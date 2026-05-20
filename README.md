@@ -210,25 +210,26 @@ Apply the lab's time series and anomaly detection expertise to detect silent dat
 - **Novelty:** High. Current methods are basic.
 - **Tractability:** Good. Lab has compute. Small LLaMA models work as testbeds.
 
-### Direction B: Failure Aware Inference Scheduling with Reinforcement Learning
+### Direction B: Failure Aware Inference Scheduling with Hybrid Heuristic-RL Policies
 
-Build an RL based inference scheduler that optimizes for latency and throughput while also handling degraded or failing nodes. The scheduler learns to route around problem nodes and trigger early rebalancing.
+Build a hybrid, failure-aware inference scheduler that optimizes for latency and throughput while dynamically routing around degraded or failing nodes. Recognizing that production environments (like Anthropic or LinkedIn) require sub-millisecond decision times where pure RL policies are too slow, this approach uses a lightweight, supervisory reinforcement learning/ML model that updates dynamic heuristic parameters in the critical path (such as in vLLM or continuous batching systems) rather than executing a heavy RL step for every token or request.
 
-- **Reliability angle:** Graceful degradation when nodes fail.
-- **Efficiency angle:** Better tail latency and resource utilization.
-- **Lab fit:** Moderate to high. Combines RL (new for lab) with reliability (core lab area).
-- **Novelty:** High. Existing schedulers assume hardware works correctly.
-- **Tractability:** Moderate. Builds on vLLM and existing scheduling research.
+- **Reliability angle:** Graceful degradation, proactive routing around unstable nodes, and smart traffic rebalancing.
+- **Efficiency angle:** Minimizes tail latency ($p99$) and maximizes cluster-wide GPU utilization under hardware degradation.
+- **Lab fit:** Moderate to high. Combines reinforcement learning (new for the lab) with systems reliability (core lab area).
+- **Novelty:** High. Schedulers like vLLM optimize for speed but assume hardware is healthy; failure-aware hybrid scheduling is highly novel.
+- **Tractability:** Moderate. Leverages existing schedulers (vLLM) and focuses on telemetry-driven heuristic routing rather than reinventing the serving engine.
 
 ### Direction C: Graph Neural Networks for Cascading Failure Prediction in GPU Clusters
 
-Model GPU clusters as graphs and use graph neural networks to predict how failures propagate across nodes. Use the predictions to drive smarter checkpointing and job placement decisions.
+Model GPU clusters as graphs and use graph neural networks to predict how network fabric congestion or physical hardware degradation propagates across neighboring nodes. These predictions can drive preemptive checkpointing and intelligent job placement decisions.
 
-- **Reliability angle:** Predict cascading failures before they happen.
-- **Efficiency angle:** Avoid wasted compute by anticipating cluster problems and acting early.
-- **Lab fit:** High. Builds on lab's recent NeurIPS 2025 graph ML work.
-- **Novelty:** High. Cluster level cascading prediction is underexplored.
-- **Tractability:** Moderate. Depends on telemetry data availability.
+- **Reliability angle:** Predict cascading fabric/collective communication failures before they stall the entire training run.
+- **Efficiency angle:** Saves massive amounts of compute by predicting bottlenecks and optimizing cluster network topologies.
+- **Lab fit:** High. Directly builds on the lab's recent NeurIPS 2025 graph ML work.
+- **Novelty:** High. Network-aware cascading failure modeling at the graph topology level is currently underexplored.
+- **Gotcha (Telemetry Data Scarcity):** Production-grade GPU topologies, InfiniBand/RoCE traffic traces, and detailed failure logs are highly proprietary trade secrets of hyperscalers. Validating a GNN model in a university lab setting relies heavily on synthetic cluster simulation, making practical real-world validation extremely difficult.
+- **Tractability:** Low to Moderate. Highly dependent on simulator fidelity or successfully securing an open-source anonymized cluster trace.
 
 ---
 
