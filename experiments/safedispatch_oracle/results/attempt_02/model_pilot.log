@@ -1,0 +1,53 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+loading models
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   0%|          | 1/311 [00:01<08:51,  1.72s/it]Loading weights: 100%|██████████| 311/311 [00:01<00:00, 179.13it/s]
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 5046.01it/s]
+prompt 00/32  88.5s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 01/32  66.8s  c1=(0,0)  div_free=13 flip_dec=13 flip_pre=None
+prompt 02/32  74.3s  c1=(0,0)  div_free=62 flip_dec=62 flip_pre=62
+prompt 03/32  73.5s  c1=(0,0)  div_free=6 flip_dec=6 flip_pre=None
+prompt 04/32  60.4s  c1=(0,0)  div_free=None flip_dec=None flip_pre=65
+prompt 05/32  68.7s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 06/32  59.8s  c1=(0,0)  div_free=53 flip_dec=53 flip_pre=None
+prompt 07/32  68.5s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 08/32  53.8s  c1=(0,0)  div_free=43 flip_dec=43 flip_pre=43
+prompt 09/32  55.3s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 10/32  52.4s  c1=(0,0)  div_free=17 flip_dec=17 flip_pre=17
+prompt 11/32  56.9s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 12/32  130.7s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 13/32  77.6s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 14/32  101.2s  c1=(0,0)  div_free=22 flip_dec=22 flip_pre=1
+prompt 15/32  92.9s  c1=(0,0)  div_free=0 flip_dec=0 flip_pre=0
+prompt 16/32  45.3s  c1=(0,0)  div_free=0 flip_dec=0 flip_pre=0
+prompt 17/32  39.7s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 18/32  42.6s  c1=(0,0)  div_free=None flip_dec=None flip_pre=8
+prompt 19/32  41.8s  c1=(0,0)  div_free=57 flip_dec=57 flip_pre=None
+prompt 20/32  41.3s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 21/32  41.8s  c1=(0,0)  div_free=5 flip_dec=5 flip_pre=5
+prompt 22/32  43.3s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 23/32  38.1s  c1=(0,0)  div_free=None flip_dec=None flip_pre=None
+prompt 24/32  40.8s  c1=(0,0)  div_free=60 flip_dec=60 flip_pre=60
+prompt 25/32  37.9s  c1=(0,0)  div_free=6 flip_dec=6 flip_pre=6
+prompt 26/32  35.8s  c1=(0,0)  div_free=15 flip_dec=15 flip_pre=15
+prompt 27/32  36.6s  c1=(0,0)  div_free=13 flip_dec=13 flip_pre=13
+prompt 28/32  39.1s  c1=(0,0)  div_free=5 flip_dec=5 flip_pre=None
+prompt 29/32  35.8s  c1=(0,0)  div_free=55 flip_dec=55 flip_pre=55
+prompt 30/32  38.5s  c1=(0,0)  div_free=51 flip_dec=51 flip_pre=51
+prompt 31/32  43.2s  c1=(0,0)  div_free=None flip_dec=None flip_pre=30
+{
+ "C1": {
+  "reference_bitwise_stable": true,
+  "candidate_bitwise_stable": true,
+  "PASS": true,
+  "nonfinite_ref": 0,
+  "nonfinite_cand": 0
+ },
+ "C3": {
+  "prompts_agree": 32,
+  "of": 32,
+  "PASS": true,
+  "prompts_diverging_free_run": 18,
+  "prefill_vs_decode_first_flip_agreement": 0.71875
+ }
+}
+C4: FAIL coverage 0.058 flips 33 of 3072

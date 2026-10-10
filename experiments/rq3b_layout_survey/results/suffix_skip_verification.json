@@ -1,0 +1,502 @@
+{
+  "model_id": "Qwen/Qwen3.5-0.8B-Base",
+  "last_recurrent_layer": 22,
+  "skipped_layers": [
+    23
+  ],
+  "reps_per_cell": 8,
+  "randomized_order": true,
+  "correctness_criterion": "recurrent-state equality, not logit equality",
+  "summary": [
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "suffix_len": 128,
+      "normal_median_s": 0.17387481301557273,
+      "skip_median_s": 0.17123270803131163,
+      "measured_saving_pct": 1.5195444000416947,
+      "recurrent_state_max_abs_diff": 0.0,
+      "recurrent_state_identical": true
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "suffix_len": 256,
+      "normal_median_s": 0.3508476868737489,
+      "skip_median_s": 0.34729860397055745,
+      "measured_saving_pct": 1.0115736930791153,
+      "recurrent_state_max_abs_diff": 0.0,
+      "recurrent_state_identical": true
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "suffix_len": 512,
+      "normal_median_s": 0.9800587499048561,
+      "skip_median_s": 0.970172124565579,
+      "measured_saving_pct": 1.008778845169933,
+      "recurrent_state_max_abs_diff": 0.0,
+      "recurrent_state_identical": true
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "suffix_len": 1024,
+      "normal_median_s": 2.6471725834999233,
+      "skip_median_s": 2.4778328539105132,
+      "measured_saving_pct": 6.397003755815566,
+      "recurrent_state_max_abs_diff": 0.0,
+      "recurrent_state_identical": true
+    }
+  ],
+  "raw": [
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "skip_suffix",
+      "rep": 0,
+      "seconds": 0.18224749993532896
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "normal",
+      "rep": 0,
+      "seconds": 0.1726611249614507
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "normal",
+      "rep": 1,
+      "seconds": 0.17393762501887977
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "skip_suffix",
+      "rep": 1,
+      "seconds": 0.17065512505359948
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "skip_suffix",
+      "rep": 2,
+      "seconds": 0.17120850016362965
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "normal",
+      "rep": 2,
+      "seconds": 0.1738549170549959
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "skip_suffix",
+      "rep": 3,
+      "seconds": 0.17197387502528727
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "normal",
+      "rep": 3,
+      "seconds": 0.173665874870494
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "skip_suffix",
+      "rep": 4,
+      "seconds": 0.1712569158989936
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "normal",
+      "rep": 4,
+      "seconds": 0.17325437488034368
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "skip_suffix",
+      "rep": 5,
+      "seconds": 0.1723102501127869
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "normal",
+      "rep": 5,
+      "seconds": 0.17401462513953447
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "normal",
+      "rep": 6,
+      "seconds": 0.1744234999641776
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "skip_suffix",
+      "rep": 6,
+      "seconds": 0.17115504201501608
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "skip_suffix",
+      "rep": 7,
+      "seconds": 0.17040912504307926
+    },
+    {
+      "context_len": 512,
+      "boundary": 384,
+      "method": "normal",
+      "rep": 7,
+      "seconds": 0.17389470897614956
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "skip_suffix",
+      "rep": 0,
+      "seconds": 0.35592587501741946
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "normal",
+      "rep": 0,
+      "seconds": 0.3557511249091476
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "skip_suffix",
+      "rep": 1,
+      "seconds": 0.3490037079900503
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "normal",
+      "rep": 1,
+      "seconds": 0.4157140830066055
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "skip_suffix",
+      "rep": 2,
+      "seconds": 0.39642150001600385
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "normal",
+      "rep": 2,
+      "seconds": 0.35154233290813863
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "normal",
+      "rep": 3,
+      "seconds": 0.35015304083935916
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "skip_suffix",
+      "rep": 3,
+      "seconds": 0.3448439580388367
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "normal",
+      "rep": 4,
+      "seconds": 0.34964704187586904
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "skip_suffix",
+      "rep": 4,
+      "seconds": 0.3455934999510646
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "skip_suffix",
+      "rep": 5,
+      "seconds": 0.34399912506341934
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "normal",
+      "rep": 5,
+      "seconds": 0.3498220001347363
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "normal",
+      "rep": 6,
+      "seconds": 0.3493379580322653
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "skip_suffix",
+      "rep": 6,
+      "seconds": 0.3437230000272393
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "normal",
+      "rep": 7,
+      "seconds": 0.40274079190567136
+    },
+    {
+      "context_len": 1024,
+      "boundary": 768,
+      "method": "skip_suffix",
+      "rep": 7,
+      "seconds": 0.36269124993123114
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "normal",
+      "rep": 0,
+      "seconds": 0.7749114579055458
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "skip_suffix",
+      "rep": 0,
+      "seconds": 0.8263343328144401
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "normal",
+      "rep": 1,
+      "seconds": 0.8814360410906374
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "skip_suffix",
+      "rep": 1,
+      "seconds": 0.8645572499372065
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "normal",
+      "rep": 2,
+      "seconds": 0.9113347919192165
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "skip_suffix",
+      "rep": 2,
+      "seconds": 0.9070077908691019
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "normal",
+      "rep": 3,
+      "seconds": 0.9540158328600228
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "skip_suffix",
+      "rep": 3,
+      "seconds": 0.9321934580802917
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "normal",
+      "rep": 4,
+      "seconds": 1.0061016669496894
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "skip_suffix",
+      "rep": 4,
+      "seconds": 1.0081507910508662
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "skip_suffix",
+      "rep": 5,
+      "seconds": 1.0229606670327485
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "normal",
+      "rep": 5,
+      "seconds": 1.0631249169819057
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "skip_suffix",
+      "rep": 6,
+      "seconds": 1.0923089168500155
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "normal",
+      "rep": 6,
+      "seconds": 1.1950763328932226
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "normal",
+      "rep": 7,
+      "seconds": 1.1804692088626325
+    },
+    {
+      "context_len": 2048,
+      "boundary": 1536,
+      "method": "skip_suffix",
+      "rep": 7,
+      "seconds": 1.2142504171933979
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "skip_suffix",
+      "rep": 0,
+      "seconds": 2.816002457868308
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "normal",
+      "rep": 0,
+      "seconds": 2.786182750016451
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "normal",
+      "rep": 1,
+      "seconds": 2.7680425841826946
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "skip_suffix",
+      "rep": 1,
+      "seconds": 2.699617249891162
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "skip_suffix",
+      "rep": 2,
+      "seconds": 2.7069637498352677
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "normal",
+      "rep": 2,
+      "seconds": 2.6434983329381794
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "normal",
+      "rep": 3,
+      "seconds": 2.6508468340616673
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "skip_suffix",
+      "rep": 3,
+      "seconds": 2.4531180828344077
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "normal",
+      "rep": 4,
+      "seconds": 2.4122937091160566
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "skip_suffix",
+      "rep": 4,
+      "seconds": 2.5025476249866188
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "skip_suffix",
+      "rep": 5,
+      "seconds": 2.390602499945089
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "normal",
+      "rep": 5,
+      "seconds": 2.497835041023791
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "skip_suffix",
+      "rep": 6,
+      "seconds": 2.366173541173339
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "normal",
+      "rep": 6,
+      "seconds": 2.656894041923806
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "skip_suffix",
+      "rep": 7,
+      "seconds": 2.3300570000428706
+    },
+    {
+      "context_len": 4096,
+      "boundary": 3072,
+      "method": "normal",
+      "rep": 7,
+      "seconds": 2.4313312920276076
+    }
+  ]
+}

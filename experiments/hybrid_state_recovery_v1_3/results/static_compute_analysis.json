@@ -1,0 +1,16 @@
+{
+  "total_linear_weight_elements": 751894528,
+  "full_attention_kv_projection_weight_elements": 6291456,
+  "full_attention_q_projection_weight_elements": 25165824,
+  "full_attention_decoder_block_parameter_elements": 110115840,
+  "full_attention_layer_indices": [
+    3,
+    7,
+    11,
+    15,
+    19,
+    23
+  ],
+  "kv_projection_fraction_of_all_linear_weights": 0.008367471454719777,
+  "note": "Weight-element fractions are only structural MAC proxies. Attention matmul, norms, activations and recurrent kernels are not included, so the true fraction of total work saved by K/V projection bypass is no larger in general."
+}

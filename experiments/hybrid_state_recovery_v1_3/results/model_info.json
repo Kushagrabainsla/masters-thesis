@@ -1,0 +1,39 @@
+{
+  "model_class": "Qwen3_5ForCausalLM",
+  "text_model_class": "Qwen3_5TextModel",
+  "num_parameters": 752393024,
+  "num_hidden_layers": 24,
+  "hidden_size": 1024,
+  "vocab_size": 248320,
+  "layer_type_counts": {
+    "linear_attention": 18,
+    "full_attention": 6
+  },
+  "layer_types": [
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention",
+    "linear_attention",
+    "linear_attention",
+    "linear_attention",
+    "full_attention"
+  ],
+  "attention_implementation": "eager"
+}

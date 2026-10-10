@@ -1,0 +1,26 @@
+seed 0 done
+seed 1 done
+seed 2 done
+seed 3 done
+seed 4 done
+seed 5 done
+seed 6 done
+seed 7 done
+seed 8 done
+seed 9 done
+seed 10 done
+seed 11 done
+seed 12 done
+seed 13 done
+seed 14 done
+seed 15 done
+seed 16 done
+seed 17 done
+seed 18 done
+seed 19 done
+C2 PASS=True  checks={'a_F0_zero_diff': True, 'b_bitwise_detects_F1_to_F4': True, 'c_spec_F1_F2_F3_within_one_spacing': True, 'c_blind_spot_allclose_passes_F1_F2_F3': True}
+  F0: n_diff=0/10485760 (0.00e+00) max_spacing=0 allclose_pass=20/20
+  F1: n_diff=44/10485760 (4.20e-06) max_spacing=1 allclose_pass=20/20
+  F2: n_diff=5235300/10485760 (4.99e-01) max_spacing=1 allclose_pass=20/20
+  F3: n_diff=656356/10485760 (6.26e-02) max_spacing=1 allclose_pass=20/20
+  F4: n_diff=3905007/10485760 (3.72e-01) max_spacing=2 allclose_pass=3/20

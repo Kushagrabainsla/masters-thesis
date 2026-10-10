@@ -1,0 +1,986 @@
+{
+  "vs_normal": {
+    "comparable": true,
+    "global_max_abs": 13.40625,
+    "rows": [
+      {
+        "layer_idx": 0,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 0,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 1,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 1,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 2,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 2,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 4,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 5.490234375,
+        "mean_abs": 0.43206915259361267,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 4,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.0417629480361938,
+        "mean_abs": 0.0040419516153633595,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 5,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 3.5234375,
+        "mean_abs": 0.35436081886291504,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 5,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.5256165266036987,
+        "mean_abs": 0.001549766631796956,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 6,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 2.598876953125,
+        "mean_abs": 0.26340198516845703,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 6,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.17454040050506592,
+        "mean_abs": 0.0010630780598148704,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 8,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 4.703125,
+        "mean_abs": 0.36496639251708984,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 8,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.0273516178131104,
+        "mean_abs": 0.0025940872728824615,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 9,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 7.416015625,
+        "mean_abs": 0.3574479818344116,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 9,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.5408602952957153,
+        "mean_abs": 0.0012687775306403637,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 10,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 5.978515625,
+        "mean_abs": 0.31458139419555664,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 10,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.2718116044998169,
+        "mean_abs": 0.0009726186981424689,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 12,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 9.86083984375,
+        "mean_abs": 0.46610620617866516,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 12,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.5265673398971558,
+        "mean_abs": 0.003825239837169647,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 13,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 5.755859375,
+        "mean_abs": 0.42683008313179016,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 13,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.5608503222465515,
+        "mean_abs": 0.0014016455970704556,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 14,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 5.5390625,
+        "mean_abs": 0.39349564909935,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 14,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.40217506885528564,
+        "mean_abs": 0.0015135585563257337,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 16,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 9.640625,
+        "mean_abs": 0.6714060306549072,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 16,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.011978268623352,
+        "mean_abs": 0.0068607148714363575,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 17,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 13.40625,
+        "mean_abs": 0.7044374942779541,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 17,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.2360033988952637,
+        "mean_abs": 0.008810407482087612,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 18,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 7.2890625,
+        "mean_abs": 0.7077341079711914,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 18,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.3117671012878418,
+        "mean_abs": 0.010705353692173958,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 20,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 11.7890625,
+        "mean_abs": 0.9331347346305847,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 20,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 2.4632279872894287,
+        "mean_abs": 0.01119275577366352,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 21,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 13.1875,
+        "mean_abs": 0.8358540534973145,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 21,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.4948492050170898,
+        "mean_abs": 0.007668803445994854,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 22,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 6.67578125,
+        "mean_abs": 0.5491319298744202,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 22,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 2.151850461959839,
+        "mean_abs": 0.0024006194435060024,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      }
+    ]
+  },
+  "vs_full": {
+    "comparable": true,
+    "global_max_abs": 13.40625,
+    "rows": [
+      {
+        "layer_idx": 0,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 0,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 1,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 1,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 2,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 2,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 4,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 5.490234375,
+        "mean_abs": 0.43206915259361267,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 4,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.0417629480361938,
+        "mean_abs": 0.0040419516153633595,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 5,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 3.5234375,
+        "mean_abs": 0.35436081886291504,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 5,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.5256165266036987,
+        "mean_abs": 0.001549766631796956,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 6,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 2.598876953125,
+        "mean_abs": 0.26340198516845703,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 6,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.17454040050506592,
+        "mean_abs": 0.0010630780598148704,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 8,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 4.703125,
+        "mean_abs": 0.36496639251708984,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 8,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.0273516178131104,
+        "mean_abs": 0.0025940872728824615,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 9,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 7.416015625,
+        "mean_abs": 0.3574479818344116,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 9,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.5408602952957153,
+        "mean_abs": 0.0012687775306403637,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 10,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 5.978515625,
+        "mean_abs": 0.31458139419555664,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 10,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.2718116044998169,
+        "mean_abs": 0.0009726186981424689,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 12,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 9.86083984375,
+        "mean_abs": 0.46610620617866516,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 12,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.5265673398971558,
+        "mean_abs": 0.003825239837169647,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 13,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 5.755859375,
+        "mean_abs": 0.42683008313179016,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 13,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.5608503222465515,
+        "mean_abs": 0.0014016455970704556,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 14,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 5.5390625,
+        "mean_abs": 0.39349564909935,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 14,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.40217506885528564,
+        "mean_abs": 0.0015135585563257337,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 16,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 9.640625,
+        "mean_abs": 0.6714060306549072,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 16,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.011978268623352,
+        "mean_abs": 0.0068607148714363575,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 17,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 13.40625,
+        "mean_abs": 0.7044374942779541,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 17,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.2360033988952637,
+        "mean_abs": 0.008810407482087612,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 18,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 7.2890625,
+        "mean_abs": 0.7077341079711914,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 18,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.3117671012878418,
+        "mean_abs": 0.010705353692173958,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 20,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 11.7890625,
+        "mean_abs": 0.9331347346305847,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 20,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 2.4632279872894287,
+        "mean_abs": 0.01119275577366352,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 21,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 13.1875,
+        "mean_abs": 0.8358540534973145,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 21,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 1.4948492050170898,
+        "mean_abs": 0.007668803445994854,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 22,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 6.67578125,
+        "mean_abs": 0.5491319298744202,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 22,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 2.151850461959839,
+        "mean_abs": 0.0024006194435060024,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      }
+    ]
+  }
+}

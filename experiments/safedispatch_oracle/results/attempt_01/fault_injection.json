@@ -1,0 +1,85 @@
+{
+  "criterion": "C2",
+  "shape": {
+    "m": 256,
+    "k": 2048,
+    "n": 2048
+  },
+  "seeds": 20,
+  "allclose_rtol": 0.0078125,
+  "per_mode": {
+    "F0": {
+      "n": 10485760,
+      "n_diff": 0,
+      "max_spacing": 0,
+      "allclose_pass": 20,
+      "seeds": 20,
+      "frac_diff": 0.0
+    },
+    "F1": {
+      "n": 10485760,
+      "n_diff": 44,
+      "max_spacing": 1,
+      "allclose_pass": 20,
+      "seeds": 20,
+      "frac_diff": 4.1961669921875e-06
+    },
+    "F2": {
+      "n": 10485760,
+      "n_diff": 5235300,
+      "max_spacing": 1,
+      "allclose_pass": 20,
+      "seeds": 20,
+      "frac_diff": 0.49927711486816406
+    },
+    "F3": {
+      "n": 10485760,
+      "n_diff": 656356,
+      "max_spacing": 1,
+      "allclose_pass": 20,
+      "seeds": 20,
+      "frac_diff": 0.06259498596191407
+    },
+    "F4": {
+      "n": 10485760,
+      "n_diff": 3905007,
+      "max_spacing": 2,
+      "allclose_pass": 3,
+      "seeds": 20,
+      "frac_diff": 0.3724104881286621
+    }
+  },
+  "checks": {
+    "a_F0_zero_diff": true,
+    "b_bitwise_detects_F1_to_F4": true,
+    "c_spec_F1_F2_F3_within_one_spacing": true,
+    "c_blind_spot_allclose_passes_F1_F2_F3": true
+  },
+  "PASS": true,
+  "notes": {
+    "F4_allclose_pass_seeds": 3,
+    "F4_max_spacing": 2,
+    "faults_are_own_constructions": "same fault class as arXiv 2609.00363, not a reproduction of its five faults"
+  },
+  "manifest": {
+    "timestamp_utc": "2026-09-24T15:43:58.122849+00:00",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.12.13",
+    "torch": "2.14.0",
+    "transformers": "5.17.0",
+    "mps_available": true,
+    "torch_threads": 4,
+    "source_sha256": {
+      "harness/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "harness/contracts.py": "07c76cfcb1d5397865caa7506b0aa2ede69ee5b7cce4ed3408b9d85ca8a7e9fe",
+      "harness/estimator.py": "8c805b868bb6d863a00abbf10e69ee88a5f4562e01076fb449f7179e5fddfc16",
+      "harness/int8_gemm.py": "2d9570dffe98ebc67de09fdc3de54b0843d441d53a5d99a688fc80c2a0999301",
+      "harness/manifest.py": "ff60b18a1ba679c3ee091173aa2d79c69a4fcbd6b02651b018db1db0678bc7ca",
+      "harness/modelrun.py": "865dae835999cf21c23dcc45bd40ac7dd93a01ea52a6211629b5782088a5cc66",
+      "run_fault_injection.py": "0a5661f3b1c820b51f10569394ab9e18bd62ee38a32b3564c0c08267aa9e296c"
+    },
+    "prompts_sha256": "a6ee618b31fa259bda03c35ca40a306882a03c4b07c9b051fef88d8d65affdaf",
+    "experiment": "E-23/C2"
+  }
+}

@@ -1,0 +1,13 @@
+knee: 0/2400
+knee: 200/2400
+knee: 400/2400
+knee: 600/2400
+knee: 800/2400
+knee: 1000/2400
+knee: 1200/2400
+knee: 1400/2400
+knee: 1600/2400
+knee: 1800/2400
+knee: 2000/2400
+knee: 2200/2400
+wrote /Users/kushagrabainsls/Desktop/mscs/masters-thesis/experiments/metastable_admission/results/e28_knee.csv 2400 runs

@@ -1,0 +1,1322 @@
+[
+  {
+    "context_len": 512,
+    "boundary": 256,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 512,
+    "boundary": 256,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 512,
+    "boundary": 256,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 512,
+    "boundary": 256,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 512,
+    "boundary": 256,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 12.935546875,
+      "mean_abs": 2.5097367763519287
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 12.935546875,
+      "mean_abs": 2.5097367763519287
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 13.40625
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 13.40625
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 512,
+    "boundary": 384,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 512,
+    "boundary": 384,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 512,
+    "boundary": 384,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 512,
+    "boundary": 384,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 512,
+    "boundary": 384,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 12.537109375,
+      "mean_abs": 2.5335288047790527
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 12.537109375,
+      "mean_abs": 2.5335288047790527
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 13.046875
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 13.046875
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 512,
+    "boundary": 448,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.01171875,
+      "mean_abs": 0.0019481000490486622
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.015625,
+      "mean_abs": 0.001992365112528205
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.03125
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.015625
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 512,
+    "boundary": 448,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.01171875,
+      "mean_abs": 0.0019481000490486622
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.015625,
+      "mean_abs": 0.001992365112528205
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.03125
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.015625
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 512,
+    "boundary": 448,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0078125,
+      "mean_abs": 0.0012536031426861882
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.03125
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.015625
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 512,
+    "boundary": 448,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0078125,
+      "mean_abs": 0.0012536031426861882
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.03125
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 512,
+    "boundary": 448,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 12.298828125,
+      "mean_abs": 2.528207540512085
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 12.291015625,
+      "mean_abs": 2.5283427238464355
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 12.625
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 12.625
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 512,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 1024,
+    "boundary": 512,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 512,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 1024,
+    "boundary": 512,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 512,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 10.56640625,
+      "mean_abs": 1.8877569437026978
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 10.56640625,
+      "mean_abs": 1.8877569437026978
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 15.890625
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 15.890625
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 768,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 768,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 1024,
+    "boundary": 768,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 768,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 1024,
+    "boundary": 768,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 11.060546875,
+      "mean_abs": 1.874751091003418
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 11.060546875,
+      "mean_abs": 1.874751091003418
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 15.171875
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 15.171875
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 896,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 1024,
+    "boundary": 896,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 896,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 1024,
+    "boundary": 896,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 1024,
+    "boundary": 896,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 11.828125,
+      "mean_abs": 1.8645697832107544
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 11.828125,
+      "mean_abs": 1.8645697832107544
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 15.40625
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 15.40625
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1024,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1024,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1024,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1024,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1024,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 11.51171875,
+      "mean_abs": 1.8773281574249268
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 11.51171875,
+      "mean_abs": 1.8773281574249268
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 16.203125
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 16.203125
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1536,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1536,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1536,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1536,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1536,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 11.2255859375,
+      "mean_abs": 1.8565335273742676
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 11.2255859375,
+      "mean_abs": 1.8565335273742676
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 16.2265625
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 16.2265625
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1792,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1792,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1792,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1792,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1792,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 11.373046875,
+      "mean_abs": 1.8485281467437744
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 11.373046875,
+      "mean_abs": 1.8485281467437744
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 16.578125
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 16.578125
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 2048,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 2048,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 2048,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 4096,
+    "boundary": 2048,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 4096,
+    "boundary": 2048,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 14.9296875,
+      "mean_abs": 1.8848340511322021
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 14.9296875,
+      "mean_abs": 1.8848340511322021
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 18.03125
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 18.03125
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3072,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3072,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3072,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3072,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3072,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 15.23046875,
+      "mean_abs": 1.8950995206832886
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 15.23046875,
+      "mean_abs": 1.8950995206832886
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 19.265625
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 19.265625
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3584,
+    "method": "frozen_full_kv_bypass_kv_proj",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3584,
+    "method": "frozen_full_kv_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": 6
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3584,
+    "method": "oracle_cached_full_block_outputs",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3584,
+    "method": "normal_suffix_replay",
+    "logits_vs_normal_suffix": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 0.0,
+      "mean_abs": 0.0
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 0.0
+    },
+    "frozen_update_calls": null
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3584,
+    "method": "naive_identity_skip_full_blocks",
+    "logits_vs_normal_suffix": {
+      "max_abs": 14.83203125,
+      "mean_abs": 1.8982336521148682
+    },
+    "logits_vs_full_reference": {
+      "max_abs": 14.83203125,
+      "mean_abs": 1.8982336521148682
+    },
+    "linear_state_vs_normal_suffix": {
+      "comparable": true,
+      "global_max_abs": 20.28125
+    },
+    "linear_state_vs_full_reference": {
+      "comparable": true,
+      "global_max_abs": 20.28125
+    },
+    "frozen_update_calls": null
+  }
+]

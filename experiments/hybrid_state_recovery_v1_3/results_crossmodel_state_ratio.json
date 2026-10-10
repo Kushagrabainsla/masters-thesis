@@ -1,0 +1,70 @@
+[
+  {
+    "fa_activation_bytes_per_token": 12288,
+    "activation_to_kv_byte_ratio": 1.0,
+    "context_where_activation_cache_equals_one_snapshot": 1536.0,
+    "model_id": "Qwen/Qwen3.5-0.8B-Base",
+    "num_hidden_layers": 24,
+    "n_full_attention_layers": 6,
+    "n_recurrent_layers": 18,
+    "hidden_size": 1024,
+    "recurrent_style": "gated_deltanet",
+    "fa_kv_bytes_per_token": 12288,
+    "recurrent_snapshot_bytes": 18874368,
+    "recurrent_snapshot_MiB": 18.0,
+    "crossover_context_tokens": 1536.0,
+    "note": "crossover = context length at which FA KV bytes equal ONE recurrent snapshot"
+  },
+  {
+    "fa_activation_bytes_per_token": 0,
+    "activation_to_kv_byte_ratio": null,
+    "context_where_activation_cache_equals_one_snapshot": null,
+    "model_id": "tiiuae/Falcon-H1-0.5B-Instruct",
+    "num_hidden_layers": 36,
+    "n_full_attention_layers": 0,
+    "n_recurrent_layers": 0,
+    "hidden_size": 1024,
+    "recurrent_style": "mamba2_heads",
+    "fa_kv_bytes_per_token": 0,
+    "recurrent_snapshot_bytes": 0,
+    "recurrent_snapshot_MiB": null,
+    "crossover_context_tokens": null,
+    "note": "crossover = context length at which FA KV bytes equal ONE recurrent snapshot"
+  },
+  {
+    "fa_activation_bytes_per_token": 32768,
+    "activation_to_kv_byte_ratio": 2.0,
+    "context_where_activation_cache_equals_one_snapshot": 3072.0,
+    "model_id": "nvidia/Nemotron-H-8B-Base-8K",
+    "num_hidden_layers": 52,
+    "n_full_attention_layers": 4,
+    "n_recurrent_layers": 24,
+    "hidden_size": 4096,
+    "recurrent_style": "mamba2_heads",
+    "fa_kv_bytes_per_token": 16384,
+    "recurrent_snapshot_bytes": 100663296,
+    "recurrent_snapshot_MiB": 96.0,
+    "crossover_context_tokens": 6144.0,
+    "note": "crossover = context length at which FA KV bytes equal ONE recurrent snapshot"
+  },
+  {
+    "fa_activation_bytes_per_token": 32768,
+    "activation_to_kv_byte_ratio": 2.0,
+    "context_where_activation_cache_equals_one_snapshot": 4608.0,
+    "model_id": "ibm-granite/granite-4.0-h-small",
+    "num_hidden_layers": 40,
+    "n_full_attention_layers": 4,
+    "n_recurrent_layers": 36,
+    "hidden_size": 4096,
+    "recurrent_style": "mamba2_heads",
+    "fa_kv_bytes_per_token": 16384,
+    "recurrent_snapshot_bytes": 150994944,
+    "recurrent_snapshot_MiB": 144.0,
+    "crossover_context_tokens": 9216.0,
+    "note": "crossover = context length at which FA KV bytes equal ONE recurrent snapshot"
+  },
+  {
+    "model_id": "state-spaces/mamba2-2.7b",
+    "error": "ValueError('Unrecognized model in state-spaces/mamba2-2.7b. Should have a `model_type` key in its config.json.')"
+  }
+]

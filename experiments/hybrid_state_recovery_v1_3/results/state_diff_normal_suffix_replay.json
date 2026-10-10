@@ -1,0 +1,986 @@
+{
+  "vs_normal": {
+    "comparable": true,
+    "global_max_abs": 0.0,
+    "rows": [
+      {
+        "layer_idx": 0,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 0,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 1,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 1,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 2,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 2,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 4,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 4,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 5,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 5,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 6,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 6,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 8,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 8,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 9,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 9,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 10,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 10,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 12,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 12,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 13,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 13,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 14,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 14,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 16,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 16,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 17,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 17,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 18,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 18,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 20,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 20,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 21,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 21,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 22,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 22,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      }
+    ]
+  },
+  "vs_full": {
+    "comparable": true,
+    "global_max_abs": 0.0,
+    "rows": [
+      {
+        "layer_idx": 0,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 0,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 1,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 1,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 2,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 2,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 4,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 4,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 5,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 5,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 6,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 6,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 8,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 8,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 9,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 9,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 10,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 10,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 12,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 12,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 13,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 13,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 14,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 14,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 16,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 16,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 17,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 17,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 18,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 18,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 20,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 20,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 21,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 21,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      },
+      {
+        "layer_idx": 22,
+        "kind": "conv_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          6144,
+          4
+        ]
+      },
+      {
+        "layer_idx": 22,
+        "kind": "recurrent_states",
+        "state_idx": 0,
+        "comparable": true,
+        "max_abs": 0.0,
+        "mean_abs": 0.0,
+        "shape": [
+          1,
+          16,
+          128,
+          128
+        ]
+      }
+    ]
+  }
+}

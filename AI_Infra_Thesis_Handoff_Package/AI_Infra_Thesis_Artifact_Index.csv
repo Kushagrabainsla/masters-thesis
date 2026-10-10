@@ -1,0 +1,9 @@
+artifact,purpose_warning
+gpu_efficiency_v2_results_bundle.zip,V2.1 Mac empirical screens; use cautiously.
+gpu_efficiency_v2_2_results_bundle.zip,Corrected network crossover + Alibaba trace elasticity + typed hybrid allocator screen.
+vllm_hybrid_state_gap_results_bundle.zip,Pinned vLLM source/runtime composability evidence.
+vllm_reconstructability_poc_results_bundle.zip,Generic REQUIRED/RECONSTRUCTABLE/EPHEMERAL POC and A/B results.
+consistent_state_planner_poc_results_bundle.zip,324-row normalized cost planner sensitivity study.
+mac_hybrid_selective_recovery_results_bundle.zip,Valid Qwen3.5 MPS cached-suffix/cache-topology experiment.
+mac_state_selective_recovery_results_bundle.zip,Latest state-selective recovery experiment; frozen-KV semantics invalid; oracle valid only for one quick case.
+mac_state_selective_recovery_fix_v1_2.zip,Unrun explicit-mask compatibility fix prepared after v1.1; do not treat as tested.

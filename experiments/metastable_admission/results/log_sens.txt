@@ -1,0 +1,10 @@
+sens: 0/1800
+sens: 200/1800
+sens: 400/1800
+sens: 600/1800
+sens: 800/1800
+sens: 1000/1800
+sens: 1200/1800
+sens: 1400/1800
+sens: 1600/1800
+wrote /Users/kushagrabainsls/Desktop/mscs/masters-thesis/experiments/metastable_admission/results/e28_sens.csv 1800 runs

@@ -1,0 +1,331 @@
+{
+  "files": 224,
+  "main_sessions": 216,
+  "sidechain_streams": 5,
+  "session_max_prompt_quantiles": [
+    20528.1,
+    21072.2,
+    21937.0,
+    23877.8,
+    26385.0,
+    30394.8,
+    31094.8,
+    39837.6,
+    360394.0
+  ],
+  "sessions_max_prompt_over": {
+    "150000": 34,
+    "200000": 31,
+    "500000": 17,
+    "900000": 2
+  },
+  "main": {
+    "requests": 10431,
+    "token_totals": {
+      "input_tokens": 21400,
+      "cache_write_tokens": 45959550,
+      "cache_read_tokens": 3883919150,
+      "output_tokens": 9073943
+    },
+    "cost_usd": {
+      "uncached_input": 0.08328000000000567,
+      "cache_write": 333.41320200000257,
+      "cache_read": 1423.8305827999982,
+      "output": 167.57967000000022
+    },
+    "cost_total_usd": 1924.906734800001,
+    "cost_share": {
+      "uncached_input": 4.3264433800559437e-05,
+      "cache_write": 0.17321005530932615,
+      "cache_read": 0.7396880882896049,
+      "output": 0.08705859196726841
+    },
+    "break_counts": {
+      "session_start": 208,
+      "hit": 10140,
+      "ttl_expiry": 71,
+      "compaction": 3,
+      "other_break": 9
+    },
+    "break_write_tokens": {
+      "session_start": 2661977,
+      "hit": 16218451,
+      "ttl_expiry": 24833459,
+      "compaction": 115774,
+      "other_break": 2151289
+    },
+    "break_write_cost_share_of_total": {
+      "session_start": 0.0064156583676159866,
+      "hit": 0.06268883048639666,
+      "ttl_expiry": 0.09358667344406028,
+      "compaction": 0.0002946677829868642,
+      "other_break": 0.010267489662065882
+    },
+    "compaction_calls_est_cost_share": 0.0007169240852302303,
+    "break_write_share_excl_hits": {
+      "session_start": 0.0894406413923777,
+      "ttl_expiry": 0.8343875626841685,
+      "compaction": 0.0038899287321269627,
+      "other_break": 0.07228186719132691
+    },
+    "appended_tokens": 16574758,
+    "appended_tool_tokens": 5619072.2737086,
+    "tool_share_of_appended": 0.33901383499587745,
+    "tool_tokens_by_name": {
+      "Bash": 4065981.857703676,
+      "Read": 1056543.3758903546,
+      "WebSearch": 194874.41088943905,
+      "WebFetch": 172910.40883807102,
+      "Edit": 32791.60831402313,
+      "mcp__1a59c906-04da-521d-bda7-7f71b9f9e01c__guide": 32137.27921825297,
+      "Artifact": 20172.49758107562,
+      "Write": 13258.99268144862,
+      "mcp__Claude_Browser__browser_batch": 5239.447937172713,
+      "mcp__1a59c906-04da-521d-bda7-7f71b9f9e01c__update": 4085.6881567264986,
+      "mcp__1a59c906-04da-521d-bda7-7f71b9f9e01c__read": 3794.6954663398155,
+      "mcp__ccd_pr__get_status": 2796.9615649907446
+    },
+    "tool_token_cost_usd": 611.7374610576461,
+    "tool_token_cost_share": 0.31780109134544954,
+    "oracle_saving_share": {
+      "2": 0.15890054567272477,
+      "4": 0.2383508185090862,
+      "10": 0.28602098221090466
+    },
+    "realistic_r4": {
+      "main_saving_r4": 289.3550351383907,
+      "compressed_results": 1496,
+      "compressed_tokens": 3519611.009282096,
+      "abstractive_cost": 8.3679247708847,
+      "extractive_cost": 4.848313761602614,
+      "abstractive_output_tokens": 879902.752320524,
+      "main_saving_share": 0.15032158696689005,
+      "net_abstractive_share": 0.14597440244121787,
+      "net_extractive_share": 0.1478028603844791
+    },
+    "compactions": [
+      {
+        "pre": 967845,
+        "post": 19747,
+        "duration_s": 244.375,
+        "trigger": "auto",
+        "tool_tokens_in_context": 331344.0920364866
+      },
+      {
+        "pre": 853974,
+        "post": 9168,
+        "duration_s": 110.86,
+        "trigger": "manual",
+        "tool_tokens_in_context": 354362.9074770283
+      },
+      {
+        "pre": 968680,
+        "post": 13905,
+        "duration_s": 76.293,
+        "trigger": "auto",
+        "tool_tokens_in_context": 275113.9100907624
+      }
+    ],
+    "capped_requests": 0,
+    "tokens_per_char_deciles": [
+      0.2533340560328734,
+      0.25900445946680717,
+      0.26643209099112547,
+      0.2764209866529017,
+      0.2888707037643208,
+      0.304246452588656,
+      0.3211380949318831,
+      0.3404856545583385,
+      0.3641754776484406
+    ],
+    "gap_minutes_quantiles": [
+      0.042203334172566734,
+      0.05410666465759277,
+      0.06407666762669881,
+      0.07354666789372762,
+      0.08475000063578288,
+      0.09700666586558024,
+      0.11170666615168254,
+      0.12772666533788044,
+      0.1472000002861023,
+      0.16928333441416424,
+      0.19454999844233195,
+      0.22102333148320516,
+      0.2554933333396912,
+      0.30462333440780637,
+      0.3702500025431315,
+      0.47580999771753946,
+      0.7387599992752075,
+      1.3133599996566772,
+      2.7768500010172525
+    ],
+    "gaps_over_5m": 325,
+    "gaps_over_60m": 74
+  },
+  "sidechain": {
+    "requests": 99,
+    "token_totals": {
+      "input_tokens": 218,
+      "cache_write_tokens": 584117,
+      "cache_read_tokens": 9367791,
+      "output_tokens": 5290
+    },
+    "cost_usd": {
+      "uncached_input": 0.00040999999999999923,
+      "cache_write": 1.4321425000000003,
+      "cache_read": 1.8692943000000002,
+      "output": 0.050449999999999974
+    },
+    "cost_total_usd": 3.3522968000000004,
+    "cost_share": {
+      "uncached_input": 0.0001223042064771828,
+      "cache_write": 0.42721232201158327,
+      "cache_read": 0.5576159903263935,
+      "output": 0.01504938345554605
+    },
+    "break_counts": {
+      "session_start": 5,
+      "hit": 94
+    },
+    "break_write_tokens": {
+      "session_start": 187571,
+      "hit": 396764
+    },
+    "break_write_cost_share_of_total": {
+      "session_start": 0.13223314534679625,
+      "hit": 0.29510148087126403
+    },
+    "compaction_calls_est_cost_share": 0.0,
+    "break_write_share_excl_hits": {
+      "session_start": 1.0
+    },
+    "appended_tokens": 396562,
+    "appended_tool_tokens": 352605.25949606486,
+    "tool_share_of_appended": 0.8891554397447684,
+    "tool_tokens_by_name": {
+      "WebFetch": 136037.1878701616,
+      "Bash": 104247.37362883105,
+      "Read": 76919.62642077392,
+      "WebSearch": 23974.885469239543,
+      "SubagentHandback": 11405.435015355835,
+      "bash_placeholder": 20.75109170305677,
+      "ToolSearch": 0.0
+    },
+    "tool_token_cost_usd": 1.9056042488922422,
+    "tool_token_cost_share": 0.5684473549275953,
+    "oracle_saving_share": {
+      "2": 0.2842236774637977,
+      "4": 0.4263355161956966,
+      "10": 0.5116026194348359
+    },
+    "realistic_r4": {
+      "main_saving_r4": 1.1659047477566773,
+      "compressed_results": 100,
+      "compressed_tokens": 280759.44489270326,
+      "abstractive_cost": 0.6617087510085826,
+      "extractive_cost": 0.3809493061158793,
+      "abstractive_output_tokens": 70189.86122317582,
+      "main_saving_share": 0.34779281707892845,
+      "net_abstractive_share": 0.15040314949084896,
+      "net_extractive_share": 0.23415451807274282
+    },
+    "compactions": [],
+    "capped_requests": 0,
+    "tokens_per_char_deciles": [
+      0.3152518572445019,
+      0.3955931334870612,
+      0.4552852306880911,
+      0.49150029650128485,
+      0.5597288109124786,
+      0.6385648465836683,
+      0.8060425364396835,
+      1.0615183246073299,
+      2.093173953295532
+    ],
+    "gap_minutes_quantiles": [
+      0.06730833351612091,
+      0.08632499972979227,
+      0.10449166695276897,
+      0.11699999968210854,
+      0.12480833331743876,
+      0.13123333255449932,
+      0.14713333447774252,
+      0.16953333218892416,
+      0.18152083257834117,
+      0.19906666676203413,
+      0.21264166732629136,
+      0.22545000314712524,
+      0.2358125001192093,
+      0.2649416665236155,
+      0.30565416713555654,
+      0.34330000082651774,
+      0.4957708319028219,
+      0.6385416686534882,
+      1.1307958324750262
+    ],
+    "gaps_over_5m": 0,
+    "gaps_over_60m": 0
+  },
+  "verbatim": {
+    "counts": {
+      "edits": 684,
+      "found": 489,
+      "src_Bash": 280,
+      "src_Read": 209,
+      "not_found": 195,
+      "across_compaction": 5
+    },
+    "found_share": 0.7149122807017544,
+    "lag_requests_deciles": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      3.0,
+      9.0,
+      20.0,
+      55.0,
+      144.0
+    ],
+    "lag_le_1": 0.4212678936605317,
+    "lag_le_3": 0.5112474437627812,
+    "lag_le_10": 0.623721881390593,
+    "tool_lag_deciles": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      4.0,
+      10.0,
+      26.0,
+      60.0,
+      155.0
+    ],
+    "tool_lag_lt_3": 0.4662576687116564,
+    "tool_lag_lt_5": 0.5173824130879345,
+    "read_samples_le_8000_chars": 153
+  },
+  "verbatim_posthoc_self_sources": {
+    "counts": {
+      "edits": 684,
+      "latest_source_tool": 485,
+      "no_source": 62,
+      "latest_source_self": 137
+    },
+    "tool_source_share": 0.7090643274853801,
+    "self_source_share": 0.20029239766081872,
+    "tool_lag_deciles": [
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      4.0,
+      9.6,
+      24.0,
+      60.0,
+      154.4
+    ],
+    "tool_lag_lt_3": 0.47010309278350515,
+    "tool_lag_lt_5": 0.5216494845360825
+  }
+}

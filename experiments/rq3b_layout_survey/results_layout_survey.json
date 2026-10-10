@@ -1,0 +1,488 @@
+{
+  "rule": "maximal sound skip set = trailing run of full-attention layers; validated against exhaustive subset search in rq1_soundness_gate",
+  "caveat": "Achievable saving is an UPPER bound: it assumes skipping a block costs nothing and that all FA layers cost the same. Measured oracle numbers on Qwen3.5 came in below the analytical share.",
+  "rows": [
+    {
+      "model_id": "Qwen/Qwen3.5-0.8B-Base",
+      "n_layers": 24,
+      "n_fa": 6,
+      "n_rec": 18,
+      "n_fused": 0,
+      "n_mlp": 0,
+      "fa_positions": [
+        3,
+        7,
+        11,
+        15,
+        19,
+        23
+      ],
+      "last_layer_kind": "fa",
+      "skippable_suffix": [
+        23
+      ],
+      "skippable_suffix_len": 1,
+      "skippable_suffix_kinds": [
+        "fa"
+      ],
+      "skippable_fa_layers": 1,
+      "skippable_fraction_of_fa": 0.16666666666666666,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 28.46,
+        "8192": 42.49,
+        "32768": 67.77,
+        "131072": 88.31
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 4.743,
+        "8192": 7.081,
+        "32768": 11.295,
+        "131072": 14.719
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 28.46,
+        "8192": 42.49,
+        "32768": 67.77,
+        "131072": 88.31
+      }
+    },
+    {
+      "model_id": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "n_layers": 48,
+      "n_fa": 12,
+      "n_rec": 36,
+      "n_fused": 0,
+      "n_mlp": 0,
+      "fa_positions": [
+        3,
+        7,
+        11,
+        15,
+        19,
+        23,
+        27,
+        31,
+        35,
+        39,
+        43,
+        47
+      ],
+      "last_layer_kind": "fa",
+      "skippable_suffix": [
+        47
+      ],
+      "skippable_suffix_len": 1,
+      "skippable_suffix_kinds": [
+        "fa"
+      ],
+      "skippable_fa_layers": 1,
+      "skippable_fraction_of_fa": 0.08333333333333333,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 28.98,
+        "8192": 44.65,
+        "32768": 70.6,
+        "131072": 89.77
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 2.415,
+        "8192": 3.721,
+        "32768": 5.883,
+        "131072": 7.481
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 28.98,
+        "8192": 44.65,
+        "32768": 70.6,
+        "131072": 89.77
+      }
+    },
+    {
+      "model_id": "nvidia/Nemotron-H-8B-Base-8K",
+      "n_layers": 52,
+      "n_fa": 4,
+      "n_rec": 24,
+      "n_fused": 0,
+      "n_mlp": 24,
+      "fa_positions": [
+        7,
+        18,
+        29,
+        40
+      ],
+      "last_layer_kind": "mlp",
+      "skippable_suffix": [
+        51
+      ],
+      "skippable_suffix_len": 1,
+      "skippable_suffix_kinds": [
+        "mlp"
+      ],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 3.2,
+        "8192": 5.55,
+        "32768": 13.9,
+        "131072": 36.41
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 2.487,
+        "8192": 2.426,
+        "32768": 2.212,
+        "131072": 1.634
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 3.2,
+        "8192": 5.55,
+        "32768": 13.9,
+        "131072": 36.41
+      }
+    },
+    {
+      "model_id": "nvidia/Nemotron-H-47B-Base-8K",
+      "n_layers": 98,
+      "n_fa": 5,
+      "n_rec": 45,
+      "n_fused": 0,
+      "n_mlp": 48,
+      "fa_positions": [
+        17,
+        38,
+        49,
+        60,
+        86
+      ],
+      "last_layer_kind": "mlp",
+      "skippable_suffix": [
+        97
+      ],
+      "skippable_suffix_len": 1,
+      "skippable_suffix_kinds": [
+        "mlp"
+      ],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 2.01,
+        "8192": 2.97,
+        "32768": 6.61,
+        "131072": 18.79
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 1.124,
+        "8192": 1.113,
+        "32768": 1.071,
+        "131072": 0.931
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 2.01,
+        "8192": 2.97,
+        "32768": 6.61,
+        "131072": 18.79
+      }
+    },
+    {
+      "model_id": "nvidia/Nemotron-H-56B-Base-8K",
+      "n_layers": 118,
+      "n_fa": 10,
+      "n_rec": 54,
+      "n_fused": 0,
+      "n_mlp": 54,
+      "fa_positions": [
+        7,
+        18,
+        29,
+        40,
+        51,
+        62,
+        73,
+        84,
+        95,
+        106
+      ],
+      "last_layer_kind": "mlp",
+      "skippable_suffix": [
+        117
+      ],
+      "skippable_suffix_len": 1,
+      "skippable_suffix_kinds": [
+        "mlp"
+      ],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 3.31,
+        "8192": 4.85,
+        "32768": 10.55,
+        "131072": 27.82
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 0.986,
+        "8192": 0.97,
+        "32768": 0.912,
+        "131072": 0.736
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 3.31,
+        "8192": 4.85,
+        "32768": 10.55,
+        "131072": 27.82
+      }
+    },
+    {
+      "model_id": "ibm-granite/granite-4.0-h-small",
+      "n_layers": 40,
+      "n_fa": 4,
+      "n_rec": 36,
+      "n_fused": 0,
+      "n_mlp": 0,
+      "fa_positions": [
+        5,
+        15,
+        25,
+        35
+      ],
+      "last_layer_kind": "rec",
+      "skippable_suffix": [],
+      "skippable_suffix_len": 0,
+      "skippable_suffix_kinds": [],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 6.48,
+        "8192": 9.88,
+        "32768": 21.34,
+        "131072": 47.86
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 0.0,
+        "8192": 0.0,
+        "32768": 0.0,
+        "131072": 0.0
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 6.48,
+        "8192": 9.88,
+        "32768": 21.34,
+        "131072": 47.86
+      }
+    },
+    {
+      "model_id": "ibm-granite/granite-4.0-h-tiny",
+      "n_layers": 40,
+      "n_fa": 4,
+      "n_rec": 36,
+      "n_fused": 0,
+      "n_mlp": 0,
+      "fa_positions": [
+        5,
+        15,
+        25,
+        35
+      ],
+      "last_layer_kind": "rec",
+      "skippable_suffix": [],
+      "skippable_suffix_len": 0,
+      "skippable_suffix_kinds": [],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 8.67,
+        "8192": 15.95,
+        "32768": 36.28,
+        "131072": 67.61
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 0.0,
+        "8192": 0.0,
+        "32768": 0.0,
+        "131072": 0.0
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 8.67,
+        "8192": 15.95,
+        "32768": 36.28,
+        "131072": 67.61
+      }
+    },
+    {
+      "model_id": "ibm-granite/granite-4.0-h-micro",
+      "n_layers": 40,
+      "n_fa": 4,
+      "n_rec": 36,
+      "n_fused": 0,
+      "n_mlp": 0,
+      "fa_positions": [
+        5,
+        15,
+        25,
+        35
+      ],
+      "last_layer_kind": "rec",
+      "skippable_suffix": [],
+      "skippable_suffix_len": 0,
+      "skippable_suffix_kinds": [],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 9.05,
+        "8192": 11.63,
+        "32768": 20.64,
+        "131072": 43.63
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 0.0,
+        "8192": 0.0,
+        "32768": 0.0,
+        "131072": 0.0
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 9.05,
+        "8192": 11.63,
+        "32768": 20.64,
+        "131072": 43.63
+      }
+    },
+    {
+      "model_id": "Zyphra/Zamba2-2.7B",
+      "n_layers": 54,
+      "n_fa": 0,
+      "n_rec": 45,
+      "n_fused": 9,
+      "n_mlp": 0,
+      "fa_positions": [],
+      "last_layer_kind": "rec",
+      "skippable_suffix": [],
+      "skippable_suffix_len": 0,
+      "skippable_suffix_kinds": [],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "note": "fused parallel hybrid: attention and recurrent paths live in the same block and their outputs are combined, so the attention path cannot be skipped independently at all",
+      "cost_model_skipped": "fused layout"
+    },
+    {
+      "model_id": "ibm-ai-platform/Bamba-9B",
+      "n_layers": 32,
+      "n_fa": 3,
+      "n_rec": 29,
+      "n_fused": 0,
+      "n_mlp": 0,
+      "fa_positions": [
+        9,
+        18,
+        27
+      ],
+      "last_layer_kind": "rec",
+      "skippable_suffix": [],
+      "skippable_suffix_len": 0,
+      "skippable_suffix_kinds": [],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 7.96,
+        "8192": 9.33,
+        "32768": 14.41,
+        "131072": 30.08
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 0.0,
+        "8192": 0.0,
+        "32768": 0.0,
+        "131072": 0.0
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 7.96,
+        "8192": 9.33,
+        "32768": 14.41,
+        "131072": 30.08
+      }
+    },
+    {
+      "model_id": "tiiuae/Falcon-H1-0.5B-Instruct",
+      "n_layers": 36,
+      "n_fa": 0,
+      "n_rec": 0,
+      "n_fused": 36,
+      "n_mlp": 0,
+      "fa_positions": [],
+      "last_layer_kind": "fused",
+      "skippable_suffix": [],
+      "skippable_suffix_len": 0,
+      "skippable_suffix_kinds": [],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "note": "fused parallel hybrid: attention and recurrent paths live in the same block and their outputs are combined, so the attention path cannot be skipped independently at all",
+      "cost_model_skipped": "fused layout"
+    },
+    {
+      "model_id": "tiiuae/Falcon-H1-34B-Instruct",
+      "n_layers": 72,
+      "n_fa": 0,
+      "n_rec": 0,
+      "n_fused": 72,
+      "n_mlp": 0,
+      "fa_positions": [],
+      "last_layer_kind": "fused",
+      "skippable_suffix": [],
+      "skippable_suffix_len": 0,
+      "skippable_suffix_kinds": [],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "note": "fused parallel hybrid: attention and recurrent paths live in the same block and their outputs are combined, so the attention path cannot be skipped independently at all",
+      "cost_model_skipped": "fused layout"
+    },
+    {
+      "model_id": "LiquidAI/LFM2-1.2B",
+      "n_layers": 16,
+      "n_fa": 6,
+      "n_rec": 10,
+      "n_fused": 0,
+      "n_mlp": 0,
+      "fa_positions": [
+        2,
+        5,
+        8,
+        10,
+        12,
+        14
+      ],
+      "last_layer_kind": "rec",
+      "skippable_suffix": [],
+      "skippable_suffix_len": 0,
+      "skippable_suffix_kinds": [],
+      "skippable_fa_layers": 0,
+      "skippable_fraction_of_fa": 0.0,
+      "recurrent_first_layout": false,
+      "fa_share_pct": {
+        "2048": 37.86,
+        "8192": 44.64,
+        "32768": 61.45,
+        "131072": 82.59
+      },
+      "achievable_sound_saving_pct": {
+        "2048": 0.0,
+        "8192": 0.0,
+        "32768": 0.0,
+        "131072": 0.0
+      },
+      "counterfactual_recurrent_first_saving_pct": {
+        "2048": 37.86,
+        "8192": 44.64,
+        "32768": 61.45,
+        "131072": 82.59
+      }
+    }
+  ]
+}

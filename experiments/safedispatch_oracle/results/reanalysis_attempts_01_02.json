@@ -1,0 +1,204 @@
+{
+  "note": "development evidence only, amendment A1 was designed after seeing this data",
+  "attempts": {
+    "attempt_01": {
+      "n_positions": 3072,
+      "n_flips": 8,
+      "invariant_flip_needs_margin_le_2x_maxdiff": {
+        "violations": 0,
+        "PASS": true,
+        "max_margin_among_flips": 0.027133941650390625,
+        "min_2x_maxdiff_at_high_margin": 0.025265216827392578
+      },
+      "intervals": {
+        "jeffreys_rate": {
+          "coverage_stratified": 0.0,
+          "coverage_srs_wilson": 0.97,
+          "mean_width_stratified": 0.012467190470403133,
+          "mean_width_srs_wilson": 0.008499152060243756,
+          "one_sided_95_ucb_miss_stratified": 0.0,
+          "one_sided_95_ucb_miss_srs_wilson": 0.0,
+          "mean_ucb_over_truth_stratified": 5.0954026021418155,
+          "mean_ucb_over_truth_srs_wilson": 2.961294213308756,
+          "bin_sizes": [
+            70,
+            60,
+            190,
+            294,
+            383,
+            542,
+            1533
+          ],
+          "bin_flips": [
+            8,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bin_alloc": [
+            70,
+            60,
+            170,
+            152,
+            111,
+            83,
+            122
+          ],
+          "truth_flip_rate": 0.0026041666666666665
+        },
+        "beta_binomial": {
+          "coverage_stratified": 1.0,
+          "coverage_srs_wilson": 0.97,
+          "mean_width_stratified": 0.01174484049479167,
+          "mean_width_srs_wilson": 0.008463597730071762,
+          "one_sided_95_ucb_miss_stratified": 0.0,
+          "one_sided_95_ucb_miss_srs_wilson": 0.0,
+          "mean_ucb_over_truth_stratified": 4.648299999999998,
+          "mean_ucb_over_truth_srs_wilson": 2.9387372368437927,
+          "bin_sizes": [
+            70,
+            60,
+            190,
+            294,
+            383,
+            542,
+            1533
+          ],
+          "bin_flips": [
+            8,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bin_alloc": [
+            70,
+            60,
+            170,
+            152,
+            111,
+            83,
+            122
+          ],
+          "truth_flip_rate": 0.0026041666666666665
+        }
+      }
+    },
+    "attempt_02": {
+      "n_positions": 3072,
+      "n_flips": 33,
+      "invariant_flip_needs_margin_le_2x_maxdiff": {
+        "violations": 0,
+        "PASS": true,
+        "max_margin_among_flips": 0.17813682556152344,
+        "min_2x_maxdiff_at_high_margin": 0.21097278594970703
+      },
+      "intervals": {
+        "jeffreys_rate": {
+          "coverage_stratified": 0.058,
+          "coverage_srs_wilson": 0.966,
+          "mean_width_stratified": 0.012800585940411445,
+          "mean_width_srs_wilson": 0.015214262461379824,
+          "one_sided_95_ucb_miss_stratified": 0.0,
+          "one_sided_95_ucb_miss_srs_wilson": 0.022,
+          "mean_ucb_over_truth_stratified": 1.9984999905746221,
+          "mean_ucb_over_truth_srs_wilson": 1.74922270714372,
+          "bin_sizes": [
+            70,
+            60,
+            190,
+            294,
+            383,
+            542,
+            1533
+          ],
+          "bin_flips": [
+            22,
+            8,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bin_alloc": [
+            70,
+            60,
+            170,
+            152,
+            111,
+            83,
+            122
+          ],
+          "truth_flip_rate": 0.0107421875
+        },
+        "beta_binomial": {
+          "coverage_stratified": 0.94,
+          "coverage_srs_wilson": 0.966,
+          "mean_width_stratified": 0.011818652343750003,
+          "mean_width_srs_wilson": 0.015404655904251798,
+          "one_sided_95_ucb_miss_stratified": 0.0,
+          "one_sided_95_ucb_miss_srs_wilson": 0.024,
+          "mean_ucb_over_truth_stratified": 1.8860969696969696,
+          "mean_ucb_over_truth_srs_wilson": 1.7833796267486757,
+          "bin_sizes": [
+            70,
+            60,
+            190,
+            294,
+            383,
+            542,
+            1533
+          ],
+          "bin_flips": [
+            22,
+            8,
+            3,
+            0,
+            0,
+            0,
+            0
+          ],
+          "bin_alloc": [
+            70,
+            60,
+            170,
+            152,
+            111,
+            83,
+            122
+          ],
+          "truth_flip_rate": 0.0107421875
+        }
+      }
+    }
+  },
+  "manifest": {
+    "timestamp_utc": "2026-09-24T16:53:38.433466+00:00",
+    "platform": "macOS-26.5.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "python": "3.12.13",
+    "torch": "2.14.0",
+    "transformers": "5.17.0",
+    "mps_available": true,
+    "torch_threads": 4,
+    "source_sha256": {
+      "harness/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "harness/contracts.py": "07c76cfcb1d5397865caa7506b0aa2ede69ee5b7cce4ed3408b9d85ca8a7e9fe",
+      "harness/estimator.py": "52638e0bc7c57374c7416ff14aeda7d7fac48b7cb3b91f3429d71506c019bb62",
+      "harness/int8_gemm.py": "2d9570dffe98ebc67de09fdc3de54b0843d441d53a5d99a688fc80c2a0999301",
+      "harness/manifest.py": "ff60b18a1ba679c3ee091173aa2d79c69a4fcbd6b02651b018db1db0678bc7ca",
+      "harness/modelrun.py": "865dae835999cf21c23dcc45bd40ac7dd93a01ea52a6211629b5782088a5cc66",
+      "run_fault_injection.py": "0a5661f3b1c820b51f10569394ab9e18bd62ee38a32b3564c0c08267aa9e296c",
+      "run_model_pilot.py": "e55fe7f76d13294dc0b5071df6f4ceafc37a48b02ebed3e8d4cdf6464019e93e",
+      "run_reanalysis.py": "7c8779f28765586fa7c49513b26522acc5e577eb487fd5bcd5fac7614b9fccde"
+    },
+    "prompts_sha256": "a6ee618b31fa259bda03c35ca40a306882a03c4b07c9b051fef88d8d65affdaf",
+    "experiment": "E-23/reanalysis_A1"
+  }
+}

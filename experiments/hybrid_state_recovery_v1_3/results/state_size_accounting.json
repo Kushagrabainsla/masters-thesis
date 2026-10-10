@@ -1,0 +1,46 @@
+[
+  {
+    "full_attention_kv_bytes": 6291456,
+    "recurrent_state_bytes": 18874368,
+    "conv_state_bytes": 884736,
+    "recurrent_snapshot_total_bytes": 19759104,
+    "context_len": 512,
+    "full_context_activation_bytes": 6291456,
+    "full_prefill_s": 0.671143832965754,
+    "n_full_attention_layers": 6,
+    "n_linear_attention_layers": 18
+  },
+  {
+    "full_attention_kv_bytes": 12582912,
+    "recurrent_state_bytes": 18874368,
+    "conv_state_bytes": 884736,
+    "recurrent_snapshot_total_bytes": 19759104,
+    "context_len": 1024,
+    "full_context_activation_bytes": 12582912,
+    "full_prefill_s": 1.3745995410718024,
+    "n_full_attention_layers": 6,
+    "n_linear_attention_layers": 18
+  },
+  {
+    "full_attention_kv_bytes": 25165824,
+    "recurrent_state_bytes": 18874368,
+    "conv_state_bytes": 884736,
+    "recurrent_snapshot_total_bytes": 19759104,
+    "context_len": 2048,
+    "full_context_activation_bytes": 25165824,
+    "full_prefill_s": 4.099588292068802,
+    "n_full_attention_layers": 6,
+    "n_linear_attention_layers": 18
+  },
+  {
+    "full_attention_kv_bytes": 50331648,
+    "recurrent_state_bytes": 18874368,
+    "conv_state_bytes": 884736,
+    "recurrent_snapshot_total_bytes": 19759104,
+    "context_len": 4096,
+    "full_context_activation_bytes": 50331648,
+    "full_prefill_s": 8.170424500014633,
+    "n_full_attention_layers": 6,
+    "n_linear_attention_layers": 18
+  }
+]

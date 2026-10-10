@@ -1,0 +1,19 @@
+{
+  "interpretation_scope": "Real Qwen3.5-0.8B execution on Apple MPS with eager attention. The POC tests whether preserving already-valid full-attention KV while rebuilding lagging linear/recurrent state provides incremental compute savings over ordinary suffix replay. It is not a CUDA/vLLM benchmark.",
+  "semantic_recovery_correct": true,
+  "max_semantic_logit_diff_vs_normal_suffix": 0.01171875,
+  "frozen_full_attention_kv_unchanged": true,
+  "naive_skip_full_blocks_is_incorrect": true,
+  "median_speedup_pct": {
+    "frozen_full_kv_replay": 0.0746187317761382,
+    "frozen_full_kv_bypass_kv_proj": 0.6736942510991051,
+    "oracle_cached_full_block_outputs": 14.041900158345722
+  },
+  "screen_signal": "weak_incremental_selective_recovery_signal_deprioritize",
+  "heuristic_gates": {
+    "promising": "correct + frozen KV unchanged + median K/V-projection-bypass speedup >=10% vs normal suffix replay",
+    "activation_pivot": "K/V-only <10% but oracle full-block skip >=25%; requires activation/state design rather than KV-only recovery",
+    "weak": "both K/V-only and oracle headroom small"
+  },
+  "critical_caveat": "The oracle path caches exact post-decoder-block hidden activations and is intentionally not a deployable baseline. It is an upper-bound probe for how much full-block compute could be removed if extra activation state were retained."
+}

@@ -1,0 +1,33 @@
+{
+  "model": "Qwen/Qwen3-0.6B",
+  "device": "mps",
+  "n": 30,
+  "A": {
+    "exact_survival": 0.03333333333333333,
+    "mean_line_recall": 0.09722222222222222,
+    "median_char_ratio": 0.15599979067455128,
+    "median_seconds": 3.3257133960723877,
+    "p90_seconds": 9.710521459579468,
+    "tokens_per_second": 22.100750400484067
+  },
+  "B": {
+    "exact_survival": 0.13333333333333333,
+    "mean_line_recall": 0.2923105081826012,
+    "median_char_ratio": 0.257080333962573,
+    "median_seconds": 2.6695550680160522,
+    "p90_seconds": 12.917969989776612,
+    "tokens_per_second": 21.77122383525006
+  },
+  "C": {
+    "exact_survival": 0.2,
+    "mean_line_recall": 0.33280659908566884,
+    "median_char_ratio": 0.24303737877327092
+  },
+  "D": {
+    "exact_survival": 0.0,
+    "mean_line_recall": 0.2761720665209037,
+    "median_char_ratio": 0.2460232759688003
+  },
+  "median_input_tokens": 591.5,
+  "A_hit_max_new_tokens_share": 0.06666666666666667
+}

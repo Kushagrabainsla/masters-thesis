@@ -1,0 +1,7 @@
+variant load spike client: spike/ctrl goodput post, late (means over 10 paired seeds); min over all points per variant below
+decode_x0.5     lowest ratio 0.96 at ('decode_x0.5', '1.0', '1.0', 'C') (post 0.96, late 1.01)
+decode_x2       lowest ratio 1.00 at ('decode_x2', '0.7', '1.0', 'A') (post 1.07, late 1.00)
+gap_x0.25       lowest ratio 1.00 at ('gap_x0.25', '1.0', '0.5', 'A') (post 1.00, late 1.00)
+out_clip_1024   lowest ratio 0.98 at ('out_clip_1024', '1.0', '0.5', 'C') (post 1.02, late 0.98)
+prefill_x0.5    lowest ratio 0.88 at ('prefill_x0.5', '1.0', '0.5', 'C') (post 0.88, late 1.04)
+prefill_x2      lowest ratio 1.00 at ('prefill_x2', '0.6', '0.5', 'A') (post 1.07, late 1.00)

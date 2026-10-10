@@ -1,0 +1,98 @@
+[
+  {
+    "context_len": 512,
+    "boundary": 256,
+    "suffix_len": 256,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 6291456,
+    "suffix_activation_bytes": 3145728
+  },
+  {
+    "context_len": 512,
+    "boundary": 384,
+    "suffix_len": 128,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 6291456,
+    "suffix_activation_bytes": 1572864
+  },
+  {
+    "context_len": 512,
+    "boundary": 448,
+    "suffix_len": 64,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 6291456,
+    "suffix_activation_bytes": 786432
+  },
+  {
+    "context_len": 1024,
+    "boundary": 512,
+    "suffix_len": 512,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 12582912,
+    "suffix_activation_bytes": 6291456
+  },
+  {
+    "context_len": 1024,
+    "boundary": 768,
+    "suffix_len": 256,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 12582912,
+    "suffix_activation_bytes": 3145728
+  },
+  {
+    "context_len": 1024,
+    "boundary": 896,
+    "suffix_len": 128,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 12582912,
+    "suffix_activation_bytes": 1572864
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1024,
+    "suffix_len": 1024,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 25165824,
+    "suffix_activation_bytes": 12582912
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1536,
+    "suffix_len": 512,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 25165824,
+    "suffix_activation_bytes": 6291456
+  },
+  {
+    "context_len": 2048,
+    "boundary": 1792,
+    "suffix_len": 256,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 25165824,
+    "suffix_activation_bytes": 3145728
+  },
+  {
+    "context_len": 4096,
+    "boundary": 2048,
+    "suffix_len": 2048,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 50331648,
+    "suffix_activation_bytes": 25165824
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3072,
+    "suffix_len": 1024,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 50331648,
+    "suffix_activation_bytes": 12582912
+  },
+  {
+    "context_len": 4096,
+    "boundary": 3584,
+    "suffix_len": 512,
+    "full_attention_layers": 6,
+    "full_context_activation_bytes": 50331648,
+    "suffix_activation_bytes": 6291456
+  }
+]

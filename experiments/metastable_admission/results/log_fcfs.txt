@@ -1,0 +1,24 @@
+fcfs: 0/4500
+fcfs: 200/4500
+fcfs: 400/4500
+fcfs: 600/4500
+fcfs: 800/4500
+fcfs: 1000/4500
+fcfs: 1200/4500
+fcfs: 1400/4500
+fcfs: 1600/4500
+fcfs: 1800/4500
+fcfs: 2000/4500
+fcfs: 2200/4500
+fcfs: 2400/4500
+fcfs: 2600/4500
+fcfs: 2800/4500
+fcfs: 3000/4500
+fcfs: 3200/4500
+fcfs: 3400/4500
+fcfs: 3600/4500
+fcfs: 3800/4500
+fcfs: 4000/4500
+fcfs: 4200/4500
+fcfs: 4400/4500
+wrote /Users/kushagrabainsls/Desktop/mscs/masters-thesis/experiments/metastable_admission/results/e28_fcfs.csv 4500 runs

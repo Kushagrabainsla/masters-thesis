@@ -1,0 +1,70 @@
+{
+  "nccl_version": "2.31.2",
+  "nccl_commit": "fd168324a3dc0c9080fd4881b6c7f4bb252a95a2",
+  "findings": {
+    "ce_routing_gate": {
+      "matches": [
+        "src/enqueue/enqueue.cc:3305:      if ((info->collConfig.CTAPolicy & NCCL_CTA_POLICY_ZERO) && (ceAvailable || hierCeAvailable)) {"
+      ],
+      "conclusion": "CE routing is gated on a user-supplied static CTA policy AND a static eligibility predicate. No cost model and no runtime state participate."
+    },
+    "ce_eligibility_inputs": {
+      "parameters": [
+        "struct ncclComm* comm",
+        "ncclFunc_t coll",
+        "int /*ncclDevRedOp_t*/ red",
+        "ncclDataType_t ty",
+        "ncclSymRegType_t winRegType",
+        "struct ncclDevrWindow* sendWin",
+        "struct ncclDevrWindow* recvWin"
+      ],
+      "rejection_reasons": [
+        "not implemented",
+        "host-backed cuMem segments are not supported",
+        "not all ranks have NVLink connectivity",
+        "symmetric support is not enabled",
+        "window registration type %d is not supported"
+      ],
+      "conclusion": "Every rejection reason is a static capability or registration property: collective/op/dtype support, host-backed segments, NVLink connectivity, symmetric support, window registration type. None is a load condition."
+    },
+    "tuner_api_inputs": {
+      "versions_present": [
+        "tuner_v2.h",
+        "tuner_v3.h",
+        "tuner_v4.h",
+        "tuner_v5.h",
+        "tuner_v6.h"
+      ],
+      "latest": "tuner_v6.h",
+      "getCollInfo_parameters": [
+        "void* context",
+        "ncclFunc_t collType",
+        "size_t nBytes",
+        "int numPipeOps",
+        "float** collCostTable",
+        "int numAlgo",
+        "int numProto",
+        "int regBuff",
+        "int* nChannels"
+      ],
+      "conclusion": "getCollInfo receives collective type, byte count, pipelined-op count, a cost table, algo/proto counts and a registration flag. It receives no occupancy, no bandwidth pressure and no handle to the concurrent kernel. A tuner plugin therefore CANNOT implement RQ2's policy, and CE routing does not consult the tuner at all."
+    },
+    "runtime_resource_sensing": {
+      "terms_searched": [
+        "occupancy",
+        "cudaOccupancy",
+        "smUtil",
+        "GetUtilization",
+        "activeWarps",
+        "nvmlDeviceGetUtilizationRates",
+        "smActive",
+        "achieved_occupancy"
+      ],
+      "matches": [],
+      "conclusion": "No occupancy or utilization sensing anywhere in src/. The information RQ2's policy would need is not collected by the runtime at all."
+    }
+  },
+  "rq2_source_level_gap_confirmed": true,
+  "what_this_establishes": "The architectural gap is real and does not need a GPU to demonstrate: the CE-vs-SM decision is a static user policy, the eligibility check is static, the tuner is not consulted for it, and the runtime never measures compute-side resource pressure. What still needs NVLink hardware is how much performance the missing input is worth.",
+  "what_this_does_not_establish": "Nothing about magnitude. A static policy may well capture most of the available benefit; that is the simplest-solution attack and it remains open."
+}

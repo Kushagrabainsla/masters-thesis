@@ -1,0 +1,30 @@
+{
+  "timestamp_utc": "2026-09-24T15:45:32.064211+00:00",
+  "platform": "macOS-26.5.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "python": "3.12.13",
+  "torch": "2.14.0",
+  "transformers": "5.17.0",
+  "mps_available": true,
+  "torch_threads": 4,
+  "source_sha256": {
+    "harness/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "harness/contracts.py": "07c76cfcb1d5397865caa7506b0aa2ede69ee5b7cce4ed3408b9d85ca8a7e9fe",
+    "harness/estimator.py": "8c805b868bb6d863a00abbf10e69ee88a5f4562e01076fb449f7179e5fddfc16",
+    "harness/int8_gemm.py": "2d9570dffe98ebc67de09fdc3de54b0843d441d53a5d99a688fc80c2a0999301",
+    "harness/manifest.py": "ff60b18a1ba679c3ee091173aa2d79c69a4fcbd6b02651b018db1db0678bc7ca",
+    "harness/modelrun.py": "865dae835999cf21c23dcc45bd40ac7dd93a01ea52a6211629b5782088a5cc66",
+    "run_fault_injection.py": "0a5661f3b1c820b51f10569394ab9e18bd62ee38a32b3564c0c08267aa9e296c",
+    "run_model_pilot.py": "ccc546a532791421773c774fe1720a9d55f72e4062a71e8f5ce31dc535d299df"
+  },
+  "prompts_sha256": "a6ee618b31fa259bda03c35ca40a306882a03c4b07c9b051fef88d8d65affdaf",
+  "experiment": "E-23/model_pilot",
+  "model": "Qwen/Qwen3-0.6B",
+  "reference": "cpu_fp32",
+  "candidate": "mps_fp16",
+  "n_prompts": 32,
+  "steps": 96,
+  "prompt_tokens": 64,
+  "batch_size": 1,
+  "decoding": "greedy"
+}

@@ -1,0 +1,9 @@
+@page { size: Letter; margin: 1in; }
+body { font-family: "Times New Roman", Times, serif; font-size: 11pt; line-height: 1.15; color: #000; }
+h1.title { font-size: 14pt; margin: 0 0 4pt 0; text-align: left; }
+h2 { font-size: 11pt; margin: 8pt 0 2pt 0; }
+p { margin: 2pt 0 4pt 0; text-align: left; }
+table { border-collapse: collapse; width: 100%; margin: 4pt 0 6pt 0; font-size: 11pt; }
+th, td { border: 0.5pt solid #444; padding: 1pt 4pt; vertical-align: top; text-align: left; }
+thead th { background: #eee; }
+header#title-block-header { margin-bottom: 2pt; }
