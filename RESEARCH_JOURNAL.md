@@ -2,7 +2,7 @@
 
 Owner: Kushagra Bainsla, MSCS, San Jose State University
 Created: 2026-09-23
-Last updated: 2026-10-08
+Last updated: 2026-10-11
 Protocol version: 1
 
 This is the single source of truth for the whole research journey: every idea, every
@@ -184,7 +184,7 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-08, after R-18.** Rewrite this section every session.
+**As of 2026-10-11, after R-19.** Rewrite this section every session.
 
 ### 1.1 Summary
 
@@ -224,6 +224,9 @@ maps every file to what it contains.
   Write-up: `dossier/ORPHANS_R-18_2026-10-08.md`.
 - D-37 (recommendation, open): stop mining literature for gaps; spend the first H100 hours on I-23
   Test A; start new ideas from a mechanism or algorithm with a clear invariant.
+- R-19 (D-38, user's method, 2026-10-11): assumption removal. 40 assumptions, 7 checked, I-103 to I-109.
+  Only I-106 (per-layer KV drift across adjacent RL checkpoints, version-aware serving) is open and
+  Mac-testable; WEAK. D-39 (recommendation, open): run its premise check or go to I-23.
 - Lessons: in 2026, direct mechanism transfers into LLM infrastructure appear as preprints, issues or
   pull requests within weeks (R-10, R-13, R-17). Measure the premise on real data first. When a frozen
   rule says "no effect", check the edges of the grid (trigger size, horizon, metric power) before
@@ -279,7 +282,9 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 
 ### 1.5 Next actions, in order
 
-1. **D-37 decision by the user** (supersedes the open part of D-34). If accepted: plan the first H100
+1. **D-39 and D-37 decisions by the user.** D-39: run the I-106 Mac premise check (needs a download of
+   OLMo-2 1B RLVR revisions) or skip it.
+2. **D-37 decision by the user** (supersedes the open part of D-34). If accepted: plan the first H100
    session for I-23 Test A on the Mac first (cell list, scripts, time per cell, cost cap), with kill
    rules frozen and a Sonnet pre-run review. Confirm the D-35 wording.
 2. Grant and compute: pick programs from Appendix B.3 and submit the drafts in `grants/` (D-18, D-19).
@@ -292,6 +297,9 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 6. Fill the June to September gap in Section 4 with what the user remembers.
 
 ### 1.6 Recent changes
+
+- 2026-10-11: R-19 assumption removal (D-38). I-103 to I-109. I-106 WEAK (Mac premise check proposed),
+  I-108 WEAK, others KILL. D-39.
 
 - 2026-10-08 (later session): R-18 orphan-finding scan (D-36). I-95 to I-102, all KILL except a WEAK
   keep-alive policy (I-98). D-35 copied from memory notes, D-37 recommendation.
@@ -687,6 +695,18 @@ history in Section 5.
 | I-101 | Harvest idle SMs of online inference for best-effort work | KILL, crowded | 5.17 |
 | I-102 | Byte-budgeted decode batches against long-context interference | KILL, STAR, Medha, PLA-Serve | 5.17 |
 
+### 3.13 Phase 12: 2026-10-11 assumption removal (R-19)
+
+| ID | Idea | Status | Section |
+|---|---|---|---|
+| I-103 | Verify AI-generated kernels (assumption: kernels are written by trusted experts) | KILL as new idea, folds into I-23 as motivation | 5.18 |
+| I-104 | Training under grid demand response (assumption: full power at any time) | KILL (Emerald 2507.00909 compares DVFS, pause, reallocation) | 5.18 |
+| I-105 | Agent-as-tenant cluster scheduler (assumption: users are humans with few jobs) | KILL (real logs show few duplicates; ALPS, 2603.15916) | 5.18 |
+| I-106 | Version-aware serving: per-layer KV drift across adjacent RL checkpoints (assumption: model version fixed for a session) | WEAK, MEASURE-FIRST, Mac premise check proposed | 5.18 |
+| I-107 | Machine-consumer decode mode (assumption: a human reads the stream) | KILL (Human-Less LLM Serving 2606.20577, jump-forward decoding) | 5.18 |
+| I-108 | Isolation vs reuse vs offload under confidential GPUs (assumption: trusted operator) | WEAK, needs a CC GPU (Azure or GCP) | 5.18 |
+| I-109 | KV policy from server-side session state (assumption: stateless server) | KILL, same as I-45 and I-50 | 5.18 |
+
 ---
 
 ## 4. Timeline (append-only)
@@ -1000,6 +1020,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   Source: dossier/ORPHANS_R-18_2026-10-08.md. Ideas: I-95 to I-102.
 2026-10-08  [P7]  Section 1 rewritten "as of 2026-10-08, after R-18". The previous version
                   recorded R-17 and D-34 as the latest state.
+2026-10-11  [P7]  The user proposed assumption removal (D-38, R-19). 40 assumptions, 7 checked by the
+                  main session and two Sonnet agents, Sonnet attack of three. I-106 (KV drift across
+                  adjacent RL checkpoints) is the only open, Mac-testable question. D-39.
+                  Source: dossier/ASSUMPTIONS_R-19_2026-10-11.md. Ideas: I-103 to I-109.
+2026-10-11  [P7]  Section 1 rewritten "as of 2026-10-11, after R-19".
 ```
 
 ---
@@ -2276,6 +2301,42 @@ to their fixes, and their headline numbers can mislead (three of five checked nu
 hiding a 0.13 s median, a configured value read as a peak, a training-node correlation read as an
 inference result). Use them to size a waste, not to find the idea.
 
+### 5.18 I-103 to I-109 (assumption removal, R-19)
+
+Origin: 2026-10-08 to 2026-10-11. The user proposed the method ("Mainframes assume one administrator;
+the Internet removes that... Lets do that for AI infra as well") and approved it (D-38). Method: 40
+assumptions listed from first principles; 7 kept (breaking now, and removal breaks something concrete);
+prior-art checks (main session for P1, two Sonnet agents for P2 to P7); a Sonnet attack of P2, P3, P4.
+Write-ups: `dossier/ASSUMPTIONS_R-19_2026-10-11.md`, `dossier/R-19_PRIORART_P2-P4_2026-10-11.md`,
+`dossier/R-19_PRIORART_P5-P7_2026-10-11.md`, `dossier/REVIEW_R-19_SHORTLIST_2026-10-11.md`.
+
+- **I-103 AI-generated kernels.** KILL as new idea. Offline verification is crowded: contract-grade
+  verifier 2608.12700 (39.5% of 2,638 accepted kernels broken, SNIPPET), Kernel Contracts 2604.22032,
+  KernelBench-Verified, ProofWright, Volta. FlashInfer-Bench (2601.00227) injects agent kernels into
+  SGLang and vLLM. Deployment-time checking is I-23's question; this strengthens I-23's motivation.
+- **I-104 Demand response for training.** KILL. Emerald (2507.00909, FACT from the PDF) compares DVFS,
+  pausing and reallocation; PowerSlider covers inference.
+- **I-105 Agents as cluster tenants.** KILL. Reviewer analysis of 12 public autoresearch logs: exact
+  duplicates 0 to 4%; schedules tied to time progress make early loss a poor predictor; ALPS (ICML
+  2026) and 2603.15916.
+- **I-106 Version-aware serving.** WEAK. Evidence that the assumption breaks for long sessions is thin:
+  Cursor Tab ships checkpoints every 1.5 to 2 hours (FACT), Composer about every 5 hours (reviewer);
+  most agent APIs resend history, so an update costs one prefix-cache miss (about 4% of prefill tokens,
+  reviewer estimate). vLLM `keep` mode continues on stale KV (SNIPPET). Mechanism pieces exist
+  (draining, DeltaZip, PSRL version-tagged KV, PipelineRL stale KV). KVShareArena (2609.10266, FACT)
+  tests cross-version KV reuse, but only for distant pairs (base to post-trained, distilled), with no
+  per-layer drift and no layer selection from weight deltas. Narrowed question: after an RL update, how
+  far does the KV of an existing context drift per layer, and can the weight delta alone predict which
+  layers need recomputation? Data: `allenai/OLMo-2-0425-1B-RLVR1`, 13 step revisions (200 to 2600,
+  FACT), Apache-2.0, about 2.97 GB each. Reviewer's estimate: about 40% chance to pass the Mac gate.
+- **I-107 Machine-consumer decode mode.** KILL. 2606.20577 drops streaming SLOs for agent traffic;
+  forced spans are SGLang jump-forward decoding.
+- **I-108 Confidential-GPU trade-off.** WEAK. PipeLLM (ASPLOS 2025), 2606.23969 and 2608.26575 measure
+  CC overheads; the joint isolation, reuse and offload trade-off is open, but a test needs a CC GPU.
+- **I-109 Server-side session state.** KILL. Same as I-45 and I-50.
+Lesson: assumption removal generated fresher questions than paper mining, but in 2026 each removed
+assumption already has early work. The surviving question (I-106) is narrow and measurable on the Mac.
+
 ---
 
 ## 6. Experiments and reviews
@@ -3493,6 +3554,19 @@ Findings:
 Verdicts: I-98 keep-alive policy WEAK. All others KILL.
 Full write-up: `dossier/ORPHANS_R-18_2026-10-08.md`.
 
+**R-19 Assumption removal with two Sonnet prior-art agents and a Sonnet attack** (2026-10-11).
+Scope: 40 assumptions of AI infrastructure, 7 kept (I-103 to I-109).
+Method: main-session list and triage; P1 checked by the main session; P2 to P7 by two Sonnet agents;
+Sonnet attack of P2, P3, P4 (`dossier/REVIEW_R-19_SHORTLIST_2026-10-11.md`). The main session opened
+KVShareArena (2609.10266, abstract and HTML) and the OLMo-2 RLVR revision list.
+Findings:
+1. FACT: each kept assumption is already breaking and already has 2025 or 2026 work.
+2. FACT (reviewer): vLLM `keep` mode avoids re-prefill on weight updates; the claim in the brief that
+   `clear_cache` forces re-prefill was wrong for current vLLM (SNIPPET).
+3. FACT: KVShareArena covers cross-version reuse for distant pairs only.
+4. INTERPRETATION: I-106 is the only question that is open, cheap and Mac-testable.
+Verdicts: I-106 WEAK (MEASURE-FIRST), I-108 WEAK, others KILL.
+
 ---
 
 ## 7. Prior-art ledger
@@ -3960,6 +4034,8 @@ proposed it and no acceptance is recorded.
 | D-35 | 2026-10-08 | The user will self-fund AWS GPUs to validate ideas; first round 1 x H100, about $20; prepare everything on the Mac first. Scope broadened: ideas need not transfer old mechanisms; algorithmic GPU-efficiency optimizations (data structures and algorithms) are in scope; benchmarking papers stay out | User (recorded in a parallel session's memory notes on 2026-10-08; copied here by the R-18 session, wording second-hand, to be confirmed by the user) | Three route searches found almost nothing | Decided by the user |
 | D-36 | 2026-10-08 | Run an orphan-finding scan (R-18): read reports of measured waste (issues, characterization papers) instead of running systems first | Proposed by the main session; the user approved ("yes, go ahead!") | The user asked whether reading can replace running systems | Decided by the user. Done: no survivor |
 | D-37 | 2026-10-08 | After R-18: stop mining literature and issues for gaps. Spend the first self-funded H100 hours (D-35) on I-23 Test A, which needs Hopper FP8 and is prepared on the Mac (E-23 harness). Start new ideas from a mechanism or algorithm with a clear invariant, and use papers only to size the waste | Recommendation (R-18, main session and reviewer). Not a decision | R-10, R-13, R-17 and R-18 found no open Mac-testable gap; I-23 is the strongest live idea and fits one H100 | **Open, waiting on the user** |
+| D-38 | 2026-10-11 | Run an assumption-removal search (R-19) | Proposed by the user ("Lets try one more time, this time try to think of removing assumptions"); approved 2026-10-11 ("sure, go ahead!") | Paper and issue mining found nothing | Decided by the user. Done |
+| D-39 | 2026-10-11 | After R-19: run the I-106 premise check on the Mac (OLMo-2 1B RLVR revisions, about 3 GB each), after a rubber duck, frozen kill rules and a Sonnet pre-run review; or skip it and go to I-23 Test A (D-37) | Recommendation (R-19). Not a decision. The download needs the user's approval | I-106 is narrow; reviewer gives about 40% to pass | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -4006,6 +4082,10 @@ proposed it and no acceptance is recorded.
 | `dossier/ORPHANS_R-18_2026-10-08.md` | 2026-10-08 | R-18 orphan-finding scan: method, issue findings, paper harvest screen, verdicts, lesson |
 | `dossier/R-18_ORPHAN_FINDINGS_PAPERS_2026-10-08.md` | 2026-10-08 | Sonnet harvest: 31 findings from 30 characterization papers with fix status |
 | `dossier/REVIEW_R-18_ORPHANS_2026-10-08.md` | 2026-10-08 | Sonnet attack of five orphan rows, with corrections to the harvest |
+| `dossier/ASSUMPTIONS_R-19_2026-10-11.md` | 2026-10-11 | R-19: 40 assumptions with triage, P1 check |
+| `dossier/R-19_PRIORART_P2-P4_2026-10-11.md` | 2026-10-11 | Sonnet prior-art check of P2 to P4 |
+| `dossier/R-19_PRIORART_P5-P7_2026-10-11.md` | 2026-10-11 | Sonnet prior-art check of P5 to P7 |
+| `dossier/REVIEW_R-19_SHORTLIST_2026-10-11.md` | 2026-10-11 | Sonnet attack of P2 to P4, I-106 premise check design |
 | `dossier/REVIEW_R-14_I-80_2026-10-07.md` | 2026-10-07 | R-14: Sonnet adversarial review of I-80 and four combinations, with a toy simulator |
 | `dossier/REVIEW_E-28_PRERUN_2026-10-07.md` | 2026-10-07 to 2026-10-08 | R-15: two Sonnet pre-run reviews of E-28 (blockers, fixes, second pass) |
 | `dossier/REVIEW_R-16_E-28_POSTRUN_2026-10-08.md` | 2026-10-08 | R-16: Sonnet post-run review of E-28, with the hysteresis reviewer check |
@@ -4207,3 +4287,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-08 (later session): R-18 orphan-finding scan. Section 3.12, Section 5.17, R-18 in Section
   6.2, Section 7.14, D-35 (copied from memory notes), D-36, D-37, Section 4 entries, Appendix A rows,
   Section 1 rewritten.
+- 2026-10-11: R-19 assumption removal. Section 3.13, Section 5.18, R-19 in Section 6.2, D-38, D-39,
+  Section 4 entries, Appendix A rows, Section 1 rewritten.
