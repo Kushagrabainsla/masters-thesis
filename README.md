@@ -2,12 +2,11 @@
 
 Kushagra Bainsla, M.S. Computer Science, San Jose State University.
 
-This repository holds the research record for my M.S. thesis. The thesis direction is not chosen yet. The repository records every candidate idea, the experiments that tested them, the adversarial reviews, and the reasons each idea was kept or killed.
+This repository holds the research record for my M.S. thesis. It records every idea, the experiments that tested them, the adversarial reviews, and the reasons each idea was kept or killed.
 
 ## Status (2026-10-11)
 
-- No thesis direction is chosen.
-- The strongest open candidate is **I-23 (SafeDispatch)**. The question: when a faster GPU kernel replaces a slower one inside an LLM inference server, does the model output change, and how much speed can a correctness-aware kernel choice recover? The scope is Hopper and Blackwell block-scaled FP8, NVFP4 and MoE kernels.
+- The main focus is **I-23 (SafeDispatch)**. The question: when a faster GPU kernel replaces a slower one inside an LLM inference server, does the model output change, and how much speed can a correctness-aware kernel choice recover? The scope is Hopper and Blackwell block-scaled FP8, NVFP4 and MoE kernels.
 - I-23 needs an NVIDIA GPU. The evaluation harness is built and validated on a laptop (`experiments/safedispatch_oracle/`). The first GPU run is Test A.
 - Many other ideas were tested on a laptop and killed. Each kill has a written reason and kill criteria that were fixed before the run.
 
