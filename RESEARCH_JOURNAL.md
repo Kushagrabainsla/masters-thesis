@@ -3574,6 +3574,9 @@ Verdicts: I-106 WEAK (MEASURE-FIRST), I-108 WEAK, others KILL.
 Cumulative. Add rows, never remove. Check levels are defined in section 0.4. Dates are
 publication or issue-open dates where known.
 
+`references/` lists every arXiv paper in this ledger and in the dossiers, by topic, with titles and
+authors from arXiv. Run `references/_tools/build_references.py` again after you add rows here.
+
 ### 7.1 Numerics, determinism, conformance, kernel dispatch
 
 | Work | Date | What it shows | Effect | Check |
@@ -4289,3 +4292,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   Section 1 rewritten.
 - 2026-10-11: R-19 assumption removal. Section 3.13, Section 5.18, R-19 in Section 6.2, D-38, D-39,
   Section 4 entries, Appendix A rows, Section 1 rewritten.
+- 2026-10-14: added the `references/` folder (447 arXiv papers in 16 topic folders, generated from
+  Section 7 and the dossiers) and a pointer to it in Section 7. No idea or status changed.

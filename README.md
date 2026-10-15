@@ -22,6 +22,7 @@ For the full current state, read Section 1 of `RESEARCH_JOURNAL.md`.
 | One experiment or review | `RESEARCH_JOURNAL.md`, Section 6. Search by ID, for example `E-28` or `R-16` |
 | Decisions and who made them | `RESEARCH_JOURNAL.md`, Section 10 |
 | Retracted claims | `RESEARCH_JOURNAL.md`, Section 8 |
+| The papers we cite, by topic | `references/README.md` |
 
 The journal is large. Search it by ID instead of reading it from start to end.
 
@@ -41,6 +42,7 @@ The journal is large. Search it by ID instead of reading it from start to end.
 | `RESEARCH_JOURNAL.md` | The single source of truth: ideas (`I-nn`), experiments (`E-nn`), reviews (`R-nn`), decisions (`D-nn`), prior art and timeline |
 | `experiments/` | Code, inputs and results for each experiment. Some folders have their own README |
 | `dossier/` | Long-form literature reviews, route searches and adversarial reviews. Each file name has its review ID and date |
+| `references/` | All 447 cited arXiv papers in 16 topic folders, with links, authors, check levels and the files that cite them. Also `references.bib` |
 | `grants/` | Drafts of GPU compute applications (NAIRR Pilot, NSF ACCESS, NVIDIA Academic Grant) |
 | `archive/` | Superseded files. `archive/README.md` maps each file to its replacement |
 | `AI_Infra_Thesis_Handoff_Package/`, `HANDOFF_2026-10-08.md`, `*.docx` at the root | Older snapshots of the research state. If they disagree with the journal, the journal is correct |

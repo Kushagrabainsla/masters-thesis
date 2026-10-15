@@ -1,0 +1,7852 @@
+{
+ "1710.03740": {
+  "title": "Mixed Precision Training",
+  "authors": [
+   "Paulius Micikevicius",
+   "Sharan Narang",
+   "Jonah Alben",
+   "Gregory Diamos",
+   "Erich Elsen",
+   "David Garcia",
+   "Boris Ginsburg",
+   "Michael Houston",
+   "Oleksii Kuchaiev",
+   "Ganesh Venkatesh",
+   "Hao Wu"
+  ],
+  "published": "2017-10-10",
+  "category": "cs.AI"
+ },
+ "1907.01484": {
+  "title": "Themis: Fair and Efficient GPU Cluster Scheduling",
+  "authors": [
+   "Kshiteej Mahajan",
+   "Arjun Balasubramanian",
+   "Arjun Singhvi",
+   "Shivaram Venkataraman",
+   "Aditya Akella",
+   "Amar Phanishayee",
+   "Shuchi Chawla"
+  ],
+  "published": "2019-07-02",
+  "category": "cs.DC"
+ },
+ "1910.02054": {
+  "title": "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models",
+  "authors": [
+   "Samyam Rajbhandari",
+   "Jeff Rasley",
+   "Olatunji Ruwase",
+   "Yuxiong He"
+  ],
+  "published": "2019-10-04",
+  "category": "cs.LG"
+ },
+ "2005.04305": {
+  "title": "Measuring the Algorithmic Efficiency of Neural Networks",
+  "authors": [
+   "Danny Hernandez",
+   "Tom B. Brown"
+  ],
+  "published": "2020-05-08",
+  "category": "cs.LG"
+ },
+ "2102.11245": {
+  "title": "Silent Data Corruptions at Scale",
+  "authors": [
+   "Harish Dattatraya Dixit",
+   "Sneha Pendharkar",
+   "Matt Beadon",
+   "Chris Mason",
+   "Tejasvi Chakravarthy",
+   "Bharath Muthiah",
+   "Sriram Sankar"
+  ],
+  "published": "2021-02-22",
+  "category": "cs.AR"
+ },
+ "2104.04473": {
+  "title": "Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM",
+  "authors": [
+   "Deepak Narayanan",
+   "Mohammad Shoeybi",
+   "Jared Casper",
+   "Patrick LeGresley",
+   "Mostofa Patwary",
+   "Vijay Anand Korthikanti",
+   "Dmitri Vainbrand",
+   "Prethvi Kashinkunti",
+   "Julie Bernauer",
+   "Bryan Catanzaro",
+   "Amar Phanishayee",
+   "Matei Zaharia"
+  ],
+  "published": "2021-04-09",
+  "category": "cs.CL"
+ },
+ "2112.13354": {
+  "title": "Large-scale Machine Learning Cluster Scheduling via Multi-agent Graph Reinforcement Learning",
+  "authors": [
+   "Xiaoyang Zhao",
+   "Chuan Wu"
+  ],
+  "published": "2021-12-26",
+  "category": "cs.DC"
+ },
+ "2202.07848": {
+  "title": "Singularity: Planet-Scale, Preemptive and Elastic Scheduling of AI Workloads",
+  "authors": [
+   "Dharma Shukla",
+   "Muthian Sivathanu",
+   "Srinidhi Viswanatha",
+   "Bhargav Gulavani",
+   "Rimma Nehme",
+   "Amey Agrawal",
+   "Chen Chen",
+   "Nipun Kwatra",
+   "Ramachandran Ramjee",
+   "Pankaj Sharma",
+   "Atul Katiyar",
+   "Vipul Modi",
+   "Vaibhav Sharma",
+   "Abhishek Singh",
+   "Shreshth Singhal",
+   "Kaustubh Welankar",
+   "Lu Xun",
+   "Ravi Anupindi",
+   "Karthik Elangovan",
+   "Hasibur Rahman",
+   "Zhou Lin",
+   "Rahul Seetharaman",
+   "Cheng Xu",
+   "Eddie Ailijiang",
+   "Suresh Krishnappa",
+   "Mark Russinovich"
+  ],
+  "published": "2022-02-16",
+  "category": "cs.DC"
+ },
+ "2202.07896": {
+  "title": "Aryl: An Elastic Cluster Scheduler for Deep Learning",
+  "authors": [
+   "Jiamin Li",
+   "Hong Xu",
+   "Yibo Zhu",
+   "Zherui Liu",
+   "Chuanxiong Guo",
+   "Cong Wang"
+  ],
+  "published": "2022-02-16",
+  "category": "cs.DC"
+ },
+ "2203.15556": {
+  "title": "Training Compute-Optimal Large Language Models",
+  "authors": [
+   "Jordan Hoffmann",
+   "Sebastian Borgeaud",
+   "Arthur Mensch",
+   "Elena Buchatskaya",
+   "Trevor Cai",
+   "Eliza Rutherford",
+   "Diego de Las Casas",
+   "Lisa Anne Hendricks",
+   "Johannes Welbl",
+   "Aidan Clark",
+   "Tom Hennigan",
+   "Eric Noland",
+   "Katie Millican",
+   "George van den Driessche",
+   "Bogdan Damoc",
+   "Aurelia Guy",
+   "Simon Osindero",
+   "Karen Simonyan",
+   "Erich Elsen",
+   "Jack W. Rae",
+   "Oriol Vinyals",
+   "Laurent Sifre"
+  ],
+  "published": "2022-03-29",
+  "category": "cs.CL"
+ },
+ "2204.02311": {
+  "title": "PaLM: Scaling Language Modeling with Pathways",
+  "authors": [
+   "Aakanksha Chowdhery",
+   "Sharan Narang",
+   "Jacob Devlin",
+   "Maarten Bosma",
+   "Gaurav Mishra",
+   "Adam Roberts",
+   "Paul Barham",
+   "Hyung Won Chung",
+   "Charles Sutton",
+   "Sebastian Gehrmann",
+   "Parker Schuh",
+   "Kensen Shi",
+   "Sasha Tsvyashchenko",
+   "Joshua Maynez",
+   "Abhishek Rao",
+   "Parker Barnes",
+   "Yi Tay",
+   "Noam Shazeer",
+   "Vinodkumar Prabhakaran",
+   "Emily Reif",
+   "Nan Du",
+   "Ben Hutchinson",
+   "Reiner Pope",
+   "James Bradbury",
+   "Jacob Austin",
+   "Michael Isard",
+   "Guy Gur-Ari",
+   "Pengcheng Yin",
+   "Toju Duke",
+   "Anselm Levskaya",
+   "Sanjay Ghemawat",
+   "Sunipa Dev",
+   "Henryk Michalewski",
+   "Xavier Garcia",
+   "Vedant Misra",
+   "Kevin Robinson",
+   "Liam Fedus",
+   "Denny Zhou",
+   "Daphne Ippolito",
+   "David Luan",
+   "Hyeontaek Lim",
+   "Barret Zoph",
+   "Alexander Spiridonov",
+   "Ryan Sepassi",
+   "David Dohan",
+   "Shivani Agrawal",
+   "Mark Omernick",
+   "Andrew M. Dai",
+   "Thanumalayan Sankaranarayana Pillai",
+   "Marie Pellat",
+   "Aitor Lewkowycz",
+   "Erica Moreira",
+   "Rewon Child",
+   "Oleksandr Polozov",
+   "Katherine Lee",
+   "Zongwei Zhou",
+   "Xuezhi Wang",
+   "Brennan Saeta",
+   "Mark Diaz",
+   "Orhan Firat",
+   "Michele Catasta",
+   "Jason Wei",
+   "Kathy Meier-Hellstern",
+   "Douglas Eck",
+   "Jeff Dean",
+   "Slav Petrov",
+   "Noah Fiedel"
+  ],
+  "published": "2022-04-05",
+  "category": "cs.CL"
+ },
+ "2204.05149": {
+  "title": "The Carbon Footprint of Machine Learning Training Will Plateau, Then Shrink",
+  "authors": [
+   "David Patterson",
+   "Joseph Gonzalez",
+   "Urs H\u00f6lzle",
+   "Quoc Le",
+   "Chen Liang",
+   "Lluis-Miquel Munguia",
+   "Daniel Rothchild",
+   "David So",
+   "Maud Texier",
+   "Jeff Dean"
+  ],
+  "published": "2022-04-11",
+  "category": "cs.LG"
+ },
+ "2204.09183": {
+  "title": "Robustness Testing of Data and Knowledge Driven Anomaly Detection in Cyber-Physical Systems",
+  "authors": [
+   "Xugui Zhou",
+   "Maxfield Kouzel",
+   "Homa Alemzadeh"
+  ],
+  "published": "2022-04-20",
+  "category": "cs.LG"
+ },
+ "2205.01068": {
+  "title": "OPT: Open Pre-trained Transformer Language Models",
+  "authors": [
+   "Susan Zhang",
+   "Stephen Roller",
+   "Naman Goyal",
+   "Mikel Artetxe",
+   "Moya Chen",
+   "Shuohui Chen",
+   "Christopher Dewan",
+   "Mona Diab",
+   "Xian Li",
+   "Xi Victoria Lin",
+   "Todor Mihaylov",
+   "Myle Ott",
+   "Sam Shleifer",
+   "Kurt Shuster",
+   "Daniel Simig",
+   "Punit Singh Koura",
+   "Anjali Sridhar",
+   "Tianlu Wang",
+   "Luke Zettlemoyer"
+  ],
+  "published": "2022-05-02",
+  "category": "cs.CL"
+ },
+ "2205.05198": {
+  "title": "Reducing Activation Recomputation in Large Transformer Models",
+  "authors": [
+   "Vijay Korthikanti",
+   "Jared Casper",
+   "Sangkug Lym",
+   "Lawrence McAfee",
+   "Michael Andersch",
+   "Mohammad Shoeybi",
+   "Bryan Catanzaro"
+  ],
+  "published": "2022-05-10",
+  "category": "cs.LG"
+ },
+ "2205.14135": {
+  "title": "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+  "authors": [
+   "Tri Dao",
+   "Daniel Y. Fu",
+   "Stefano Ermon",
+   "Atri Rudra",
+   "Christopher R\u00e9"
+  ],
+  "published": "2022-05-27",
+  "category": "cs.LG"
+ },
+ "2209.05433": {
+  "title": "FP8 Formats for Deep Learning",
+  "authors": [
+   "Paulius Micikevicius",
+   "Dusan Stosic",
+   "Neil Burgess",
+   "Marius Cornea",
+   "Pradeep Dubey",
+   "Richard Grisenthwaite",
+   "Sangwon Ha",
+   "Alexander Heinecke",
+   "Patrick Judd",
+   "John Kamalu",
+   "Naveen Mellempudi",
+   "Stuart Oberman",
+   "Mohammad Shoeybi",
+   "Michael Siu",
+   "Hao Wu"
+  ],
+  "published": "2022-09-12",
+  "category": "cs.LG"
+ },
+ "2210.03629": {
+  "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+  "authors": [
+   "Shunyu Yao",
+   "Jeffrey Zhao",
+   "Dian Yu",
+   "Nan Du",
+   "Izhak Shafran",
+   "Karthik Narasimhan",
+   "Yuan Cao"
+  ],
+  "published": "2022-10-06",
+  "category": "cs.CL"
+ },
+ "2211.01713": {
+  "title": "iGniter: Interference-Aware GPU Resource Provisioning for Predictable DNN Inference in the Cloud",
+  "authors": [
+   "Fei Xu",
+   "Jianian Xu",
+   "Jiabin Chen",
+   "Li Chen",
+   "Ruitao Shang",
+   "Zhi Zhou",
+   "Fangming Liu"
+  ],
+  "published": "2022-11-03",
+  "category": "cs.DC"
+ },
+ "2211.02001": {
+  "title": "Estimating the Carbon Footprint of BLOOM, a 176B Parameter Language Model",
+  "authors": [
+   "Alexandra Sasha Luccioni",
+   "Sylvain Viguier",
+   "Anne-Laure Ligozat"
+  ],
+  "published": "2022-11-03",
+  "category": "cs.LG"
+ },
+ "2211.05102": {
+  "title": "Efficiently Scaling Transformer Inference",
+  "authors": [
+   "Reiner Pope",
+   "Sholto Douglas",
+   "Aakanksha Chowdhery",
+   "Jacob Devlin",
+   "James Bradbury",
+   "Anselm Levskaya",
+   "Jonathan Heek",
+   "Kefan Xiao",
+   "Shivani Agrawal",
+   "Jeff Dean"
+  ],
+  "published": "2022-11-09",
+  "category": "cs.LG"
+ },
+ "2211.17192": {
+  "title": "Fast Inference from Transformers via Speculative Decoding",
+  "authors": [
+   "Yaniv Leviathan",
+   "Matan Kalman",
+   "Yossi Matias"
+  ],
+  "published": "2022-11-30",
+  "category": "cs.LG"
+ },
+ "2302.01318": {
+  "title": "Accelerating Large Language Model Decoding with Speculative Sampling",
+  "authors": [
+   "Charlie Chen",
+   "Sebastian Borgeaud",
+   "Geoffrey Irving",
+   "Jean-Baptiste Lespiau",
+   "Laurent Sifre",
+   "John Jumper"
+  ],
+  "published": "2023-02-02",
+  "category": "cs.CL"
+ },
+ "2302.06590": {
+  "title": "The Impact of AI on Developer Productivity: Evidence from GitHub Copilot",
+  "authors": [
+   "Sida Peng",
+   "Eirini Kalliamvakou",
+   "Peter Cihon",
+   "Mert Demirer"
+  ],
+  "published": "2023-02-13",
+  "category": "cs.SE"
+ },
+ "2303.11366": {
+  "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+  "authors": [
+   "Noah Shinn",
+   "Federico Cassano",
+   "Edward Berman",
+   "Ashwin Gopinath",
+   "Karthik Narasimhan",
+   "Shunyu Yao"
+  ],
+  "published": "2023-03-20",
+  "category": "cs.AI"
+ },
+ "2304.11277": {
+  "title": "PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel",
+  "authors": [
+   "Yanli Zhao",
+   "Andrew Gu",
+   "Rohan Varma",
+   "Liang Luo",
+   "Chien-Chin Huang",
+   "Min Xu",
+   "Less Wright",
+   "Hamid Shojanazeri",
+   "Myle Ott",
+   "Sam Shleifer",
+   "Alban Desmaison",
+   "Can Balioglu",
+   "Pritam Damania",
+   "Bernard Nguyen",
+   "Geeta Chauhan",
+   "Yuchen Hao",
+   "Ajit Mathews",
+   "Shen Li"
+  ],
+  "published": "2023-04-21",
+  "category": "cs.DC"
+ },
+ "2305.05920": {
+  "title": "Fast Distributed Inference Serving for Large Language Models",
+  "authors": [
+   "Bingyang Wu",
+   "Yinmin Zhong",
+   "Zili Zhang",
+   "Shengyu Liu",
+   "Fangyue Liu",
+   "Yuanhang Sun",
+   "Gang Huang",
+   "Xuanzhe Liu",
+   "Xin Jin"
+  ],
+  "published": "2023-05-10",
+  "category": "cs.LG"
+ },
+ "2306.00978": {
+  "title": "AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration",
+  "authors": [
+   "Ji Lin",
+   "Jiaming Tang",
+   "Haotian Tang",
+   "Shang Yang",
+   "Wei-Ming Chen",
+   "Wei-Chen Wang",
+   "Guangxuan Xiao",
+   "Xingyu Dang",
+   "Chuang Gan",
+   "Song Han"
+  ],
+  "published": "2023-06-01",
+  "category": "cs.CL"
+ },
+ "2307.03172": {
+  "title": "Lost in the Middle: How Language Models Use Long Contexts",
+  "authors": [
+   "Nelson F. Liu",
+   "Kevin Lin",
+   "John Hewitt",
+   "Ashwin Paranjape",
+   "Michele Bevilacqua",
+   "Fabio Petroni",
+   "Percy Liang"
+  ],
+  "published": "2023-07-06",
+  "category": "cs.CL"
+ },
+ "2309.06180": {
+  "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+  "authors": [
+   "Woosuk Kwon",
+   "Zhuohan Li",
+   "Siyuan Zhuang",
+   "Ying Sheng",
+   "Lianmin Zheng",
+   "Cody Hao Yu",
+   "Joseph E. Gonzalez",
+   "Hao Zhang",
+   "Ion Stoica"
+  ],
+  "published": "2023-09-12",
+  "category": "cs.LG"
+ },
+ "2310.01798": {
+  "title": "Large Language Models Cannot Self-Correct Reasoning Yet",
+  "authors": [
+   "Jie Huang",
+   "Xinyun Chen",
+   "Swaroop Mishra",
+   "Huaixiu Steven Zheng",
+   "Adams Wei Yu",
+   "Xinying Song",
+   "Denny Zhou"
+  ],
+  "published": "2023-10-03",
+  "category": "cs.CL"
+ },
+ "2310.03003": {
+  "title": "From Words to Watts: Benchmarking the Energy Costs of Large Language Model Inference",
+  "authors": [
+   "Siddharth Samsi",
+   "Dan Zhao",
+   "Joseph McDonald",
+   "Baolin Li",
+   "Adam Michaleas",
+   "Michael Jones",
+   "William Bergeron",
+   "Jeremy Kepner",
+   "Devesh Tiwari",
+   "Vijay Gadepally"
+  ],
+  "published": "2023-10-04",
+  "category": "cs.CL"
+ },
+ "2311.17371": {
+  "title": "Should we be going MAD? A Look at Multi-Agent Debate Strategies for LLMs",
+  "authors": [
+   "Andries Smit",
+   "Paul Duckworth",
+   "Nathan Grinsztajn",
+   "Thomas D. Barrett",
+   "Arnu Pretorius"
+  ],
+  "published": "2023-11-29",
+  "category": "cs.CL"
+ },
+ "2311.18677": {
+  "title": "Splitwise: Efficient generative LLM inference using phase splitting",
+  "authors": [
+   "Pratyush Patel",
+   "Esha Choukse",
+   "Chaojie Zhang",
+   "Aashaka Shah",
+   "\u00cd\u00f1igo Goiri",
+   "Saeed Maleki",
+   "Ricardo Bianchini"
+  ],
+  "published": "2023-11-30",
+  "category": "cs.AR"
+ },
+ "2312.02741": {
+  "title": "Part-time Power Measurements: nvidia-smi's Lack of Attention",
+  "authors": [
+   "Zeyu Yang",
+   "Karel Adamek",
+   "Wesley Armour"
+  ],
+  "published": "2023-12-05",
+  "category": "cs.DC"
+ },
+ "2312.05215": {
+  "title": "DeltaZip: Efficient Serving of Multiple Full-Model-Tuned LLMs",
+  "authors": [
+   "Xiaozhe Yao",
+   "Qinghao Hu",
+   "Ana Klimovic"
+  ],
+  "published": "2023-12-08",
+  "category": "cs.DC"
+ },
+ "2312.05516": {
+  "title": "Stateful Large Language Model Serving with Pensieve",
+  "authors": [
+   "Lingfan Yu",
+   "Jinkun Lin",
+   "Jinyang Li"
+  ],
+  "published": "2023-12-09",
+  "category": "cs.LG"
+ },
+ "2312.06902": {
+  "title": "Reducing Energy Bloat in Large Model Training",
+  "authors": [
+   "Jae-Won Chung",
+   "Yile Gu",
+   "Insu Jang",
+   "Luoxi Meng",
+   "Nikhil Bansal",
+   "Mosharaf Chowdhury"
+  ],
+  "published": "2023-12-12",
+  "category": "cs.LG"
+ },
+ "2312.07104": {
+  "title": "SGLang: Efficient Execution of Structured Language Model Programs",
+  "authors": [
+   "Lianmin Zheng",
+   "Liangsheng Yin",
+   "Zhiqiang Xie",
+   "Chuyue Sun",
+   "Jeff Huang",
+   "Cody Hao Yu",
+   "Shiyi Cao",
+   "Christos Kozyrakis",
+   "Ion Stoica",
+   "Joseph E. Gonzalez",
+   "Clark Barrett",
+   "Ying Sheng"
+  ],
+  "published": "2023-12-12",
+  "category": "cs.AI"
+ },
+ "2401.00134": {
+  "title": "Unicron: Economizing Self-Healing LLM Training at Scale",
+  "authors": [
+   "Tao He",
+   "Xue Li",
+   "Zhibin Wang",
+   "Kun Qian",
+   "Jingbo Xu",
+   "Wenyuan Yu",
+   "Jingren Zhou"
+  ],
+  "published": "2023-12-30",
+  "category": "cs.DC"
+ },
+ "2401.00448": {
+  "title": "Beyond Chinchilla-Optimal: Accounting for Inference in Language Model Scaling Laws",
+  "authors": [
+   "Nikhil Sardana",
+   "Jacob Portes",
+   "Sasha Doubov",
+   "Jonathan Frankle"
+  ],
+  "published": "2023-12-31",
+  "category": "cs.LG"
+ },
+ "2401.07851": {
+  "title": "Unlocking Efficiency in Large Language Model Inference: A Comprehensive Survey of Speculative Decoding",
+  "authors": [
+   "Heming Xia",
+   "Zhe Yang",
+   "Qingxiu Dong",
+   "Peiyi Wang",
+   "Yongqi Li",
+   "Tao Ge",
+   "Tianyu Liu",
+   "Wenjie Li",
+   "Zhifang Sui"
+  ],
+  "published": "2024-01-15",
+  "category": "cs.CL"
+ },
+ "2401.09670": {
+  "title": "DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving",
+  "authors": [
+   "Yinmin Zhong",
+   "Shengyu Liu",
+   "Junda Chen",
+   "Jianbo Hu",
+   "Yibo Zhu",
+   "Xuanzhe Liu",
+   "Xin Jin",
+   "Hao Zhang"
+  ],
+  "published": "2024-01-18",
+  "category": "cs.DC"
+ },
+ "2402.01030": {
+  "title": "Executable Code Actions Elicit Better LLM Agents",
+  "authors": [
+   "Xingyao Wang",
+   "Yangyi Chen",
+   "Lifan Yuan",
+   "Yizhe Zhang",
+   "Yunzhu Li",
+   "Hao Peng",
+   "Heng Ji"
+  ],
+  "published": "2024-02-01",
+  "category": "cs.CL"
+ },
+ "2402.15627": {
+  "title": "MegaScale: Scaling Large Language Model Training to More Than 10,000 GPUs",
+  "authors": [
+   "Ziheng Jiang",
+   "Haibin Lin",
+   "Yinmin Zhong",
+   "Qi Huang",
+   "Yangrui Chen",
+   "Zhi Zhang",
+   "Yanghua Peng",
+   "Xiang Li",
+   "Cong Xie",
+   "Shibiao Nong",
+   "Yulu Jia",
+   "Sun He",
+   "Hongmin Chen",
+   "Zhihao Bai",
+   "Qi Hou",
+   "Shipeng Yan",
+   "Ding Zhou",
+   "Yiyao Sheng",
+   "Zhuo Jiang",
+   "Haohan Xu",
+   "Haoran Wei",
+   "Zhang Zhang",
+   "Pengfei Nie",
+   "Leqi Zou",
+   "Sida Zhao",
+   "Liang Xiang",
+   "Zherui Liu",
+   "Zhe Li",
+   "Xiaoying Jia",
+   "Jianxi Ye",
+   "Xin Jin",
+   "Xin Liu"
+  ],
+  "published": "2024-02-23",
+  "category": "cs.LG"
+ },
+ "2403.01876": {
+  "title": "D\u00e9j\u00e0Vu: KV-cache Streaming for Fast, Fault-tolerant Generative LLM Serving",
+  "authors": [
+   "Foteini Strati",
+   "Sara Mcallister",
+   "Amar Phanishayee",
+   "Jakub Tarnawski",
+   "Ana Klimovic"
+  ],
+  "published": "2024-03-04",
+  "category": "cs.DC"
+ },
+ "2403.02310": {
+  "title": "Taming Throughput-Latency Tradeoff in LLM Inference with Sarathi-Serve",
+  "authors": [
+   "Amey Agrawal",
+   "Nitin Kedia",
+   "Ashish Panwar",
+   "Jayashree Mohan",
+   "Nipun Kwatra",
+   "Bhargav S. Gulavani",
+   "Alexey Tumanov",
+   "Ramachandran Ramjee"
+  ],
+  "published": "2024-03-04",
+  "category": "cs.LG"
+ },
+ "2403.05812": {
+  "title": "Algorithmic progress in language models",
+  "authors": [
+   "Anson Ho",
+   "Tamay Besiroglu",
+   "Ege Erdil",
+   "David Owen",
+   "Robi Rahman",
+   "Zifan Carl Guo",
+   "David Atkinson",
+   "Neil Thompson",
+   "Jaime Sevilla"
+  ],
+  "published": "2024-03-09",
+  "category": "cs.CL"
+ },
+ "2403.07648": {
+  "title": "Characterization of Large Language Model Development in the Datacenter",
+  "authors": [
+   "Qinghao Hu",
+   "Zhisheng Ye",
+   "Zerui Wang",
+   "Guoteng Wang",
+   "Meng Zhang",
+   "Qiaoling Chen",
+   "Peng Sun",
+   "Dahua Lin",
+   "Xiaolin Wang",
+   "Yingwei Luo",
+   "Yonggang Wen",
+   "Tianwei Zhang"
+  ],
+  "published": "2024-03-12",
+  "category": "cs.DC"
+ },
+ "2403.11805": {
+  "title": "LLM as a System Service on Mobile Devices",
+  "authors": [
+   "Wangsong Yin",
+   "Mengwei Xu",
+   "Yuanchun Li",
+   "Xuanzhe Liu"
+  ],
+  "published": "2024-03-18",
+  "category": "cs.OS"
+ },
+ "2403.12968": {
+  "title": "LLMLingua-2: Data Distillation for Efficient and Faithful Task-Agnostic Prompt Compression",
+  "authors": [
+   "Zhuoshi Pan",
+   "Qianhui Wu",
+   "Huiqiang Jiang",
+   "Menglin Xia",
+   "Xufang Luo",
+   "Jue Zhang",
+   "Qingwei Lin",
+   "Victor R\u00fchle",
+   "Yuqing Yang",
+   "Chin-Yew Lin",
+   "H. Vicky Zhao",
+   "Lili Qiu",
+   "Dongmei Zhang"
+  ],
+  "published": "2024-03-19",
+  "category": "cs.CL"
+ },
+ "2403.14123": {
+  "title": "AI and Memory Wall",
+  "authors": [
+   "Amir Gholami",
+   "Zhewei Yao",
+   "Sehoon Kim",
+   "Coleman Hooper",
+   "Michael W. Mahoney",
+   "Kurt Keutzer"
+  ],
+  "published": "2024-03-21",
+  "category": "cs.LG"
+ },
+ "2403.19708": {
+  "title": "Cost-Efficient Large Language Model Serving for Multi-turn Conversations with CachedAttention",
+  "authors": [
+   "Bin Gao",
+   "Zhuomin He",
+   "Puru Sharma",
+   "Qingxuan Kang",
+   "Djordje Jevdjic",
+   "Junbo Deng",
+   "Xingkun Yang",
+   "Zhou Yu",
+   "Pengfei Zuo"
+  ],
+  "published": "2024-03-23",
+  "category": "cs.CL"
+ },
+ "2405.05465": {
+  "title": "Vidur: A Large-Scale Simulation Framework For LLM Inference",
+  "authors": [
+   "Amey Agrawal",
+   "Nitin Kedia",
+   "Jayashree Mohan",
+   "Ashish Panwar",
+   "Nipun Kwatra",
+   "Bhargav Gulavani",
+   "Ramachandran Ramjee",
+   "Alexey Tumanov"
+  ],
+  "published": "2024-05-08",
+  "category": "cs.LG"
+ },
+ "2405.12079": {
+  "title": "PhoenixOS: Concurrent OS-level GPU Checkpoint and Restore with Validated Speculation",
+  "authors": [
+   "Xingda Wei",
+   "Zhuobin Huang",
+   "Tianle Sun",
+   "Yingyi Hao",
+   "Rong Chen",
+   "Mingcong Han",
+   "Jinyu Gu",
+   "Haibo Chen"
+  ],
+  "published": "2024-05-20",
+  "category": "cs.DC"
+ },
+ "2405.15793": {
+  "title": "SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering",
+  "authors": [
+   "John Yang",
+   "Carlos E. Jimenez",
+   "Alexander Wettig",
+   "Kilian Lieret",
+   "Shunyu Yao",
+   "Karthik Narasimhan",
+   "Ofir Press"
+  ],
+  "published": "2024-05-06",
+  "category": "cs.SE"
+ },
+ "2405.19888": {
+  "title": "Parrot: Efficient Serving of LLM-based Applications with Semantic Variable",
+  "authors": [
+   "Chaofan Lin",
+   "Zhenhua Han",
+   "Chengruidong Zhang",
+   "Yuqing Yang",
+   "Fan Yang",
+   "Chen Chen",
+   "Lili Qiu"
+  ],
+  "published": "2024-05-30",
+  "category": "cs.LG"
+ },
+ "2406.03243": {
+  "title": "Llumnix: Dynamic Scheduling for Large Language Model Serving",
+  "authors": [
+   "Biao Sun",
+   "Ziming Huang",
+   "Hanyu Zhao",
+   "Wencong Xiao",
+   "Xinyi Zhang",
+   "Yong Li",
+   "Wei Lin"
+  ],
+  "published": "2024-06-05",
+  "category": "cs.AR"
+ },
+ "2406.06858": {
+  "title": "FLUX: Fast Software-based Communication Overlap On GPUs Through Kernel Fusion",
+  "authors": [
+   "Li-Wen Chang",
+   "Wenlei Bao",
+   "Qi Hou",
+   "Chengquan Jiang",
+   "Ningxin Zheng",
+   "Yinmin Zhong",
+   "Xuanrun Zhang",
+   "Zuquan Song",
+   "Chengji Yao",
+   "Ziheng Jiang",
+   "Haibin Lin",
+   "Xin Jin",
+   "Xin Liu"
+  ],
+  "published": "2024-06-11",
+  "category": "cs.LG"
+ },
+ "2406.12045": {
+  "title": "$\u03c4$-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains",
+  "authors": [
+   "Shunyu Yao",
+   "Noah Shinn",
+   "Pedram Razavi",
+   "Karthik Narasimhan"
+  ],
+  "published": "2024-06-17",
+  "category": "cs.AI"
+ },
+ "2406.14066": {
+  "title": "TurboSpec: Closed-loop Speculation Control System for Optimizing LLM Serving Goodput",
+  "authors": [
+   "Xiaoxuan Liu",
+   "Jongseok Park",
+   "Langxiang Hu",
+   "Woosuk Kwon",
+   "Zhuohan Li",
+   "Chen Zhang",
+   "Kuntai Du",
+   "Xiangxi Mo",
+   "Kaichao You",
+   "Alvin Cheung",
+   "Zhijie Deng",
+   "Ion Stoica",
+   "Hao Zhang"
+  ],
+  "published": "2024-06-20",
+  "category": "cs.AI"
+ },
+ "2407.00079": {
+  "title": "Mooncake: A KVCache-centric Disaggregated Architecture for LLM Serving",
+  "authors": [
+   "Ruoyu Qin",
+   "Zheming Li",
+   "Weiran He",
+   "Mingxing Zhang",
+   "Yongwei Wu",
+   "Weimin Zheng",
+   "Xinran Xu"
+  ],
+  "published": "2024-06-24",
+  "category": "cs.DC"
+ },
+ "2407.01489": {
+  "title": "Agentless: Demystifying LLM-based Software Engineering Agents",
+  "authors": [
+   "Chunqiu Steven Xia",
+   "Yinlin Deng",
+   "Soren Dunn",
+   "Lingming Zhang"
+  ],
+  "published": "2024-07-01",
+  "category": "cs.SE"
+ },
+ "2407.01502": {
+  "title": "AI Agents That Matter",
+  "authors": [
+   "Sayash Kapoor",
+   "Benedikt Stroebl",
+   "Zachary S. Siegel",
+   "Nitya Nadgir",
+   "Arvind Narayanan"
+  ],
+  "published": "2024-07-01",
+  "category": "cs.LG"
+ },
+ "2407.07000": {
+  "title": "Etalon: Holistic Performance Evaluation Framework for LLM Inference Systems",
+  "authors": [
+   "Amey Agrawal",
+   "Anmol Agarwal",
+   "Nitin Kedia",
+   "Jayashree Mohan",
+   "Souvik Kundu",
+   "Nipun Kwatra",
+   "Ramachandran Ramjee",
+   "Alexey Tumanov"
+  ],
+  "published": "2024-07-09",
+  "category": "cs.LG"
+ },
+ "2407.08608": {
+  "title": "FlashAttention-3: Fast and Accurate Attention with Asynchrony and Low-precision",
+  "authors": [
+   "Jay Shah",
+   "Ganesh Bikshandi",
+   "Ying Zhang",
+   "Vijay Thakkar",
+   "Pradeep Ramani",
+   "Tri Dao"
+  ],
+  "published": "2024-07-11",
+  "category": "cs.LG"
+ },
+ "2407.20143": {
+  "title": "ByteCheckpoint: A Unified Checkpointing System for Large Foundation Model Development",
+  "authors": [
+   "Borui Wan",
+   "Mingji Han",
+   "Yiyao Sheng",
+   "Yanghua Peng",
+   "Haibin Lin",
+   "Mofan Zhang",
+   "Zhichao Lai",
+   "Menghan Yu",
+   "Junda Zhang",
+   "Zuquan Song",
+   "Xin Liu",
+   "Chuan Wu"
+  ],
+  "published": "2024-07-29",
+  "category": "cs.AI"
+ },
+ "2407.21783": {
+  "title": "The Llama 3 Herd of Models",
+  "authors": [
+   "Aaron Grattafiori",
+   "Abhimanyu Dubey",
+   "Abhinav Jauhri",
+   "Abhinav Pandey",
+   "Abhishek Kadian",
+   "Ahmad Al-Dahle",
+   "Aiesha Letman",
+   "Akhil Mathur",
+   "Alan Schelten",
+   "Alex Vaughan",
+   "Amy Yang",
+   "Angela Fan",
+   "Anirudh Goyal",
+   "Anthony Hartshorn",
+   "Aobo Yang",
+   "Archi Mitra",
+   "Archie Sravankumar",
+   "Artem Korenev",
+   "Arthur Hinsvark",
+   "Arun Rao",
+   "Aston Zhang",
+   "Aurelien Rodriguez",
+   "Austen Gregerson",
+   "Ava Spataru",
+   "Baptiste Roziere",
+   "Bethany Biron",
+   "Binh Tang",
+   "Bobbie Chern",
+   "Charlotte Caucheteux",
+   "Chaya Nayak",
+   "Chloe Bi",
+   "Chris Marra",
+   "Chris McConnell",
+   "Christian Keller",
+   "Christophe Touret",
+   "Chunyang Wu",
+   "Corinne Wong",
+   "Cristian Canton Ferrer",
+   "Cyrus Nikolaidis",
+   "Damien Allonsius",
+   "Daniel Song",
+   "Danielle Pintz",
+   "Danny Livshits",
+   "Danny Wyatt",
+   "David Esiobu",
+   "Dhruv Choudhary",
+   "Dhruv Mahajan",
+   "Diego Garcia-Olano",
+   "Diego Perino",
+   "Dieuwke Hupkes",
+   "Egor Lakomkin",
+   "Ehab AlBadawy",
+   "Elina Lobanova",
+   "Emily Dinan",
+   "Eric Michael Smith",
+   "Filip Radenovic",
+   "Francisco Guzm\u00e1n",
+   "Frank Zhang",
+   "Gabriel Synnaeve",
+   "Gabrielle Lee",
+   "Georgia Lewis Anderson",
+   "Govind Thattai",
+   "Graeme Nail",
+   "Gregoire Mialon",
+   "Guan Pang",
+   "Guillem Cucurell",
+   "Hailey Nguyen",
+   "Hannah Korevaar",
+   "Hu Xu",
+   "Hugo Touvron",
+   "Iliyan Zarov",
+   "Imanol Arrieta Ibarra",
+   "Isabel Kloumann",
+   "Ishan Misra",
+   "Ivan Evtimov",
+   "Jack Zhang",
+   "Jade Copet",
+   "Jaewon Lee",
+   "Jan Geffert",
+   "Jana Vranes",
+   "Jason Park",
+   "Jay Mahadeokar",
+   "Jeet Shah",
+   "Jelmer van der Linde",
+   "Jennifer Billock",
+   "Jenny Hong",
+   "Jenya Lee",
+   "Jeremy Fu",
+   "Jianfeng Chi",
+   "Jianyu Huang",
+   "Jiawen Liu",
+   "Jie Wang",
+   "Jiecao Yu",
+   "Joanna Bitton",
+   "Joe Spisak",
+   "Jongsoo Park",
+   "Joseph Rocca",
+   "Joshua Johnstun",
+   "Joshua Saxe",
+   "Junteng Jia",
+   "Kalyan Vasuden Alwala",
+   "Karthik Prasad",
+   "Kartikeya Upasani",
+   "Kate Plawiak",
+   "Ke Li",
+   "Kenneth Heafield",
+   "Kevin Stone",
+   "Khalid El-Arini",
+   "Krithika Iyer",
+   "Kshitiz Malik",
+   "Kuenley Chiu",
+   "Kunal Bhalla",
+   "Kushal Lakhotia",
+   "Lauren Rantala-Yeary",
+   "Laurens van der Maaten",
+   "Lawrence Chen",
+   "Liang Tan",
+   "Liz Jenkins",
+   "Louis Martin",
+   "Lovish Madaan",
+   "Lubo Malo",
+   "Lukas Blecher",
+   "Lukas Landzaat",
+   "Luke de Oliveira",
+   "Madeline Muzzi",
+   "Mahesh Pasupuleti",
+   "Mannat Singh",
+   "Manohar Paluri",
+   "Marcin Kardas",
+   "Maria Tsimpoukelli",
+   "Mathew Oldham",
+   "Mathieu Rita",
+   "Maya Pavlova",
+   "Melanie Kambadur",
+   "Mike Lewis",
+   "Min Si",
+   "Mitesh Kumar Singh",
+   "Mona Hassan",
+   "Naman Goyal",
+   "Narjes Torabi",
+   "Nikolay Bashlykov",
+   "Nikolay Bogoychev",
+   "Niladri Chatterji",
+   "Ning Zhang",
+   "Olivier Duchenne",
+   "Onur \u00c7elebi",
+   "Patrick Alrassy",
+   "Pengchuan Zhang",
+   "Pengwei Li",
+   "Petar Vasic",
+   "Peter Weng",
+   "Prajjwal Bhargava",
+   "Pratik Dubal",
+   "Praveen Krishnan",
+   "Punit Singh Koura",
+   "Puxin Xu",
+   "Qing He",
+   "Qingxiao Dong",
+   "Ragavan Srinivasan",
+   "Raj Ganapathy",
+   "Ramon Calderer",
+   "Ricardo Silveira Cabral",
+   "Robert Stojnic",
+   "Roberta Raileanu",
+   "Rohan Maheswari",
+   "Rohit Girdhar",
+   "Rohit Patel",
+   "Romain Sauvestre",
+   "Ronnie Polidoro",
+   "Roshan Sumbaly",
+   "Ross Taylor",
+   "Ruan Silva",
+   "Rui Hou",
+   "Rui Wang",
+   "Saghar Hosseini",
+   "Sahana Chennabasappa",
+   "Sanjay Singh",
+   "Sean Bell",
+   "Seohyun Sonia Kim",
+   "Sergey Edunov",
+   "Shaoliang Nie",
+   "Sharan Narang",
+   "Sharath Raparthy",
+   "Sheng Shen",
+   "Shengye Wan",
+   "Shruti Bhosale",
+   "Shun Zhang",
+   "Simon Vandenhende",
+   "Soumya Batra",
+   "Spencer Whitman",
+   "Sten Sootla",
+   "Stephane Collot",
+   "Suchin Gururangan",
+   "Sydney Borodinsky",
+   "Tamar Herman",
+   "Tara Fowler",
+   "Tarek Sheasha",
+   "Thomas Georgiou",
+   "Thomas Scialom",
+   "Tobias Speckbacher",
+   "Todor Mihaylov",
+   "Tong Xiao",
+   "Ujjwal Karn",
+   "Vedanuj Goswami",
+   "Vibhor Gupta",
+   "Vignesh Ramanathan",
+   "Viktor Kerkez",
+   "Vincent Gonguet",
+   "Virginie Do",
+   "Vish Vogeti",
+   "V\u00edtor Albiero",
+   "Vladan Petrovic",
+   "Weiwei Chu",
+   "Wenhan Xiong",
+   "Wenyin Fu",
+   "Whitney Meers",
+   "Xavier Martinet",
+   "Xiaodong Wang",
+   "Xiaofang Wang",
+   "Xiaoqing Ellen Tan",
+   "Xide Xia",
+   "Xinfeng Xie",
+   "Xuchao Jia",
+   "Xuewei Wang",
+   "Yaelle Goldschlag",
+   "Yashesh Gaur",
+   "Yasmine Babaei",
+   "Yi Wen",
+   "Yiwen Song",
+   "Yuchen Zhang",
+   "Yue Li",
+   "Yuning Mao",
+   "Zacharie Delpierre Coudert",
+   "Zheng Yan",
+   "Zhengxing Chen",
+   "Zoe Papakipos",
+   "Aaditya Singh",
+   "Aayushi Srivastava",
+   "Abha Jain",
+   "Adam Kelsey",
+   "Adam Shajnfeld",
+   "Adithya Gangidi",
+   "Adolfo Victoria",
+   "Ahuva Goldstand",
+   "Ajay Menon",
+   "Ajay Sharma",
+   "Alex Boesenberg",
+   "Alexei Baevski",
+   "Allie Feinstein",
+   "Amanda Kallet",
+   "Amit Sangani",
+   "Amos Teo",
+   "Anam Yunus",
+   "Andrei Lupu",
+   "Andres Alvarado",
+   "Andrew Caples",
+   "Andrew Gu",
+   "Andrew Ho",
+   "Andrew Poulton",
+   "Andrew Ryan",
+   "Ankit Ramchandani",
+   "Annie Dong",
+   "Annie Franco",
+   "Anuj Goyal",
+   "Aparajita Saraf",
+   "Arkabandhu Chowdhury",
+   "Ashley Gabriel",
+   "Ashwin Bharambe",
+   "Assaf Eisenman",
+   "Azadeh Yazdan",
+   "Beau James",
+   "Ben Maurer",
+   "Benjamin Leonhardi",
+   "Bernie Huang",
+   "Beth Loyd",
+   "Beto De Paola",
+   "Bhargavi Paranjape",
+   "Bing Liu",
+   "Bo Wu",
+   "Boyu Ni",
+   "Braden Hancock",
+   "Bram Wasti",
+   "Brandon Spence",
+   "Brani Stojkovic",
+   "Brian Gamido",
+   "Britt Montalvo",
+   "Carl Parker",
+   "Carly Burton",
+   "Catalina Mejia",
+   "Ce Liu",
+   "Changhan Wang",
+   "Changkyu Kim",
+   "Chao Zhou",
+   "Chester Hu",
+   "Ching-Hsiang Chu",
+   "Chris Cai",
+   "Chris Tindal",
+   "Christoph Feichtenhofer",
+   "Cynthia Gao",
+   "Damon Civin",
+   "Dana Beaty",
+   "Daniel Kreymer",
+   "Daniel Li",
+   "David Adkins",
+   "David Xu",
+   "Davide Testuggine",
+   "Delia David",
+   "Devi Parikh",
+   "Diana Liskovich",
+   "Didem Foss",
+   "Dingkang Wang",
+   "Duc Le",
+   "Dustin Holland",
+   "Edward Dowling",
+   "Eissa Jamil",
+   "Elaine Montgomery",
+   "Eleonora Presani",
+   "Emily Hahn",
+   "Emily Wood",
+   "Eric-Tuan Le",
+   "Erik Brinkman",
+   "Esteban Arcaute",
+   "Evan Dunbar",
+   "Evan Smothers",
+   "Fei Sun",
+   "Felix Kreuk",
+   "Feng Tian",
+   "Filippos Kokkinos",
+   "Firat Ozgenel",
+   "Francesco Caggioni",
+   "Frank Kanayet",
+   "Frank Seide",
+   "Gabriela Medina Florez",
+   "Gabriella Schwarz",
+   "Gada Badeer",
+   "Georgia Swee",
+   "Gil Halpern",
+   "Grant Herman",
+   "Grigory Sizov",
+   " Guangyi",
+   " Zhang",
+   "Guna Lakshminarayanan",
+   "Hakan Inan",
+   "Hamid Shojanazeri",
+   "Han Zou",
+   "Hannah Wang",
+   "Hanwen Zha",
+   "Haroun Habeeb",
+   "Harrison Rudolph",
+   "Helen Suk",
+   "Henry Aspegren",
+   "Hunter Goldman",
+   "Hongyuan Zhan",
+   "Ibrahim Damlaj",
+   "Igor Molybog",
+   "Igor Tufanov",
+   "Ilias Leontiadis",
+   "Irina-Elena Veliche",
+   "Itai Gat",
+   "Jake Weissman",
+   "James Geboski",
+   "James Kohli",
+   "Janice Lam",
+   "Japhet Asher",
+   "Jean-Baptiste Gaya",
+   "Jeff Marcus",
+   "Jeff Tang",
+   "Jennifer Chan",
+   "Jenny Zhen",
+   "Jeremy Reizenstein",
+   "Jeremy Teboul",
+   "Jessica Zhong",
+   "Jian Jin",
+   "Jingyi Yang",
+   "Joe Cummings",
+   "Jon Carvill",
+   "Jon Shepard",
+   "Jonathan McPhie",
+   "Jonathan Torres",
+   "Josh Ginsburg",
+   "Junjie Wang",
+   "Kai Wu",
+   "Kam Hou U",
+   "Karan Saxena",
+   "Kartikay Khandelwal",
+   "Katayoun Zand",
+   "Kathy Matosich",
+   "Kaushik Veeraraghavan",
+   "Kelly Michelena",
+   "Keqian Li",
+   "Kiran Jagadeesh",
+   "Kun Huang",
+   "Kunal Chawla",
+   "Kyle Huang",
+   "Lailin Chen",
+   "Lakshya Garg",
+   "Lavender A",
+   "Leandro Silva",
+   "Lee Bell",
+   "Lei Zhang",
+   "Liangpeng Guo",
+   "Licheng Yu",
+   "Liron Moshkovich",
+   "Luca Wehrstedt",
+   "Madian Khabsa",
+   "Manav Avalani",
+   "Manish Bhatt",
+   "Martynas Mankus",
+   "Matan Hasson",
+   "Matthew Lennie",
+   "Matthias Reso",
+   "Maxim Groshev",
+   "Maxim Naumov",
+   "Maya Lathi",
+   "Meghan Keneally",
+   "Miao Liu",
+   "Michael L. Seltzer",
+   "Michal Valko",
+   "Michelle Restrepo",
+   "Mihir Patel",
+   "Mik Vyatskov",
+   "Mikayel Samvelyan",
+   "Mike Clark",
+   "Mike Macey",
+   "Mike Wang",
+   "Miquel Jubert Hermoso",
+   "Mo Metanat",
+   "Mohammad Rastegari",
+   "Munish Bansal",
+   "Nandhini Santhanam",
+   "Natascha Parks",
+   "Natasha White",
+   "Navyata Bawa",
+   "Nayan Singhal",
+   "Nick Egebo",
+   "Nicolas Usunier",
+   "Nikhil Mehta",
+   "Nikolay Pavlovich Laptev",
+   "Ning Dong",
+   "Norman Cheng",
+   "Oleg Chernoguz",
+   "Olivia Hart",
+   "Omkar Salpekar",
+   "Ozlem Kalinli",
+   "Parkin Kent",
+   "Parth Parekh",
+   "Paul Saab",
+   "Pavan Balaji",
+   "Pedro Rittner",
+   "Philip Bontrager",
+   "Pierre Roux",
+   "Piotr Dollar",
+   "Polina Zvyagina",
+   "Prashant Ratanchandani",
+   "Pritish Yuvraj",
+   "Qian Liang",
+   "Rachad Alao",
+   "Rachel Rodriguez",
+   "Rafi Ayub",
+   "Raghotham Murthy",
+   "Raghu Nayani",
+   "Rahul Mitra",
+   "Rangaprabhu Parthasarathy",
+   "Raymond Li",
+   "Rebekkah Hogan",
+   "Robin Battey",
+   "Rocky Wang",
+   "Russ Howes",
+   "Ruty Rinott",
+   "Sachin Mehta",
+   "Sachin Siby",
+   "Sai Jayesh Bondu",
+   "Samyak Datta",
+   "Sara Chugh",
+   "Sara Hunt",
+   "Sargun Dhillon",
+   "Sasha Sidorov",
+   "Satadru Pan",
+   "Saurabh Mahajan",
+   "Saurabh Verma",
+   "Seiji Yamamoto",
+   "Sharadh Ramaswamy",
+   "Shaun Lindsay",
+   "Shaun Lindsay",
+   "Sheng Feng",
+   "Shenghao Lin",
+   "Shengxin Cindy Zha",
+   "Shishir Patil",
+   "Shiva Shankar",
+   "Shuqiang Zhang",
+   "Shuqiang Zhang",
+   "Sinong Wang",
+   "Sneha Agarwal",
+   "Soji Sajuyigbe",
+   "Soumith Chintala",
+   "Stephanie Max",
+   "Stephen Chen",
+   "Steve Kehoe",
+   "Steve Satterfield",
+   "Sudarshan Govindaprasad",
+   "Sumit Gupta",
+   "Summer Deng",
+   "Sungmin Cho",
+   "Sunny Virk",
+   "Suraj Subramanian",
+   "Sy Choudhury",
+   "Sydney Goldman",
+   "Tal Remez",
+   "Tamar Glaser",
+   "Tamara Best",
+   "Thilo Koehler",
+   "Thomas Robinson",
+   "Tianhe Li",
+   "Tianjun Zhang",
+   "Tim Matthews",
+   "Timothy Chou",
+   "Tzook Shaked",
+   "Varun Vontimitta",
+   "Victoria Ajayi",
+   "Victoria Montanez",
+   "Vijai Mohan",
+   "Vinay Satish Kumar",
+   "Vishal Mangla",
+   "Vlad Ionescu",
+   "Vlad Poenaru",
+   "Vlad Tiberiu Mihailescu",
+   "Vladimir Ivanov",
+   "Wei Li",
+   "Wenchen Wang",
+   "Wenwen Jiang",
+   "Wes Bouaziz",
+   "Will Constable",
+   "Xiaocheng Tang",
+   "Xiaojian Wu",
+   "Xiaolan Wang",
+   "Xilun Wu",
+   "Xinbo Gao",
+   "Yaniv Kleinman",
+   "Yanjun Chen",
+   "Ye Hu",
+   "Ye Jia",
+   "Ye Qi",
+   "Yenda Li",
+   "Yilin Zhang",
+   "Ying Zhang",
+   "Yossi Adi",
+   "Youngjin Nam",
+   " Yu",
+   " Wang",
+   "Yu Zhao",
+   "Yuchen Hao",
+   "Yundi Qian",
+   "Yunlu Li",
+   "Yuzi He",
+   "Zach Rait",
+   "Zachary DeVito",
+   "Zef Rosnbrick",
+   "Zhaoduo Wen",
+   "Zhenyu Yang",
+   "Zhiwei Zhao",
+   "Zhiyu Ma"
+  ],
+  "published": "2024-07-31",
+  "category": "cs.AI"
+ },
+ "2407.21787": {
+  "title": "Large Language Monkeys: Scaling Inference Compute with Repeated Sampling",
+  "authors": [
+   "Bradley Brown",
+   "Jordan Juravsky",
+   "Ryan Ehrlich",
+   "Ronald Clark",
+   "Quoc V. Le",
+   "Christopher R\u00e9",
+   "Azalia Mirhoseini"
+  ],
+  "published": "2024-07-31",
+  "category": "cs.LG"
+ },
+ "2408.11049": {
+  "title": "MagicDec: Breaking the Latency-Throughput Tradeoff for Long Context Generation with Speculative Decoding",
+  "authors": [
+   "Ranajoy Sadhukhan",
+   "Jian Chen",
+   "Zhuoming Chen",
+   "Vashisth Tiwari",
+   "Ruihang Lai",
+   "Jinyuan Shi",
+   "Ian En-Hsu Yen",
+   "Avner May",
+   "Tianqi Chen",
+   "Beidi Chen"
+  ],
+  "published": "2024-08-20",
+  "category": "cs.CL"
+ },
+ "2409.12517": {
+  "title": "Scaling FP8 training to trillion-token LLMs",
+  "authors": [
+   "Maxim Fishman",
+   "Brian Chmiel",
+   "Ron Banner",
+   "Daniel Soudry"
+  ],
+  "published": "2024-09-19",
+  "category": "cs.LG"
+ },
+ "2409.17264": {
+  "title": "No Request Left Behind: Tackling Heterogeneity in Long-Context LLM Inference with Medha",
+  "authors": [
+   "Amey Agrawal",
+   "Haoran Qiu",
+   "Junda Chen",
+   "\u00cd\u00f1igo Goiri",
+   "Chaojie Zhang",
+   "Rayyan Shahid",
+   "Ramachandran Ramjee",
+   "Alexey Tumanov",
+   "Esha Choukse"
+  ],
+  "published": "2024-09-25",
+  "category": "cs.LG"
+ },
+ "2409.20002": {
+  "title": "The Early Bird Catches the Leak: Unveiling Timing Side Channels in LLM Serving Systems",
+  "authors": [
+   "Linke Song",
+   "Zixuan Pang",
+   "Wenhao Wang",
+   "Zihao Wang",
+   "XiaoFeng Wang",
+   "Hongbo Chen",
+   "Wei Song",
+   "Yier Jin",
+   "Dan Meng",
+   "Rui Hou"
+  ],
+  "published": "2024-09-30",
+  "category": "cs.CR"
+ },
+ "2410.05004": {
+  "title": "Fast State Restoration in LLM Serving with HCache",
+  "authors": [
+   "Shiwei Gao",
+   "Youmin Chen",
+   "Jiwu Shu"
+  ],
+  "published": "2024-10-07",
+  "category": "cs.DC"
+ },
+ "2410.06992": {
+  "title": "SWE-Bench+: Enhanced Coding Benchmark for LLMs",
+  "authors": [
+   "Reem Aleithan",
+   "Haoran Xue",
+   "Mohammad Mahdi Mohajer",
+   "Elijah Nnorom",
+   "Gias Uddin",
+   "Song Wang"
+  ],
+  "published": "2024-10-09",
+  "category": "cs.SE"
+ },
+ "2410.12588": {
+  "title": "FALCON: Pinpointing and Mitigating Stragglers for Large-Scale Hybrid-Parallel Training",
+  "authors": [
+   "Tianyuan Wu",
+   "Wei Wang",
+   "Yinghao Yu",
+   "Siran Yang",
+   "Wenchao Wu",
+   "Qinkai Duan",
+   "Guodong Yang",
+   "Jiamang Wang",
+   "Lin Qu",
+   "Liping Zhang"
+  ],
+  "published": "2024-10-16",
+  "category": "cs.DC"
+ },
+ "2410.21680": {
+  "title": "Revisiting Reliability in Large-Scale Machine Learning Research Clusters",
+  "authors": [
+   "Apostolos Kokolis",
+   "Michael Kuchnik",
+   "John Hoffman",
+   "Adithya Kumar",
+   "Parth Malani",
+   "Faye Ma",
+   "Zachary DeVito",
+   "Shubho Sengupta",
+   "Kalyan Saladi",
+   "Carole-Jean Wu"
+  ],
+  "published": "2024-10-29",
+  "category": "cs.DC"
+ },
+ "2410.22307": {
+  "title": "SVIP: Towards Verifiable Inference of Open-source Large Language Models",
+  "authors": [
+   "Yifan Sun",
+   "Yuhang Li",
+   "Yue Zhang",
+   "Yuchen Jin",
+   "Huan Zhang"
+  ],
+  "published": "2024-10-29",
+  "category": "cs.LG"
+ },
+ "2411.00442": {
+  "title": "Revealing Floating-Point Accumulation Orders in Software/Hardware Implementations",
+  "authors": [
+   "Peichen Xie",
+   "Yanjie Gao",
+   "Yang Wang",
+   "Jilong Xue"
+  ],
+  "published": "2024-11-01",
+  "category": "math.NA"
+ },
+ "2411.02355": {
+  "title": "\"Give Me BF16 or Give Me Death\"? Accuracy-Performance Trade-Offs in LLM Quantization",
+  "authors": [
+   "Eldar Kurtic",
+   "Alexandre Marques",
+   "Shubhra Pandit",
+   "Mark Kurtz",
+   "Dan Alistarh"
+  ],
+  "published": "2024-11-04",
+  "category": "cs.LG"
+ },
+ "2411.02820": {
+  "title": "DroidSpeak: KV Cache Sharing for Cross-LLM Communication and Multi-LLM Serving",
+  "authors": [
+   "Yuhan Liu",
+   "Yuyang Huang",
+   "Jiayi Yao",
+   "Shaoting Feng",
+   "Zhuohan Gu",
+   "Kuntai Du",
+   "Hanchen Li",
+   "Yihua Cheng",
+   "Junchen Jiang",
+   "Shan Lu",
+   "Madan Musuvathi",
+   "Esha Choukse"
+  ],
+  "published": "2024-11-05",
+  "category": "cs.MA"
+ },
+ "2411.03357": {
+  "title": "PipeLLM: Fast and Confidential Large Language Model Services with Speculative Pipelined Encryption",
+  "authors": [
+   "Yifan Tan",
+   "Cheng Tan",
+   "Zeyu Mi",
+   "Haibo Chen"
+  ],
+  "published": "2024-11-04",
+  "category": "cs.CR"
+ },
+ "2411.03731": {
+  "title": "Reducing Hyperparameter Tuning Costs in ML, Vision and Language Model Training Pipelines via Memoization-Awareness",
+  "authors": [
+   "Abdelmajid Essofi",
+   "Ridwan Salahuddeen",
+   "Munachiso Nwadike",
+   "Elnura Zhalieva",
+   "Kun Zhang",
+   "Eric Xing",
+   "Willie Neiswanger",
+   "Qirong Ho"
+  ],
+  "published": "2024-11-06",
+  "category": "cs.LG"
+ },
+ "2411.04330": {
+  "title": "Scaling Laws for Precision",
+  "authors": [
+   "Tanishq Kumar",
+   "Zachary Ankner",
+   "Benjamin F. Spector",
+   "Blake Bordelon",
+   "Niklas Muennighoff",
+   "Mansheej Paul",
+   "Cengiz Pehlevan",
+   "Christopher R\u00e9",
+   "Aditi Raghunathan"
+  ],
+  "published": "2024-11-07",
+  "category": "cs.LG"
+ },
+ "2411.05288": {
+  "title": "Balancing Pipeline Parallelism with Vocabulary Parallelism",
+  "authors": [
+   "Man Tsung Yeung",
+   "Penghui Qi",
+   "Min Lin",
+   "Xinyi Wan"
+  ],
+  "published": "2024-11-08",
+  "category": "cs.DC"
+ },
+ "2411.19379": {
+  "title": "Marconi: Prefix Caching for the Era of Hybrid LLMs",
+  "authors": [
+   "Rui Pan",
+   "Zhuang Wang",
+   "Zhen Jia",
+   "Can Karakus",
+   "Luca Zancato",
+   "Tri Dao",
+   "Yida Wang",
+   "Ravi Netravali"
+  ],
+  "published": "2024-11-28",
+  "category": "cs.DC"
+ },
+ "2412.19437": {
+  "title": "DeepSeek-V3 Technical Report",
+  "authors": [
+   " DeepSeek-AI",
+   "Aixin Liu",
+   "Bei Feng",
+   "Bing Xue",
+   "Bingxuan Wang",
+   "Bochao Wu",
+   "Chengda Lu",
+   "Chenggang Zhao",
+   "Chengqi Deng",
+   "Chenyu Zhang",
+   "Chong Ruan",
+   "Damai Dai",
+   "Daya Guo",
+   "Dejian Yang",
+   "Deli Chen",
+   "Dongjie Ji",
+   "Erhang Li",
+   "Fangyun Lin",
+   "Fucong Dai",
+   "Fuli Luo",
+   "Guangbo Hao",
+   "Guanting Chen",
+   "Guowei Li",
+   "H. Zhang",
+   "Han Bao",
+   "Hanwei Xu",
+   "Haocheng Wang",
+   "Haowei Zhang",
+   "Honghui Ding",
+   "Huajian Xin",
+   "Huazuo Gao",
+   "Hui Li",
+   "Hui Qu",
+   "J. L. Cai",
+   "Jian Liang",
+   "Jianzhong Guo",
+   "Jiaqi Ni",
+   "Jiashi Li",
+   "Jiawei Wang",
+   "Jin Chen",
+   "Jingchang Chen",
+   "Jingyang Yuan",
+   "Junjie Qiu",
+   "Junlong Li",
+   "Junxiao Song",
+   "Kai Dong",
+   "Kai Hu",
+   "Kaige Gao",
+   "Kang Guan",
+   "Kexin Huang",
+   "Kuai Yu",
+   "Lean Wang",
+   "Lecong Zhang",
+   "Lei Xu",
+   "Leyi Xia",
+   "Liang Zhao",
+   "Litong Wang",
+   "Liyue Zhang",
+   "Meng Li",
+   "Miaojun Wang",
+   "Mingchuan Zhang",
+   "Minghua Zhang",
+   "Minghui Tang",
+   "Mingming Li",
+   "Ning Tian",
+   "Panpan Huang",
+   "Peiyi Wang",
+   "Peng Zhang",
+   "Qiancheng Wang",
+   "Qihao Zhu",
+   "Qinyu Chen",
+   "Qiushi Du",
+   "R. J. Chen",
+   "R. L. Jin",
+   "Ruiqi Ge",
+   "Ruisong Zhang",
+   "Ruizhe Pan",
+   "Runji Wang",
+   "Runxin Xu",
+   "Ruoyu Zhang",
+   "Ruyi Chen",
+   "S. S. Li",
+   "Shanghao Lu",
+   "Shangyan Zhou",
+   "Shanhuang Chen",
+   "Shaoqing Wu",
+   "Shengfeng Ye",
+   "Shengfeng Ye",
+   "Shirong Ma",
+   "Shiyu Wang",
+   "Shuang Zhou",
+   "Shuiping Yu",
+   "Shunfeng Zhou",
+   "Shuting Pan",
+   "T. Wang",
+   "Tao Yun",
+   "Tian Pei",
+   "Tianyu Sun",
+   "W. L. Xiao",
+   "Wangding Zeng",
+   "Wanjia Zhao",
+   "Wei An",
+   "Wen Liu",
+   "Wenfeng Liang",
+   "Wenjun Gao",
+   "Wenqin Yu",
+   "Wentao Zhang",
+   "X. Q. Li",
+   "Xiangyue Jin",
+   "Xianzu Wang",
+   "Xiao Bi",
+   "Xiaodong Liu",
+   "Xiaohan Wang",
+   "Xiaojin Shen",
+   "Xiaokang Chen",
+   "Xiaokang Zhang",
+   "Xiaosha Chen",
+   "Xiaotao Nie",
+   "Xiaowen Sun",
+   "Xiaoxiang Wang",
+   "Xin Cheng",
+   "Xin Liu",
+   "Xin Xie",
+   "Xingchao Liu",
+   "Xingkai Yu",
+   "Xinnan Song",
+   "Xinxia Shan",
+   "Xinyi Zhou",
+   "Xinyu Yang",
+   "Xinyuan Li",
+   "Xuecheng Su",
+   "Xuheng Lin",
+   "Y. K. Li",
+   "Y. Q. Wang",
+   "Y. X. Wei",
+   "Y. X. Zhu",
+   "Yang Zhang",
+   "Yanhong Xu",
+   "Yanhong Xu",
+   "Yanping Huang",
+   "Yao Li",
+   "Yao Zhao",
+   "Yaofeng Sun",
+   "Yaohui Li",
+   "Yaohui Wang",
+   "Yi Yu",
+   "Yi Zheng",
+   "Yichao Zhang",
+   "Yifan Shi",
+   "Yiliang Xiong",
+   "Ying He",
+   "Ying Tang",
+   "Yishi Piao",
+   "Yisong Wang",
+   "Yixuan Tan",
+   "Yiyang Ma",
+   "Yiyuan Liu",
+   "Yongqiang Guo",
+   "Yu Wu",
+   "Yuan Ou",
+   "Yuchen Zhu",
+   "Yuduan Wang",
+   "Yue Gong",
+   "Yuheng Zou",
+   "Yujia He",
+   "Yukun Zha",
+   "Yunfan Xiong",
+   "Yunxian Ma",
+   "Yuting Yan",
+   "Yuxiang Luo",
+   "Yuxiang You",
+   "Yuxuan Liu",
+   "Yuyang Zhou",
+   "Z. F. Wu",
+   "Z. Z. Ren",
+   "Zehui Ren",
+   "Zhangli Sha",
+   "Zhe Fu",
+   "Zhean Xu",
+   "Zhen Huang",
+   "Zhen Zhang",
+   "Zhenda Xie",
+   "Zhengyan Zhang",
+   "Zhewen Hao",
+   "Zhibin Gou",
+   "Zhicheng Ma",
+   "Zhigang Yan",
+   "Zhihong Shao",
+   "Zhipeng Xu",
+   "Zhiyu Wu",
+   "Zhongyu Zhang",
+   "Zhuoshu Li",
+   "Zihui Gu",
+   "Zijia Zhu",
+   "Zijun Liu",
+   "Zilin Li",
+   "Ziwei Xie",
+   "Ziyang Song",
+   "Ziyi Gao",
+   "Zizheng Pan"
+  ],
+  "published": "2024-12-27",
+  "category": "cs.CL"
+ },
+ "2501.14312": {
+  "title": "Locality-aware Fair Scheduling in LLM Serving",
+  "authors": [
+   "Shiyi Cao",
+   "Yichuan Wang",
+   "Ziming Mao",
+   "Pin-Lun Hsu",
+   "Liangsheng Yin",
+   "Tian Xia",
+   "Dacheng Li",
+   "Shu Liu",
+   "Yineng Zhang",
+   "Yang Zhou",
+   "Ying Sheng",
+   "Joseph Gonzalez",
+   "Ion Stoica"
+  ],
+  "published": "2025-01-24",
+  "category": "cs.DC"
+ },
+ "2501.16007": {
+  "title": "TOPLOC: A Locality Sensitive Hashing Scheme for Trustless Verifiable Inference",
+  "authors": [
+   "Jack Min Ong",
+   "Matthew Di Ferrante",
+   "Aaron Pazdera",
+   "Ryan Garner",
+   "Sami Jaghouar",
+   "Manveer Basra",
+   "Max Ryabinin",
+   "Johannes Hagemann"
+  ],
+  "published": "2025-01-27",
+  "category": "cs.CR"
+ },
+ "2502.05413": {
+  "title": "Flare: Anomaly Diagnostics for Divergent LLM Training in GPU Clusters of Thousand-Plus Scale",
+  "authors": [
+   "Weihao Cui",
+   "Ji Zhang",
+   "Han Zhao",
+   "Chao Liu",
+   "Jian Sha",
+   "Bingsheng He",
+   "Minyi Guo",
+   "Quan Chen"
+  ],
+  "published": "2025-02-08",
+  "category": "cs.OS"
+ },
+ "2502.07776": {
+  "title": "Auditing Prompt Caching in Language Model APIs",
+  "authors": [
+   "Chenchen Gu",
+   "Xiang Lisa Li",
+   "Rohith Kuditipudi",
+   "Percy Liang",
+   "Tatsunori Hashimoto"
+  ],
+  "published": "2025-02-11",
+  "category": "cs.CL"
+ },
+ "2502.08788": {
+  "title": "Stop Overvaluing Multi-Agent Debate -- We Must Rethink Evaluation and Embrace Model Heterogeneity",
+  "authors": [
+   "Hangfan Zhang",
+   "Zhiyao Cui",
+   "Jianhao Chen",
+   "Xinrun Wang",
+   "Qiaosheng Zhang",
+   "Zhen Wang",
+   "Dinghao Wu",
+   "Shuyue Hu"
+  ],
+  "published": "2025-02-12",
+  "category": "cs.CL"
+ },
+ "2502.13965": {
+  "title": "Autellix: An Efficient Serving Engine for LLM Agents as General Programs",
+  "authors": [
+   "Michael Luo",
+   "Xiaoxiang Shi",
+   "Colin Cai",
+   "Tianjun Zhang",
+   "Justin Wong",
+   "Yichuan Wang",
+   "Chi Wang",
+   "Yanping Huang",
+   "Zhifeng Chen",
+   "Joseph E. Gonzalez",
+   "Ion Stoica"
+  ],
+  "published": "2025-02-19",
+  "category": "cs.LG"
+ },
+ "2502.15964": {
+  "title": "Minions: Cost-efficient Collaboration Between On-device and Cloud Language Models",
+  "authors": [
+   "Avanika Narayan",
+   "Dan Biderman",
+   "Sabri Eyuboglu",
+   "Avner May",
+   "Scott Linderman",
+   "James Zou",
+   "Christopher Re"
+  ],
+  "published": "2025-02-21",
+  "category": "cs.LG"
+ },
+ "2502.16631": {
+  "title": "CRIUgpu: Transparent Checkpointing of GPU-Accelerated Workloads",
+  "authors": [
+   "Radostin Stoyanov",
+   "Vikt\u00f3ria Spi\u0161akov\u00e1",
+   "Jesus Ramos",
+   "Steven Gurfinkel",
+   "Andrei Vagin",
+   "Adrian Reber",
+   "Wesley Armour",
+   "Rodrigo Bruno"
+  ],
+  "published": "2025-02-23",
+  "category": "cs.DC"
+ },
+ "2502.20566": {
+  "title": "Stochastic Rounding for LLM Training: Theory and Practice",
+  "authors": [
+   "Kaan Ozkara",
+   "Tao Yu",
+   "Youngsuk Park"
+  ],
+  "published": "2025-02-27",
+  "category": "cs.LG"
+ },
+ "2502.21231": {
+  "title": "ByteScale: Efficient Scaling of LLM Training with a 2048K Context Length on More Than 12,000 GPUs",
+  "authors": [
+   "Hao Ge",
+   "Junda Feng",
+   "Qi Huang",
+   "Fangcheng Fu",
+   "Xiaonan Nie",
+   "Lei Zuo",
+   "Haibin Lin",
+   "Bin Cui",
+   "Xin Liu"
+  ],
+  "published": "2025-02-28",
+  "category": "cs.DC"
+ },
+ "2503.10251": {
+  "title": "Numerical stability analysis of large language models",
+  "authors": [
+   "Stanislav Budzinskiy",
+   "Wenyi Fang",
+   "Longbin Zeng",
+   "Philipp Petersen"
+  ],
+  "published": "2025-03-13",
+  "category": "math.NA"
+ },
+ "2503.13657": {
+  "title": "Why Do Multi-Agent LLM Systems Fail?",
+  "authors": [
+   "Mert Cemri",
+   "Melissa Z. Pan",
+   "Shuyi Yang",
+   "Lakshya A. Agrawal",
+   "Bhavya Chopra",
+   "Rishabh Tiwari",
+   "Kurt Keutzer",
+   "Aditya Parameswaran",
+   "Dan Klein",
+   "Kannan Ramchandran",
+   "Matei Zaharia",
+   "Joseph E. Gonzalez",
+   "Ion Stoica"
+  ],
+  "published": "2025-03-17",
+  "category": "cs.AI"
+ },
+ "2503.16416": {
+  "title": "Survey on Evaluation of LLM-based Agents",
+  "authors": [
+   "Asaf Yehudai",
+   "Lilach Eden",
+   "Alan Li",
+   "Guy Uziel",
+   "Yilun Zhao",
+   "Roy Bar-Haim",
+   "Arman Cohan",
+   "Michal Shmueli-Scheuer"
+  ],
+  "published": "2025-03-20",
+  "category": "cs.AI"
+ },
+ "2503.17924": {
+  "title": "WLB-LLM: Workload-Balanced 4D Parallelism for Large Language Model Training",
+  "authors": [
+   "Zheng Wang",
+   "Anna Cai",
+   "Xinfeng Xie",
+   "Zaifeng Pan",
+   "Yue Guan",
+   "Weiwei Chu",
+   "Jie Wang",
+   "Shikai Li",
+   "Jianyu Huang",
+   "Chris Cai",
+   "Yuchen Hao",
+   "Yufei Ding"
+  ],
+  "published": "2025-03-23",
+  "category": "cs.DC"
+ },
+ "2503.18813": {
+  "title": "Defeating Prompt Injections by Design",
+  "authors": [
+   "Edoardo Debenedetti",
+   "Ilia Shumailov",
+   "Tianqi Fan",
+   "Jamie Hayes",
+   "Nicholas Carlini",
+   "Daniel Fabian",
+   "Christoph Kern",
+   "Chongyang Shi",
+   "Andreas Terzis",
+   "Florian Tram\u00e8r"
+  ],
+  "published": "2025-03-24",
+  "category": "cs.CR"
+ },
+ "2503.20591": {
+  "title": "NotebookOS: A Replicated Notebook Platform for Interactive Training with On-Demand GPUs",
+  "authors": [
+   "Benjamin Carver",
+   "Jingyuan Zhang",
+   "Haoliang Wang",
+   "Kanak Mahadik",
+   "Yue Cheng"
+  ],
+  "published": "2025-03-26",
+  "category": "cs.DC"
+ },
+ "2503.22562": {
+  "title": "Niyama : Breaking the Silos of LLM Inference Serving",
+  "authors": [
+   "Kanishk Goel",
+   "Jayashree Mohan",
+   "Nipun Kwatra",
+   "Ravi Shreyas Anupindi",
+   "Ramachandran Ramjee"
+  ],
+  "published": "2025-03-28",
+  "category": "cs.LG"
+ },
+ "2504.04715": {
+  "title": "Are You Getting What You Pay For? Auditing Model Substitution in LLM APIs",
+  "authors": [
+   "Will Cai",
+   "Tianneng Shi",
+   "Xuandong Zhao",
+   "Dawn Song"
+  ],
+  "published": "2025-04-07",
+  "category": "cs.CL"
+ },
+ "2504.20068": {
+  "title": "JITServe: SLO-aware LLM Serving with Imprecise Request Information",
+  "authors": [
+   "Wei Zhang",
+   "Zhiyu Wu",
+   "Yi Mu",
+   "Rui Ning",
+   "Banruo Liu",
+   "Nikhil Sarda",
+   "Myungjin Lee",
+   "Fan Lai"
+  ],
+  "published": "2025-04-24",
+  "category": "cs.DC"
+ },
+ "2505.03275": {
+  "title": "RAG-MCP: Mitigating Prompt Bloat in LLM Tool Selection via Retrieval-Augmented Generation",
+  "authors": [
+   "Tiantian Gan",
+   "Qiyao Sun"
+  ],
+  "published": "2025-05-06",
+  "category": "cs.AI"
+ },
+ "2505.05713": {
+  "title": "Understanding Stragglers in Large Model Training Using What-if Analysis",
+  "authors": [
+   "Jinkun Lin",
+   "Ziheng Jiang",
+   "Zuquan Song",
+   "Sida Zhao",
+   "Menghan Yu",
+   "Zhanghan Wang",
+   "Chenyuan Wang",
+   "Zuocheng Shi",
+   "Xiang Shi",
+   "Wei Jia",
+   "Zherui Liu",
+   "Shuguang Wang",
+   "Haibin Lin",
+   "Xin Liu",
+   "Aurojit Panda",
+   "Jinyang Li"
+  ],
+  "published": "2025-05-09",
+  "category": "cs.DC"
+ },
+ "2505.09343": {
+  "title": "Insights into DeepSeek-V3: Scaling Challenges and Reflections on Hardware for AI Architectures",
+  "authors": [
+   "Chenggang Zhao",
+   "Chengqi Deng",
+   "Chong Ruan",
+   "Damai Dai",
+   "Huazuo Gao",
+   "Jiashi Li",
+   "Liyue Zhang",
+   "Panpan Huang",
+   "Shangyan Zhou",
+   "Shirong Ma",
+   "Wenfeng Liang",
+   "Ying He",
+   "Yuqing Wang",
+   "Yuxuan Liu",
+   "Y. X. Wei"
+  ],
+  "published": "2025-05-14",
+  "category": "cs.DC"
+ },
+ "2505.09999": {
+  "title": "ServeGen: Workload Characterization and Generation of Large Language Model Serving in Production",
+  "authors": [
+   "Yuxing Xiang",
+   "Xue Li",
+   "Kun Qian",
+   "Wenyuan Yu",
+   "Ennan Zhai",
+   "Xin Jin"
+  ],
+  "published": "2025-05-15",
+  "category": "cs.DC"
+ },
+ "2505.11329": {
+  "title": "TokenWeave: Efficient Compute-Communication Overlap for Distributed LLM Inference",
+  "authors": [
+   "Raja Gond",
+   "Nipun Kwatra",
+   "Ramachandran Ramjee"
+  ],
+  "published": "2025-05-16",
+  "category": "cs.DC"
+ },
+ "2505.16501": {
+  "title": "Performance of Confidential Computing GPUs",
+  "authors": [
+   "Antonio Mart\u00ednez Ibarra",
+   "Julian James Stephen",
+   "Aurora Gonz\u00e1lez Vidal",
+   "K. R. Jayaram",
+   "Antonio Fernando Skarmeta G\u00f3mez"
+  ],
+  "published": "2025-05-22",
+  "category": "cs.PF"
+ },
+ "2505.24298": {
+  "title": "AReaL: A Large-Scale Asynchronous Reinforcement Learning System for Language Reasoning",
+  "authors": [
+   "Wei Fu",
+   "Jiaxuan Gao",
+   "Xujie Shen",
+   "Chen Zhu",
+   "Zhiyu Mei",
+   "Chuyi He",
+   "Shusheng Xu",
+   "Guo Wei",
+   "Jun Mei",
+   "Jiashu Wang",
+   "Tongkai Yang",
+   "Binhang Yuan",
+   "Yi Wu"
+  ],
+  "published": "2025-05-30",
+  "category": "cs.LG"
+ },
+ "2506.01380": {
+  "title": "Playing with Transformer at 30+ FPS via Next-Frame Diffusion",
+  "authors": [
+   "Xinle Cheng",
+   "Tianyu He",
+   "Jiayi Xu",
+   "Junliang Guo",
+   "Di He",
+   "Jiang Bian"
+  ],
+  "published": "2025-06-02",
+  "category": "cs.CV"
+ },
+ "2506.02634": {
+  "title": "KVCache Cache in the Wild: Characterizing and Optimizing KVCache Cache at a Large Cloud Provider",
+  "authors": [
+   "Jiahao Wang",
+   "Jinbo Han",
+   "Xingda Wei",
+   "Sijie Shen",
+   "Dingyan Zhang",
+   "Chenguang Fang",
+   "Rong Chen",
+   "Wenyuan Yu",
+   "Haibo Chen"
+  ],
+  "published": "2025-06-03",
+  "category": "cs.DC"
+ },
+ "2506.05433": {
+  "title": "Prefix Grouper: Efficient GRPO Training through Shared-Prefix Forward",
+  "authors": [
+   "Zikang Liu",
+   "Tongtian Yue",
+   "Yepeng Tang",
+   "Longteng Guo",
+   "Junxian Cai",
+   "Qingbin Liu",
+   "Xi Chen",
+   "Jing Liu"
+  ],
+  "published": "2025-06-05",
+  "category": "cs.LG"
+ },
+ "2506.06975": {
+  "title": "Auditing Black-Box LLM APIs with a Rank-Based Uniformity Test",
+  "authors": [
+   "Xiaoyuan Zhu",
+   "Yaowen Ye",
+   "Tianyi Qiu",
+   "Hanlin Zhu",
+   "Sijun Tan",
+   "Ajraf Mannan",
+   "Jonathan Michala",
+   "Raluca Ada Popa",
+   "Willie Neiswanger"
+  ],
+  "published": "2025-06-08",
+  "category": "cs.CR"
+ },
+ "2506.08528": {
+  "title": "EROICA: Online Performance Troubleshooting for Large-scale Model Training",
+  "authors": [
+   "Yu Guan",
+   "Zhiyu Yin",
+   "Haoyu Chen",
+   "Sheng Cheng",
+   "Chaojie Yang",
+   "Kun Qian",
+   "Tianyin Xu",
+   "Pengcheng Zhang",
+   "Yang Zhang",
+   "Hanyu Zhao",
+   "Yong Li",
+   "Wei Lin",
+   "Dennis Cai",
+   "Ennan Zhai"
+  ],
+  "published": "2025-06-10",
+  "category": "cs.DC"
+ },
+ "2506.09713": {
+  "title": "A First Look at Bugs in LLM Inference Engines",
+  "authors": [
+   "Mugeng Liu",
+   "Siqi Zhong",
+   "Weichen Bi",
+   "Yixuan Zhang",
+   "Zhiyang Chen",
+   "Zhenpeng Chen",
+   "Xuanzhe Liu",
+   "Yun Ma"
+  ],
+  "published": "2025-06-11",
+  "category": "cs.SE"
+ },
+ "2506.12286": {
+  "title": "The SWE-Bench Illusion: When State-of-the-Art LLMs Remember Instead of Reason",
+  "authors": [
+   "Shanchao Liang",
+   "Spandan Garg",
+   "Roshanak Zilouchian Moghaddam"
+  ],
+  "published": "2025-06-14",
+  "category": "cs.AI"
+ },
+ "2506.14851": {
+  "title": "Efficient Serving of LLM Applications with Probabilistic Demand Modeling",
+  "authors": [
+   "Yifei Liu",
+   "Zuo Gan",
+   "Zhenghao Gan",
+   "Weiye Wang",
+   "Chen Chen",
+   "Yizhou Shan",
+   "Xusheng Chen",
+   "Zhenhua Han",
+   "Yifei Zhu",
+   "Shixuan Sun",
+   "Minyi Guo"
+  ],
+  "published": "2025-06-17",
+  "category": "cs.DC"
+ },
+ "2506.17615": {
+  "title": "EQuARX: Efficient Quantized AllReduce in XLA for Distributed Machine Learning Acceleration",
+  "authors": [
+   "Ibrahim Ahmed",
+   "Clemens Schaefer",
+   "Gil Tabak",
+   "Denis Vnukov",
+   "Zenong Zhang",
+   "Felix chern",
+   "Anatoliy Yevtushenko",
+   "Andy Davis"
+  ],
+  "published": "2025-06-21",
+  "category": "cs.LG"
+ },
+ "2506.24045": {
+  "title": "Agent.xpu: Efficient Scheduling of Agentic LLM Workloads on Heterogeneous SoC",
+  "authors": [
+   "Xinming Wei",
+   "Jiahao Zhang",
+   "Haoran Li",
+   "Jiayu Chen",
+   "Haoning Guan",
+   "Rui Qu",
+   "Maoliang Li",
+   "Xiang Chen",
+   "Guojie Luo"
+  ],
+  "published": "2025-06-30",
+  "category": "cs.DC"
+ },
+ "2507.00909": {
+  "title": "Turning AI Data Centers into Grid-Interactive Assets: Results from a Field Demonstration in Phoenix, Arizona",
+  "authors": [
+   "Philip Colangelo",
+   "Ayse K. Coskun",
+   "Jack Megrue",
+   "Ciaran Roberts",
+   "Shayan Sengupta",
+   "Varun Sivaram",
+   "Ethan Tiao",
+   "Aroon Vijaykar",
+   "Chris Williams",
+   "Daniel C. Wilson",
+   "Zack MacFarland",
+   "Daniel Dreiling",
+   "Nathan Morey",
+   "Anuja Ratnayake",
+   "Baskar Vairamohan"
+  ],
+  "published": "2025-07-01",
+  "category": "cs.DC"
+ },
+ "2507.02825": {
+  "title": "Establishing Best Practices for Building Rigorous Agentic Benchmarks",
+  "authors": [
+   "Yuxuan Zhu",
+   "Tengjun Jin",
+   "Yada Pruksachatkun",
+   "Andy Zhang",
+   "Shu Liu",
+   "Sasha Cui",
+   "Sayash Kapoor",
+   "Shayne Longpre",
+   "Kevin Meng",
+   "Rebecca Weiss",
+   "Fazl Barez",
+   "Rahul Gupta",
+   "Jwala Dhamala",
+   "Jacob Merizian",
+   "Mario Giulianelli",
+   "Harry Coppock",
+   "Cozmin Ududec",
+   "Jasjeet Sekhon",
+   "Jacob Steinhardt",
+   "Antony Kellermann",
+   "Sarah Schwettmann",
+   "Matei Zaharia",
+   "Ion Stoica",
+   "Percy Liang",
+   "Daniel Kang"
+  ],
+  "published": "2025-07-03",
+  "category": "cs.AI"
+ },
+ "2507.04786": {
+  "title": "Demystifying NCCL: An In-depth Analysis of GPU Communication Protocols and Algorithms",
+  "authors": [
+   "Zhiyi Hu",
+   "Siyuan Shen",
+   "Tommaso Bonato",
+   "Sylvain Jeaugey",
+   "Cedell Alexander",
+   "Eric Spada",
+   "James Dinan",
+   "Jeff Hammond",
+   "Torsten Hoefler"
+  ],
+  "published": "2025-07-07",
+  "category": "cs.DC"
+ },
+ "2507.07400": {
+  "title": "KVFlow: Efficient Prefix Caching for Accelerating LLM-Based Multi-Agent Workflows",
+  "authors": [
+   "Zaifeng Pan",
+   "Ajjkumar Patel",
+   "Zhengding Hu",
+   "Yipeng Shen",
+   "Yue Guan",
+   "Wan-Lu Li",
+   "Lianhui Qin",
+   "Yida Wang",
+   "Yufei Ding"
+  ],
+  "published": "2025-07-10",
+  "category": "cs.DC"
+ },
+ "2507.08954": {
+  "title": "MQFQ-Sticky: Fair Queueing For Serverless GPU Functions",
+  "authors": [
+   "Alexander Fuerst",
+   "Siddharth Anil",
+   "Vishakha Dixit",
+   " Purushottam",
+   " Kulkarni",
+   "Prateek Sharma"
+  ],
+  "published": "2025-07-11",
+  "category": "cs.DC"
+ },
+ "2507.09089": {
+  "title": "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity",
+  "authors": [
+   "Joel Becker",
+   "Nate Rush",
+   "Elizabeth Barnes",
+   "David Rein"
+  ],
+  "published": "2025-07-12",
+  "category": "cs.AI"
+ },
+ "2507.12619": {
+  "title": "BootSeer: Analyzing and Mitigating Initialization Bottlenecks in Large-Scale LLM Training",
+  "authors": [
+   "Rui Li",
+   "Xiaoyun Zhi",
+   "Jinxin Chi",
+   "Menghan Yu",
+   "Lixin Huang",
+   "Jia Zhu",
+   "Weilun Zhang",
+   "Xing Ma",
+   "Wenjia Liu",
+   "Zhicheng Zhu",
+   "Daowen Luo",
+   "Zuquan Song",
+   "Xin Yin",
+   "Chao Xiang",
+   "Shuguang Wang",
+   "Wencong Xiao",
+   "Gene Cooperman"
+  ],
+  "published": "2025-07-16",
+  "category": "cs.LG"
+ },
+ "2508.03611": {
+  "title": "Astrolabe: Balancing Load in LLM Serving with Randomized Prediction-Guided Scheduling",
+  "authors": [
+   "Wei Da",
+   "Evangelia Kalyvianaki"
+  ],
+  "published": "2025-08-05",
+  "category": "cs.DC"
+ },
+ "2508.06948": {
+  "title": "Kairos: Low-latency Multi-Agent Serving with Shared LLMs and Excessive Loads in the Public Cloud",
+  "authors": [
+   "Jinyuan Chen",
+   "Jiuchen Shi",
+   "Quan Chen",
+   "Minyi Guo"
+  ],
+  "published": "2025-08-09",
+  "category": "cs.DC"
+ },
+ "2508.14318": {
+  "title": "Power Stabilization for AI Training Datacenters",
+  "authors": [
+   "Esha Choukse",
+   "Brijesh Warrier",
+   "Scot Heath",
+   "Luz Belmont",
+   "April Zhao",
+   "Hassan Ali Khan",
+   "Brian Harry",
+   "Matthew Kappel",
+   "Russell J. Hewett",
+   "Kushal Datta",
+   "Yu Pei",
+   "Caroline Lichtenberger",
+   "John Siegler",
+   "David Lukofsky",
+   "Zaid Kahn",
+   "Gurpreet Sahota",
+   "Andy Sullivan",
+   "Charles Frederick",
+   "Hien Thai",
+   "Rebecca Naughton",
+   "Daniel Jurnove",
+   "Justin Harp",
+   "Reid Carper",
+   "Nithish Mahalingam",
+   "Srini Varkala",
+   "Alok Gautam Kumbhare",
+   "Satyajit Desai",
+   "Venkatesh Ramamurthy",
+   "Praneeth Gottumukkala",
+   "Girish Bhatia",
+   "Kelsey Wildstone",
+   "Laurentiu Olariu",
+   "Ileana Incorvaia",
+   "Alex Wetmore",
+   "Prabhat Ram",
+   "Melur Raghuraman",
+   "Mohammed Ayna",
+   "Mike Kendrick",
+   "Ricardo Bianchini",
+   "Aaron Hurst",
+   "Reza Zamani",
+   "Xin Li",
+   "Michael Petrov",
+   "Gene Oden",
+   "Rory Carmichael",
+   "Tom Li",
+   "Apoorv Gupta",
+   "Pratikkumar Patel",
+   "Nilesh Dattani",
+   "Lawrence Marwong",
+   "Rob Nertney",
+   "Hirofumi Kobayashi",
+   "Jeff Liott",
+   "Miro Enev",
+   "Divya Ramakrishnan",
+   "Ian Buck",
+   "Jonah Alben"
+  ],
+  "published": "2025-08-20",
+  "category": "cs.AR"
+ },
+ "2508.14544": {
+  "title": "Adaptively Robust LLM Inference Optimization under Prediction Uncertainty",
+  "authors": [
+   "Zixi Chen",
+   "Yinyu Ye",
+   "Zijie Zhou"
+  ],
+  "published": "2025-08-20",
+  "category": "cs.LG"
+ },
+ "2508.15734": {
+  "title": "Measuring the environmental impact of delivering AI at Google Scale",
+  "authors": [
+   "Cooper Elsworth",
+   "Keguo Huang",
+   "David Patterson",
+   "Ian Schneider",
+   "Robert Sedivy",
+   "Savannah Goodman",
+   "Ben Townsend",
+   "Parthasarathy Ranganathan",
+   "Jeff Dean",
+   "Amin Vahdat",
+   "Ben Gomes",
+   "James Manyika"
+  ],
+  "published": "2025-08-21",
+  "category": "cs.AI"
+ },
+ "2508.21433": {
+  "title": "The Complexity Trap: Simple Observation Masking Is as Efficient as LLM Summarization for Agent Context Management",
+  "authors": [
+   "Tobias Lindenbauer",
+   "Igor Slinko",
+   "Ludwig Felder",
+   "Egor Bogomolov",
+   "Yaroslav Zharov"
+  ],
+  "published": "2025-08-29",
+  "category": "cs.SE"
+ },
+ "2509.04084": {
+  "title": "Optimizing Frequent Checkpointing via Low-Cost Differential for Distributed Training Systems",
+  "authors": [
+   "Chenxuan Yao",
+   "Yuchong Hu",
+   "Feifan Liu",
+   "Zhengyu Liu",
+   "Lin Wang",
+   "Mingqi Li",
+   "Dan Feng"
+  ],
+  "published": "2025-09-04",
+  "category": "cs.DC"
+ },
+ "2509.11134": {
+  "title": "GFS: A Preemption-aware Scheduling Framework for GPU Clusters with Predictive Spot Instance Management",
+  "authors": [
+   "Jiaang Duan",
+   "Shenglin Xu",
+   "Shiyou Qian",
+   "Dingyu Yang",
+   "Kangjin Wang",
+   "Chenzhi Liao",
+   "Yinghao Yu",
+   "Qin Hua",
+   "Hanwen Hu",
+   "Qi Wang",
+   "Wenchao Wu",
+   "Dongqing Bao",
+   "Tianyu Lu",
+   "Jian Cao",
+   "Guangtao Xue",
+   "Guodong Yang",
+   "Liping Zhang",
+   "Gang Chen"
+  ],
+  "published": "2025-09-14",
+  "category": "cs.DC"
+ },
+ "2509.16293": {
+  "title": "Robust LLM Training Infrastructure at ByteDance",
+  "authors": [
+   "Borui Wan",
+   "Gaohong Liu",
+   "Zuquan Song",
+   "Jun Wang",
+   "Yun Zhang",
+   "Guangming Sheng",
+   "Shuguang Wang",
+   "Houmin Wei",
+   "Chenyuan Wang",
+   "Weiqiang Lou",
+   "Xi Yang",
+   "Mofan Zhang",
+   "Kaihua Jiang",
+   "Cheng Ren",
+   "Xiaoyun Zhi",
+   "Menghan Yu",
+   "Zhe Nan",
+   "Zhuolin Zheng",
+   "Baoquan Zhong",
+   "Qinlong Wang",
+   "Huan Yu",
+   "Jinxin Chi",
+   "Wang Zhang",
+   "Yuhan Li",
+   "Zixian Du",
+   "Sida Zhao",
+   "Yongqiang Zhang",
+   "Jingzhe Tang",
+   "Zherui Liu",
+   "Chuan Wu",
+   "Yanghua Peng",
+   "Haibin Lin",
+   "Wencong Xiao",
+   "Xin Liu",
+   "Liang Xiang"
+  ],
+  "published": "2025-09-19",
+  "category": "cs.LG"
+ },
+ "2509.18886": {
+  "title": "Confidential LLM Inference: Performance and Cost Across CPU and GPU TEEs",
+  "authors": [
+   "Marcin Chrapek",
+   "Marcin Copik",
+   "Etienne Mettaz",
+   "Torsten Hoefler"
+  ],
+  "published": "2025-09-23",
+  "category": "cs.PF"
+ },
+ "2509.19128": {
+  "title": "PipelineRL: Faster On-policy Reinforcement Learning for Long Sequence Generation",
+  "authors": [
+   "Alexandre Pich\u00e9",
+   "Ehsan Kamalloo",
+   "Rafael Pardinas",
+   "Xiaoyin Chen",
+   "Dzmitry Bahdanau"
+  ],
+  "published": "2025-09-23",
+  "category": "cs.LG"
+ },
+ "2509.21009": {
+  "title": "RollPacker: Mitigating Long-Tail Rollouts for Fast, Synchronous RL Post-Training",
+  "authors": [
+   "Wei Gao",
+   "Yuheng Zhao",
+   "Dakai An",
+   "Tianyuan Wu",
+   "Lunxi Cao",
+   "Shaopan Xiong",
+   "Ju Huang",
+   "Weixun Wang",
+   "Siran Yang",
+   "Wenbo Su",
+   "Jiamang Wang",
+   "Lin Qu",
+   "Bo Zheng",
+   "Wei Wang"
+  ],
+  "published": "2025-09-25",
+  "category": "cs.DC"
+ },
+ "2509.23586": {
+  "title": "Reducing Cost of LLM Agents with Trajectory Reduction",
+  "authors": [
+   "Yuan-An Xiao",
+   "Pengfei Gao",
+   "Chao Peng",
+   "Yingfei Xiong"
+  ],
+  "published": "2025-09-28",
+  "category": "cs.SE"
+ },
+ "2509.25149": {
+  "title": "Pretraining Large Language Models with NVFP4",
+  "authors": [
+   " NVIDIA",
+   "Felix Abecassis",
+   "Anjulie Agrusa",
+   "Dong Ahn",
+   "Jonah Alben",
+   "Stefania Alborghetti",
+   "Michael Andersch",
+   "Sivakumar Arayandi",
+   "Alexis Bjorlin",
+   "Aaron Blakeman",
+   "Evan Briones",
+   "Ian Buck",
+   "Bryan Catanzaro",
+   "Muya Chang",
+   "Jinhang Choi",
+   "Mike Chrzanowski",
+   "Eric Chung",
+   "Victor Cui",
+   "Steve Dai",
+   "Bita Darvish Rouhani",
+   "Carlo del Mundo",
+   "Deena Donia",
+   "Burc Eryilmaz",
+   "Henry Estela",
+   "Abhinav Goel",
+   "Oleg Goncharov",
+   "Yugi Guvvala",
+   "Robert Hesse",
+   "Russell Hewett",
+   "Herbert Hum",
+   "Ujval Kapasi",
+   "Brucek Khailany",
+   "Mikail Khona",
+   "Nick Knight",
+   "Alex Kondratenko",
+   "Ronny Krashinsky",
+   "Ben Lanir",
+   "Simon Layton",
+   "Michael Lightstone",
+   "Daniel Lo",
+   "Paulius Micikevicius",
+   "Asit Mishra",
+   "Tim Moon",
+   "Deepak Narayanan",
+   "Chao Ni",
+   "Abhijit Paithankar",
+   "Satish Pasumarthi",
+   "Ankit Patel",
+   "Mostofa Patwary",
+   "Ashwin Poojary",
+   "Gargi Prasad",
+   "Sweta Priyadarshi",
+   "Yigong Qin",
+   "Xiaowei Ren",
+   "Oleg Rybakov",
+   "Charbel Sakr",
+   "Sanjeev Satheesh",
+   "Stas Sergienko",
+   "Pasha Shamis",
+   "Kirthi Shankar",
+   "Nishant Sharma",
+   "Mohammad Shoeybi",
+   "Michael Siu",
+   "Misha Smelyanskiy",
+   "Darko Stosic",
+   "Dusan Stosic",
+   "Bor-Yiing Su",
+   "Frank Sun",
+   "Nima Tajbakhsh",
+   "Shelby Thomas",
+   "Przemek Tredak",
+   "Evgeny Tsykunov",
+   "Gandhi Vaithilingam",
+   "Aditya Vavre",
+   "Rangharajan Venkatesan",
+   "Roger Waleffe",
+   "Qiyu Wan",
+   "Hexin Wang",
+   "Mengdi Wang",
+   "Lizzie Wei",
+   "Hao Wu",
+   "Evan Wu",
+   "Keith Wyss",
+   "Ning Xu",
+   "Jinze Xue",
+   "Charlene Yang",
+   "Yujia Zhai",
+   "Ruoxi Zhang",
+   "Jingyang Zhu",
+   "Zhongbo Zhu"
+  ],
+  "published": "2025-09-29",
+  "category": "cs.CL"
+ },
+ "2509.25279": {
+  "title": "RL in the Wild: Characterizing RLVR Training in LLM Deployment",
+  "authors": [
+   "Jiecheng Zhou",
+   "Qinghao Hu",
+   "Yuyang Jin",
+   "Zerui Wang",
+   "Peng Sun",
+   "Yuzhe Gu",
+   "Wenwei Zhang",
+   "Mingshu Zhai",
+   "Xingcheng Zhang",
+   "Weiming Zhang"
+  ],
+  "published": "2025-09-29",
+  "category": "cs.AI"
+ },
+ "2510.00536": {
+  "title": "GUI-KV: Efficient GUI Agents via KV Cache with Spatio-Temporal Awareness",
+  "authors": [
+   "Kung-Hsiang Huang",
+   "Haoyi Qiu",
+   "Yutong Dai",
+   "Caiming Xiong",
+   "Chien-Sheng Wu"
+  ],
+  "published": "2025-10-01",
+  "category": "cs.CL"
+ },
+ "2510.00606": {
+  "title": "ElasWave: An Elastic-Native System for Scalable Hybrid-Parallel Training",
+  "authors": [
+   "Xueze Kang",
+   "Guangyu Xiang",
+   "Yuxin Wang",
+   "Hao Zhang",
+   "Yuchu Fang",
+   "Yuhang Zhou",
+   "Zhenheng Tang",
+   "Youhui Lv",
+   "Eliran Maman",
+   "Mark Wasserman",
+   "Alon Zameret",
+   "Zhipeng Bian",
+   "Shushu Chen",
+   "Zhiyou Yu",
+   "Jin Wang",
+   "Xiaoyu Wu",
+   "Yang Zheng",
+   "Chen Tian",
+   "Xiaowen Chu"
+  ],
+  "published": "2025-10-01",
+  "category": "cs.DC"
+ },
+ "2510.00615": {
+  "title": "ACON: Optimizing Context Compression for Long-horizon LLM Agents",
+  "authors": [
+   "Minki Kang",
+   "Wei-Ning Chen",
+   "Dongge Han",
+   "Huseyin A. Inan",
+   "Lukas Wutschitz",
+   "Yanzhi Chen",
+   "Robert Sim",
+   "Saravan Rajmohan"
+  ],
+  "published": "2025-10-01",
+  "category": "cs.AI"
+ },
+ "2510.03243": {
+  "title": "Ranking Before Serving: Low-Latency LLM Serving via Pairwise Learning-to-Rank",
+  "authors": [
+   "Yiheng Tao",
+   "Yihe Zhang",
+   "Matthew Dearing",
+   "Xin Wang",
+   "Yuping Fan",
+   "Michael E. Papka",
+   "Zhiling Lan"
+  ],
+  "published": "2025-09-25",
+  "category": "cs.LG"
+ },
+ "2510.03275": {
+  "title": "SDQ-LLM: Sigma-Delta Quantization for 1-bit LLMs of any size",
+  "authors": [
+   "Junhao Xia",
+   "Ming Zhao",
+   "Limin Xiao",
+   "Xiujun Zhang"
+  ],
+  "published": "2025-09-27",
+  "category": "cs.LG"
+ },
+ "2510.04618": {
+  "title": "Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models",
+  "authors": [
+   "Qizheng Zhang",
+   "Changran Hu",
+   "Shubhangi Upasani",
+   "Boyuan Ma",
+   "Fenglu Hong",
+   "Vamsidhar Kamanuru",
+   "Jay Rainton",
+   "Chen Wu",
+   "Mengmeng Ji",
+   "Hanchen Li",
+   "Urmish Thakker",
+   "James Zou",
+   "Kunle Olukotun"
+  ],
+  "published": "2025-10-06",
+  "category": "cs.LG"
+ },
+ "2510.05497": {
+  "title": "Patterns behind Chaos: Forecasting Data Movement for Efficient Large-Scale MoE LLM Inference",
+  "authors": [
+   "Zhongkai Yu",
+   "Yue Guan",
+   "Zihao Yu",
+   "Chenyang Zhou",
+   "Zhengding Hu",
+   "Shuyi Pei",
+   "Yangwook Kang",
+   "Yufei Ding",
+   "Po-An Tsai"
+  ],
+  "published": "2025-10-07",
+  "category": "cs.DC"
+ },
+ "2510.06126": {
+  "title": "lm-Meter: Unveiling Runtime Inference Latency for On-Device Language Models",
+  "authors": [
+   "Haoxin Wang",
+   "Xiaolong Tu",
+   "Hongyu Ke",
+   "Huirong Chai",
+   "Dawei Chen",
+   "Kyungtae Han"
+  ],
+  "published": "2025-10-07",
+  "category": "cs.LG"
+ },
+ "2510.08666": {
+  "title": "dInfer: An Efficient Inference Framework for Diffusion Language Models",
+  "authors": [
+   "Yuxin Ma",
+   "Lun Du",
+   "Lanning Wei",
+   "Kun Chen",
+   "Qian Xu",
+   "Kangyu Wang",
+   "Guofeng Feng",
+   "Guoshan Lu",
+   "Lin Liu",
+   "Xiaojing Qi",
+   "Xinyuan Zhang",
+   "Zhen Tao",
+   "Haibo Feng",
+   "Ziyun Jiang",
+   "Ying Xu",
+   "Zenan Huang",
+   "Yihong Zhuang",
+   "Haokai Xu",
+   "Jiaqi Hu",
+   "Zhenzhong Lan",
+   "Junbo Zhao",
+   "Jianguo Li",
+   "Da Zheng"
+  ],
+  "published": "2025-10-09",
+  "category": "cs.CL"
+ },
+ "2510.09023": {
+  "title": "The Attacker Moves Second: Stronger Adaptive Attacks Bypass Defenses Against Llm Jailbreaks and Prompt Injections",
+  "authors": [
+   "Milad Nasr",
+   "Nicholas Carlini",
+   "Chawin Sitawarin",
+   "Sander V. Schulhoff",
+   "Jamie Hayes",
+   "Michael Ilie",
+   "Juliette Pluto",
+   "Shuang Song",
+   "Harsh Chaudhari",
+   "Ilia Shumailov",
+   "Abhradeep Thakurta",
+   "Kai Yuanqing Xiao",
+   "Andreas Terzis",
+   "Florian Tram\u00e8r"
+  ],
+  "published": "2025-10-10",
+  "category": "cs.LG"
+ },
+ "2510.11977": {
+  "title": "Holistic Agent Leaderboard: The Missing Infrastructure for AI Agent Evaluation",
+  "authors": [
+   "Sayash Kapoor",
+   "Benedikt Stroebl",
+   "Peter Kirgis",
+   "Nitya Nadgir",
+   "Zachary S Siegel",
+   "Boyi Wei",
+   "Tianci Xue",
+   "Ziru Chen",
+   "Felix Chen",
+   "Saiteja Utpala",
+   "Franck Ndzomga",
+   "Dheeraj Oruganty",
+   "Sophie Luskin",
+   "Kangheng Liu",
+   "Botao Yu",
+   "Amit Arora",
+   "Dongyoon Hahm",
+   "Harsh Trivedi",
+   "Huan Sun",
+   "Juyong Lee",
+   "Tengjun Jin",
+   "Yifan Mai",
+   "Yifei Zhou",
+   "Yuxuan Zhu",
+   "Rishi Bommasani",
+   "Daniel Kang",
+   "Dawn Song",
+   "Peter Henderson",
+   "Yu Su",
+   "Percy Liang",
+   "Arvind Narayanan"
+  ],
+  "published": "2025-10-13",
+  "category": "cs.AI"
+ },
+ "2510.13668": {
+  "title": "STAR: Decode-Phase Rescheduling for LLM Inference",
+  "authors": [
+   "Zhibin Wang",
+   "Zetao Hong",
+   "Xue Li",
+   "Zibo Wang",
+   "Shipeng Li",
+   "Qingkai Meng",
+   "Qing Wang",
+   "Chengying Huan",
+   "Rong Gu",
+   "Sheng Zhong",
+   "Chen Tian"
+  ],
+  "published": "2025-10-15",
+  "category": "cs.DC"
+ },
+ "2510.15330": {
+  "title": "BeLLMan: Controlling LLM Congestion",
+  "authors": [
+   "Tella Rajashekhar Reddy",
+   "Atharva Deshmukh",
+   "Karan Tandon",
+   "Rohan Gandhi",
+   "Anjaly Parayil",
+   "Debopam Bhattacherjee"
+  ],
+  "published": "2025-10-17",
+  "category": "cs.DC"
+ },
+ "2510.18893": {
+  "title": "CodeCRDT: Observation-Driven Coordination for Multi-Agent LLM Code Generation",
+  "authors": [
+   "Sergey Pugachev"
+  ],
+  "published": "2025-10-18",
+  "category": "cs.DC"
+ },
+ "2511.02230": {
+  "title": "Continuum: Efficient and Robust Multi-Turn LLM Agent Scheduling with KV Cache Time-to-Live",
+  "authors": [
+   "Hanchen Li",
+   "Runyuan He",
+   "Qiuyang Mang",
+   "Qizheng Zhang",
+   "Huanzhi Mao",
+   "Xiaokun Chen",
+   "Hangrui Zhou",
+   "Huanchen Zhang",
+   "Alvin Cheung",
+   "Joseph Gonzalez",
+   "Ion Stoica"
+  ],
+  "published": "2025-11-04",
+  "category": "cs.OS"
+ },
+ "2511.07424": {
+  "title": "Enhancing reliability in AI inference services: An empirical study on real production incidents",
+  "authors": [
+   "Bhala Ranganathan",
+   "Mickey Zhang",
+   "Kai Wu"
+  ],
+  "published": "2025-10-17",
+  "category": "cs.DC"
+ },
+ "2511.07426": {
+  "title": "Network and Systems Performance Characterization of MCP-Enabled LLM Agents",
+  "authors": [
+   "Zihao Ding",
+   "Mufeng Zhu",
+   "Yao Liu"
+  ],
+  "published": "2025-10-20",
+  "category": "cs.DC"
+ },
+ "2511.11617": {
+  "title": "AnchorTP: Resilient LLM Inference with State-Preserving Elastic Tensor Parallelism",
+  "authors": [
+   "Wendong Xu",
+   "Chujie Chen",
+   "He Xiao",
+   "Kuan Li",
+   "Jing Xiong",
+   "Chen Zhang",
+   "Wenyong Zhou",
+   "Chaofan Tao",
+   "Yang Bai",
+   "Bei Yu",
+   "Ngai Wong"
+  ],
+  "published": "2025-11-05",
+  "category": "cs.DC"
+ },
+ "2511.12294": {
+  "title": "ProofWright: Towards Agentic Formal Verification of CUDA",
+  "authors": [
+   "Bodhisatwa Chatterjee",
+   "Drew Zagieboylo",
+   "Sana Damani",
+   "Siva Hari",
+   "Christos Kozyrakis"
+  ],
+  "published": "2025-11-15",
+  "category": "cs.SE"
+ },
+ "2511.12638": {
+  "title": "Equivalence Checking of ML GPU Kernels",
+  "authors": [
+   "Benjamin Driscoll",
+   "Kshitij Dubey",
+   "Anjiang Wei",
+   "Neeraj Kayal",
+   "Rahul Sharma",
+   "Alex Aiken"
+  ],
+  "published": "2025-11-16",
+  "category": "cs.PL"
+ },
+ "2511.13940": {
+  "title": "ParallelKittens: Systematic and Practical Simplification of Multi-GPU AI Kernels",
+  "authors": [
+   "Stuart H. Sul",
+   "Simran Arora",
+   "Benjamin F. Spector",
+   "Christopher R\u00e9"
+  ],
+  "published": "2025-11-17",
+  "category": "cs.DC"
+ },
+ "2511.14116": {
+  "title": "FailSafe: High-performance Resilient Serving",
+  "authors": [
+   "Ziyi Xu",
+   "Zhiqiang Xie",
+   "Swapnil Gandhi",
+   "Christos Kozyrakis"
+  ],
+  "published": "2025-11-18",
+  "category": "cs.DC"
+ },
+ "2511.16665": {
+  "title": "Taming the Long-Tail: Efficient Reasoning RL Training with Adaptive Drafter",
+  "authors": [
+   "Qinghao Hu",
+   "Shang Yang",
+   "Junxian Guo",
+   "Xiaozhe Yao",
+   "Yujun Lin",
+   "Yuxian Gu",
+   "Han Cai",
+   "Chuang Gan",
+   "Ana Klimovic",
+   "Song Han"
+  ],
+  "published": "2025-11-20",
+  "category": "cs.LG"
+ },
+ "2511.17826": {
+  "title": "Deterministic Inference across Tensor Parallel Sizes That Eliminates Training-Inference Mismatch",
+  "authors": [
+   "Ziyang Zhang",
+   "Xinheng Ding",
+   "Jiayi Yuan",
+   "Rixin Liu",
+   "Huizi Mao",
+   "Jiarong Xing",
+   "Zirui Liu"
+  ],
+  "published": "2025-11-21",
+  "category": "cs.LG"
+ },
+ "2511.20621": {
+  "title": "DiFR: Inference Verification Despite Nondeterminism",
+  "authors": [
+   "Adam Karvonen",
+   "Daniel Reuter",
+   "Roy Rinberg",
+   "Luke Marks",
+   "Adri\u00e0 Garriga-Alonso",
+   "Keri Warr"
+  ],
+  "published": "2025-11-25",
+  "category": "cs.LG"
+ },
+ "2511.21702": {
+  "title": "CSV-Decode: Certifiable Sub-Vocabulary Decoding for Efficient Large Language Model Inference",
+  "authors": [
+   "Dong Liu",
+   "Shu Wang",
+   "Yanxuan Yu",
+   "Haisheng Wang",
+   "Ben Lengerich"
+  ],
+  "published": "2025-11-16",
+  "category": "cs.CL"
+ },
+ "2512.02556": {
+  "title": "DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models",
+  "authors": [
+   " DeepSeek-AI",
+   "Aixin Liu",
+   "Aoxue Mei",
+   "Bangcai Lin",
+   "Bing Xue",
+   "Bingxuan Wang",
+   "Bingzheng Xu",
+   "Bochao Wu",
+   "Bowei Zhang",
+   "Chaofan Lin",
+   "Chen Dong",
+   "Chengda Lu",
+   "Chenggang Zhao",
+   "Chengqi Deng",
+   "Chenhao Xu",
+   "Chong Ruan",
+   "Damai Dai",
+   "Daya Guo",
+   "Dejian Yang",
+   "Deli Chen",
+   "Erhang Li",
+   "Fangqi Zhou",
+   "Fangyun Lin",
+   "Fucong Dai",
+   "Guangbo Hao",
+   "Guanting Chen",
+   "Guowei Li",
+   "H. Zhang",
+   "Hanwei Xu",
+   "Hao Li",
+   "Haofen Liang",
+   "Haoran Wei",
+   "Haowei Zhang",
+   "Haowen Luo",
+   "Haozhe Ji",
+   "Honghui Ding",
+   "Hongxuan Tang",
+   "Huanqi Cao",
+   "Huazuo Gao",
+   "Hui Qu",
+   "Hui Zeng",
+   "Jialiang Huang",
+   "Jiashi Li",
+   "Jiaxin Xu",
+   "Jiewen Hu",
+   "Jingchang Chen",
+   "Jingting Xiang",
+   "Jingyang Yuan",
+   "Jingyuan Cheng",
+   "Jinhua Zhu",
+   "Jun Ran",
+   "Junguang Jiang",
+   "Junjie Qiu",
+   "Junlong Li",
+   "Junxiao Song",
+   "Kai Dong",
+   "Kaige Gao",
+   "Kang Guan",
+   "Kexin Huang",
+   "Kexing Zhou",
+   "Kezhao Huang",
+   "Kuai Yu",
+   "Lean Wang",
+   "Lecong Zhang",
+   "Lei Wang",
+   "Liang Zhao",
+   "Liangsheng Yin",
+   "Lihua Guo",
+   "Lingxiao Luo",
+   "Linwang Ma",
+   "Litong Wang",
+   "Liyue Zhang",
+   "M. S. Di",
+   "M. Y Xu",
+   "Mingchuan Zhang",
+   "Minghua Zhang",
+   "Minghui Tang",
+   "Mingxu Zhou",
+   "Panpan Huang",
+   "Peixin Cong",
+   "Peiyi Wang",
+   "Qiancheng Wang",
+   "Qihao Zhu",
+   "Qingyang Li",
+   "Qinyu Chen",
+   "Qiushi Du",
+   "Ruiling Xu",
+   "Ruiqi Ge",
+   "Ruisong Zhang",
+   "Ruizhe Pan",
+   "Runji Wang",
+   "Runqiu Yin",
+   "Runxin Xu",
+   "Ruomeng Shen",
+   "Ruoyu Zhang",
+   "S. H. Liu",
+   "Shanghao Lu",
+   "Shangyan Zhou",
+   "Shanhuang Chen",
+   "Shaofei Cai",
+   "Shaoyuan Chen",
+   "Shengding Hu",
+   "Shengyu Liu",
+   "Shiqiang Hu",
+   "Shirong Ma",
+   "Shiyu Wang",
+   "Shuiping Yu",
+   "Shunfeng Zhou",
+   "Shuting Pan",
+   "Songyang Zhou",
+   "Tao Ni",
+   "Tao Yun",
+   "Tian Pei",
+   "Tian Ye",
+   "Tianyuan Yue",
+   "Wangding Zeng",
+   "Wen Liu",
+   "Wenfeng Liang",
+   "Wenjie Pang",
+   "Wenjing Luo",
+   "Wenjun Gao",
+   "Wentao Zhang",
+   "Xi Gao",
+   "Xiangwen Wang",
+   "Xiao Bi",
+   "Xiaodong Liu",
+   "Xiaohan Wang",
+   "Xiaokang Chen",
+   "Xiaokang Zhang",
+   "Xiaotao Nie",
+   "Xin Cheng",
+   "Xin Liu",
+   "Xin Xie",
+   "Xingchao Liu",
+   "Xingkai Yu",
+   "Xingyou Li",
+   "Xinyu Yang",
+   "Xinyuan Li",
+   "Xu Chen",
+   "Xuecheng Su",
+   "Xuehai Pan",
+   "Xuheng Lin",
+   "Xuwei Fu",
+   "Y. Q. Wang",
+   "Yang Zhang",
+   "Yanhong Xu",
+   "Yanru Ma",
+   "Yao Li",
+   "Yao Li",
+   "Yao Zhao",
+   "Yaofeng Sun",
+   "Yaohui Wang",
+   "Yi Qian",
+   "Yi Yu",
+   "Yichao Zhang",
+   "Yifan Ding",
+   "Yifan Shi",
+   "Yiliang Xiong",
+   "Ying He",
+   "Ying Zhou",
+   "Yinmin Zhong",
+   "Yishi Piao",
+   "Yisong Wang",
+   "Yixiao Chen",
+   "Yixuan Tan",
+   "Yixuan Wei",
+   "Yiyang Ma",
+   "Yiyuan Liu",
+   "Yonglun Yang",
+   "Yongqiang Guo",
+   "Yongtong Wu",
+   "Yu Wu",
+   "Yuan Cheng",
+   "Yuan Ou",
+   "Yuanfan Xu",
+   "Yuduan Wang",
+   "Yue Gong",
+   "Yuhan Wu",
+   "Yuheng Zou",
+   "Yukun Li",
+   "Yunfan Xiong",
+   "Yuxiang Luo",
+   "Yuxiang You",
+   "Yuxuan Liu",
+   "Yuyang Zhou",
+   "Z. F. Wu",
+   "Z. Z. Ren",
+   "Zehua Zhao",
+   "Zehui Ren",
+   "Zhangli Sha",
+   "Zhe Fu",
+   "Zhean Xu",
+   "Zhenda Xie",
+   "Zhengyan Zhang",
+   "Zhewen Hao",
+   "Zhibin Gou",
+   "Zhicheng Ma",
+   "Zhigang Yan",
+   "Zhihong Shao",
+   "Zhixian Huang",
+   "Zhiyu Wu",
+   "Zhuoshu Li",
+   "Zhuping Zhang",
+   "Zian Xu",
+   "Zihao Wang",
+   "Zihui Gu",
+   "Zijia Zhu",
+   "Zilin Li",
+   "Zipeng Zhang",
+   "Ziwei Xie",
+   "Ziyi Gao",
+   "Zizheng Pan",
+   "Zongqing Yao",
+   "Bei Feng",
+   "Hui Li",
+   "J. L. Cai",
+   "Jiaqi Ni",
+   "Lei Xu",
+   "Meng Li",
+   "Ning Tian",
+   "R. J. Chen",
+   "R. L. Jin",
+   "S. S. Li",
+   "Shuang Zhou",
+   "Tianyu Sun",
+   "X. Q. Li",
+   "Xiangyue Jin",
+   "Xiaojin Shen",
+   "Xiaosha Chen",
+   "Xinnan Song",
+   "Xinyi Zhou",
+   "Y. X. Zhu",
+   "Yanping Huang",
+   "Yaohui Li",
+   "Yi Zheng",
+   "Yuchen Zhu",
+   "Yunxian Ma",
+   "Zhen Huang",
+   "Zhipeng Xu",
+   "Zhongyu Zhang",
+   "Dongjie Ji",
+   "Jian Liang",
+   "Jianzhong Guo",
+   "Jin Chen",
+   "Leyi Xia",
+   "Miaojun Wang",
+   "Mingming Li",
+   "Peng Zhang",
+   "Ruyi Chen",
+   "Shangmian Sun",
+   "Shaoqing Wu",
+   "Shengfeng Ye",
+   "T. Wang",
+   "W. L. Xiao",
+   "Wei An",
+   "Xianzu Wang",
+   "Xiaowen Sun",
+   "Xiaoxiang Wang",
+   "Ying Tang",
+   "Yukun Zha",
+   "Zekai Zhang",
+   "Zhe Ju",
+   "Zhen Zhang",
+   "Zihua Qu"
+  ],
+  "published": "2025-12-02",
+  "category": "cs.CL"
+ },
+ "2512.03816": {
+  "title": "Log Probability Tracking of LLM APIs",
+  "authors": [
+   "Timoth\u00e9e Chauvin",
+   "Erwan Le Merrer",
+   "Fran\u00e7ois Ta\u00efani",
+   "Gilles Tredan"
+  ],
+  "published": "2025-12-03",
+  "category": "cs.LG"
+ },
+ "2512.08296": {
+  "title": "Towards a Science of Scaling Agent Systems",
+  "authors": [
+   "Yubin Kim",
+   "Ken Gu",
+   "Chanwoo Park",
+   "Chunjong Park",
+   "Samuel Schmidgall",
+   "A. Ali Heydari",
+   "Yao Yan",
+   "Zhihan Zhang",
+   "Yuchen Zhuang",
+   "Yun Liu",
+   "Mark Malhotra",
+   "Paul Pu Liang",
+   "Hae Won Park",
+   "Yuzhe Yang",
+   "Xuhai Xu",
+   "Yilun Du",
+   "Shwetak Patel",
+   "Tim Althoff",
+   "Daniel McDuff",
+   "Xin Liu"
+  ],
+  "published": "2025-12-09",
+  "category": "cs.AI"
+ },
+ "2512.12928": {
+  "title": "ProServe: Unified Multi-Priority Request Scheduling for LLM Serving",
+  "authors": [
+   "Weizhe Huang",
+   "Tao Peng",
+   "Tongxuan Liu",
+   "Donghe Jin",
+   "Kang Meng",
+   "Xianzhe Dong",
+   "Ke Zhang"
+  ],
+  "published": "2025-12-15",
+  "category": "cs.DC"
+ },
+ "2512.13488": {
+  "title": "SIGMA: An AI-Empowered Training Stack on Early-Life Hardware",
+  "authors": [
+   "Lei Qu",
+   "Lianhai Ren",
+   "Peng Cheng",
+   "Rui Gao",
+   "Ruizhe Wang",
+   "Tianyu Chen",
+   "Xiao Liu",
+   "Xingjian Zhang",
+   "Yeyun Gong",
+   "Yifan Xiong",
+   "Yucheng Ding",
+   "Yuting Jiang",
+   "Zhenghao Lin",
+   "Zhongxin Guo",
+   "Ziyue Yang"
+  ],
+  "published": "2025-12-15",
+  "category": "cs.DC"
+ },
+ "2512.13961": {
+  "title": "Olmo 3",
+  "authors": [
+   "Team Olmo",
+   " :",
+   "Allyson Ettinger",
+   "Amanda Bertsch",
+   "Bailey Kuehl",
+   "David Graham",
+   "David Heineman",
+   "Dirk Groeneveld",
+   "Faeze Brahman",
+   "Finbarr Timbers",
+   "Hamish Ivison",
+   "Jacob Morrison",
+   "Jake Poznanski",
+   "Kyle Lo",
+   "Luca Soldaini",
+   "Matt Jordan",
+   "Mayee Chen",
+   "Michael Noukhovitch",
+   "Nathan Lambert",
+   "Pete Walsh",
+   "Pradeep Dasigi",
+   "Robert Berry",
+   "Saumya Malik",
+   "Saurabh Shah",
+   "Scott Geng",
+   "Shane Arora",
+   "Shashank Gupta",
+   "Taira Anderson",
+   "Teng Xiao",
+   "Tyler Murray",
+   "Tyler Romero",
+   "Victoria Graf",
+   "Akari Asai",
+   "Akshita Bhagia",
+   "Alexander Wettig",
+   "Alisa Liu",
+   "Aman Rangapur",
+   "Chloe Anastasiades",
+   "Costa Huang",
+   "Dustin Schwenk",
+   "Harsh Trivedi",
+   "Ian Magnusson",
+   "Jaron Lochner",
+   "Jiacheng Liu",
+   "Lester James V. Miranda",
+   "Maarten Sap",
+   "Malia Morgan",
+   "Michael Schmitz",
+   "Michal Guerquin",
+   "Michael Wilson",
+   "Regan Huff",
+   "Ronan Le Bras",
+   "Rui Xin",
+   "Rulin Shao",
+   "Sam Skjonsberg",
+   "Shannon Zejiang Shen",
+   "Shuyue Stella Li",
+   "Tucker Wilde",
+   "Valentina Pyatkin",
+   "Will Merrill",
+   "Yapei Chang",
+   "Yuling Gu",
+   "Zhiyuan Zeng",
+   "Ashish Sabharwal",
+   "Luke Zettlemoyer",
+   "Pang Wei Koh",
+   "Ali Farhadi",
+   "Noah A. Smith",
+   "Hannaneh Hajishirzi"
+  ],
+  "published": "2025-12-15",
+  "category": "cs.CL"
+ },
+ "2512.15745": {
+  "title": "LLaDA2.0: Scaling Up Diffusion Language Models to 100B",
+  "authors": [
+   "Tiwei Bie",
+   "Maosong Cao",
+   "Kun Chen",
+   "Lun Du",
+   "Mingliang Gong",
+   "Zhuochen Gong",
+   "Yanmei Gu",
+   "Jiaqi Hu",
+   "Zenan Huang",
+   "Zhenzhong Lan",
+   "Chengxi Li",
+   "Chongxuan Li",
+   "Jianguo Li",
+   "Zehuan Li",
+   "Huabin Liu",
+   "Lin Liu",
+   "Guoshan Lu",
+   "Xiaocheng Lu",
+   "Yuxin Ma",
+   "Jianfeng Tan",
+   "Lanning Wei",
+   "Ji-Rong Wen",
+   "Yipeng Xing",
+   "Xiaolu Zhang",
+   "Junbo Zhao",
+   "Da Zheng",
+   "Jun Zhou",
+   "Junlin Zhou",
+   "Zhanchao Zhou",
+   "Liwang Zhu",
+   "Yihong Zhuang"
+  ],
+  "published": "2025-12-10",
+  "category": "cs.LG"
+ },
+ "2512.19179": {
+  "title": "CascadeInfer: Length-Aware Scheduling of LLM Serving with Low Latency and Load Balancing",
+  "authors": [
+   "Yitao Yuan",
+   "Chenqi Zhao",
+   "Bohan Zhao",
+   "Zane Cao",
+   "Yongchao He",
+   "Wenfei Wu"
+  ],
+  "published": "2025-12-22",
+  "category": "cs.DC"
+ },
+ "2512.22492": {
+  "title": "Role-Based Fault Tolerance System for LLM RL Post-Training",
+  "authors": [
+   "Zhenqian Chen",
+   "Baoquan Zhong",
+   "Xiang Li",
+   "Qing Dai",
+   "Xinkui Zhao",
+   "Miao Ye",
+   "Ren Cheng",
+   "Lufei Zhang",
+   "Jianwei Yin"
+  ],
+  "published": "2025-12-27",
+  "category": "cs.DC"
+ },
+ "2512.22560": {
+  "title": "RollArt: Disaggregated Multi-Task Agentic RL Training at Scale",
+  "authors": [
+   "Wei Gao",
+   "Yuheng Zhao",
+   "Tianyuan Wu",
+   "Shaopan Xiong",
+   "Weixun Wang",
+   "Dakai An",
+   "Lunxi Cao",
+   "Dilxat Muhtar",
+   "Zichen Liu",
+   "Haizhou Zhao",
+   "Ju Huang",
+   "Siran Yang",
+   "Yongbin Li",
+   "Wenbo Su",
+   "Jiamang Wang",
+   "Lin Qu",
+   "Bo Zheng",
+   "Wei Wang"
+  ],
+  "published": "2025-12-27",
+  "category": "cs.DC"
+ },
+ "2512.24511": {
+  "title": "Understanding LLM Checkpoint/Restore I/O Strategies and Patterns",
+  "authors": [
+   "Mikaila J. Gossman",
+   "Avinash Maurya",
+   "Bogdan Nicolae",
+   "Jon C. Calhoun"
+  ],
+  "published": "2025-12-30",
+  "category": "cs.DC"
+ },
+ "2512.25059": {
+  "title": "Reliable and Resilient Collective Communication Library for LLM Training and Serving",
+  "authors": [
+   "Wei Wang",
+   "Nengneng Yu",
+   "Sixian Xiong",
+   "Zaoxing Liu"
+  ],
+  "published": "2025-12-31",
+  "category": "cs.DC"
+ },
+ "2601.00227": {
+  "title": "FlashInfer-Bench: Building the Virtuous Cycle for AI-driven LLM Systems",
+  "authors": [
+   "Shanli Xing",
+   "Yiyan Zhai",
+   "Alexander Jiang",
+   "Yixin Dong",
+   "Yong Wu",
+   "Zihao Ye",
+   "Charlie Ruan",
+   "Yingyi Huang",
+   "Yineng Zhang",
+   "Liangsheng Yin",
+   "Aksara Bayyapu",
+   "Luis Ceze",
+   "Tianqi Chen"
+  ],
+  "published": "2026-01-01",
+  "category": "cs.AI"
+ },
+ "2601.04071": {
+  "title": "Hummingbird: SLO-Oriented GPU Preemption at Microsecond-scale",
+  "authors": [
+   "Tiancheng Hu",
+   "Chenxi Wang",
+   "Ting Cao",
+   "Jin Qin",
+   "Lei Chen",
+   "Xinyu Xiao",
+   "Junhao Hu",
+   "Hongliang Tian",
+   "Shoumeng Yan",
+   "Huimin Cui",
+   "Quan Chen",
+   "Tao Xie"
+  ],
+  "published": "2026-01-07",
+  "category": "cs.DC"
+ },
+ "2601.06007": {
+  "title": "Don't Break the Cache: An Evaluation of Prompt Caching for Long-Horizon Agentic Tasks",
+  "authors": [
+   "Elias Lumer",
+   "Faheem Nizar",
+   "Akshaya Jangiti",
+   "Kevin Frank",
+   "Anmol Gulati",
+   "Mandar Phadate",
+   "Vamse Kumar Subbiah"
+  ],
+  "published": "2026-01-09",
+  "category": "cs.CL"
+ },
+ "2601.10274": {
+  "title": "Queueing-Aware Optimization of Reasoning Tokens for Accuracy-Latency Trade-offs in LLM Servers",
+  "authors": [
+   "Emre Ozbas",
+   "Melih Bastopcu"
+  ],
+  "published": "2026-01-15",
+  "category": "cs.LG"
+ },
+ "2601.11589": {
+  "title": "LAPS: A Length-Aware-Prefill LLM Serving System",
+  "authors": [
+   "Jianshu She",
+   "Zonghang Li",
+   "Hongchao Du",
+   "Shangyu Wu",
+   "Wenhao Zheng",
+   "Eric Xing",
+   "Zhengzhong Liu",
+   "Huaxiu Yao",
+   "Jason Xue",
+   "Qirong Ho"
+  ],
+  "published": "2026-01-04",
+  "category": "cs.DC"
+ },
+ "2601.11868": {
+  "title": "Terminal-Bench: Benchmarking Agents on Hard, Realistic Tasks in Command Line Interfaces",
+  "authors": [
+   "Mike A. Merrill",
+   "Alexander G. Shaw",
+   "Nicholas Carlini",
+   "Boxuan Li",
+   "Harsh Raj",
+   "Ivan Bercovich",
+   "Lin Shi",
+   "Jeong Yeon Shin",
+   "Thomas Walshe",
+   "E. Kelly Buchanan",
+   "Junhong Shen",
+   "Guanghao Ye",
+   "Haowei Lin",
+   "Jason Poulos",
+   "Maoyu Wang",
+   "Marianna Nezhurina",
+   "Jenia Jitsev",
+   "Di Lu",
+   "Orfeas Menis Mastromichalakis",
+   "Zhiwei Xu",
+   "Zizhao Chen",
+   "Yue Liu",
+   "Robert Zhang",
+   "Leon Liangyu Chen",
+   "Anurag Kashyap",
+   "Jan-Lucas Uslu",
+   "Jeffrey Li",
+   "Jianbo Wu",
+   "Minghao Yan",
+   "Song Bian",
+   "Vedang Sharma",
+   "Ke Sun",
+   "Steven Dillmann",
+   "Akshay Anand",
+   "Andrew Lanpouthakoun",
+   "Bardia Koopah",
+   "Changran Hu",
+   "Etash Guha",
+   "Gabriel H. S. Dreiman",
+   "Jiacheng Zhu",
+   "Karl Krauth",
+   "Li Zhong",
+   "Niklas Muennighoff",
+   "Robert Amanfu",
+   "Shangyin Tan",
+   "Shreyas Pimpalgaonkar",
+   "Tushar Aggarwal",
+   "Xiangning Lin",
+   "Xin Lan",
+   "Xuandong Zhao",
+   "Yiqing Liang",
+   "Yuanli Wang",
+   "Zilong Wang",
+   "Changzhi Zhou",
+   "David Heineman",
+   "Hange Liu",
+   "Harsh Trivedi",
+   "John Yang",
+   "Junhong Lin",
+   "Manish Shetty",
+   "Michael Yang",
+   "Nabil Omi",
+   "Negin Raoof",
+   "Shanda Li",
+   "Terry Yue Zhuo",
+   "Wuwei Lin",
+   "Yiwei Dai",
+   "Yuxin Wang",
+   "Wenhao Chai",
+   "Shang Zhou",
+   "Dariush Wahdany",
+   "Ziyu She",
+   "Jiaming Hu",
+   "Zhikang Dong",
+   "Yuxuan Zhu",
+   "Sasha Cui",
+   "Ahson Saiyed",
+   "Arinbj\u00f6rn Kolbeinsson",
+   "Jesse Hu",
+   "Christopher Michael Rytting",
+   "Ryan Marten",
+   "Yixin Wang",
+   "Alex Dimakis",
+   "Andy Konwinski",
+   "Ludwig Schmidt"
+  ],
+  "published": "2026-01-17",
+  "category": "cs.SE"
+ },
+ "2601.16746": {
+  "title": "SWE-Pruner: Self-Adaptive Context Pruning for Coding Agents",
+  "authors": [
+   "Yuhang Wang",
+   "Yuling Shi",
+   "Mo Yang",
+   "Rongrui Zhang",
+   "Shilin He",
+   "Heng Lian",
+   "Yuting Chen",
+   "Siyu Ye",
+   "Kai Cai",
+   "Xiaodong Gu"
+  ],
+  "published": "2026-01-23",
+  "category": "cs.SE"
+ },
+ "2601.16956": {
+  "title": "DataStates-LLM: Scalable Checkpointing for Transformer Models Using Composable State Providers",
+  "authors": [
+   "Avinash Maurya",
+   "M. Mustafa Rafique",
+   "Franck Cappello",
+   "Bogdan Nicolae"
+  ],
+  "published": "2026-01-23",
+  "category": "cs.DC"
+ },
+ "2601.17768": {
+  "title": "LLM-42: Enabling Determinism in LLM Inference with Verified Speculation",
+  "authors": [
+   "Raja Gond",
+   "Aditya K Kamath",
+   "Ramachandran Ramjee",
+   "Ashish Panwar"
+  ],
+  "published": "2026-01-25",
+  "category": "cs.LG"
+ },
+ "2601.20595": {
+  "title": "Syncopate: Efficient Multi-GPU AI Kernels via Automatic Chunk-Centric Compute-Communication Overlap",
+  "authors": [
+   "Xinwei Qiang",
+   "Yue Guan",
+   "Zhengding Hu",
+   "Keren Zhou",
+   "Yufei Ding",
+   "Adnan Aziz"
+  ],
+  "published": "2026-01-28",
+  "category": "cs.DC"
+ },
+ "2601.21623": {
+  "title": "LAMP: Look-Ahead Mixed-Precision Inference of Large Language Models",
+  "authors": [
+   "Stanislav Budzinskiy",
+   "Marian Gloser",
+   "Tolunay Yilmaz",
+   "Ying Hong Tham",
+   "Yuanyi Lin",
+   "Wenyi Fang",
+   "Fan Wu",
+   "Philipp Petersen"
+  ],
+  "published": "2026-01-29",
+  "category": "cs.LG"
+ },
+ "2601.22129": {
+  "title": "SWE-Replay: Efficient Test-Time Scaling for Software Engineering Agents",
+  "authors": [
+   "Yifeng Ding",
+   "Lingming Zhang"
+  ],
+  "published": "2026-01-29",
+  "category": "cs.SE"
+ },
+ "2601.22438": {
+  "title": "Towards Resiliency in Large Language Model Serving with KevlarFlow",
+  "authors": [
+   "Shangshu Qian",
+   "Kipling Liu",
+   "P. C. Sruthi",
+   "Lin Tan",
+   "Yongle Zhang"
+  ],
+  "published": "2026-01-30",
+  "category": "cs.DC"
+ },
+ "2601.22705": {
+  "title": "CONCUR: High-Throughput Agentic Batch Inference of LLM via Congestion-Based Concurrency Control",
+  "authors": [
+   "Qiaoling Chen",
+   "Zhisheng Ye",
+   "Tian Tang",
+   "Peng Sun",
+   "Boyu Tian",
+   "Guoteng Wang",
+   "Shenggui Li",
+   "Yonggang Wen",
+   "Zhenhua Han",
+   "Tianwei Zhang"
+  ],
+  "published": "2026-01-30",
+  "category": "cs.DC"
+ },
+ "2602.00482": {
+  "title": "AREAL-DTA: Dynamic Tree Attention for Efficient Reinforcement Learning of Large Language Models",
+  "authors": [
+   "Jiarui Zhang",
+   "Yuchen Yang",
+   "Ran Yan",
+   "Zhiyu Mei",
+   "Liyuan Zhang",
+   "Daifeng Li",
+   "Wei Fu",
+   "Jiaxuan Gao",
+   "Shusheng Xu",
+   "Yi Wu",
+   "Binhang Yuan"
+  ],
+  "published": "2026-01-31",
+  "category": "cs.LG"
+ },
+ "2602.03839": {
+  "title": "Understanding and Exploiting Weight Update Sparsity for Communication-Efficient Distributed RL",
+  "authors": [
+   "Erfan Miahi",
+   "Eugene Belilovsky"
+  ],
+  "published": "2026-02-03",
+  "category": "cs.LG"
+ },
+ "2602.06502": {
+  "title": "DualMap: Enabling Both Cache Affinity and Load Balancing for Distributed LLM Serving",
+  "authors": [
+   "Ying Yuan",
+   "Pengfei Zuo",
+   "Bo Wang",
+   "Zhangyu Chen",
+   "Zhipeng Tan",
+   "Zhou Yu"
+  ],
+  "published": "2026-02-06",
+  "category": "cs.DC"
+ },
+ "2602.07451": {
+  "title": "DLLM Agent: See Farther, Run Faster",
+  "authors": [
+   "Huiling Zhen",
+   "Weizhe Lin",
+   "Renxi Liu",
+   "Kai Han",
+   "Yiming Li",
+   "Yuchuan Tian",
+   "Hanting Chen",
+   "Xiaoguang Li",
+   "Xiaosong Li",
+   "Chen Chen",
+   "Xianzhi Yu",
+   "Mingxuan Yuan",
+   "Youliang Yan",
+   "Peifeng Qin",
+   "Jun Wang",
+   "Yu Wang",
+   "Dacheng Tao",
+   "Yunhe Wang"
+  ],
+  "published": "2026-02-07",
+  "category": "cs.CL"
+ },
+ "2602.08043": {
+  "title": "V-ABFT: Variance-Based Adaptive Threshold for Fault-Tolerant Matrix Multiplication in Mixed-Precision Deep Learning",
+  "authors": [
+   "Yiheng Gao",
+   "Qin Hua",
+   "Zizhong Chen"
+  ],
+  "published": "2026-02-08",
+  "category": "cs.LG"
+ },
+ "2602.09345": {
+  "title": "AgentCgroup: Understanding and Controlling OS Resources of AI Agents",
+  "authors": [
+   "Yusheng Zheng",
+   "Jiakun Fan",
+   "Quanzhi Fu",
+   "Yiwei Yang",
+   "Wei Zhang",
+   "Andi Quinn"
+  ],
+  "published": "2026-02-10",
+  "category": "cs.OS"
+ },
+ "2602.10986": {
+  "title": "TVCACHE: A Stateful Tool-Value Cache for Post-Training LLM Agents",
+  "authors": [
+   "Abhishek Vijaya Kumar",
+   "Bhaskar Kataria",
+   "Byungsoo Oh",
+   "Emaad Manzoor",
+   "Rachee Singh"
+  ],
+  "published": "2026-02-11",
+  "category": "cs.LG"
+ },
+ "2602.11530": {
+  "title": "PASCAL: A Phase-Aware Scheduling Algorithm for Serving Reasoning-based Large Language Models",
+  "authors": [
+   "Eunyeong Cho",
+   "Jehyeon Bang",
+   "Ranggi Hwang",
+   "Minsoo Rhu"
+  ],
+  "published": "2026-02-12",
+  "category": "cs.LG"
+ },
+ "2602.12151": {
+  "title": "OServe: Accelerating LLM Serving via Spatial-Temporal Workload Orchestration",
+  "authors": [
+   "Youhe Jiang",
+   "Fangcheng Fu",
+   "Taiyi Wang",
+   "Guoliang He",
+   "Eiko Yoneki"
+  ],
+  "published": "2026-02-12",
+  "category": "cs.DC"
+ },
+ "2602.13692": {
+  "title": "ThunderAgent: A Simple, Fast and Program-Aware Agentic Inference System",
+  "authors": [
+   "Hao Kang",
+   "Ziyang Li",
+   "Weili Xu",
+   "Xinyu Yang",
+   "Yinfang Chen",
+   "Junxiong Wang",
+   "Beidi Chen",
+   "Tushar Krishna",
+   "Chenfeng Xu",
+   "Simran Arora"
+  ],
+  "published": "2026-02-14",
+  "category": "cs.OS"
+ },
+ "2602.15858": {
+  "title": "State Design Matters: How Representations Shape Dynamic Reasoning in Large Language Models",
+  "authors": [
+   "Annie Wong",
+   "Aske Plaat",
+   "Thomas B\u00e4ck",
+   "Niki van Stein",
+   "Anna V. Kononova"
+  ],
+  "published": "2026-01-25",
+  "category": "cs.CL"
+ },
+ "2602.16666": {
+  "title": "Towards a Science of AI Agent Reliability",
+  "authors": [
+   "Stephan Rabanser",
+   "Sayash Kapoor",
+   "Peter Kirgis",
+   "Kangheng Liu",
+   "Saiteja Utpala",
+   "Arvind Narayanan"
+  ],
+  "published": "2026-02-18",
+  "category": "cs.AI"
+ },
+ "2603.00030": {
+  "title": "SimpleTool: Parallel Decoding for Real-Time LLM Function Calling",
+  "authors": [
+   "Xiaoxin Shi",
+   "Jiaxin Wan",
+   "Linkang Dong",
+   "Wei Jiang",
+   "Yue Liu",
+   "Zengfeng Huang"
+  ],
+  "published": "2026-02-04",
+  "category": "cs.CL"
+ },
+ "2603.03306": {
+  "title": "Token-Oriented Object Notation vs JSON: A Benchmark of Plain and Constrained Decoding Generation",
+  "authors": [
+   "Ivan Matveev"
+  ],
+  "published": "2026-02-08",
+  "category": "cs.CL"
+ },
+ "2603.04424": {
+  "title": "When Scaling Fails: Network and Fabric Effects on Distributed GPU Training Performance",
+  "authors": [
+   "Dinesh Gopalan",
+   "Ratul Ali"
+  ],
+  "published": "2026-02-16",
+  "category": "cs.NI"
+ },
+ "2603.05451": {
+  "title": "FlashAttention-4: Algorithm and Kernel Pipelining Co-Design for Asymmetric Hardware Scaling",
+  "authors": [
+   "Ted Zadouri",
+   "Markus Hoehnerbach",
+   "Jay Shah",
+   "Timmy Liu",
+   "Vijay Thakkar",
+   "Tri Dao"
+  ],
+  "published": "2026-03-05",
+  "category": "cs.CL"
+ },
+ "2603.07041": {
+  "title": "AIReSim: A Discrete Event Simulator for Large-scale AI Cluster Reliability Modeling",
+  "authors": [
+   "Karthik Pattabiraman",
+   "Mihir Patel",
+   "Fred Lin"
+  ],
+  "published": "2026-03-07",
+  "category": "cs.DC"
+ },
+ "2603.07917": {
+  "title": "SageSched: Efficient LLM Scheduling Confronting Demand Uncertainty and Hybridity",
+  "authors": [
+   "Zhenghao Gan",
+   "Yichen Bao",
+   "Yifei Liu",
+   "Chen Chen",
+   "Quan Chen",
+   "Minyi Guo"
+  ],
+  "published": "2026-03-09",
+  "category": "cs.DC"
+ },
+ "2603.15916": {
+  "title": "Auto Researching, not hyperparameter tuning: Convergence Analysis of 10,000 Experiments",
+  "authors": [
+   "Xiaoyi Li"
+  ],
+  "published": "2026-03-16",
+  "category": "cs.LG"
+ },
+ "2603.17973": {
+  "title": "TDAD: Test-Driven Agentic Development - Reducing Code Regressions in AI Coding Agents via Graph-Based Impact Analysis",
+  "authors": [
+   "Pepe Alonso",
+   "Sergio Yovine",
+   "Victor A. Braberman"
+  ],
+  "published": "2026-03-18",
+  "category": "cs.SE"
+ },
+ "2603.18897": {
+  "title": "Parallelizing Tool Execution and LLM Generation for Low-Latency Agent Serving",
+  "authors": [
+   "Yifan Sui",
+   "Han Zhao",
+   "Rui Ma",
+   "Zhiyuan He",
+   "Hao Wang",
+   "Jianxun Li",
+   "Kaiqiang Xu",
+   "Kai Chen",
+   "Yuqing Yang"
+  ],
+  "published": "2026-03-19",
+  "category": "cs.DC"
+ },
+ "2603.19022": {
+  "title": "Behavioral Fingerprints for LLM Endpoint Stability and Identity",
+  "authors": [
+   "Jonah Leshin",
+   "Manish Shah",
+   "Ian Timmis",
+   "Daniel Kang"
+  ],
+  "published": "2026-03-19",
+  "category": "cs.AI"
+ },
+ "2603.26041": {
+  "title": "Where and How to Prune: An Empirical Study of Visual Token Pruning for GUI Agent Navigation",
+  "authors": [
+   "Daiqiang Li",
+   "Zihao Pan",
+   "Zeyu Zhang",
+   "Xuyang Liu",
+   "Shijia Xu",
+   "Ronghao Chen",
+   "Huacan Wang",
+   "Honggang Chen",
+   "Linfeng Zhang",
+   "Zhangquan Chen",
+   "Haiyun Jiang"
+  ],
+  "published": "2026-03-27",
+  "category": "cs.CV"
+ },
+ "2603.28052": {
+  "title": "Meta-Harness: End-to-End Optimization of Model Harnesses",
+  "authors": [
+   "Yoonho Lee",
+   "Roshen Nair",
+   "Qizheng Zhang",
+   "Kangwook Lee",
+   "Omar Khattab",
+   "Chelsea Finn"
+  ],
+  "published": "2026-03-30",
+  "category": "cs.AI"
+ },
+ "2603.28458": {
+  "title": "HISA: Efficient Hierarchical Indexing for Fine-Grained Sparse Attention",
+  "authors": [
+   "Yufei Xu",
+   "Fanxu Meng",
+   "Fan Jiang",
+   "Yuxuan Wang",
+   "Ruijie Zhou",
+   "Zhaohui Wang",
+   "Jiexi Wu",
+   "Zhixin Pan",
+   "Xiaojuan Tang",
+   "Wenjie Pei",
+   "Tongxuan Liu",
+   "Di Yin",
+   "Xing Sun",
+   "Muhan Zhang"
+  ],
+  "published": "2026-03-30",
+  "category": "cs.LG"
+ },
+ "2604.00726": {
+  "title": "Exploring Silent Data Corruption as a Reliability Challenge in LLM Training",
+  "authors": [
+   "Anton Altenbernd",
+   "Philipp Wiesner",
+   "Odej Kao"
+  ],
+  "published": "2026-04-01",
+  "category": "cs.LG"
+ },
+ "2604.04979": {
+  "title": "Squeez: Task-Conditioned Tool-Output Pruning for Coding Agents",
+  "authors": [
+   "\u00c1d\u00e1m Kov\u00e1cs"
+  ],
+  "published": "2026-04-04",
+  "category": "cs.SE"
+ },
+ "2604.06664": {
+  "title": "Foundry: Template-Based CUDA Graph Context Materialization for Fast LLM Serving Cold Start",
+  "authors": [
+   "Xueshen Liu",
+   "Yongji Wu",
+   "Yuncheng Yao",
+   "Danyang Zhuo",
+   "Ion Stoica",
+   "Z. Morley Mao"
+  ],
+  "published": "2026-04-08",
+  "category": "cs.DC"
+ },
+ "2604.06970": {
+  "title": "Scheduling the Unschedulable: Taming Black-Box LLM Inference at Scale",
+  "authors": [
+   "Renzhong Yuan",
+   "Yijun Zeng",
+   "Xiaosong Gao",
+   "Linxi Yu",
+   "Haochun Liao",
+   "Han Wang"
+  ],
+  "published": "2026-04-08",
+  "category": "cs.DC"
+ },
+ "2604.07853": {
+  "title": "QaRL: Rollout-Aligned Quantization-Aware RL for Fast and Stable Training under Training--Inference Mismatch",
+  "authors": [
+   "Hao Gu",
+   "Hao Wang",
+   "Jiacheng Liu",
+   "Lujun Li",
+   "Qiyuan Zhu",
+   "Bei Liu",
+   "Binxing Xu",
+   "Lei Wang",
+   "Xintong Yang",
+   "Sida Lin",
+   "Sirui Han",
+   "Yike Guo"
+  ],
+  "published": "2026-04-09",
+  "category": "cs.LG"
+ },
+ "2604.08590": {
+  "title": "AlphaLab: Autonomous Multi-Agent Research Across Optimization Domains with Frontier LLMs",
+  "authors": [
+   "Brendan R. Hogan",
+   "Xiwen Chen",
+   "James T. Wilson",
+   "Kashif Rasul",
+   "Adel Boyarsky",
+   "Thomas Kamei",
+   "Anderson Schneider",
+   "Yuriy Nevmyvaka"
+  ],
+  "published": "2026-03-31",
+  "category": "cs.LG"
+ },
+ "2604.10390": {
+  "title": "LLM-PRISM: Characterizing Silent Data Corruption from Permanent GPU Faults in LLM Training",
+  "authors": [
+   "Abhishek Tyagi",
+   "Saurabh Hukerikar",
+   "Nirmal Saxena",
+   "Yanxiang Huang",
+   "Philip Shirvani",
+   "Chung-Hsuan Tung",
+   "Yuhao Zhu"
+  ],
+  "published": "2026-04-12",
+  "category": "cs.AR"
+ },
+ "2604.11035": {
+  "title": "Introspective Diffusion Language Models",
+  "authors": [
+   "Yifan Yu",
+   "Yuqing Jian",
+   "Junxiong Wang",
+   "Zhongzhu Zhou",
+   "Donglin Zhuang",
+   "Xinyu Fang",
+   "Sri Yanamandra",
+   "Xiaoxia Wu",
+   "Qingyang Wu",
+   "Shuaiwen Leon Song",
+   "Tri Dao",
+   "Ben Athiwaratkun",
+   "James Zou",
+   "Fan Lai",
+   "Chenfeng Xu"
+  ],
+  "published": "2026-04-13",
+  "category": "cs.AI"
+ },
+ "2604.15186": {
+  "title": "Scepsy: Serving Agentic Workflows Using Aggregate LLM Pipelines",
+  "authors": [
+   "Otto White",
+   "Marcel Wagenl\u00e4nder",
+   "Britannio Jarrett",
+   "Xijin Zhou",
+   "Yanda Tao",
+   "Pedro Silvestre",
+   "Guo Li",
+   "Huanzhou Zhu",
+   "Llu\u00eds Vilanova",
+   "Peter Pietzuch"
+  ],
+  "published": "2026-04-16",
+  "category": "cs.DC"
+ },
+ "2604.15409": {
+  "title": "The Illusion of Equivalence: Systematic FP16 Divergence in KV-Cached Autoregressive Inference",
+  "authors": [
+   "Ranjith Chodavarapu",
+   "Lei Xu"
+  ],
+  "published": "2026-04-16",
+  "category": "cs.LG"
+ },
+ "2604.17111": {
+  "title": "HiveMind: OS-Inspired Scheduling for Concurrent LLM Agent Workloads",
+  "authors": [
+   "Justice Owusu Agyemang",
+   "Jerry John Kponyo",
+   "Obed Kwasi Somuah",
+   "Elliot Amponsah",
+   "Godfred Manu Addo Boakye",
+   "Kwame Opuni-Boachie Obour Agyekum"
+  ],
+  "published": "2026-04-18",
+  "category": "cs.DC"
+ },
+ "2604.17172": {
+  "title": "UCCL-Zip: Lossless Compression Supercharged GPU Communication",
+  "authors": [
+   "Shuang Ma",
+   "Chon Lam Lao",
+   "Zhiying Xu",
+   "Zhuang Wang",
+   "Ziming Mao",
+   "Delong Meng",
+   "Jia Zhen",
+   "Jun Wu",
+   "Ion Stoica",
+   "Yida Wang",
+   "Yang Zhou"
+  ],
+  "published": "2026-04-19",
+  "category": "cs.DC"
+ },
+ "2604.17249": {
+  "title": "Bit-Flip Vulnerability of Shared KV-Cache Blocks in LLM Serving Systems",
+  "authors": [
+   "Yuji Yamamoto",
+   "Satoshi Matsuura"
+  ],
+  "published": "2026-04-19",
+  "category": "cs.CR"
+ },
+ "2604.19572": {
+  "title": "A Self-Evolving Framework for Efficient Terminal Agents via Observational Context Compression",
+  "authors": [
+   "Jincheng Ren",
+   "Siwei Wu",
+   "Yizhi Li",
+   "Kang Zhu",
+   "Shu Xu",
+   "Boyu Feng",
+   "Ruibin Yuan",
+   "Wei Zhang",
+   "Riza Batista-Navarro",
+   "Jian Yang",
+   "Chenghua Lin"
+  ],
+  "published": "2026-04-21",
+  "category": "cs.CL"
+ },
+ "2604.22032": {
+  "title": "Kernel Contracts: A Specification Language for ML Kernel Correctness Across Heterogeneous Silicon",
+  "authors": [
+   "Cooper Veit"
+  ],
+  "published": "2026-04-23",
+  "category": "cs.LG"
+ },
+ "2604.22312": {
+  "title": "Guess-Verify-Refine: Data-Aware Top-K for Sparse-Attention Decoding on Blackwell via Temporal Correlation",
+  "authors": [
+   "Long Cheng",
+   "Ritchie Zhao",
+   "Timmy Liu",
+   "Mindy Li",
+   "Xianjie Qiao",
+   "Kefeng Duan",
+   "Yu-Jung Chen",
+   "Xiaoming Chen",
+   "Bita Darvish Rouhani",
+   "June Yang"
+  ],
+  "published": "2026-04-24",
+  "category": "cs.DC"
+ },
+ "2604.23150": {
+  "title": "Scaling Multi-Node Mixture-of-Experts Inference Using Expert Activation Patterns",
+  "authors": [
+   "Abhimanyu Bambhaniya",
+   "Geonhwa Jeong",
+   "Jason Park",
+   "Jiecao Yu",
+   "Jaewon Lee",
+   "Pengchao Wang",
+   "Changkyu Kim",
+   "Chunqiang Tang",
+   "Tushar Krishna"
+  ],
+  "published": "2026-04-25",
+  "category": "cs.LG"
+ },
+ "2604.27844": {
+  "title": "ZipCCL: Efficient Lossless Data Compression of Communication Collectives for Accelerating LLM Training",
+  "authors": [
+   "Wenxiang Lin",
+   "Xinglin Pan",
+   "Ruibo Fan",
+   "Shaohuai Shi",
+   "Xiaowen Chu"
+  ],
+  "published": "2026-04-30",
+  "category": "cs.DC"
+ },
+ "2605.00528": {
+  "title": "SAGA: Workflow-Atomic Scheduling for AI Agent Inference on GPU Clusters",
+  "authors": [
+   "Dongxin Guo",
+   "Jikun Wu",
+   "Siu Ming Yiu"
+  ],
+  "published": "2026-05-01",
+  "category": "cs.DC"
+ },
+ "2605.00616": {
+  "title": "LLM-Emu: Native Runtime Emulation of LLM Inference via Profile-Driven Sampling",
+  "authors": [
+   "Wei Da",
+   "Evangelia Kalyvianaki"
+  ],
+  "published": "2026-05-01",
+  "category": "cs.DC"
+ },
+ "2605.02568": {
+  "title": "StreamIndex: Memory-Bounded Compressed Sparse Attention via Streaming Top-k",
+  "authors": [
+   "Jaber Jaber",
+   "Osama Jaber"
+  ],
+  "published": "2026-05-04",
+  "category": "cs.LG"
+ },
+ "2605.03213": {
+  "title": "When Agents Handle Secrets: A Survey of Confidential Computing for Agentic AI",
+  "authors": [
+   "Javad Forough",
+   "Marios Kogias",
+   "Hamed Haddadi"
+  ],
+  "published": "2026-05-04",
+  "category": "cs.CR"
+ },
+ "2605.03375": {
+  "title": "Tutti: Making SSD-Backed KV Cache Practical for Long-Context LLM Serving",
+  "authors": [
+   "Shi Qiu",
+   "Yifan Hu",
+   "Xintao Wang",
+   "Wenhao Zhu",
+   "Jianqin Yan",
+   "Hao Chen",
+   "Kaiqiang Xu",
+   "Kai Chen",
+   "Yiming Zhang"
+  ],
+  "published": "2026-05-05",
+  "category": "cs.OS"
+ },
+ "2605.04213": {
+  "title": "The Anatomy of Silent Data Corruption: GPU Error Pattern Study and Modeling Guidance",
+  "authors": [
+   "Chung-Hsuan Tung",
+   "Yanxiang Huang",
+   "Nirmal Saxena",
+   "Philip Shirvani",
+   "Saurabh Hukerikar",
+   "Twinkle Jain",
+   "Abhishek Tyagi",
+   "Sanjay Gongalore"
+  ],
+  "published": "2026-05-05",
+  "category": "cs.AR"
+ },
+ "2605.04478": {
+  "title": "CCL-D: A High-Precision Diagnostic System for Slow and Hang Anomalies in Large-Scale Model Training",
+  "authors": [
+   "Yida Gu",
+   "Fakang Wang",
+   "Jianhao Fu",
+   "Zhenhang Sun",
+   "Qianyu Zhang",
+   "Hairui Zhao",
+   "Xingchen Liu",
+   "Yang Tian",
+   "Wenjing Huang",
+   "Zedong Liu",
+   "Yifan Chen",
+   "Jinwu Yang",
+   "Yueyuan Zhou",
+   "Qian Zhao",
+   "Haoxu Li",
+   "Tao Wang",
+   "Feng Yu",
+   "Zhan Wang",
+   "Guangming Tan",
+   "Dingwen Tao"
+  ],
+  "published": "2026-05-06",
+  "category": "cs.DC"
+ },
+ "2605.04956": {
+  "title": "KernelBenchX: A Comprehensive Benchmark for Evaluating LLM-Generated GPU Kernels",
+  "authors": [
+   "Han Wang",
+   "Jintao Zhang",
+   "Kai Jiang",
+   "Haoxu Wang",
+   "Jianfei Chen",
+   "Jun Zhu"
+  ],
+  "published": "2026-05-06",
+  "category": "cs.LG"
+ },
+ "2605.05219": {
+  "title": "Sparse Prefix Caching for Hybrid and Recurrent LLM Serving",
+  "authors": [
+   "Mikhail Shirokikh",
+   "Sergey Nikolenko"
+  ],
+  "published": "2026-04-17",
+  "category": "cs.LG"
+ },
+ "2605.07330": {
+  "title": "SparseRL-Sync: Lossless Weight Synchronization with ~100x Less Communication",
+  "authors": [
+   "Lucas Hu",
+   "Ranchi Zhao",
+   "Isaac Zhu",
+   "Zach Zhang",
+   "Hscos Zhang",
+   "Hugh Yin",
+   "Jason Zhao"
+  ],
+  "published": "2026-05-08",
+  "category": "cs.LG"
+ },
+ "2605.09370": {
+  "title": "From Detection to Recovery: Operational Analysis on LLM Pre-training with 504 GPUs",
+  "authors": [
+   "Daemyung Kang",
+   "Eunjin Hwang",
+   "Hanjeong Lee",
+   "HyeokJin Kim",
+   "Hyunhoi Koo",
+   "Jeongkyu Shin",
+   "Jeongseok Kang",
+   "Jihyun Kang",
+   "Jinho Heo",
+   "Joongi Kim",
+   "Junbum Lee",
+   "Jungseung Yang",
+   "Kyujin Cho",
+   "Youngsook Song"
+  ],
+  "published": "2026-05-10",
+  "category": "cs.DC"
+ },
+ "2605.10670": {
+  "title": "Surviving Partial Rank Failures in Wide Expert-Parallel MoE Inference",
+  "authors": [
+   "Xun Sun",
+   "Shaoyuan Chen",
+   "Pingchuan Ma",
+   "Yue Chen",
+   "Ziwei Yuan",
+   "Zhanhao Cao",
+   "Han Han",
+   "Shangming Cai",
+   "Teng Ma",
+   "Xuchun Shang",
+   "Xinpeng Zhao",
+   "Ke Yang",
+   "Junlin Wei",
+   "Lianzhi Lin",
+   "Yuji Liu",
+   "Feng Ren",
+   "Haoran Hu",
+   "Cheng Wan",
+   "Yingdi Shan",
+   "Yongwei Wu",
+   "Mingxing Zhang"
+  ],
+  "published": "2026-05-11",
+  "category": "cs.DC"
+ },
+ "2605.11202": {
+  "title": "Continuous Discovery of Vulnerabilities in LLM Serving Systems with Fuzzing",
+  "authors": [
+   "Yunze Zhao",
+   "Yibo Zhao",
+   "Yuchen Zhang",
+   "Zaoxing Liu",
+   "Michelle L. Mazurek"
+  ],
+  "published": "2026-05-11",
+  "category": "cs.CR"
+ },
+ "2605.13907": {
+  "title": "AIS: Adaptive Importance Sampling for Quantized RL",
+  "authors": [
+   "Jiajun Zhou",
+   "Wei Shao",
+   "Lingchao Zheng",
+   "Yuwei Fan",
+   "Ngai Wong"
+  ],
+  "published": "2026-05-13",
+  "category": "stat.ML"
+ },
+ "2605.15638": {
+  "title": "ITHICA: Intra-Thread Instruction Checking Approach for Defect-Induced Silent Data Corruptions",
+  "authors": [
+   "Ioanna Vavelidou",
+   "Subho S. Banerjee",
+   "Eric X. Liu",
+   "Mike Fuller",
+   "Subhasish Mitra",
+   "Caroline Trippel"
+  ],
+  "published": "2026-05-15",
+  "category": "cs.AR"
+ },
+ "2605.17879": {
+  "title": "Guard: Scalable Straggler Detection and Node Health Management for Large-Scale Training",
+  "authors": [
+   "Guanliang Liu",
+   "Abhinandan Patni",
+   "Congzhu Lin",
+   "Zoe Zeng",
+   "Jack Wittmayer",
+   "Josh Wu",
+   "Ashvin Nihalani",
+   "Binxuan Huang",
+   "Yinghong Liu",
+   "Rory Na",
+   "Anthony Ko",
+   "Alexander Zhipa",
+   "Cong Cheng",
+   "Mi Sun",
+   "Vijay Rajakumar",
+   "Rejith George Joseph",
+   "Parthasarathy Govindarajen"
+  ],
+  "published": "2026-05-18",
+  "category": "cs.DC"
+ },
+ "2605.19260": {
+  "title": "AQuaUI: Visual Token Reduction for GUI Agents with Adaptive Quadtrees",
+  "authors": [
+   "Yuankai Li",
+   "Tinghui Zhu",
+   "Ha Min Son",
+   "Zhe Zhao",
+   "Xin Liu",
+   "Muhao Chen"
+  ],
+  "published": "2026-05-19",
+  "category": "cs.AI"
+ },
+ "2605.19481": {
+  "title": "C2CServe: Leveraging NVLink-C2C for Elastic Serverless LLM Serving on MIG",
+  "authors": [
+   "Shutian Luo",
+   "Ali Zafar Sadiq",
+   "Rui Yang",
+   "Mingye Zhang",
+   "Haiying Shen",
+   "Wei Wang",
+   "Yue Cheng"
+  ],
+  "published": "2026-05-19",
+  "category": "cs.OS"
+ },
+ "2605.19537": {
+  "title": "The Silent Hyperparameter: Quantifying the Impact of Inference Backends on LLM Reproducibility",
+  "authors": [
+   "David Pape",
+   "Jonathan Evertz",
+   "Lea Sch\u00f6nherr"
+  ],
+  "published": "2026-05-19",
+  "category": "cs.LG"
+ },
+ "2605.20563": {
+  "title": "Multi-agent Collaboration with State Management",
+  "authors": [
+   "Mengyang Liu",
+   "Taozhi Chen",
+   "Zhenhua Xu",
+   "Xue Jiang",
+   "Yihong Dong"
+  ],
+  "published": "2026-05-19",
+  "category": "cs.MA"
+ },
+ "2605.21427": {
+  "title": "PALS: Power-Aware LLM Serving for Mixture-of-Experts Models",
+  "authors": [
+   "Can Hankendi",
+   "Rana Shahout",
+   "Minlan Yu",
+   "Ayse K. Coskun"
+  ],
+  "published": "2026-05-20",
+  "category": "cs.AI"
+ },
+ "2605.22416": {
+  "title": "Asymmetric Virtual Memory Paging for Hybrid Mamba-Transformer Inference",
+  "authors": [
+   "An Xuan Nguyen"
+  ],
+  "published": "2026-05-21",
+  "category": "cs.LG"
+ },
+ "2605.22781": {
+  "title": "DeltaBox: Scaling Stateful AI Agents with Millisecond-Level Sandbox Checkpoint/Rollback",
+  "authors": [
+   "Yunpeng Dong",
+   "Jingkai He",
+   "Shiqi Liu",
+   "Yuze Hou",
+   "Dong Du",
+   "Zhonghu Xu",
+   "Si Yu",
+   "Baochuan Yang",
+   "Yubin Xia",
+   "Haibo Chen"
+  ],
+  "published": "2026-05-21",
+  "category": "cs.OS"
+ },
+ "2605.23066": {
+  "title": "Orbax: Distributed Checkpointing with JAX",
+  "authors": [
+   "Colin Gaffney",
+   "Shutong Li",
+   "Daniel Ng",
+   "Anastasia Petrushkina",
+   "Niket Kumar",
+   "Adam Cogdell",
+   "Mridul Sahu",
+   "Yaning Liang",
+   "Nikhil Bansal",
+   "Justin Pan",
+   "Angel Mau",
+   "Abhishek Agrawal",
+   "Marco Berlot",
+   "Ruoxin Sang",
+   "Kiranbir Sodhia",
+   "Rakesh Iyer"
+  ],
+  "published": "2026-05-21",
+  "category": "cs.DC"
+ },
+ "2605.23215": {
+  "title": "FastKernels: Benchmarking GPU Kernel Generation in Production",
+  "authors": [
+   "Gabriele Oliaro",
+   "Jaeseong Lee",
+   "Yichao Fu",
+   "Zhaoyuan Su",
+   "Owen Lu",
+   "Sreeram Vennam",
+   "May Jiang",
+   "Junli Wang",
+   "Hao Zhang",
+   "Zhihao Jia",
+   "Samyam Rajbhandari"
+  ],
+  "published": "2026-05-22",
+  "category": "cs.LG"
+ },
+ "2605.23640": {
+  "title": "CachePrune: Privacy-Aware and Fine-Grained KV Cache Sharing for Efficient LLM Inference",
+  "authors": [
+   "Guanlong Wu",
+   "Zhaohan li",
+   "Yao Zhang",
+   "Zheng Zhang",
+   "Jianyu Niu",
+   "Ye Wu",
+   "Yinqian Zhang"
+  ],
+  "published": "2026-05-22",
+  "category": "cs.CR"
+ },
+ "2605.23950": {
+  "title": "Stop Comparing LLM Agents Without Disclosing the Harness",
+  "authors": [
+   "Yunbei Zhang",
+   "Janet Wang",
+   "Yingqiang Ge",
+   "Weijie Xu",
+   "Jihun Hamm",
+   "Chandan K. Reddy"
+  ],
+  "published": "2026-05-07",
+  "category": "cs.AI"
+ },
+ "2605.26297": {
+  "title": "Agentic AI Workload Characteristics",
+  "authors": [
+   "Yichao Yuan",
+   "Ankita Nayak",
+   "Souvik Kundu",
+   "Nishil Talati"
+  ],
+  "published": "2026-05-25",
+  "category": "cs.DC"
+ },
+ "2605.26930": {
+  "title": "Revisiting Bruck: Phase-Efficient All-to-All Collective Communication in Reconfigurable Networks",
+  "authors": [
+   "Anton Juerss",
+   "Stefan Schmid"
+  ],
+  "published": "2026-05-26",
+  "category": "cs.DC"
+ },
+ "2605.27605": {
+  "title": "Laguna M.1/XS.2 Technical Report",
+  "authors": [
+   "Julien Abadji",
+   "Marah Abdin",
+   "Connor Adams",
+   "Eric Alcaide",
+   "Mustafa Altun",
+   "Michele Artoni",
+   "Junze Bao",
+   "Uday Barar",
+   "Vassilis Bekiaris",
+   "Arkadii Bessonov",
+   "Benjamin B\u00fctikofer",
+   "Jonathan Chang",
+   "Yen-Chun Chen",
+   "Dmitry Chernenkov",
+   "Yang Chi",
+   "Filippos Christianos",
+   "Fenia Christopoulou",
+   "Razvan-Andrei Ciocoiu",
+   "Tzachi Cohen",
+   "Yohann Coppel",
+   "Dmitrii Emelianenko",
+   "Brandon Fergerson",
+   "Brian Fitzgerald",
+   "Matthias Gall\u00e9",
+   "Alex Golonzovskyi",
+   "George Grigorev",
+   "Yiyang Hao",
+   "Christian Hensel",
+   "Jan Huenermann",
+   "Ye Ji",
+   "Sarthak Joshi",
+   "Eiso Kant",
+   "Kabir Khandpur",
+   "Seonghyeon Kim",
+   "Vladimir Kirichenko",
+   "Umut Kocasarac",
+   "Ilya Kochik",
+   "Ivan Komarov",
+   "Chaerin Kong",
+   "Anurag Koul",
+   "Fran\u00e7ois-Joseph Lacroix",
+   "Sergei Laktionov",
+   "Waren Long",
+   "Quentin Malartic",
+   "Vadim Markovtsev",
+   "Afonso Marques",
+   "Robert McHardy",
+   "Carlos Mochol\u00ed",
+   "Dmitry Monakhov",
+   "Adam Morris",
+   "Martin Muller",
+   "Christian M\u00fcrtz",
+   "Robin Nabel",
+   "Thien Nguyen",
+   "Rok Novosel",
+   "Szymon Ozog",
+   "Aalhad Patankar",
+   "Aleksei Petrov",
+   "Alexandre Pich\u00e9",
+   "Arthur Pignet",
+   "Teodor Poncu",
+   "Phil Potter",
+   "Alexander Rakowski",
+   "Pierre-Yves Ritschard",
+   "Jay Roberts",
+   "Joe Rowell",
+   "Piotr Sarna",
+   "Pierre-Andr\u00e9 Savalle",
+   "Uladzislau Sazanovich",
+   "Nikita Shapovalov",
+   "Arsenii Shevchenko",
+   "Mikhail Shilkov",
+   "Andrei Sokol",
+   "Mohamed Soliman",
+   "Jack Stephenson",
+   "Victor Storchan",
+   "Dragos-Constantin Tantaru",
+   "Artem Tyurin",
+   "Adrian W\u00e4lchli",
+   "Pengming Wang",
+   "Jianxiao Yang",
+   "Renat Zayashnikov",
+   "Alexander Zelenka Martin",
+   "Nikolay Zinov",
+   "Caroline Bercier",
+   "Jos\u00e9 Caldeira",
+   "Margarida Garcia",
+   "Tom George",
+   "Kabeer Gharzai",
+   "Glenn Hitchcock",
+   "Carson Klingenberg",
+   "Ivo Pinto",
+   "Varun Randery",
+   "Noah Smith",
+   "Arina Sugako",
+   "Jason Warner"
+  ],
+  "published": "2026-05-26",
+  "category": "cs.AI"
+ },
+ "2605.28053": {
+  "title": "RW-TTT: Batched Serving for Request-Owned Test-Time Training State",
+  "authors": [
+   "Jian Yang",
+   "Zhizhuo Kou",
+   "Yao Tian",
+   "Hao Zhang",
+   "Han Chen",
+   "Sirui Han",
+   "Yike Guo"
+  ],
+  "published": "2026-05-27",
+  "category": "cs.LG"
+ },
+ "2605.30218": {
+  "title": "MarginGate: Sparse Margin-Triggered Verification for Batch-Invariant LLM Inference",
+  "authors": [
+   "Kexin Chu",
+   "Yang Zhou",
+   "Wei Zhang"
+  ],
+  "published": "2026-05-28",
+  "category": "cs.LG"
+ },
+ "2606.00279": {
+  "title": "Bit-Exact AI Inference Verification Without Performance Tradeoffs",
+  "authors": [
+   "Naci Cankaya"
+  ],
+  "published": "2026-05-29",
+  "category": "cs.CR"
+ },
+ "2606.00942": {
+  "title": "Characterizing Metastable Faults and Failures",
+  "authors": [
+   "Ali Farahbakhsh",
+   "Qingjie Lu",
+   "Lorenzo Alvisi",
+   "Andreas Haeberlen",
+   "Robbert Van Renesse"
+  ],
+  "published": "2026-05-31",
+  "category": "cs.OS"
+ },
+ "2606.01065": {
+  "title": "Leyline: KV Cache Directives for Agentic Inference",
+  "authors": [
+   "Bole Ma",
+   "Jan Eitzinger",
+   "Harald Koestler"
+  ],
+  "published": "2026-05-31",
+  "category": "cs.DC"
+ },
+ "2606.01680": {
+  "title": "Don't Let a Few Network Failures Slow the Entire AllReduce",
+  "authors": [
+   "Peiqing Chen",
+   "Jiedong Jiang",
+   "Nengneng Yu",
+   "Yuefeng Wang",
+   "Sixian Xiong",
+   "Wei Wang",
+   "Zaoxing Liu"
+  ],
+  "published": "2026-06-01",
+  "category": "cs.DC"
+ },
+ "2606.01790": {
+  "title": "STaR-KV: Spatio-Temporal Adaptive Re-weighting for KV Cache Compression in GUI Vision-Language Models",
+  "authors": [
+   "Yuhang Han",
+   "Wenzheng Yang",
+   "Yujie Chen",
+   "Xiangqi Jin",
+   "Yaojie Zhang",
+   "Siteng Huang",
+   "Linfeng Zhang"
+  ],
+  "published": "2026-06-01",
+  "category": "cs.CV"
+ },
+ "2606.01839": {
+  "title": "Observation, Not Prediction: Conversation-Level Disaggregated Scheduling for Agentic Serving",
+  "authors": [
+   "Jianru Ding",
+   "Ryien Hosseini",
+   "Pouya Mahdi Gholami",
+   "Mingyuan Xiang",
+   "Henry Hoffmann"
+  ],
+  "published": "2026-06-01",
+  "category": "cs.DC"
+ },
+ "2606.03077": {
+  "title": "Libra: Efficient Resource Management for Agentic RL Post-Training",
+  "authors": [
+   "Kaiwen Chen",
+   "Xin Tan",
+   "Jingzong Li",
+   "Zhi Zhou",
+   "Cen Li",
+   "Jiang Liu",
+   "Meng Jie",
+   "Jiazhi Jiang",
+   "Hong Xu"
+  ],
+  "published": "2026-06-02",
+  "category": "cs.LG"
+ },
+ "2606.04511": {
+  "title": "SparDA: Sparse Decoupled Attention for Efficient Long-Context LLM Inference",
+  "authors": [
+   "Yaosheng Fu",
+   "Guangxuan Xiao",
+   "Xin Dong",
+   "Song Han",
+   "Oreste Villa"
+  ],
+  "published": "2026-06-03",
+  "category": "cs.CL"
+ },
+ "2606.04594": {
+  "title": "Ekka: Automated Diagnosis of Silent Errors in LLM Inference",
+  "authors": [
+   "Yile Gu",
+   "Zhen Zhang",
+   "Shaowei Zhu",
+   "Xinwei Fu",
+   "Jun Wu",
+   "Yida Wang",
+   "Baris Kasikci"
+  ],
+  "published": "2026-06-03",
+  "category": "cs.DC"
+ },
+ "2606.07362": {
+  "title": "Breaking the Ice: Analyzing Cold Start Latency in vLLM",
+  "authors": [
+   "Huzaifa Shaaban Kabakibo",
+   "Animesh Trivedi",
+   "Lin Wang"
+  ],
+  "published": "2026-06-05",
+  "category": "cs.LG"
+ },
+ "2606.07571": {
+  "title": "Enabling KV Caching of Shared Prefix for Diffusion Language Models",
+  "authors": [
+   "Younghun Go",
+   "Jaehoon Han",
+   "Changyong Shin",
+   "Chuck Yoo",
+   "Gyeongsik Yang"
+  ],
+  "published": "2026-05-26",
+  "category": "cs.LG"
+ },
+ "2606.07624": {
+  "title": "Sequential statistical inference for Large Language Models: Representation, validity, and monitoring",
+  "authors": [
+   "Yao Xie"
+  ],
+  "published": "2026-05-30",
+  "category": "cs.LG"
+ },
+ "2606.07878": {
+  "title": "Still: Amortized KV Cache Compaction in a Single Forward Pass",
+  "authors": [
+   "Charles O'Neill",
+   "Alex Sandomirsky",
+   "Harry Partridge",
+   "Mudith Jayasekara",
+   "Max Kirkby"
+  ],
+  "published": "2026-06-05",
+  "category": "cs.LG"
+ },
+ "2606.08529": {
+  "title": "Scaffold Effects on GAIA: A Controlled Comparison",
+  "authors": [
+   "Jason Starace"
+  ],
+  "published": "2026-06-07",
+  "category": "cs.AI"
+ },
+ "2606.09079": {
+  "title": "FlashMemory-DeepSeek-V4: Lightning Index Ultra-Long Context via Lookahead Sparse Attention",
+  "authors": [
+   "Yan Wang",
+   "Qifan Zhang",
+   "Jiachen Yu",
+   "Tian Liang",
+   "Dongyang Ma",
+   "Xiang Hu",
+   "Zibo Lin",
+   "Chunyang Li",
+   "Zhichao Wang",
+   "Miao Peng",
+   "Nuo Chen",
+   "Jia Li",
+   "Yujiu Yang",
+   "Haitao Mi",
+   "Dong Yu"
+  ],
+  "published": "2026-06-08",
+  "category": "cs.LG"
+ },
+ "2606.09200": {
+  "title": "Resource-aware Computation-Communication Overlap for multi-GPU ML Workloads",
+  "authors": [
+   "Minyu Cui",
+   "Miquel Pericas"
+  ],
+  "published": "2026-06-08",
+  "category": "cs.DC"
+ },
+ "2606.09613": {
+  "title": "AgentServeSim: Serving-System Simulation and Policy Search for LLM Agent Programs",
+  "authors": [
+   "Rakibul Hasan Rajib",
+   "Mengxin Zheng",
+   "Qian Lou"
+  ],
+  "published": "2026-06-08",
+  "category": "cs.CL"
+ },
+ "2606.11213": {
+  "title": "Beyond Compaction: Structured Context Eviction for Long-Horizon Agents",
+  "authors": [
+   "Andrew Semenov",
+   "Svyatoslav Dorofeev"
+  ],
+  "published": "2026-05-01",
+  "category": "cs.CL"
+ },
+ "2606.11916": {
+  "title": "Characterizing Software Aging in GPU-Based LLM Serving Systems",
+  "authors": [
+   "Domenico Cotroneo",
+   "Bojan Cukic"
+  ],
+  "published": "2026-06-10",
+  "category": "cs.SE"
+ },
+ "2606.14179": {
+  "title": "CacheRL:Multi-Turn Tool-Calling Agents via Cached Rollouts and Hybrid Reward",
+  "authors": [
+   "Md Amirul Islam",
+   "Sumiran Thakur",
+   "Huancheng Chen",
+   "Su Min Park",
+   "Jiayun Wang",
+   "Gyuhak Kim"
+  ],
+  "published": "2026-06-12",
+  "category": "cs.CL"
+ },
+ "2606.15376": {
+  "title": "CoAgent: Concurrency Control for Multi-Agent Systems",
+  "authors": [
+   "Hongtao Lyu",
+   "Dingyan Zhang",
+   "Mingyu Wu",
+   "Xingda Wei",
+   "Haibo Chen"
+  ],
+  "published": "2026-06-13",
+  "category": "cs.DC"
+ },
+ "2606.15555": {
+  "title": "Service-Induced Congestion in Memory-Constrained LLM Serving",
+  "authors": [
+   "Ruicheng Ao",
+   "Jing Dong",
+   "Gan Luo",
+   "David Simchi-Levi"
+  ],
+  "published": "2026-06-14",
+  "category": "math.OC"
+ },
+ "2606.16824": {
+  "title": "CacheWise: Understanding Workloads and Optimizing KVCache Management for Efficiently Serving LLM Coding Agents",
+  "authors": [
+   "Shubham Tiwari",
+   "Tapan Chugh",
+   "Nash Rickert",
+   "Simon Peter",
+   "Ratul Mahajan",
+   "Haiying Shen"
+  ],
+  "published": "2026-06-15",
+  "category": "cs.DC"
+ },
+ "2606.17016": {
+  "title": "TokenPilot: Cache-Efficient Context Management for LLM Agents",
+  "authors": [
+   "Buqiang Xu",
+   "Zirui Xue",
+   "Dianmou Chen",
+   "Chenyang Fu",
+   "Chiyu Wu",
+   "Caiying Huang",
+   "Chen Jiang",
+   "Jizhan Fang",
+   "Xinle Deng",
+   "Yijun Chen",
+   "Yunzhi Yao",
+   "Xuehai Wang",
+   "Jin Shang",
+   "Gong Yu",
+   "Ningyu Zhang"
+  ],
+  "published": "2026-06-15",
+  "category": "cs.CL"
+ },
+ "2606.17034": {
+  "title": "KVEraser: Learning to Steer KV Cache for Efficient Localized Context Erasing",
+  "authors": [
+   "Mufei Li",
+   "Shikun Liu",
+   "Dongqi Fu",
+   "Haoyu Wang",
+   "Yinglong Xia",
+   "Hong Li",
+   "Hong Yan",
+   "Pan Li"
+  ],
+  "published": "2026-06-15",
+  "category": "cs.CL"
+ },
+ "2606.17787": {
+  "title": "LUMEN: Coordinated Failure Recovery for Distributed LLM Serving",
+  "authors": [
+   "Zhang Cao",
+   "Shujie Han",
+   "Juncheng Zhang",
+   "Yuanming Ren",
+   "Yongkun Li",
+   "Patrick P. C. Lee"
+  ],
+  "published": "2026-06-16",
+  "category": "cs.DC"
+ },
+ "2606.18741": {
+  "title": "ReMP: Low-Downtime Runtime Model-Parallelism Reconfiguration for LLM Serving",
+  "authors": [
+   "Haipeng Yuan",
+   "Kaining Zheng",
+   "Yongshu Bai",
+   "Yuchen Zhang",
+   "Yunquan Zhang",
+   "Baodong Wu",
+   "Xiang Gao",
+   "Daning Cheng"
+  ],
+  "published": "2026-06-17",
+  "category": "cs.DC"
+ },
+ "2606.20128": {
+  "title": "The Correctness Illusion in LLM-Generated GPU Kernels",
+  "authors": [
+   "Dipankar Sarkar"
+  ],
+  "published": "2026-06-18",
+  "category": "cs.SE"
+ },
+ "2606.20374": {
+  "title": "ARGUS: Production-Scale Tracing and Performance Diagnosis for over 10,000-GPU Clusters",
+  "authors": [
+   "Jiasheng Zhou",
+   "Longbin Zeng",
+   "Clavis Chen",
+   "Ruiming Lu",
+   "Qinwei Yang",
+   "Leyi Ye",
+   "Ray Ying",
+   "Key Zhang"
+  ],
+  "published": "2026-06-18",
+  "category": "cs.DC"
+ },
+ "2606.20577": {
+  "title": "Human-Less LLM Serving: Quantifying the Human Tax on Throughput",
+  "authors": [
+   "Jianhui Lian",
+   "Li Chen",
+   "Dan Li",
+   "Yong Jiang"
+  ],
+  "published": "2026-05-03",
+  "category": "cs.NI"
+ },
+ "2606.20683": {
+  "title": "From Question Answering to Task Completion: A Survey on Agent System and Harness Design",
+  "authors": [
+   "Jianyuan Guo",
+   "Zhiwei Hao",
+   "Chengcheng Wang",
+   "Cheng Fan",
+   "Tingzhang Luo",
+   "Hongguang Li",
+   "Ying Gao",
+   "Hefei Mei",
+   "Jiankun Peng",
+   "Rongjian Xu",
+   "Minjing Dong",
+   "Han Wu",
+   "Mengyu Zheng",
+   "Kai Han",
+   "Shiqi Wang",
+   "Chang Xu",
+   "Yunhe Wang"
+  ],
+  "published": "2026-06-14",
+  "category": "cs.AI"
+ },
+ "2606.21023": {
+  "title": "Demystifying Numerical Instability in LLM Inference: Achieving Reproducible Inference for Mission-Critical Tasks with HEAL",
+  "authors": [
+   "Zhenting Zhu",
+   "Lucas Thai",
+   "Shan Yu",
+   "Yicheng Liu",
+   "Yifan Qiao",
+   "Chenxi Wang",
+   "Harry Xu",
+   "Junyi Shu"
+  ],
+  "published": "2026-06-19",
+  "category": "cs.LG"
+ },
+ "2606.21633": {
+  "title": "HERALD: High-Throughput Block Diffusion LLM Serving via CPU-GPU Cooperative KV Cache Retrieval",
+  "authors": [
+   "Omin Kwon",
+   "Doyeon Kim",
+   "Jongseok Park",
+   "Seung Yul Lee",
+   "Ion Stoica",
+   "Jae W. Lee"
+  ],
+  "published": "2026-06-19",
+  "category": "cs.LG"
+ },
+ "2606.23001": {
+  "title": "EnerInfer: Energy-Aware On-Device LLM Inference",
+  "authors": [
+   "Bohua Zou",
+   "Nian Liu",
+   "Binqi Sun",
+   "Matteo Mascherin",
+   "Debayan Roy",
+   "Yutao Liu",
+   "Yu Peng",
+   "Ning Jia",
+   "Haibo Chen"
+  ],
+  "published": "2026-06-22",
+  "category": "cs.SE"
+ },
+ "2606.23406": {
+  "title": "HyperQuant: A Rate-Distortion-Optimal Quantization Pipeline for Large Language and Diffusion Models",
+  "authors": [
+   "Yuval Domb",
+   "Hadar Sackstein",
+   "Tomer Solberg"
+  ],
+  "published": "2026-06-22",
+  "category": "cs.LG"
+ },
+ "2606.23521": {
+  "title": "Concordia: JIT-Compiled Persistent-Kernel Checkpointing for Fault-Tolerant LLM Inference",
+  "authors": [
+   "Yuhang Gan",
+   "Yiwei Yang",
+   "Yuyi Li",
+   "Xiangyu Gao",
+   "Yichen Wang",
+   "Rain Jiang",
+   "Xiaoning Ding",
+   "Andi Quinn",
+   "Chen Qian"
+  ],
+  "published": "2026-06-22",
+  "category": "cs.DC"
+ },
+ "2606.23969": {
+  "title": "The Serialized Bridge: Understanding and Recovering LLM Serving Performance under Blackwell GPU Confidential Computing",
+  "authors": [
+   "Hang Yin",
+   "Kevin Wang"
+  ],
+  "published": "2026-06-22",
+  "category": "cs.DC"
+ },
+ "2606.25098": {
+  "title": "Power-Flexible AI Data Centers: A New Paradigm for Grid-Responsive Compute",
+  "authors": [
+   "Chris Williams",
+   "Philip Colangelo",
+   "Ayse Coskun",
+   "Ethan Levine",
+   "Andy Neale",
+   "Ciaran Roberts",
+   "Shayan Sengupta",
+   "Nikhil Shirolkar",
+   "Varun Sivaram",
+   "Sarah Soares",
+   "Ethan Tiao",
+   "Scott Underwood",
+   "Daniel Wilson",
+   "Frank Sharp",
+   "Luke Wainwright",
+   "Harry Petty",
+   "Scott Wallace",
+   "Brandon Records"
+  ],
+  "published": "2026-06-23",
+  "category": "cs.DC"
+ },
+ "2606.28565": {
+  "title": "KernelSight-LM: A Kernel-Level LLM Inference Simulator",
+  "authors": [
+   "Xiteng Yao",
+   "Taeho Kim",
+   "Hengzhi Pei",
+   "Xinle Liu",
+   "Kyle Ulrich",
+   "Leonard Lausen",
+   "Ashish Khetan",
+   "Xiang Song",
+   "George Karypis",
+   "Martin Herbordt"
+  ],
+  "published": "2026-06-26",
+  "category": "cs.PF"
+ },
+ "2606.30560": {
+  "title": "TraceLab: Characterizing Coding Agent Workloads for LLM Serving",
+  "authors": [
+   "Kan Zhu",
+   "Mathew Jacob",
+   "Chenxi Ma",
+   "Yi Pan",
+   "Stephanie Wang",
+   "Arvind Krishnamurthy",
+   "Baris Kasikci"
+  ],
+  "published": "2026-06-29",
+  "category": "cs.LG"
+ },
+ "2606.31580": {
+  "title": "LASER: Load-Aware Serving with Early-Exit for Reasoning LLMs at the Edge",
+  "authors": [
+   "Zhiqing Tang",
+   "Size Li",
+   "Hanshuai Cui",
+   "Zilan Huang",
+   "Jianxiong Guo",
+   "Tian Wang",
+   "Yuan Wu",
+   "Weijia Jia"
+  ],
+  "published": "2026-06-30",
+  "category": "cs.DC"
+ },
+ "2607.00041": {
+  "title": "ATM: CID-Brokered Pre-Write Admission for Multi-Agent Code Co-Synthesis",
+  "authors": [
+   "Eagl Huang"
+  ],
+  "published": "2026-06-29",
+  "category": "cs.SE"
+ },
+ "2607.00466": {
+  "title": "ELDR: Expert-Locality-Aware Decode Routing for PD-Disaggregated MoE Serving",
+  "authors": [
+   "Sangjin Choi",
+   "Sukmin Cho",
+   "Yifan Xiong",
+   "Ziyue Yang",
+   "Youngjin Kwon",
+   "Peng Cheng"
+  ],
+  "published": "2026-07-01",
+  "category": "cs.DC"
+ },
+ "2607.01299": {
+  "title": "HYPIC: Accelerating Hybrid-Attention LLM Serving with Position-Independent Caching",
+  "authors": [
+   "Yifei Liu",
+   "Juntong Wu",
+   "Yang Liu",
+   "Junhao Hu",
+   "Minghao Li",
+   "Xiaoxu Chen",
+   "Weihang Chen"
+  ],
+  "published": "2026-07-01",
+  "category": "cs.DC"
+ },
+ "2607.01646": {
+  "title": "PHOENIX: Resilient LLM Training with Hot-Swapping via Zero-Overhead Checkpoint",
+  "authors": [
+   "Haotian Xie",
+   "Junlin Chen",
+   "Mingkai Zheng",
+   "Lishan Yang",
+   "Zhao Zhang"
+  ],
+  "published": "2026-07-02",
+  "category": "cs.LG"
+ },
+ "2607.02525": {
+  "title": "PEEK: Predictive Queue-Informed KV Cache Management for LLM Serving",
+  "authors": [
+   "Bing Xie",
+   "Zhipeng Wang",
+   "Masahiro Tanaka",
+   "Zhen Zheng"
+  ],
+  "published": "2026-05-10",
+  "category": "cs.DC"
+ },
+ "2607.02574": {
+  "title": "From Tensor Buffer to Distributed Memory Hierarchy: A Survey of KV Cache Management for LLM Serving",
+  "authors": [
+   "Jie Li",
+   "Tongyang Wang",
+   "Yong Chen"
+  ],
+  "published": "2026-06-30",
+  "category": "cs.DC"
+ },
+ "2607.03333": {
+  "title": "SPORK: Self-Speculative Forking to Accelerate Agentic LLM Inference",
+  "authors": [
+   "Huajun Bai",
+   "Weiwei Lv",
+   "Huichuan Zheng",
+   "Youyou Lu",
+   "Jiwu Shu"
+  ],
+  "published": "2026-07-03",
+  "category": "cs.DC"
+ },
+ "2607.08565": {
+  "title": "SMetric: Rethink LLM Scheduling for Serving Agents with Balanced Session-centric Scheduling",
+  "authors": [
+   "Jiahao Wang",
+   "Kaizhan Lin",
+   "Kaixi Zhang",
+   "Jinbo Han",
+   "Xingda Wei",
+   "Sijie Shen",
+   "Chenguang Fang",
+   "Wenyuan Yu",
+   "Rong Chen",
+   "Haibo Chen"
+  ],
+  "published": "2026-07-09",
+  "category": "cs.DC"
+ },
+ "2607.08930": {
+  "title": "BlockServe: Block-Grained Continuous Batching for High-Throughput Diffusion LLM Serving",
+  "authors": [
+   "Yuanjie Zhu",
+   "Liangwei Yang",
+   "Ke Xu",
+   "Weizhi Zhang",
+   "Shanghao Li",
+   "Zihe Song",
+   "Philip S. Yu"
+  ],
+  "published": "2026-07-09",
+  "category": "cs.LG"
+ },
+ "2607.09207": {
+  "title": "Bidirectional Resource Scheduling for Disaggregated and Asynchronous RL Post-Training",
+  "authors": [
+   "Zhiqiang Tan",
+   "Maoxin Wang",
+   "Sijie Wang",
+   "Yiming Yin",
+   "Qiang Wang",
+   "Xiaowen Chu",
+   "Shaohuai Shi"
+  ],
+  "published": "2026-07-10",
+  "category": "cs.DC"
+ },
+ "2607.10389": {
+  "title": "Stateful Worlds, Stateless Elasticity: Exact-State Serving for Interactive World Models",
+  "authors": [
+   "Jin Li",
+   "Jiawei Chen"
+  ],
+  "published": "2026-07-11",
+  "category": "cs.DC"
+ },
+ "2607.14541": {
+  "title": "Are LLM-Generated GPU Kernels Production-Ready? A Trace-Driven Benchmark and Optimization Agent",
+  "authors": [
+   "Lingyun Yang",
+   "Yuxiao Wang",
+   "Shenghao Liang",
+   "Linfeng Yang",
+   "Daocheng Ying",
+   "Chunbo You",
+   "Rui Zhang",
+   "Luping Wang",
+   "Yinghao Yu",
+   "Guodong Yang",
+   "Liping Zhang"
+  ],
+  "published": "2026-07-16",
+  "category": "cs.AI"
+ },
+ "2607.15456": {
+  "title": "Looped Latent Attention: Cross-Loop KV Compression for Looped Transformers",
+  "authors": [
+   "James O' Neill",
+   "Fergal Reid"
+  ],
+  "published": "2026-07-16",
+  "category": "cs.LG"
+ },
+ "2607.15516": {
+  "title": "Cache-Aware Prompt Compression:A Two-Tier Cost Model for LLM API Caching",
+  "authors": [
+   "Yan Song"
+  ],
+  "published": "2026-07-17",
+  "category": "cs.LG"
+ },
+ "2607.15810": {
+  "title": "QUADS: Stabilizing NVFP4 Reinforcement Learning for MoE via QUantization-error Alignment across Dual Sides",
+  "authors": [
+   "Zhengyang Zhuge",
+   "Hao Yu",
+   "Xin Wang",
+   "Zheng Li",
+   "Yizhong Cao",
+   "Dayiheng Liu",
+   "Jianwei Zhang"
+  ],
+  "published": "2026-07-17",
+  "category": "cs.LG"
+ },
+ "2607.16241": {
+  "title": "KernelBench-Verified: Do LLM-Generated Kernels Actually Beat PyTorch?",
+  "authors": [
+   "Yunxiang Zhang",
+   "Ping Yu",
+   "Jianyu Wang",
+   " Max",
+   " Fan",
+   "Julian Reed",
+   "Azalia Mirhoseini",
+   "Will Su"
+  ],
+  "published": "2026-06-26",
+  "category": "cs.LG"
+ },
+ "2607.16892": {
+  "title": "Robust KV Cache Management for LLM Serving under Output Token Length Uncertainty",
+  "authors": [
+   "Jiaming Cheng",
+   "Duong The Do",
+   "Duong Tung Nguyen"
+  ],
+  "published": "2026-07-18",
+  "category": "cs.NI"
+ },
+ "2607.17181": {
+  "title": "Talaria: Session-Aware Serverless Serving of Hundred-Billion-Parameter LLMs",
+  "authors": [
+   "Utopia Meng",
+   "Unicornt Zhao",
+   "Derek Li",
+   "Goalen Gao",
+   "Frank Du"
+  ],
+  "published": "2026-07-19",
+  "category": "cs.DC"
+ },
+ "2607.17525": {
+  "title": "FailureAtlas: A Taxonomy of Failure Modes in Multi-Provider LLM Serving Infrastructure",
+  "authors": [
+   "Vishal Pandey",
+   "Gopal Singh"
+  ],
+  "published": "2026-07-20",
+  "category": "cs.LG"
+ },
+ "2607.18213": {
+  "title": "SWE-Pruner Pro: The Coder LLM Already Knows What to Prune",
+  "authors": [
+   "Yuhang Wang",
+   "Yuling Shi",
+   "Shaoqiu Zhang",
+   "Jialiang Liang",
+   "Shilin He",
+   "Siyu Ye",
+   "Yuting Chen",
+   "Kai Cai",
+   "Xiaodong Gu"
+  ],
+  "published": "2026-07-20",
+  "category": "cs.CL"
+ },
+ "2607.19214": {
+  "title": "Keeping the Cache Warm Pays: Keepalive Economics for Agentic Workloads",
+  "authors": [
+   "Maxim Khailo"
+  ],
+  "published": "2026-07-21",
+  "category": "cs.DC"
+ },
+ "2607.19539": {
+  "title": "Fine-grained Computation-Communication Overlap via Tile-level Signaling and Scheduling for Mixture-of-Experts",
+  "authors": [
+   "Minyu Cui",
+   "Anna Wingkvist",
+   "Morgan Ericsson"
+  ],
+  "published": "2026-07-21",
+  "category": "cs.DC"
+ },
+ "2607.19653": {
+  "title": "PerfAgent: Profiler-Guided Iterative Refinement for Repository-Level Code Optimization",
+  "authors": [
+   "Ryan Deng",
+   "Yuanzhe Liu",
+   "Bastian Lipka",
+   "Yao Ma",
+   "Xuhao Chen",
+   "Tim Kaler",
+   "Jatin Ganhotra"
+  ],
+  "published": "2026-07-22",
+  "category": "cs.SE"
+ },
+ "2607.20129": {
+  "title": "CUSUM-Shaped Inference-Time Monitoring and Targeted Re-Decoding for Quantized Small Language Model Reasoning",
+  "authors": [
+   "El Hassane Ettifouri",
+   "Ayoub Belfatmi",
+   "Mahaman Sanoussi Yahaya Alassan",
+   "Walid Dahhane"
+  ],
+  "published": "2026-07-22",
+  "category": "cs.AI"
+ },
+ "2607.20860": {
+  "title": "Which Model Is Actually Serving You? IRIS: Budgeted Black-Box Auditing of Model Substitution and Routing Dilution in LLM Gateways",
+  "authors": [
+   "Yuewei Zhang",
+   "Zhi-Hai Zhang",
+   "Hanzhang Qin"
+  ],
+  "published": "2026-07-23",
+  "category": "cs.CR"
+ },
+ "2607.22186": {
+  "title": "Deconstructing Off-Policy Ratios: Entropy-Normalized Trust Regions for Asynchronous Reinforcement Learning",
+  "authors": [
+   "Guanqun Zhao",
+   "Zijun Xie",
+   "Binbin Zheng",
+   "Yehan Yang",
+   "Jiafeng Lu",
+   "Aoqi Hu",
+   "Enlei Gong",
+   "Zeyu Chen"
+  ],
+  "published": "2026-07-24",
+  "category": "cs.AI"
+ },
+ "2607.22585": {
+  "title": "The Scaffold Effect in Coding Agents: Harness Choice as a Hidden Variable in Coding-Agent Evaluation",
+  "authors": [
+   "Naman Vats",
+   "Oleg Golev"
+  ],
+  "published": "2026-06-08",
+  "category": "cs.AI"
+ },
+ "2607.22614": {
+  "title": "DynaResize: Runtime GPU Reallocation for Disaggregated LLM Post-Training",
+  "authors": [
+   "Hanlin Du",
+   "Zhiyuan Yan",
+   "Yungang Bao",
+   "Sa wang"
+  ],
+  "published": "2026-06-15",
+  "category": "cs.AI"
+ },
+ "2607.23099": {
+  "title": "Decoding the Skew: Distribution-Aware MoE Inference with Adaptive Kernel Dispatch",
+  "authors": [
+   "En-Ming Huang",
+   "An-Cheng Chang",
+   "Bai-Cheng Jeng",
+   "Shih-Hao Hung",
+   "H. T. Kung"
+  ],
+  "published": "2026-07-25",
+  "category": "cs.AR"
+ },
+ "2607.23933": {
+  "title": "SpecBox: Speculative Sandbox Scheduling for Efficient LLM Agent Serving",
+  "authors": [
+   "Yihui Zhang",
+   "Tianyu Wo",
+   "Jinghao Wang",
+   "Xiaoyang Sun",
+   "Menghao Zhang",
+   "Cangzhou Yuan",
+   "Li Li",
+   "Chunming Hu",
+   "Albert Y. Zomaya",
+   "Renyu Yang"
+  ],
+  "published": "2026-07-27",
+  "category": "cs.DC"
+ },
+ "2607.25792": {
+  "title": "The Model in the Middle: Toward AI-Native Real-Time Communication",
+  "authors": [
+   "Ziqian Liu",
+   "Minghao Li",
+   "Yiming Qiu"
+  ],
+  "published": "2026-07-28",
+  "category": "cs.NI"
+ },
+ "2607.29069": {
+  "title": "Rethinking AI Cloud Infrastructure for Agentic Serving Systems with the Aries Experimentation Framework",
+  "authors": [
+   "Leonid Kondrashov",
+   "Hongrui Liu",
+   "JooYoung Park",
+   "Boxi Zhou",
+   "Zonghao Liu",
+   "Chengzhi Lu",
+   "Riccardo Mancini",
+   "Esha Choukse",
+   "Haris Javaid",
+   "German Sviridov",
+   "Tao Peng",
+   "Chen Zhao",
+   "Anastasia Avdeeva",
+   "Aleksei Gusev",
+   "Marios Kogias",
+   "Luo Mai",
+   "Dmitrii Ustiugov"
+  ],
+  "published": "2026-07-31",
+  "category": "cs.DC"
+ },
+ "2608.00101": {
+  "title": "Agentic Coding in the Wild: Characterizing GitHub Copilot Traces at Production Scale",
+  "authors": [
+   "Banruo Liu",
+   "Haoran Qiu",
+   "\u00cd\u00f1igo Goiri",
+   "Rodrigo Fonseca",
+   "Ricardo Bianchini",
+   "Esha Choukse"
+  ],
+  "published": "2026-07-30",
+  "category": "cs.AI"
+ },
+ "2608.00423": {
+  "title": "Diagnose Before You Compress: Prediction-Independent Bottleneck Witness Refinement for LLM Serving Traces",
+  "authors": [
+   "Liming Liu",
+   "Chao Hu",
+   "Mingfei Lu",
+   "Cong Tan",
+   "Yiwei Ge",
+   "Chijin Zhou",
+   "Yongjun Xie",
+   "Runzhe Wang",
+   "Xiaohai Shi",
+   "Heyuan Shi"
+  ],
+  "published": "2026-08-01",
+  "category": "cs.AI"
+ },
+ "2608.00881": {
+  "title": "AOSpec: Action and Observation Co-Speculation for Low-Latency Agent Serving",
+  "authors": [
+   "Hao Mark Chen",
+   "Jinnan Guo",
+   "Wayne Luk",
+   "Hongxiang Fan"
+  ],
+  "published": "2026-08-01",
+  "category": "cs.LG"
+ },
+ "2608.01250": {
+  "title": "Smoothing the Ramp, Not the Peak: Scheduling-Induced Power Dynamics of LLM Inference and Their Grid-Scale Consequences",
+  "authors": [
+   "Pan Li",
+   "Yize Chen",
+   "Xia Miao",
+   "Dai Wang"
+  ],
+  "published": "2026-08-02",
+  "category": "eess.SY"
+ },
+ "2608.01657": {
+  "title": "Preserving Admission Responsibility in Multi-Tenant Large Language Model Prefix Caches",
+  "authors": [
+   "Zhiyu Wang",
+   "Rajkumar Buyya"
+  ],
+  "published": "2026-08-03",
+  "category": "cs.DC"
+ },
+ "2608.01662": {
+  "title": "LongCat Sparse Attention: Taming the Lightning via Streaming-aware Hierarchical Cross-Layer Indexing",
+  "authors": [
+   "Wen Zan",
+   "Jiaqi Zhang",
+   "Jianchao Tan",
+   "Hong Liu",
+   "Cunguang Wang",
+   "Xiang Li",
+   "Duyue Ma",
+   "Guanyu Wu",
+   "Yifan Lu",
+   "Fengcun Li",
+   "Yerui Sun",
+   "Peng Pei",
+   "Yuchen Xie",
+   "Xunliang Cai"
+  ],
+  "published": "2026-08-03",
+  "category": "cs.AI"
+ },
+ "2608.01975": {
+  "title": "TELLER: Non-intrusive Cross-Layer Root-Cause Analysis for LLM Inference",
+  "authors": [
+   "Ruilin Xu",
+   "Junyi Li",
+   "Pengfei Chen",
+   "Zongxuan Xie"
+  ],
+  "published": "2026-08-03",
+  "category": "cs.SE"
+ },
+ "2608.02645": {
+  "title": "Verified Tool Calls Improve LLM Agent Reliability Under Non-Atomic Failures",
+  "authors": [
+   "Isham Kalappurackal Mansoor",
+   "Abhishek Phadke",
+   "Pratip Rana"
+  ],
+  "published": "2026-07-31",
+  "category": "cs.SE"
+ },
+ "2608.03893": {
+  "title": "Cross-Model KV Cache Transfer in LLM Families: A Closed-Form Linear Mapping for Prefill Reuse",
+  "authors": [
+   "Taekyung Heo",
+   "Rasoul Shafipour",
+   "Ritchie Zhao",
+   "Maximilian Golub",
+   "Mohammad Mahdi Kamani",
+   "Ritika Borkar",
+   "Makesh Tarun Chandran",
+   "Pantea Zardoshti",
+   "Bita Darvish Rouhani"
+  ],
+  "published": "2026-08-04",
+  "category": "cs.LG"
+ },
+ "2608.04714": {
+  "title": "What We Observe as LLM Behavior Can Be a Side-effect of Inference Backend",
+  "authors": [
+   "Shahed Masoudian",
+   "Passant Shafaei",
+   "Monorama Swain",
+   "Markus Schedl"
+  ],
+  "published": "2026-08-05",
+  "category": "cs.SE"
+ },
+ "2608.05863": {
+  "title": "Runtime Observability for Heterogeneous Attention Memory",
+  "authors": [
+   "Fanzhe Wei",
+   "Li Liu",
+   "Ziyang Wang",
+   "Chenyu Wang"
+  ],
+  "published": "2026-08-06",
+  "category": "cs.AI"
+ },
+ "2608.06503": {
+  "title": "Toward Reliable Context Compression for Long-Horizon Agents: An Empirical Study of Execution Instability",
+  "authors": [
+   "Guanghui Min",
+   "Liang Wu",
+   "Mayank Darbari",
+   "Chen Chen",
+   "Liangjie Hong"
+  ],
+  "published": "2026-08-06",
+  "category": "cs.LG"
+ },
+ "2608.06557": {
+  "title": "Cascade: Exploiting SLO-Aware latency budget for fair and high goodput LLM inference serving",
+  "authors": [
+   "Muhammad Adnan",
+   "Rohan Mahapatra",
+   "Prashant J. Nair",
+   "Daniel Berger",
+   "Pantea Zardoshti",
+   "Rodrigo Fonseca",
+   "Esha Choukse"
+  ],
+  "published": "2026-08-06",
+  "category": "cs.DC"
+ },
+ "2608.07009": {
+  "title": "HiSparse: Scaling Sparse-Attention Decoding with Hierarchical KV Cache Management",
+  "authors": [
+   "Zhiqiang Xie",
+   "Zhangheng Huang",
+   "Tingwei Huang",
+   "Ziyi Xu",
+   "Ruiyang Ma",
+   "Christos Kozyrakis"
+  ],
+  "published": "2026-08-07",
+  "category": "cs.DC"
+ },
+ "2608.09119": {
+  "title": "Motif 3: Technical Report",
+  "authors": [
+   "Junghwan Lim",
+   "Joon Son Chung",
+   "Sungmin Lee",
+   "Wai Ting Cheung",
+   "Gihun Cho",
+   "Minsu Ha",
+   "Sangho Kang",
+   "Beomgyu Kim",
+   "Dongseok Kim",
+   "Jangwoong Kim",
+   "Taehyun Kim",
+   "Taewhan Kim",
+   "Jeesoo Lee",
+   "Jeongdoo Lee",
+   "Junhyeok Lee",
+   "Dongpin Oh",
+   "Hyeyeon Cho",
+   "Dahye Choi",
+   "Jaeheui Her",
+   "Hanbin Jung",
+   "Changjin Kang",
+   "Minjae Kim",
+   "Youngrok Kim",
+   "Hyukjin Kweon",
+   "Hongjoo Lee",
+   "Yeongjae Park",
+   "Bokki Ryu"
+  ],
+  "published": "2026-08-10",
+  "category": "cs.AI"
+ },
+ "2608.09225": {
+  "title": "Governing the KV Cache: Preventing Timing Side-Channel Leakage in Multi-Tenant LLM Inference",
+  "authors": [
+   "Tejasvi C. Addagada"
+  ],
+  "published": "2026-08-10",
+  "category": "cs.CR"
+ },
+ "2608.11034": {
+  "title": "SCOUT: Symmetric Consensus Outlier Detection for Failure Localization in LLM Pre-Training",
+  "authors": [
+   "Zhuang Wang"
+  ],
+  "published": "2026-08-11",
+  "category": "cs.DC"
+ },
+ "2608.11231": {
+  "title": "LinearKV: One Cached State Suffices for Position-Independent Caching in Hybrid LLMs",
+  "authors": [
+   "Yirui Liu",
+   "Ruoling Qi",
+   "Longwen Wang",
+   "Xuaner Wu",
+   "Jian Chen",
+   "Yuxin Jin",
+   "Jiawei Shao",
+   "Xuelong Li"
+  ],
+  "published": "2026-07-31",
+  "category": "cs.AI"
+ },
+ "2608.11668": {
+  "title": "HBF Sucks? A Full-Stack Characterization of High-Bandwidth Flash for KV-Centric LLM Serving",
+  "authors": [
+   "Zhuoran Li",
+   "Zhuohang Bian",
+   "Xin Huang",
+   "Yibo Zhao",
+   "Guangyu Sun",
+   "Youwei Zhuo"
+  ],
+  "published": "2026-08-12",
+  "category": "cs.AR"
+ },
+ "2608.12629": {
+  "title": "CAKE: Compiler-Agent Co-Design for Frontier Kernel Evolution",
+  "authors": [
+   "Zihao Ye",
+   "Yingyi Huang",
+   "Hongyi Jin",
+   "Bohan Hou",
+   "Junru Shao",
+   "Zhongming Yu",
+   "Jinqi Chen",
+   "Meghan Cowan",
+   "Shiyi Cao",
+   "Shanli Xing",
+   "Hanfeng Chen",
+   "Vinod Grover",
+   "Tianqi Chen",
+   "Luis Ceze"
+  ],
+  "published": "2026-08-12",
+  "category": "cs.LG"
+ },
+ "2608.12700": {
+  "title": "A Contract-Grade Verifier for LLM-Generated GPU Kernels, and a Native Blackwell Backward for the Gated-Linear-Recurrence Family",
+  "authors": [
+   "Rishi Shah",
+   "Rishav Shrestha"
+  ],
+  "published": "2026-08-13",
+  "category": "cs.LG"
+ },
+ "2608.13573": {
+  "title": "A Year in LLM Serving: Workload Evolution, Caching and Load-Balancing",
+  "authors": [
+   "William Nixon",
+   "Jon Durbin",
+   "Florian Standhartinger",
+   "Haryadi S. Gunawi",
+   "Juncheng Yang"
+  ],
+  "published": "2026-07-03",
+  "category": "cs.AI"
+ },
+ "2608.13756": {
+  "title": "The Integer Alibi: Localizing Cross-Kernel Divergence in INT8-Quantized LLM Inference",
+  "authors": [
+   "Teng-Ruei Chen"
+  ],
+  "published": "2026-08-13",
+  "category": "cs.LG"
+ },
+ "2608.13940": {
+  "title": "AI Research Preference Models",
+  "authors": [
+   "Thomas Simon Foster",
+   "Bassel Al Omari",
+   "Tingchen Fu",
+   "Thomas Mann",
+   "Carl Domond",
+   "Lucia Cipolina-Kun",
+   "Bhavul Gauri",
+   "Muna Aghamelu",
+   "Alexander D. Goldie",
+   "Eryk Helenowski",
+   "Jean-Christophe Gagnon-Audet",
+   "Alberto Pepe",
+   "Saba Nazir",
+   "Daniel Izcovich",
+   "Noam Levi",
+   "Rishi Hazra",
+   "Karen Hambardzumyan",
+   "Nicolas Baldwin",
+   "Xian Li",
+   "Martin Josifoski",
+   "Paris Giampouras",
+   "Masoud Jalili Sabet",
+   "Anya Sims",
+   "Hela Momand",
+   "Tatiana Shavrina",
+   "Despoina Magka",
+   "Jason Weston",
+   "Yulin Wang",
+   "Anirudh Goyal",
+   "Jo\u00e3o Henriques",
+   "Yoram Bachrach",
+   "Emily McMilin",
+   "Jakob Nicolaus Foerster"
+  ],
+  "published": "2026-08-14",
+  "category": "cs.AI"
+ },
+ "2608.14376": {
+  "title": "CoRun: Padding is Simple and Efficient for Deterministic LLM Inference",
+  "authors": [
+   "Shiju Zhao",
+   "Jiacheng Yang",
+   "Qihang Chen",
+   "Junhao Hu",
+   "Jiaqi Zheng",
+   "Guihai Chen",
+   "Xusheng Chen"
+  ],
+  "published": "2026-08-14",
+  "category": "cs.OS"
+ },
+ "2608.14624": {
+  "title": "Learning Agent Execution for KV-Cache Management in Agentic Serving",
+  "authors": [
+   "Rui Zhang",
+   "Chaeeun Kim",
+   "Shaoting Feng",
+   "Kuntai Du",
+   "Yuhan Liu",
+   "Yi Zhong",
+   "Cheng-Wei Ching",
+   "Junchen Jiang",
+   "Liting Hu"
+  ],
+  "published": "2026-07-16",
+  "category": "cs.AI"
+ },
+ "2608.14635": {
+  "title": "Belayer: Efficient Fault Tolerance for LLM Agentic RL Training",
+  "authors": [
+   "Jiecheng Zhou",
+   "Qinghao Hu",
+   "Peng Sun",
+   "Xingcheng Zhang",
+   "Weiming Zhang"
+  ],
+  "published": "2026-07-28",
+  "category": "cs.DC"
+ },
+ "2608.15118": {
+  "title": "Collective Communication for Distributed LLM Systems: Planning, Runtime Adaptation, and Computation Coordination",
+  "authors": [
+   "Xuebin Song",
+   "Menghao Zhang",
+   "Yuezheng Liu",
+   "Jinyi Xia",
+   "Shucan Yang",
+   "Xiaohe Hu",
+   "Chunming Hu",
+   "Mingwei Xu"
+  ],
+  "published": "2026-08-15",
+  "category": "cs.DC"
+ },
+ "2608.15127": {
+  "title": "From LLM Inference to Agentic Workloads: Characterization and Implications for Serving Systems",
+  "authors": [
+   "Chaokun Chang",
+   "Yukun Zhou",
+   "Kaihua Fu",
+   "Dakai An",
+   "Tianyu Feng",
+   "Hanfeng Lu",
+   "Sheng Yao",
+   "Pu Guo",
+   "Yinghao Yu",
+   "Yizhou Shan",
+   "Bo Li",
+   "Binhang Yuan",
+   "Wei Wang"
+  ],
+  "published": "2026-08-15",
+  "category": "cs.OS"
+ },
+ "2608.15939": {
+  "title": "Aborted but Not Forgotten: KV-Cache Retention Breaks Rollback Consistency in Language Agents",
+  "authors": [
+   "Guijia Zhang",
+   "Harry Yang"
+  ],
+  "published": "2026-08-16",
+  "category": "cs.CL"
+ },
+ "2608.16336": {
+  "title": "Beyond Binary Priorities: Multi-Tier SLA Scheduling for Large Language Model Serving",
+  "authors": [
+   "Anders Vestrum",
+   "Arya Raeesi",
+   "Hanna Roed"
+  ],
+  "published": "2026-08-17",
+  "category": "cs.AR"
+ },
+ "2608.16370": {
+  "title": "What Does Context Compression Cost an Agent? Interaction Costs Unrevealed by Task-Completion Metrics",
+  "authors": [
+   "Shuyu Liu"
+  ],
+  "published": "2026-08-17",
+  "category": "cs.AI"
+ },
+ "2608.16477": {
+  "title": "Pallas: A Proactive KV Cache Migration Framework for LLM Inference in AI-RAN",
+  "authors": [
+   "Tianhang Ding",
+   "Jianchun Liu",
+   "Hongli Xu"
+  ],
+  "published": "2026-08-17",
+  "category": "cs.LG"
+ },
+ "2608.19677": {
+  "title": "CacheRoute: Planned Prefix-Affinity Routing for Large-Scale LLM Serving",
+  "authors": [
+   "Huang Cheng"
+  ],
+  "published": "2026-08-20",
+  "category": "cs.DC"
+ },
+ "2608.20370": {
+  "title": "Benchmarking LLM Serving Systems for Agentic AI Workloads with XPerf",
+  "authors": [
+   "Michael Wang",
+   "Yikang Yue",
+   "Shaobo Li",
+   "Yirui Eric Zhou",
+   "Chen Wang",
+   "Jian Huang"
+  ],
+  "published": "2026-06-19",
+  "category": "cs.DC"
+ },
+ "2608.21719": {
+  "title": "PowerSlider: Exploiting Phase Asymmetry for LLM Serving under Demand Response",
+  "authors": [
+   "Yueying Li",
+   "Jiayang Chen",
+   "Yuanfan Chen",
+   "Leo Han",
+   "Haoran Qiu",
+   "Esha Choukse",
+   "Rodrigo Fonseca",
+   "Udit Gupta"
+  ],
+  "published": "2026-08-22",
+  "category": "cs.DC"
+ },
+ "2608.23740": {
+  "title": "AgentRoom: Concurrent Multi-Agent Coding in a CRDT-Backed Shared Workspace",
+  "authors": [
+   "Seonglae Cho",
+   "Donghyun Lee"
+  ],
+  "published": "2026-08-24",
+  "category": "cs.AI"
+ },
+ "2608.23807": {
+  "title": "Serving Masked Diffusion LLMs: Characterization and Design Principles from Real Hardware",
+  "authors": [
+   "Farhana Amin",
+   "Sabiha Afroz",
+   "Mona Moghadampanah",
+   "Dimitrios S. Nikolopoulos"
+  ],
+  "published": "2026-08-24",
+  "category": "cs.AI"
+ },
+ "2608.25523": {
+  "title": "TOPAS: Workflow-Aware Prefix-State Scheduling for Multi-Agent LLM Serving",
+  "authors": [
+   "Hongqiu Ni",
+   "Han Tian",
+   "Chi Zhang",
+   "Guopeng Li",
+   "Haisheng Tan"
+  ],
+  "published": "2026-08-26",
+  "category": "cs.CL"
+ },
+ "2608.26575": {
+  "title": "Benchmarking Confidential Computing Performance on NVIDIA Blackwell GPUs",
+  "authors": [
+   "Amean Asad",
+   "Ansgar Grunseid"
+  ],
+  "published": "2026-08-27",
+  "category": "cs.DC"
+ },
+ "2608.30386": {
+  "title": "DASC: Decay-Aware State Compression for Hybrid Linear-Attention Serving",
+  "authors": [
+   "Yanqi Yu",
+   "Pingwei Sun",
+   "Jianchao Tan",
+   "Tao Zhang",
+   "Yuchen Xie",
+   "Xunliang Cai",
+   "Yao Liu"
+  ],
+  "published": "2026-08-31",
+  "category": "cs.LG"
+ },
+ "2608.30769": {
+  "title": "TrainSDC: Characterizing and Mitigating Silent Data Corruption in Large Language Model Training",
+  "authors": [
+   "Zhipeng Xia",
+   "Haotian Xu",
+   "Siyu Yun",
+   "Liqi Lin",
+   "Hu Liu",
+   "Yu Li",
+   "Cheng Zhuo"
+  ],
+  "published": "2026-08-31",
+  "category": "cs.LG"
+ },
+ "2608.30830": {
+  "title": "Adaptive KV Retention for LLM Agents at Human-Approval Timescales",
+  "authors": [
+   "Minseo Choi",
+   "Ananya Joshi"
+  ],
+  "published": "2026-08-31",
+  "category": "cs.OS"
+ },
+ "2609.00006": {
+  "title": "Harness Engineering: Anatomy, Architecture, and Evolution of Coding Agents -- A Source-Code Study of Eleven Systems",
+  "authors": [
+   "Paul Barbaste",
+   "Tristan Darrigol",
+   "Germain Vu",
+   "Tom Wiltberger"
+  ],
+  "published": "2026-07-15",
+  "category": "cs.SE"
+ },
+ "2609.00058": {
+  "title": "CUDA-Harness: Harnessing Agentic CUDA Kernel Generation and Optimization from Natural Language",
+  "authors": [
+   "Qi Fan",
+   "An Zou",
+   "Yehan Ma"
+  ],
+  "published": "2026-08-30",
+  "category": "cs.CL"
+ },
+ "2609.00363": {
+  "title": "Deterministic LLM Inference Across GPU Kernels: Power-of-Two INT8 Quantization Scales and the Limits of Tolerance-Based Conformance",
+  "authors": [
+   "Teng-Ruei Chen"
+  ],
+  "published": "2026-08-25",
+  "category": "cs.LG"
+ },
+ "2609.01338": {
+  "title": "mzCache: On-Device LLM Memory Management under Multitasking",
+  "authors": [
+   "Hongseung Yu",
+   "Minsung Kim",
+   "Jongseok Park",
+   "Kyunghan Lee"
+  ],
+  "published": "2026-09-01",
+  "category": "cs.OS"
+ },
+ "2609.03236": {
+  "title": "Speculative Macro Commit for Faster Tool-Using Agents",
+  "authors": [
+   "Zeyu Liu",
+   "Souvik Kundu",
+   "Peter A. Beerel"
+  ],
+  "published": "2026-09-03",
+  "category": "cs.AI"
+ },
+ "2609.04518": {
+  "title": "Multi-Harness Reinforcement Learning for Coding Agents: Training Gains and Harness Dependence",
+  "authors": [
+   "Chenqian Le",
+   "Jiayi Cheng",
+   "Qijia He",
+   "Runhao Li",
+   "Yinghao Li",
+   "Xupeng Chen"
+  ],
+  "published": "2026-09-03",
+  "category": "cs.AI"
+ },
+ "2609.04748": {
+  "title": "Same Request, Different Answer: Quantization Amplifies Cache-Induced Divergence in LLM Serving",
+  "authors": [
+   "Aditi Patodiya"
+  ],
+  "published": "2026-09-04",
+  "category": "cs.SE"
+ },
+ "2609.05406": {
+  "title": "Beyond Scalar Flexibility: From Eligible AI Workloads to Dependable Load Relief",
+  "authors": [
+   "Meiyi Li"
+  ],
+  "published": "2026-09-04",
+  "category": "eess.SY"
+ },
+ "2609.07175": {
+  "title": "Enabling High-Bandwidth Flash for Generative Recommendation Serving with Write-Aware KV Cache Policy",
+  "authors": [
+   "Danni Peng",
+   "Kai Wu",
+   "Tianyu Zuo",
+   "Pengfei Xia",
+   "Hui Zang"
+  ],
+  "published": "2026-09-07",
+  "category": "cs.AR"
+ },
+ "2609.07536": {
+  "title": "Analytical Resource Management for Fine-grained MoE Computation-Communication Overlap",
+  "authors": [
+   "Hongyu Liu",
+   "Minyu Cui",
+   "Miquel Pericas"
+  ],
+  "published": "2026-09-07",
+  "category": "cs.DC"
+ },
+ "2609.09218": {
+  "title": "The Double Measurement Confound in Agent Benchmarks: De-Scaffolding, Ground-Truth Scoring, and Reliability Beyond the Mean",
+  "authors": [
+   "Yonghong Zhang",
+   "Shadi Motaali",
+   "Vu Phong Dinh",
+   "Avin Piroutiniya",
+   "Jorge E. L\u00f3pez de Vergara",
+   "Luis de Pedro",
+   "Ricardo Correia",
+   "Isabel M. Parra",
+   "Yong Xie"
+  ],
+  "published": "2026-09-06",
+  "category": "cs.SE"
+ },
+ "2609.09643": {
+  "title": "UNISON: A Co-Designed Near-Memory Scheduler of Session KV Residency for LLM Agents",
+  "authors": [
+   "Fan He",
+   "Yan Li",
+   "Xiaoyang Zeng"
+  ],
+  "published": "2026-09-09",
+  "category": "cs.AR"
+ },
+ "2609.09662": {
+  "title": "PELM: Power Efficient On-Device LLM Inference with Speculative Decoding and Dynamic Voltage Frequency Scaling",
+  "authors": [
+   "Weisi Yang",
+   "Stephen Xia"
+  ],
+  "published": "2026-09-09",
+  "category": "cs.LG"
+ },
+ "2609.10266": {
+  "title": "KVShareArena: KV-Cache Reuse Across Contexts and Model Checkpoints",
+  "authors": [
+   "Xi Shi",
+   "Mengxin Zheng",
+   "Qian Lou"
+  ],
+  "published": "2026-09-09",
+  "category": "cs.CL"
+ },
+ "2609.10297": {
+  "title": "TRACE: Trajectory-robust Admission with Evidence Ordering for Efficient GUI Agents",
+  "authors": [
+   "Yuhao Wang",
+   "Mu Qiao",
+   "Xindong Zhang",
+   "Yunzhi Zhuge",
+   "Lei Zhang",
+   "Huchuan Lu"
+  ],
+  "published": "2026-09-09",
+  "category": "cs.CV"
+ },
+ "2609.11356": {
+  "title": "Taming Bitwise Behavior in GPU Kernels with Tensor Core: Black-Box Reconstruction, Compiler Enforcement, and Static Verification",
+  "authors": [
+   "Ziteng Yang",
+   "Nicholas J. Riasanovsky",
+   "Warren Deng",
+   "Vivek Sarkar"
+  ],
+  "published": "2026-09-10",
+  "category": "cs.DC"
+ },
+ "2609.11542": {
+  "title": "Characterizing Job Power Elasticity for Power-Flexible AI Training",
+  "authors": [
+   "Philip Colangelo",
+   "Charles Dawson",
+   "Shayan Sengupta",
+   "Ayse Coskun",
+   "Varun Sivaram"
+  ],
+  "published": "2026-09-10",
+  "category": "cs.AI"
+ },
+ "2609.11744": {
+  "title": "Building py-kvcache: A Performance Characterization of External KV Caching for vLLM with NVMe SSDs",
+  "authors": [
+   "Joseph Kanichai",
+   "Tiziano De Matteis",
+   "Animesh Trivedi"
+  ],
+  "published": "2026-09-10",
+  "category": "cs.DC"
+ },
+ "2609.11987": {
+  "title": "Harness or Model? Isolating the Harness Effect in Agentic Coding with a Contamination-Controlled Private Suite",
+  "authors": [
+   "Mohsen Arjmandi"
+  ],
+  "published": "2026-09-08",
+  "category": "cs.AI"
+ },
+ "2609.13585": {
+  "title": "mKernel: Fast Multi-GPU, Multi-Node Fused Kernels",
+  "authors": [
+   "Ziming Mao",
+   "Yihan Zhang",
+   "Shawn Wei Chew",
+   "Shuang Ma",
+   "Costin Raiciu",
+   "Yang Zhou",
+   "Scott Shenker",
+   "Ion Stoica"
+  ],
+  "published": "2026-09-11",
+  "category": "cs.DC"
+ },
+ "2609.14872": {
+  "title": "AgentKV: Phase-Aware KV Eviction for Agentic LLMs",
+  "authors": [
+   "Taowen Tony Liu",
+   "Jeffrey T. H. Wong",
+   "Can Xiao",
+   "Bowen Yang",
+   "Hao Mark Chen",
+   "Yiren Zhao"
+  ],
+  "published": "2026-09-14",
+  "category": "cs.LG"
+ },
+ "2609.15021": {
+  "title": "Shared KV Caching for Replicated 27B Inference: Correctness Failures and Performance Boundaries",
+  "authors": [
+   "Frank Li"
+  ],
+  "published": "2026-09-14",
+  "category": "cs.DC"
+ },
+ "2609.15030": {
+  "title": "Validating Hybrid-State Cache Recovery for GLM-5.3-Flash with vLLM and LMCache",
+  "authors": [
+   "Frank Li"
+  ],
+  "published": "2026-09-14",
+  "category": "cs.DC"
+ },
+ "2609.15359": {
+  "title": "MAPS: Memory-Aware Predictive Scheduling Framework for Large Language Model Serving",
+  "authors": [
+   "Tiancheng Zhang",
+   "Yulin Chen",
+   "Yunfeng Zhao",
+   "Shaoyuan Huang",
+   "Cheng Zhang",
+   "Xiaofei Wang"
+  ],
+  "published": "2026-09-14",
+  "category": "cs.AI"
+ },
+ "2609.16215": {
+  "title": "Where Should the KV Cache Live? Placement Policies Across GPU, CPU, and SSD for Long-Lived Sessions",
+  "authors": [
+   "Srikanta Datta Tumkur",
+   "Jay Iyer",
+   "Mehar Simhadri",
+   "Sai Pavan Kumar",
+   "Sai Kapil Kumar",
+   "Ramesh Nampelly"
+  ],
+  "published": "2026-09-14",
+  "category": "cs.AI"
+ },
+ "2609.16682": {
+  "title": "DeepShare: Assurance-Driven Deep Learning Job Scheduling for Multi-Tenant Clusters",
+  "authors": [
+   "Jinghao Wang",
+   "Yihang Zhou",
+   "Xiao Zhou",
+   "Xinlei Zheng",
+   "Xiaoyang Sun",
+   "Tianyu Wo",
+   "Chunming Hu",
+   "Renyu Yang"
+  ],
+  "published": "2026-09-15",
+  "category": "cs.DC"
+ },
+ "2609.18849": {
+  "title": "Ask the Tool, Don't Guess: Agent Tool Calls Hold Their Progress, and the Serving System Should Read It",
+  "authors": [
+   "Yipeng Liu",
+   "Yingqiang Zhang",
+   "Feifei Li",
+   "Huanchen Zhang"
+  ],
+  "published": "2026-09-16",
+  "category": "cs.DC"
+ },
+ "2609.19169": {
+  "title": "SiliconBench: Speed, Memory, and Fidelity for LLM Serving on Unified-Memory Desktops",
+  "authors": [
+   "Ranran Haoran Zhang",
+   "Aysa Xuemo Fan",
+   "David Munh\u00e1 Correia",
+   "Alex Cheema",
+   "Rui Zhang"
+  ],
+  "published": "2026-09-12",
+  "category": "cs.AR"
+ },
+ "2609.19743": {
+  "title": "Syndrome Decoding for Silent Data Corruption in Quantized Integer GPU Arithmetic",
+  "authors": [
+   "Pranav Napolean",
+   "Vikas Srivastava",
+   "Napolean Periathambi"
+  ],
+  "published": "2026-09-17",
+  "category": "cs.DC"
+ },
+ "2609.19758": {
+  "title": "Sketching the Error, Not the Product: Post Hoc Fault Recovery for Half Precision GPU Matrix Multiplication",
+  "authors": [
+   "Pranav Napolean",
+   "Vikas Srivastava",
+   "Napolean Periathambi"
+  ],
+  "published": "2026-09-17",
+  "category": "cs.DC"
+ },
+ "2609.19880": {
+  "title": "D-Quant: Driftable Entropy Coding for KV Cache Quantization",
+  "authors": [
+   "Yi Su",
+   "Hong Liu",
+   "Guanghua Yu",
+   "Jianchen Zhu"
+  ],
+  "published": "2026-09-17",
+  "category": "cs.CL"
+ },
+ "2609.20804": {
+  "title": "An Empirical Study of Harness Design for Coding Agents",
+  "authors": [
+   "Run-Ze Fan",
+   "Zihao Zhang",
+   "Simin Ma",
+   "Yebowen Hu",
+   "Shouju Wang",
+   "Kaiqiang Song",
+   "Fei Liu",
+   "Hamed Zamani",
+   "Xiaoyang Wang"
+  ],
+  "published": "2026-09-17",
+  "category": "cs.AI"
+ },
+ "2609.20874": {
+  "title": "Decomposing Predictive Kubernetes Autoscaling for Large Language Model Serving Under Long Startup Delays",
+  "authors": [
+   "Tianrui Liu",
+   "Xiaohai Hu"
+  ],
+  "published": "2026-09-16",
+  "category": "cs.PF"
+ },
+ "2609.20957": {
+  "title": "An Approximate Queueing Model of LLM Inference Serving for SLO-Driven Autoscaling",
+  "authors": [
+   "Vishakha Ramani",
+   "Asser N. Tantawi"
+  ],
+  "published": "2026-09-17",
+  "category": "cs.PF"
+ },
+ "2609.21172": {
+  "title": "TierKV: Long-Context On-Device LLMs via Predictive Multi-Tier KV Caching",
+  "authors": [
+   "Zhihao Shu",
+   "Md Musfiqur Rahman Sanim",
+   "Jie Hu",
+   "Kun Yuan",
+   "Minghai Qin",
+   "Gagan Agrawal",
+   "Wei Niu"
+  ],
+  "published": "2026-09-18",
+  "category": "cs.LG"
+ },
+ "2609.21483": {
+  "title": "Weave: Fine-Grained Dynamic SM Scheduling in an MoE Megakernel for Compute-Communication Overlap",
+  "authors": [
+   "Ziyu Huang",
+   "Yangjie Zhou",
+   "Chenhao Zhu",
+   "Peng Yu",
+   "Zihan Liu",
+   "Jinyu Liu",
+   "Shulai Zhang",
+   "Xingxun Tang",
+   "Hongzhe Yan",
+   "Xinhao Luo",
+   "Minyi Guo",
+   "Xiu Lin",
+   "Yinghao Yu",
+   "Guodong Yang",
+   "Liping Zhang",
+   "Shixuan Sun",
+   "Jingwen Leng"
+  ],
+  "published": "2026-09-18",
+  "category": "cs.DC"
+ },
+ "2609.22247": {
+  "title": "CHART: A Harness-Rotation Curriculum for Harness-Robust Search Agents",
+  "authors": [
+   "Xinlu Zhang",
+   "Ying-Chun Lin",
+   "Zhihan Zhang",
+   "Besnik Fetahu",
+   "Xi Chen"
+  ],
+  "published": "2026-09-05",
+  "category": "cs.LG"
+ },
+ "2609.22978": {
+  "title": "DeepSeek Elastic Compute (DSec): A Sandbox Infrastructure for Effective Agentic Training at Scale",
+  "authors": [
+   "Jialiang Huang",
+   "Hongxuan Tang",
+   "Jingchang Chen",
+   "Yuxuan Liu",
+   "Yixiao Chen",
+   "Yuan Cheng",
+   "Yi Tao",
+   "Jingli Zhou",
+   "Yupeng Chen",
+   "Haoyu Chen",
+   "Jiarui Wang",
+   "Shengkai Lin",
+   "Chuqi Zhang",
+   "Bryan Lee Teng",
+   "Lian Guo",
+   "Zhe Fu",
+   "Wenjun Gao",
+   "Yisong Wang",
+   "Liang Zhao",
+   "Zehao Wang",
+   "Ziwei Xie",
+   "Yongqiang Guo",
+   "Peixin Cong",
+   "Ziyi Gao",
+   "Shuiping Yu",
+   "Hanwei Xu",
+   "Zuofan Wu",
+   "Zhizhou Ren",
+   "Yuyang Zhou",
+   "Bowei Zhang",
+   "Zhihuan Huang",
+   "Qihao Zhu",
+   "Lei Wang",
+   "Tianle Lin",
+   "Han Yu",
+   "Jiewen Hu",
+   "Dejian Yang",
+   "Shuo Yang",
+   "Shanghao Lu",
+   "Shaoyuan Chen",
+   "Junjie Qiu",
+   "Zhangli Sha",
+   "Yinmin Zhong",
+   "Yongtong Wu",
+   "Shiyu Wang",
+   "Wei Liu",
+   "Bingzheng Xu",
+   "Longhao Chen",
+   "Qiushi Du",
+   "Yuzhen Huang",
+   "Shirong Ma",
+   "Yaohui Wang",
+   "Mingshu Chen",
+   "Tongrui Xiong",
+   "Y. C. Yan",
+   "Haowen Luo",
+   "Haofen Liang",
+   "Xiaokang Zhang",
+   "Weihao Zeng",
+   "Runxin Xu",
+   "Peiyi Wang",
+   "Jinhua Zhu",
+   "Ruoyu Zhang",
+   "Wenkai Yang",
+   "Qi Tang",
+   "Jiping Yu",
+   "Tian Ye",
+   "Ruizhe Pan",
+   "Honghui Ding",
+   "Xiaodong Liu",
+   "Lingxiao Luo",
+   "Zhihong Shao",
+   "Yuhan Wu",
+   "Jibai Lu",
+   "Wen Liu",
+   "Haoling Zhang",
+   "Jingcheng Hu",
+   "Yaoyang Ye",
+   "Chaofan Lin",
+   "Zhaochen Zhang",
+   "Jianan Tong",
+   "Hengxu Wu",
+   "Zhihao Li",
+   "Yicheng Wang",
+   "Luyao Wang",
+   "Yuzhuo Bai",
+   "Lingyue Fu",
+   "Ruifan Xu",
+   "Y. Z. Wang",
+   "Zonglin Li",
+   "Mingqi Wei",
+   "Haiyang Shen",
+   "Chengyuan Zhang",
+   "Chao Jin",
+   "Zili Zhang",
+   "R. H. Yang",
+   "Xinbo Xu",
+   "Jian Zhou",
+   "Ruidong Zhu",
+   "Yuzhe Guo",
+   "Zelun Pan",
+   "Shaoheng Nie",
+   "Erhang Li",
+   "Shuhan Lin",
+   "Zheng Liu",
+   "Anshuo Chen",
+   "Zilong Lyu",
+   "Sinuo Cao",
+   "Rui Yu",
+   "Chuhao Wang",
+   "Junyi Guo",
+   "Junxiao Song",
+   "Kaifeng Chen",
+   "Menghao Ye",
+   "Junxian Li",
+   "Di Wu",
+   "Haiyang Ma",
+   "Yilun Wang",
+   "Haoran Yang",
+   "Yizai Cai",
+   "Shichun Liu",
+   "Yiping Wang",
+   "Junbo Sun",
+   "Shicheng Xu",
+   "Xiao Bi",
+   "Ying He",
+   "Yichao Zhang",
+   "Mingxing Zhang",
+   "Liyue Zhang",
+   "Panpan Huang",
+   "Wenfeng Liang"
+  ],
+  "published": "2026-09-19",
+  "category": "cs.DC"
+ },
+ "2609.23033": {
+  "title": "WaveFront Decoding: Parallelized Self-Speculative Decoding for Looped Language Models",
+  "authors": [
+   "Hyeongju Ha",
+   "Jae-Joon Kim"
+  ],
+  "published": "2026-09-19",
+  "category": "cs.LG"
+ },
+ "2609.25451": {
+  "title": "Fast Recovery for LLM Serving via Decoupled Device Memory Lifetime in Dynamo",
+  "authors": [
+   "Schwinn Saereesitthipitak",
+   "Mohammed Abdulwahhab",
+   "Hannah Zhang",
+   "Dan Feigin",
+   "Neelay Shah",
+   "Maksim Khadkevich",
+   "Itay Neeman",
+   "Vikram Sharma Mailthody",
+   "Wen-mei W. Hwu"
+  ],
+  "published": "2026-09-21",
+  "category": "cs.DC"
+ },
+ "2609.25624": {
+  "title": "Accelerating the Mitigation of LLM Inference Nondeterminism Across GPU Architectures",
+  "authors": [
+   "Liam Cooper",
+   "Shinnung Jeong",
+   "Hyeran Jeon",
+   "Jeffrey Young",
+   "Hyesoon Kim"
+  ],
+  "published": "2026-09-22",
+  "category": "cs.AR"
+ },
+ "2609.26219": {
+  "title": "PatchKV: Efficient KV Cache Recovery for Dynamically Edited LLM Contexts",
+  "authors": [
+   "Guotao Yang",
+   "Rui Guo",
+   "Siwei He",
+   "Sheng Chen",
+   "Yitao Hu",
+   "Keqiu Li"
+  ],
+  "published": "2026-08-18",
+  "category": "cs.DC"
+ },
+ "2609.26621": {
+  "title": "Greedy Decoding Is Not Precision-Invariant: Cross-Precision Output Divergence in LLM Inference",
+  "authors": [
+   "Gaoyuan Du",
+   "Anam Nawaz Khan",
+   "Rex Zhou",
+   "Xiaoyang Liu",
+   "Deepayan Chakrabarti",
+   "Fnu Suya",
+   "Xueping Li"
+  ],
+  "published": "2026-09-22",
+  "category": "cs.LG"
+ },
+ "2609.26779": {
+  "title": "CliffCompaction: Cost-Efficient Compaction for Long-Horizon Coding Agents",
+  "authors": [
+   "Trang Nguyen",
+   "Eulrang Cho",
+   "Bingqing Chen",
+   "Tim Dettmers"
+  ],
+  "published": "2026-09-22",
+  "category": "cs.AI"
+ },
+ "2609.28870": {
+  "title": "When Fancy Eviction Fails: Rethinking Cache Replacement For LLM Prefix Reuse",
+  "authors": [
+   "Yiyu Liu",
+   "Minlan Yu",
+   "Juncheng Yang"
+  ],
+  "published": "2026-09-24",
+  "category": "cs.DC"
+ },
+ "2609.29095": {
+  "title": "Where Does Exactly-Once Live? Model, Harness, and Tool-Contract Effects on Duplicate Side Effects in LLM Agents",
+  "authors": [
+   "Jiapeng Li"
+  ],
+  "published": "2026-09-24",
+  "category": "cs.LG"
+ },
+ "2609.32278": {
+  "title": "RR-Evict: Fine-Grained Prefix Cache Eviction beyond LRU for Agentic LLM Serving",
+  "authors": [
+   "Zaifeng Pan",
+   "Chris Wu",
+   "Zhengding Hu",
+   "Xinwei Qiang",
+   "Zhongkai Yu",
+   "Yufei Ding"
+  ],
+  "published": "2026-09-26",
+  "category": "cs.DC"
+ },
+ "2609.33762": {
+  "title": "EfficientAgent: What Makes KV Cache Offloading Work for Concurrent Agents?",
+  "authors": [
+   "Kunming Shao",
+   "Jierun Chen",
+   "Jiangnan Yu",
+   "Xiao-Hui Li",
+   "Chaofan Tao",
+   "Yanli Wang",
+   "Huanxin Lin",
+   "Kwang-Ting Cheng",
+   "Chi Ying Tsui",
+   "Haoli Bai"
+  ],
+  "published": "2026-09-27",
+  "category": "cs.DC"
+ },
+ "2609.35115": {
+  "title": "DuplexCadence: Exact State and Execution from a Speech Model's Declared Timelines",
+  "authors": [
+   "Haixiao Gao",
+   "Yimin Zheng",
+   "Linyou Xiao",
+   "Zeke Xie"
+  ],
+  "published": "2026-09-28",
+  "category": "cs.AI"
+ },
+ "2609.35366": {
+  "title": "Planarian: Managing Agent State with Statepoints",
+  "authors": [
+   "Jinnan Guo",
+   "Hao Mark Chen",
+   "Kapil Vaswani",
+   "Andrew Paverd",
+   "Peter Pietzuch"
+  ],
+  "published": "2026-09-28",
+  "category": "cs.OS"
+ },
+ "2609.37538": {
+  "title": "AVSG: Accelerated Vectorized Sparse Gather for Efficient KV Cache Offload in Sparse-Attention LLM Serving",
+  "authors": [
+   "Wenwei Kuang",
+   "Xiangyu Wang",
+   "Chong Wu",
+   "Jun Wang",
+   "Weijie Zhang",
+   "Brian K Chen",
+   "Longwen Lan",
+   "Ken Zhang"
+  ],
+  "published": "2026-09-29",
+  "category": "eess.SP"
+ },
+ "2609.38648": {
+  "title": "StateFork: Branchable Infrastructure for Agent Exploration",
+  "authors": [
+   "Jiakai Xu",
+   "Tianle Zhou",
+   "Georgios Liargkovas",
+   "Danielle Gillai",
+   "Ruizhe Fu",
+   "Patrick Shen",
+   "Eugene Wu",
+   "Kostis Kaffes"
+  ],
+  "published": "2026-09-29",
+  "category": "cs.OS"
+ },
+ "2609.38981": {
+  "title": "Vosti: Specifying, Implementing, and Verifying Deterministic LLM Inference",
+  "authors": [
+   "Jianxing Qin",
+   "Alexander Du",
+   "Danfeng Zhang",
+   "Matthew Lentz",
+   "Danyang Zhuo"
+  ],
+  "published": "2026-09-30",
+  "category": "cs.DC"
+ },
+ "2609.39131": {
+  "title": "Characterizing High Bandwidth Flash for LLM Serving",
+  "authors": [
+   "Zack Yu",
+   "Chloe Wong",
+   "Coleman Hooper",
+   "Minjae Lee",
+   "Wonjun Kang",
+   "Youngjin Cho",
+   "Michael W. Mahoney",
+   "Yakun Sophia Shao",
+   "Kurt Keutzer",
+   "Amir Gholami"
+  ],
+  "published": "2026-09-30",
+  "category": "cs.LG"
+ },
+ "2609.39185": {
+  "title": "Low-Discrepancy Dither for Quantized Recurrent State Caches",
+  "authors": [
+   "Snigdha Chandan Khilar"
+  ],
+  "published": "2026-09-30",
+  "category": "cs.LG"
+ },
+ "2610.00267": {
+  "title": "ThermE: Predictive Management of Shared Thermal Headroom for Sustained LLM Inference on Thermally Constrained Edge SoCs",
+  "authors": [
+   "Rui Lu",
+   "Yuheng Wang",
+   "Bozheng Liu"
+  ],
+  "published": "2026-09-24",
+  "category": "eess.SY"
+ },
+ "2610.02240": {
+  "title": "Calibrating the Checksum: An Empirical False-Positive Bound for One-Sided ABFT on bfloat16 GEMM, and What It Fails to Catch",
+  "authors": [
+   "Gautam Khosla"
+  ],
+  "published": "2026-09-29",
+  "category": "cs.AR"
+ },
+ "2610.04537": {
+  "title": "PhaseGate: Phase-Aware CPU Retrieval Scheduling for On-Device LLMs on Unified Memory",
+  "authors": [
+   "Seoyoon Yum",
+   "Sehoon Kim"
+  ],
+  "published": "2026-10-03",
+  "category": "cs.LG"
+ },
+ "2610.08378": {
+  "title": "Lachesis: Lifetime-Aware KV Cache Placement for Agent Serving across HBM and High-Bandwidth Flash",
+  "authors": [
+   "Jaehoon Yang",
+   "Jeongmin Lee",
+   "Haneul Park",
+   "Seung Yul Lee",
+   "Nam Sung Kim",
+   "Jae W. Lee"
+  ],
+  "published": "2026-10-06",
+  "category": "cs.AR"
+ }
+}
