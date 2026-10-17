@@ -20,12 +20,15 @@ The folder has links only, not PDFs. Most arXiv licenses do not let us share cop
 | [`09-gpu-efficiency/`](09-gpu-efficiency/README.md) | GPU efficiency review (added 2026-09-30) | 46 | 1 |
 | [`10-agent-context-compression/`](10-agent-context-compression/README.md) | Context compression and prompt caching for agents (added 2026-10-04, R-08) | 24 | 2 |
 | [`11-cross-domain-directions-r09/`](11-cross-domain-directions-r09/README.md) | Cross-domain directions (added 2026-10-06, R-09) | 28 | 12 |
-| [`12-mechanism-transfer-routes-r10-r13/`](12-mechanism-transfer-routes-r10-r13/README.md) | Mechanism-transfer routes (added 2026-10-07, R-10) | 41 | 5 |
-| [`13-route-search-r17/`](13-route-search-r17/README.md) | Route search 3 (added 2026-10-08, R-17) | 85 | 3 |
-| [`14-orphan-scan-r18/`](14-orphan-scan-r18/README.md) | Orphan-finding scan (added 2026-10-08, R-18) | 37 | 2 |
-| [`15-assumption-removal-r19/`](15-assumption-removal-r19/README.md) | Assumption removal (R-19, 2026-10-11). Not yet in journal Section 7 | 58 | 0 |
-| [`16-other-journal-citations/`](16-other-journal-citations/README.md) | Other papers cited in the journal outside Section 7 | 21 | 0 |
-| | **Total** | **447** | **61** |
+| [`12-mechanism-transfer-routes-r10-r13/`](12-mechanism-transfer-routes-r10-r13/README.md) | Mechanism-transfer routes (added 2026-10-07, R-10) | 40 | 5 |
+| [`13-route-search-r17/`](13-route-search-r17/README.md) | Route search 3 (added 2026-10-08, R-17) | 83 | 3 |
+| [`14-orphan-scan-r18/`](14-orphan-scan-r18/README.md) | Orphan-finding scan (added 2026-10-08, R-18) | 35 | 2 |
+| [`17-seed-topic-search-r20/`](17-seed-topic-search-r20/README.md) | Seed-topic gap search (added 2026-10-16, R-20) | 34 | 5 |
+| [`18-current-frontier-r21/`](18-current-frontier-r21/README.md) | Current-frontier systems review (added 2026-10-17, R-21) | 12 | 8 |
+| [`19-continued-frontier-r22/`](19-continued-frontier-r22/README.md) | Continued frontier systems review (added 2026-10-17, R-22) | 4 | 10 |
+| [`15-assumption-removal-r19/`](15-assumption-removal-r19/README.md) | Assumption removal (R-19, 2026-10-11). Not yet in journal Section 7 | 53 | 0 |
+| [`16-other-journal-citations/`](16-other-journal-citations/README.md) | Other papers cited in the journal outside Section 7 | 22 | 0 |
+| | **Total** | **488** | **84** |
 <!-- index:end -->
 
 ## How to read the tables

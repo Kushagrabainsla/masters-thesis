@@ -34,6 +34,9 @@ TOPICS = {
     "7.12": "12-mechanism-transfer-routes-r10-r13",
     "7.13": "13-route-search-r17",
     "7.14": "14-orphan-scan-r18",
+    "7.15": "17-seed-topic-search-r20",
+    "7.16": "18-current-frontier-r21",
+    "7.17": "19-continued-frontier-r22",
     "R-19": "15-assumption-removal-r19",
     "other": "16-other-journal-citations",
 }
@@ -61,6 +64,9 @@ DOSSIER_TOPIC = [
     ("R-19", "R-19"),
     ("ASSUMPTIONS_R-19", "R-19"),
     ("REVIEW_R-19", "R-19"),
+    ("GAPS_R-20", "7.15"),
+    ("FRONTIER_R-21", "7.16"),
+    ("FRONTIER_R-22", "7.17"),
 ]
 
 ID_RE = re.compile(r"(?<![\d.])(\d{2})(\d{2})\.(\d{4,5})(?:v\d+)?(?!\d)")
