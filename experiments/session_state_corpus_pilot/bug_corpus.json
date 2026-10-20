@@ -1,0 +1,70 @@
+{
+  "schema": "e33-corpus-v1",
+  "status": "CANCELLED_BEFORE_RUN",
+  "frozen_on": "2026-10-19",
+  "repository": "https://github.com/vllm-project/vllm",
+  "base_image": "vllm/vllm-openai-cpu@sha256:433cbee5e0b689095484090454b6fcdf0c68fe3eabfbb251a5e39d442917a4a6",
+  "minimum_passing_pairs": 4,
+  "replacement_after_run": false,
+  "cases": [
+    {
+      "id": "pr59103_stale_block_hash",
+      "pr": 59103,
+      "url": "https://github.com/vllm-project/vllm/pull/59103",
+      "parent_sha": "b0b23a48d466712d18d390e73b62b169842f65e2",
+      "fix_sha": "2b32d9ac6a910faf786a2904b87d5abed044c228",
+      "test_files": [
+        "tests/v1/streaming_input/test_scheduler_streaming.py"
+      ],
+      "test_node": "tests/v1/streaming_input/test_scheduler_streaming.py::TestStreamingScheduler::test_update_request_as_session_drops_stale_block_hashes",
+      "cpu_result": "NOT_RUN"
+    },
+    {
+      "id": "pr58259_async_handoff",
+      "pr": 58259,
+      "url": "https://github.com/vllm-project/vllm/pull/58259",
+      "parent_sha": "764413559a1416511002268ac460bbf8e7ddd394",
+      "fix_sha": "2f4a9759014e9294b4402aeae0fc25c11b47fc7d",
+      "test_files": [
+        "tests/v1/core/test_async_scheduler.py"
+      ],
+      "test_node": "tests/v1/core/test_async_scheduler.py::test_resumable_request_handoff",
+      "cpu_result": "NOT_RUN"
+    },
+    {
+      "id": "pr58668_stop_trim",
+      "pr": 58668,
+      "url": "https://github.com/vllm-project/vllm/pull/58668",
+      "parent_sha": "49f944be3e9fa12cbff5f30ea5ed8e1efa534e20",
+      "fix_sha": "d486219fc2f27a981d6eda53eb2b95bfde1a1d63",
+      "test_files": [
+        "tests/v1/streaming_input/test_scheduler_streaming.py"
+      ],
+      "test_node": "tests/v1/streaming_input/test_scheduler_streaming.py::test_next_chunk_fully_computed_after_stop_on_accepted_draft",
+      "cpu_result": "NOT_RUN"
+    },
+    {
+      "id": "pr58778_preempted_stop",
+      "pr": 58778,
+      "url": "https://github.com/vllm-project/vllm/pull/58778",
+      "parent_sha": "2067297b2f15f0776be6d2a7e1b435bd20af60c1",
+      "fix_sha": "f98ae6a9fd2c73a2f80dd9fe4c534676f689394d",
+      "test_files": [
+        "tests/v1/streaming_input/test_async_llm_streaming.py",
+        "tests/v1/streaming_input/test_scheduler_streaming.py"
+      ],
+      "test_node": "tests/v1/streaming_input/test_scheduler_streaming.py::test_session_resumes_after_stop_while_preempted",
+      "cpu_result": "NOT_RUN"
+    }
+  ],
+  "excluded": [
+    {
+      "pr": 44526,
+      "reason": "Closed without merge and has no stable fix commit."
+    },
+    {
+      "pr": 60764,
+      "reason": "Open and has no stable fix commit."
+    }
+  ]
+}

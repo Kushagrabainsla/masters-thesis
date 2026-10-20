@@ -1,0 +1,628 @@
+W1020 06:01:59.175000 1 site-packages/torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1020 06:01:59.176000 1 site-packages/torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1020 06:01:59.176000 1 site-packages/torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+Failed to import from vllm._C: ModuleNotFoundError("No module named 'vllm._C'")
+W1020 06:02:02.306000 1 site-packages/torch/_library/triton.py:53] Triton not available, find_triton_kernels = []
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Model Runner V2 requires Triton; using the V1 model runner instead.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.
+Casting torch.bfloat16 to torch.float16.
+CPU backend prefers block_size is multiples of 32, otherwise the performance is not optimized.

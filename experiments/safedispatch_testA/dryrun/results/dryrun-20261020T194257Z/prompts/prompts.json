@@ -1,0 +1,98 @@
+[
+ {
+  "id": "e23_local-0",
+  "source": "e23_local",
+  "index": 0,
+  "prompt": "<|im_start|>user\nEnvironment: Apple M4, 16 GiB unified memory, macOS 26.5.2, torch 2.14.0, transformers 5.17.0, MPS, float16, eager attention. Qwen3.5-0.8B-Base. `causal_conv1d` and `flash-linear-attention` are absent, so recurrent kernels use correct but slow reference implementations. This inflates recurrent cost relative to attention, which makes every full-attention share reported here a **conservative underestimate** on this hardware. The analytical model in section 1.3 does not have this bias.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-1",
+  "source": "e23_local",
+  "index": 1,
+  "prompt": "<|im_start|>user\nGiven a fixed per-request byte budget for a hybrid model, does the cost-optimal allocation across the three state classes, full-attention K/V, recurrent snapshots, and full-attention post-block activations, vary enough across real models and context lengths that any single static policy loses materially?<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-2",
+  "source": "e23_local",
+  "index": 2,
+  "prompt": "<|im_start|>user\nINTERPRETATION. There is a checkable soundness condition hiding here. At each position, the set of executed layers must be *input-closed*: for every executed layer L, either L-1 also executes at that position, or L-1's output activation is cached. Skipping an interior layer group while running the groups above it violates closure. Only two plans satisfy it:<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-3",
+  "source": "e23_local",
+  "index": 3,
+  "prompt": "<|im_start|>user\nMac-side work that is possible now: read the NCCL 2.28+ source for the CE selection path and the tuner plugin's actual inputs, and establish from source whether live compute state is even available to the decision point. If the tuner cannot observe concurrent kernel occupancy, that is a concrete systems gap independent of any benchmark.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-4",
+  "source": "e23_local",
+  "index": 4,
+  "prompt": "<|im_start|>user\nINTERPRETATION. This matters two ways. First, #52773's load-backfill is not a proposal any more, it is shipped, so the performance half of this research line is even more thoroughly closed than section 2 said. Second, it is direct evidence for RQ1: upstream keeps itself sound with hand-written conditional guards (\"if any hit ran deeper than full attention, fall back and reconcile\") spread across the manager and the scheduler, with the invariant stated only in a docstring. The closure condition in section 4 is that invariant, written down and made checkable. That is the contribution.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-5",
+  "source": "e23_local",
+  "index": 5,
+  "prompt": "<|im_start|>user\nInteger Alibi states (FACT, quoted from its limitations): one consumer GPU (sm_89), one model family at two sizes, one engine version, two INT8 kernels plus one FP8 pair. \"Nothing here licenses claims across GPU generations, model families, or future kernels.\" It also has no MoE, no NVFP4 and no multi-GPU. Its FP8 result is operator-level only, no end-to-end sequence agreement.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-6",
+  "source": "e23_local",
+  "index": 6,
+  "prompt": "<|im_start|>user\nINTERPRETATION. These two curves move in opposite directions, and that is the whole story of this research line. Long context makes full-attention work dominate hybrid replay, so the prize is real and large. But the only thing the *sound* frozen-KV mechanism actually avoids is recomputing K/V projections, which is 1.2% of replay at 512 tokens and falls toward zero as context grows, because attention matmul and MLP work grow while the projection stays linear in suffix length.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-7",
+  "source": "e23_local",
+  "index": 7,
+  "prompt": "<|im_start|>user\nFACT. The exposed control is `NCCL_CTA_POLICY` set to DEFAULT, EFFICIENCY or ZERO, a static per-communicator setting, plus `ncclCommInitRankConfig`. NVIDIA's own announcement does not state how the CE versus SM choice is made, and the documentation exposes no dedicated CE selection variable. Selection is automatic on topology and message characteristics, or tuner-driven.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-8",
+  "source": "e23_local",
+  "index": 8,
+  "prompt": "<|im_start|>user\nFACT. 3 models x 3 context lengths x 4 divergence-depth distributions x budgets from 1 to 32 snapshots. Optimally placed recurrent checkpoints win at **every** budget from 1 to 8 snapshots, for every model, at every context, under every distribution. The activation cache only wins at 16 or 32 snapshots of budget, which is 288 MiB to 4.6 GiB of state for a single request.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-9",
+  "source": "e23_local",
+  "index": 9,
+  "prompt": "<|im_start|>user\nCORRECTION. An earlier pass of this table reported 252 MiB for Nemotron-H. That was wrong: the script fell back to the MLP `intermediate_size` as the Mamba inner width. Mamba2 state is `[n_heads, head_dim, d_state]` per layer, and `n_heads * head_dim` is the Mamba inner width, not the MLP width. Corrected value is 96 MiB.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-10",
+  "source": "e23_local",
+  "index": 10,
+  "prompt": "<|im_start|>user\nCORRECTION WORTH RECORDING. An earlier pass of this analysis computed the snapshot size from an fp16 assumption and got 9.63 MiB, which made checkpointing look twice as cheap as it is. The live cache says otherwise: the gated-DeltaNet recurrent state is stored in **float32**, 4.0 bytes per element, even though the model runs in float16, because SSM state accumulates and needs the headroom. The measured snapshot is 18.84 MiB (18.00 MiB state plus 0.84 MiB conv), which reproduces the handoff ledger's independently recorded ~19.76 MiB. All numbers above use the measured value. This mattered: it halved the crossover budget.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-11",
+  "source": "e23_local",
+  "index": 11,
+  "prompt": "<|im_start|>user\nIndependent evidence that these cells are live: FlashInfer's audit found about 36% of bugs in low-precision GEMM and MoE and about 31% in MoE, and about 60% of fixes in the Python dispatch and validation layer. Open B200 reports vLLM #55238 (CUDA graph replay changes greedy output, Blackwell only, no root cause at fetch time) and #55649 (NVFP4 gated-MoE padding corrupts output, fix PR unmerged) match that pattern.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-12",
+  "source": "e23_local",
+  "index": 12,
+  "prompt": "<|im_start|>user\nThe last column is the one that matters. For Nemotron-H-8B at about 3K context the entire full-attention activation cache costs the same as **one** recurrent snapshot, so the two strategies are priced comparably rather than one dominating. That looked like a live question when written. Section 10.3 settles it negatively with optimal checkpoint placement.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-13",
+  "source": "e23_local",
+  "index": 13,
+  "prompt": "<|im_start|>user\nSkipping layers above the last recurrent layer during backfill is sound, needs no extra memory, and is worth 1% to 6% measured on Apple MPS and up to about 15% analytically at long context for Qwen-family layouts. vLLM's backfill path has no notion of a per-request layer ceiling. Small, self-contained, verifiable, and it shows the invariant doing useful work rather than only forbidding things.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-14",
+  "source": "e23_local",
+  "index": 14,
+  "prompt": "<|im_start|>user\nFACT. The August 2026 survey (arXiv 2608.15118) names this open, in its own words: \"A major architectural limitation is their heavy reliance on GPU computing resources (such as GPU Streaming Multiprocessors and device memory bandwidth) to drive network progress.\" Its adaptive-execution section covers MSCCL++, AutoCCL and MCCS; its coordination section covers CoCoNet, Centauri and NanoFlow. None selects the execution engine from live compute-kernel resource state.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ },
+ {
+  "id": "e23_local-15",
+  "source": "e23_local",
+  "index": 15,
+  "prompt": "<|im_start|>user\nSkipping layers above the last recurrent layer during backfill is sound, needs no extra memory, and is worth about 1% to 6% measured on this hardware and up to about 15% analytically at long context for Qwen3.5-family layouts. It is also, as far as the surveyed code shows, not done: vLLM's backfill path has no notion of a per-request layer ceiling. That is a small, self-contained, verifiable upstream patch, and a good first artifact for RQ1 because it demonstrates the invariant doing useful work rather than only forbidding things.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+ }
+]

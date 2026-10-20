@@ -1,0 +1,15 @@
+{
+  "completed_at": "2026-10-20T06:02:12.061596+00:00",
+  "container_image": "e35-vllm-sched:3897f95",
+  "container_image_id": "sha256:2f0b88823f437e6ad5309780cb1c228062241be0969a16dfb58bc4b237fda8ff",
+  "network": "none",
+  "result_sha256": "57e23ce1e5b70b8c536a19d69cfb35f53db84015202af83a840b6b54ff12b297",
+  "schema": "e35-trace-manifest-v1",
+  "sha256": {
+    "Dockerfile": "4904b3733c28928adc2d21cc7f09c422d75a40f757860909a3511bdfb646f10e",
+    "README.md": "92cb40c663a1dfd0b9d60017e26ea75a2f3b25475d5a205cbbbeb80739e9da08",
+    "harness.py": "b91865c05dff0ff8482b0c59288553dedf25dd91dcca066e96982e5b80b86872",
+    "trace_check.py": "6cb5662a1c589cfc5846440d696d5be091c44da5b0abe6ac6b828efdc0a0ef0a"
+  },
+  "vllm_sha": "3897f95cf17619137536d2a7d325d9c2f39dc38f"
+}

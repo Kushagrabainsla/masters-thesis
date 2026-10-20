@@ -1,0 +1,10 @@
+{
+  "audit_sha256": "66676b7a17d568bba93e818fceb8c1b83e853a2da7b224577b6e48097102bc00",
+  "completed_at": "2026-10-18T03:58:31.063733+00:00",
+  "container_cpus": 4,
+  "container_image": "python:3.12-slim",
+  "container_image_id": "sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+  "container_memory": "4g",
+  "schema": "i122-source-audit-manifest-v1",
+  "source_audit_script_sha256": "4f1a5a858cda65bd7ae3f1e5d3da064ba9700fe187ea9a23e9738df023d8a3ef"
+}

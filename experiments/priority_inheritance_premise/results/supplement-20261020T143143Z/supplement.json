@@ -1,0 +1,20 @@
+{
+ "P": {
+  "counts": {
+   "n": 600,
+   "both_finished": 600,
+   "first_equal": 510,
+   "token_shared_earlier": 361,
+   "token_equal": 239,
+   "first_shared_earlier": 90
+  },
+  "shared_later_cases": []
+ },
+ "A": {
+  "reason_counts": {
+   "budget": 1729,
+   "other_h_alloc_none": 310,
+   "preempt_step": 17
+  }
+ }
+}

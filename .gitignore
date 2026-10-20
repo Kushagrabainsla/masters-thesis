@@ -6,6 +6,3 @@ __pycache__/
 # another student's proposal, reference only
 NAIRR_Proposal.pdf
 grants/reference/
-
-# local agent tooling, not part of the research
-.claude/

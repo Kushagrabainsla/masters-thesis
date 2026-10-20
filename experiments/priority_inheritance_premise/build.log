@@ -1,0 +1,566 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.24kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/8] FROM docker.io/library/python:3.12-slim@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9
+#4 resolve docker.io/library/python:3.12-slim@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9 done
+#4 DONE 0.0s
+
+#5 [2/8] RUN apt-get update     && apt-get install -y --no-install-recommends git     && rm -rf /var/lib/apt/lists/*
+#5 CACHED
+
+#6 [3/8] RUN git clone --filter=blob:none https://github.com/vllm-project/vllm.git /opt/vllm     && git -C /opt/vllm checkout --detach "3897f95cf17619137536d2a7d325d9c2f39dc38f"
+#6 CACHED
+
+#7 [4/8] RUN pip install torch==2.14.0+cpu --index-url https://download.pytorch.org/whl/cpu
+#7 CACHED
+
+#8 [5/8] RUN pip install -r /opt/vllm/requirements/common.txt
+#8 0.709 Ignoring protobuf: markers 'platform_machine == "s390x"' don't match your environment
+#8 1.126 Collecting regex (from -r /opt/vllm/requirements/common.txt (line 1))
+#8 1.272   Downloading regex-2026.9.29-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (40 kB)
+#8 1.328 Collecting cachetools (from -r /opt/vllm/requirements/common.txt (line 2))
+#8 1.362   Downloading cachetools-7.2.4-py3-none-any.whl.metadata (5.5 kB)
+#8 1.438 Collecting psutil (from -r /opt/vllm/requirements/common.txt (line 3))
+#8 1.472   Downloading psutil-7.2.2-cp36-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (22 kB)
+#8 1.529 Collecting sentencepiece (from -r /opt/vllm/requirements/common.txt (line 4))
+#8 1.562   Downloading sentencepiece-0.2.2-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (33 kB)
+#8 1.676 Collecting numpy (from -r /opt/vllm/requirements/common.txt (line 5))
+#8 1.707   Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (6.6 kB)
+#8 1.753 Collecting requests>=2.33.0 (from -r /opt/vllm/requirements/common.txt (line 6))
+#8 1.785   Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+#8 1.831 Collecting tqdm (from -r /opt/vllm/requirements/common.txt (line 7))
+#8 1.864   Downloading tqdm-4.70.1-py3-none-any.whl.metadata (57 kB)
+#8 1.957 Collecting blake3 (from -r /opt/vllm/requirements/common.txt (line 8))
+#8 1.990   Downloading blake3-1.0.11-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.9 kB)
+#8 2.032 Collecting py-cpuinfo (from -r /opt/vllm/requirements/common.txt (line 9))
+#8 2.075   Downloading py_cpuinfo-9.0.0-py3-none-any.whl.metadata (794 bytes)
+#8 2.145 Collecting transformers<5.21.0,>=5.16.1 (from -r /opt/vllm/requirements/common.txt (line 10))
+#8 2.181   Downloading transformers-5.20.2-py3-none-any.whl.metadata (31 kB)
+#8 2.292 Collecting huggingface_hub>=1.31.0 (from -r /opt/vllm/requirements/common.txt (line 11))
+#8 2.325   Downloading huggingface_hub-2.2.0-py3-none-any.whl.metadata (16 kB)
+#8 2.419 Collecting tokenizers>=0.23.2 (from -r /opt/vllm/requirements/common.txt (line 12))
+#8 2.461   Downloading tokenizers-0.23.3-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (9.8 kB)
+#8 2.540 Collecting safetensors>=0.6.2 (from -r /opt/vllm/requirements/common.txt (line 13))
+#8 2.573   Downloading safetensors-0.8.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.2 kB)
+#8 2.687 Collecting protobuf!=6.30.*,!=6.31.*,!=6.32.*,!=6.33.0.*,!=6.33.1.*,!=6.33.2.*,!=6.33.3.*,!=6.33.4.*,>=5.29.6 (from -r /opt/vllm/requirements/common.txt (line 14))
+#8 2.720   Downloading protobuf-7.36.2-cp310-abi3-manylinux2014_aarch64.whl.metadata (595 bytes)
+#8 2.783 Collecting fastapi<0.137.0,>=0.133.0 (from fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 2.816   Downloading fastapi-0.136.3-py3-none-any.whl.metadata (27 kB)
+#8 2.862 Collecting starlette>=1.0.1 (from -r /opt/vllm/requirements/common.txt (line 17))
+#8 2.896   Downloading starlette-1.9.0-py3-none-any.whl.metadata (6.6 kB)
+#8 3.145 Collecting aiohttp>=3.14.3 (from -r /opt/vllm/requirements/common.txt (line 18))
+#8 3.175   Downloading aiohttp-3.14.5-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (8.3 kB)
+#8 3.237 Collecting openai>=2.25.0 (from -r /opt/vllm/requirements/common.txt (line 19))
+#8 3.269   Downloading openai-3.35.1-py3-none-any.whl.metadata (44 kB)
+#8 3.349 Collecting pydantic>=2.12.0 (from -r /opt/vllm/requirements/common.txt (line 20))
+#8 3.385   Downloading pydantic-2.14.1-py3-none-any.whl.metadata (133 kB)
+#8 3.464 Collecting prometheus_client>=0.18.0 (from -r /opt/vllm/requirements/common.txt (line 21))
+#8 3.498   Downloading prometheus_client-0.26.0-py3-none-any.whl.metadata (2.1 kB)
+#8 3.627 Collecting pillow>=12.3.0 (from -r /opt/vllm/requirements/common.txt (line 22))
+#8 3.656   Downloading pillow-13.0.0-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (9.1 kB)
+#8 3.705 Collecting prometheus-fastapi-instrumentator>=8.0.0 (from -r /opt/vllm/requirements/common.txt (line 23))
+#8 3.739   Downloading prometheus_fastapi_instrumentator-8.1.0-py3-none-any.whl.metadata (13 kB)
+#8 3.788 Collecting tiktoken>=0.6.0 (from -r /opt/vllm/requirements/common.txt (line 24))
+#8 3.838   Downloading tiktoken-0.14.0-cp312-cp312-manylinux_2_28_aarch64.whl.metadata (6.7 kB)
+#8 3.888 Collecting lm-format-enforcer==0.11.3 (from -r /opt/vllm/requirements/common.txt (line 25))
+#8 3.930   Downloading lm_format_enforcer-0.11.3-py3-none-any.whl.metadata (17 kB)
+#8 4.002 Collecting llguidance<1.8.0,>=1.7.0 (from -r /opt/vllm/requirements/common.txt (line 26))
+#8 4.039   Downloading llguidance-1.7.6-cp39-abi3-manylinux_2_31_aarch64.whl.metadata (10 kB)
+#8 4.094 Collecting outlines_core==0.2.14 (from -r /opt/vllm/requirements/common.txt (line 27))
+#8 4.130   Downloading outlines_core-0.2.14-cp312-cp312-manylinux_2_28_aarch64.whl.metadata (7.6 kB)
+#8 4.176 Collecting lark==1.2.2 (from -r /opt/vllm/requirements/common.txt (line 28))
+#8 4.218   Downloading lark-1.2.2-py3-none-any.whl.metadata (1.8 kB)
+#8 4.282 Collecting xgrammar==0.2.8 (from -r /opt/vllm/requirements/common.txt (line 29))
+#8 4.319   Downloading xgrammar-0.2.8-cp312-cp312-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl.metadata (10 kB)
+#8 4.322 Requirement already satisfied: typing_extensions>=4.10 in /usr/local/lib/python3.12/site-packages (from -r /opt/vllm/requirements/common.txt (line 30)) (4.16.0)
+#8 4.323 Requirement already satisfied: filelock>=3.20.3 in /usr/local/lib/python3.12/site-packages (from -r /opt/vllm/requirements/common.txt (line 31)) (3.32.3)
+#8 4.362 Collecting partial-json-parser (from -r /opt/vllm/requirements/common.txt (line 32))
+#8 4.400   Downloading partial_json_parser-0.2.1.1.post7-py3-none-any.whl.metadata (6.1 kB)
+#8 4.452 Collecting jsonschema>=4.23.0 (from -r /opt/vllm/requirements/common.txt (line 33))
+#8 4.491   Downloading jsonschema-4.26.0-py3-none-any.whl.metadata (7.6 kB)
+#8 4.618 Collecting pyzmq>=25.0.0 (from -r /opt/vllm/requirements/common.txt (line 34))
+#8 4.658   Downloading pyzmq-27.2.0-cp312-abi3-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl.metadata (3.8 kB)
+#8 4.735 Collecting msgspec (from -r /opt/vllm/requirements/common.txt (line 35))
+#8 4.772   Downloading msgspec-0.22.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (6.0 kB)
+#8 4.823 Collecting mistral_common>=1.11.6 (from mistral_common[image]>=1.11.6->-r /opt/vllm/requirements/common.txt (line 36))
+#8 4.862   Downloading mistral_common-1.12.0-py3-none-any.whl.metadata (6.1 kB)
+#8 4.928 Collecting opencv-python-headless>=4.13.0 (from -r /opt/vllm/requirements/common.txt (line 37))
+#8 4.966   Downloading opencv_python_headless-5.0.0.93-cp37-abi3-manylinux_2_28_aarch64.whl.metadata (19 kB)
+#8 5.022 Collecting pyyaml (from -r /opt/vllm/requirements/common.txt (line 38))
+#8 5.056   Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (2.4 kB)
+#8 5.103 Collecting six>=1.16.0 (from -r /opt/vllm/requirements/common.txt (line 39))
+#8 5.139   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+#8 5.256 Collecting setuptools<81.0.0,>=78.1.1 (from -r /opt/vllm/requirements/common.txt (line 40))
+#8 5.290   Downloading setuptools-80.10.2-py3-none-any.whl.metadata (6.6 kB)
+#8 5.335 Collecting einops (from -r /opt/vllm/requirements/common.txt (line 41))
+#8 5.376   Downloading einops-0.8.2-py3-none-any.whl.metadata (13 kB)
+#8 5.429 Collecting compressed-tensors==0.17.0 (from -r /opt/vllm/requirements/common.txt (line 42))
+#8 5.462   Downloading compressed_tensors-0.17.0-py3-none-any.whl.metadata (4.7 kB)
+#8 5.508 Collecting depyf==0.20.0 (from -r /opt/vllm/requirements/common.txt (line 43))
+#8 5.545   Downloading depyf-0.20.0-py3-none-any.whl.metadata (7.3 kB)
+#8 5.588 Collecting cloudpickle (from -r /opt/vllm/requirements/common.txt (line 44))
+#8 5.622   Downloading cloudpickle-3.1.2-py3-none-any.whl.metadata (7.1 kB)
+#8 5.695 Collecting watchfiles (from -r /opt/vllm/requirements/common.txt (line 45))
+#8 5.725   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.9 kB)
+#8 5.768 Collecting python-json-logger (from -r /opt/vllm/requirements/common.txt (line 46))
+#8 5.807   Downloading python_json_logger-4.2.0-py3-none-any.whl.metadata (2.9 kB)
+#8 5.864 Collecting ninja (from -r /opt/vllm/requirements/common.txt (line 47))
+#8 5.905   Downloading ninja-1.13.2-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (5.4 kB)
+#8 6.006 Collecting pybase64 (from -r /opt/vllm/requirements/common.txt (line 48))
+#8 6.044   Downloading pybase64-1.5.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (11 kB)
+#8 6.108 Collecting cbor2 (from -r /opt/vllm/requirements/common.txt (line 49))
+#8 6.144   Downloading cbor2-6.1.5-cp312-cp312-manylinux_2_28_aarch64.whl.metadata (5.5 kB)
+#8 6.216 Collecting ijson (from -r /opt/vllm/requirements/common.txt (line 50))
+#8 6.253   Downloading ijson-3.6.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (23 kB)
+#8 6.316 Collecting setproctitle (from -r /opt/vllm/requirements/common.txt (line 51))
+#8 6.347   Downloading setproctitle-1.3.8-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (10 kB)
+#8 6.390 Collecting oss-harmony>=0.0.11 (from -r /opt/vllm/requirements/common.txt (line 52))
+#8 6.428   Downloading oss_harmony-0.0.11-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (5.0 kB)
+#8 6.492 Collecting anthropic>=0.71.0 (from -r /opt/vllm/requirements/common.txt (line 53))
+#8 6.527   Downloading anthropic-1.15.0-py3-none-any.whl.metadata (5.8 kB)
+#8 6.573 Collecting model-hosting-container-standards<1.0.0,>=0.1.14 (from -r /opt/vllm/requirements/common.txt (line 54))
+#8 6.613   Downloading model_hosting_container_standards-0.1.16-py3-none-any.whl.metadata (24 kB)
+#8 6.669 Collecting mcp<3.0.0,>=2.0.0 (from -r /opt/vllm/requirements/common.txt (line 55))
+#8 6.703   Downloading mcp-2.3.0-py3-none-any.whl.metadata (6.6 kB)
+#8 6.758 Collecting opentelemetry-sdk>=1.27.0 (from -r /opt/vllm/requirements/common.txt (line 56))
+#8 6.795   Downloading opentelemetry_sdk-1.45.1-py3-none-any.whl.metadata (1.6 kB)
+#8 6.849 Collecting opentelemetry-api>=1.27.0 (from -r /opt/vllm/requirements/common.txt (line 57))
+#8 6.881   Downloading opentelemetry_api-1.45.1-py3-none-any.whl.metadata (1.4 kB)
+#8 6.928 Collecting opentelemetry-exporter-otlp>=1.27.0 (from -r /opt/vllm/requirements/common.txt (line 58))
+#8 6.963   Downloading opentelemetry_exporter_otlp-1.45.1-py3-none-any.whl.metadata (2.4 kB)
+#8 7.014 Collecting opentelemetry-semantic-conventions-ai>=0.4.1 (from -r /opt/vllm/requirements/common.txt (line 59))
+#8 7.049   Downloading opentelemetry_semantic_conventions_ai-0.5.1-py3-none-any.whl.metadata (997 bytes)
+#8 7.088 Collecting interegular>=0.3.2 (from lm-format-enforcer==0.11.3->-r /opt/vllm/requirements/common.txt (line 25))
+#8 7.124   Downloading interegular-0.3.3-py37-none-any.whl.metadata (3.0 kB)
+#8 7.170 Collecting packaging (from lm-format-enforcer==0.11.3->-r /opt/vllm/requirements/common.txt (line 25))
+#8 7.203   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+#8 7.304 Collecting apache-tvm-ffi>=0.1.11 (from xgrammar==0.2.8->-r /opt/vllm/requirements/common.txt (line 29))
+#8 7.339   Downloading apache_tvm_ffi-0.1.15-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl.metadata (6.2 kB)
+#8 7.341 Requirement already satisfied: torch>=1.10.0 in /usr/local/lib/python3.12/site-packages (from xgrammar==0.2.8->-r /opt/vllm/requirements/common.txt (line 29)) (2.14.0+cpu)
+#8 7.397 Collecting loguru (from compressed-tensors==0.17.0->-r /opt/vllm/requirements/common.txt (line 42))
+#8 7.437   Downloading loguru-0.7.3-py3-none-any.whl.metadata (22 kB)
+#8 7.476 Collecting astor (from depyf==0.20.0->-r /opt/vllm/requirements/common.txt (line 43))
+#8 7.513   Downloading astor-0.8.1-py2.py3-none-any.whl.metadata (4.2 kB)
+#8 7.559 Collecting dill (from depyf==0.20.0->-r /opt/vllm/requirements/common.txt (line 43))
+#8 7.592   Downloading dill-0.4.1-py3-none-any.whl.metadata (10 kB)
+#8 7.696 Collecting charset_normalizer<4,>=2 (from requests>=2.33.0->-r /opt/vllm/requirements/common.txt (line 6))
+#8 7.725   Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (46 kB)
+#8 7.770 Collecting idna<4,>=2.5 (from requests>=2.33.0->-r /opt/vllm/requirements/common.txt (line 6))
+#8 7.803   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#8 7.856 Collecting urllib3<3,>=1.26 (from requests>=2.33.0->-r /opt/vllm/requirements/common.txt (line 6))
+#8 7.890   Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+#8 7.942 Collecting certifi>=2023.5.7 (from requests>=2.33.0->-r /opt/vllm/requirements/common.txt (line 6))
+#8 7.980   Downloading certifi-2026.10.19-py3-none-any.whl.metadata (2.5 kB)
+#8 8.048 Collecting typer (from transformers<5.21.0,>=5.16.1->-r /opt/vllm/requirements/common.txt (line 10))
+#8 8.084   Downloading typer-0.27.3-py3-none-any.whl.metadata (16 kB)
+#8 8.131 Collecting click<9.0.0,>=8.4.2 (from huggingface_hub>=1.31.0->-r /opt/vllm/requirements/common.txt (line 11))
+#8 8.166   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#8 8.168 Requirement already satisfied: fsspec>=2023.5.0 in /usr/local/lib/python3.12/site-packages (from huggingface_hub>=1.31.0->-r /opt/vllm/requirements/common.txt (line 11)) (2026.7.0)
+#8 8.224 Collecting hf-xet<2.0.0,>=1.6.0 (from huggingface_hub>=1.31.0->-r /opt/vllm/requirements/common.txt (line 11))
+#8 8.258   Downloading hf_xet-1.7.0-cp38-abi3-manylinux_2_28_aarch64.whl.metadata (4.9 kB)
+#8 8.304 Collecting httpx2<3,>=2.0.0 (from huggingface_hub>=1.31.0->-r /opt/vllm/requirements/common.txt (line 11))
+#8 8.341   Downloading httpx2-2.15.1-py3-none-any.whl.metadata (9.6 kB)
+#8 8.411 Collecting typing-inspection>=0.4.2 (from fastapi<0.137.0,>=0.133.0->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 8.450   Downloading typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
+#8 8.492 Collecting annotated-doc>=0.0.2 (from fastapi<0.137.0,>=0.133.0->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 8.532   Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+#8 8.582 Collecting anyio<5,>=4.0.0 (from starlette>=1.0.1->-r /opt/vllm/requirements/common.txt (line 17))
+#8 8.619   Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+#8 8.670 Collecting aiohappyeyeballs>=2.5.0 (from aiohttp>=3.14.3->-r /opt/vllm/requirements/common.txt (line 18))
+#8 8.703   Downloading aiohappyeyeballs-2.7.1-py3-none-any.whl.metadata (5.9 kB)
+#8 8.744 Collecting aiosignal>=1.4.0 (from aiohttp>=3.14.3->-r /opt/vllm/requirements/common.txt (line 18))
+#8 8.782   Downloading aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+#8 8.826 Collecting attrs>=17.3.0 (from aiohttp>=3.14.3->-r /opt/vllm/requirements/common.txt (line 18))
+#8 8.858   Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+#8 8.929 Collecting frozenlist>=1.1.1 (from aiohttp>=3.14.3->-r /opt/vllm/requirements/common.txt (line 18))
+#8 8.962   Downloading frozenlist-1.8.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (20 kB)
+#8 9.100 Collecting multidict<8.0,>=4.5 (from aiohttp>=3.14.3->-r /opt/vllm/requirements/common.txt (line 18))
+#8 9.132   Downloading multidict-7.1.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (6.2 kB)
+#8 9.225 Collecting propcache>=0.2.0 (from aiohttp>=3.14.3->-r /opt/vllm/requirements/common.txt (line 18))
+#8 9.257   Downloading propcache-0.5.4-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (25 kB)
+#8 9.386 Collecting yarl<2.0,>=1.25.1 (from aiohttp>=3.14.3->-r /opt/vllm/requirements/common.txt (line 18))
+#8 9.419   Downloading yarl-1.25.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (111 kB)
+#8 9.495 Collecting jiter<1,>=0.16.0 (from openai>=2.25.0->-r /opt/vllm/requirements/common.txt (line 19))
+#8 9.528   Downloading jiter-0.17.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (5.2 kB)
+#8 9.569 Collecting sniffio (from openai>=2.25.0->-r /opt/vllm/requirements/common.txt (line 19))
+#8 9.607   Downloading sniffio-1.3.1-py3-none-any.whl.metadata (3.9 kB)
+#8 9.646 Collecting annotated-types>=0.6.0 (from pydantic>=2.12.0->-r /opt/vllm/requirements/common.txt (line 20))
+#8 9.686   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#8 10.02 Collecting pydantic-core==2.50.1 (from pydantic>=2.12.0->-r /opt/vllm/requirements/common.txt (line 20))
+#8 10.05   Downloading pydantic_core-2.50.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (6.5 kB)
+#8 10.10 Collecting jsonschema-specifications>=2023.03.6 (from jsonschema>=4.23.0->-r /opt/vllm/requirements/common.txt (line 33))
+#8 10.14   Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl.metadata (2.9 kB)
+#8 10.18 Collecting referencing>=0.28.4 (from jsonschema>=4.23.0->-r /opt/vllm/requirements/common.txt (line 33))
+#8 10.21   Downloading referencing-0.37.0-py3-none-any.whl.metadata (2.8 kB)
+#8 10.35 Collecting rpds-py>=0.25.0 (from jsonschema>=4.23.0->-r /opt/vllm/requirements/common.txt (line 33))
+#8 10.38   Downloading rpds_py-2026.9.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.1 kB)
+#8 10.40 Collecting numpy (from -r /opt/vllm/requirements/common.txt (line 5))
+#8 10.43   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl.metadata (62 kB)
+#8 10.48 Collecting pydantic-extra-types>=2.10.5 (from pydantic-extra-types[pycountry]>=2.10.5->mistral_common>=1.11.6->mistral_common[image]>=1.11.6->-r /opt/vllm/requirements/common.txt (line 36))
+#8 10.51   Downloading pydantic_extra_types-2.11.1-py3-none-any.whl.metadata (4.2 kB)
+#8 10.58 Collecting docstring-parser<1,>=0.15 (from anthropic>=0.71.0->-r /opt/vllm/requirements/common.txt (line 53))
+#8 10.61   Downloading docstring_parser-0.18.0-py3-none-any.whl.metadata (3.5 kB)
+#8 10.67 Collecting httpx (from model-hosting-container-standards<1.0.0,>=0.1.14->-r /opt/vllm/requirements/common.txt (line 54))
+#8 10.71   Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+#8 10.77 Collecting jmespath (from model-hosting-container-standards<1.0.0,>=0.1.14->-r /opt/vllm/requirements/common.txt (line 54))
+#8 10.80   Downloading jmespath-1.1.0-py3-none-any.whl.metadata (7.6 kB)
+#8 10.85 Collecting supervisor>=4.2.0 (from model-hosting-container-standards<1.0.0,>=0.1.14->-r /opt/vllm/requirements/common.txt (line 54))
+#8 10.90   Downloading supervisor-4.3.0-py2.py3-none-any.whl.metadata (87 kB)
+#8 10.95 Collecting mcp-types==2.3.0 (from mcp<3.0.0,>=2.0.0->-r /opt/vllm/requirements/common.txt (line 55))
+#8 10.99   Downloading mcp_types-2.3.0-py3-none-any.whl.metadata (1.9 kB)
+#8 11.05 Collecting pyjwt>=2.10.1 (from pyjwt[crypto]>=2.10.1->mcp<3.0.0,>=2.0.0->-r /opt/vllm/requirements/common.txt (line 55))
+#8 11.09   Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+#8 11.13 Collecting python-multipart>=0.0.9 (from mcp<3.0.0,>=2.0.0->-r /opt/vllm/requirements/common.txt (line 55))
+#8 11.16   Downloading python_multipart-0.0.32-py3-none-any.whl.metadata (2.1 kB)
+#8 11.21 Collecting sse-starlette>=3.0.0 (from mcp<3.0.0,>=2.0.0->-r /opt/vllm/requirements/common.txt (line 55))
+#8 11.24   Downloading sse_starlette-3.5.0-py3-none-any.whl.metadata (15 kB)
+#8 11.33 Collecting uvicorn>=0.31.1 (from mcp<3.0.0,>=2.0.0->-r /opt/vllm/requirements/common.txt (line 55))
+#8 11.36   Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+#8 11.45 Collecting opentelemetry-semantic-conventions==0.66b1 (from opentelemetry-sdk>=1.27.0->-r /opt/vllm/requirements/common.txt (line 56))
+#8 11.48   Downloading opentelemetry_semantic_conventions-0.66b1-py3-none-any.whl.metadata (2.4 kB)
+#8 11.52 Collecting opentelemetry-exporter-otlp-proto-grpc==1.45.1 (from opentelemetry-exporter-otlp>=1.27.0->-r /opt/vllm/requirements/common.txt (line 58))
+#8 11.56   Downloading opentelemetry_exporter_otlp_proto_grpc-1.45.1-py3-none-any.whl.metadata (2.6 kB)
+#8 11.60 Collecting opentelemetry-exporter-otlp-proto-http==1.45.1 (from opentelemetry-exporter-otlp>=1.27.0->-r /opt/vllm/requirements/common.txt (line 58))
+#8 11.64   Downloading opentelemetry_exporter_otlp_proto_http-1.45.1-py3-none-any.whl.metadata (3.0 kB)
+#8 11.69 Collecting googleapis-common-protos~=1.57 (from opentelemetry-exporter-otlp-proto-grpc==1.45.1->opentelemetry-exporter-otlp>=1.27.0->-r /opt/vllm/requirements/common.txt (line 58))
+#8 11.73   Downloading googleapis_common_protos-1.75.5-py3-none-any.whl.metadata (8.5 kB)
+#8 11.94 Collecting grpcio<2.0.0,>=1.63.2 (from opentelemetry-exporter-otlp-proto-grpc==1.45.1->opentelemetry-exporter-otlp>=1.27.0->-r /opt/vllm/requirements/common.txt (line 58))
+#8 11.98   Downloading grpcio-1.84.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (3.8 kB)
+#8 12.02 Collecting opentelemetry-exporter-otlp-common==0.66b1 (from opentelemetry-exporter-otlp-proto-grpc==1.45.1->opentelemetry-exporter-otlp>=1.27.0->-r /opt/vllm/requirements/common.txt (line 58))
+#8 12.06   Downloading opentelemetry_exporter_otlp_common-0.66b1-py3-none-any.whl.metadata (1.9 kB)
+#8 12.10 Collecting opentelemetry-exporter-otlp-proto-common==1.45.1 (from opentelemetry-exporter-otlp-proto-grpc==1.45.1->opentelemetry-exporter-otlp>=1.27.0->-r /opt/vllm/requirements/common.txt (line 58))
+#8 12.15   Downloading opentelemetry_exporter_otlp_proto_common-1.45.1-py3-none-any.whl.metadata (1.8 kB)
+#8 12.20 Collecting opentelemetry-proto==1.45.1 (from opentelemetry-exporter-otlp-proto-grpc==1.45.1->opentelemetry-exporter-otlp>=1.27.0->-r /opt/vllm/requirements/common.txt (line 58))
+#8 12.25   Downloading opentelemetry_proto-1.45.1-py3-none-any.whl.metadata (2.3 kB)
+#8 12.30 Collecting opentelemetry-exporter-http-transport==0.66b1 (from opentelemetry-exporter-http-transport[requests]==0.66b1->opentelemetry-exporter-otlp-proto-http==1.45.1->opentelemetry-exporter-otlp>=1.27.0->-r /opt/vllm/requirements/common.txt (line 58))
+#8 12.34   Downloading opentelemetry_exporter_http_transport-0.66b1-py3-none-any.whl.metadata (2.3 kB)
+#8 12.45 Collecting fastapi-cli>=0.0.8 (from fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 12.49   Downloading fastapi_cli-0.0.32-py3-none-any.whl.metadata (6.7 kB)
+#8 12.56 Collecting fastar>=0.9.0 (from fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 12.60   Downloading fastar-0.12.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.1 kB)
+#8 12.60 Requirement already satisfied: jinja2>=3.1.5 in /usr/local/lib/python3.12/site-packages (from fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16)) (3.1.6)
+#8 12.68 Collecting email-validator>=2.0.0 (from fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 12.71   Downloading email_validator-2.3.0-py3-none-any.whl.metadata (26 kB)
+#8 12.76 Collecting pydantic-settings>=2.0.0 (from fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 12.79   Downloading pydantic_settings-2.16.0-py3-none-any.whl.metadata (4.0 kB)
+#8 12.85 Collecting dnspython>=2.0.0 (from email-validator>=2.0.0->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 12.88   Downloading dnspython-2.9.0-py3-none-any.whl.metadata (5.7 kB)
+#8 12.95 Collecting rich-toolkit>=0.14.8 (from fastapi-cli>=0.0.8->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 12.98   Downloading rich_toolkit-0.20.6-py3-none-any.whl.metadata (3.0 kB)
+#8 13.03 Collecting fastapi-cloud-cli>=0.1.1 (from fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 13.07   Downloading fastapi_cloud_cli-0.26.0-py3-none-any.whl.metadata (3.1 kB)
+#8 13.13 Collecting httpcore==1.* (from httpx->model-hosting-container-standards<1.0.0,>=0.1.14->-r /opt/vllm/requirements/common.txt (line 54))
+#8 13.16   Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+#8 13.20 Collecting h11>=0.16 (from httpcore==1.*->httpx->model-hosting-container-standards<1.0.0,>=0.1.14->-r /opt/vllm/requirements/common.txt (line 54))
+#8 13.24   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+#8 13.29 Collecting httpcore2==2.15.1 (from httpx2<3,>=2.0.0->huggingface_hub>=1.31.0->-r /opt/vllm/requirements/common.txt (line 11))
+#8 13.33   Downloading httpcore2-2.15.1-py3-none-any.whl.metadata (27 kB)
+#8 13.38 Collecting truststore>=0.10 (from httpx2<3,>=2.0.0->huggingface_hub>=1.31.0->-r /opt/vllm/requirements/common.txt (line 11))
+#8 13.42   Downloading truststore-0.10.5-py3-none-any.whl.metadata (4.5 kB)
+#8 13.43 Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/site-packages (from jinja2>=3.1.5->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16)) (3.0.3)
+#8 13.50 Collecting pycountry>=23 (from pydantic-extra-types[pycountry]>=2.10.5->mistral_common>=1.11.6->mistral_common[image]>=1.11.6->-r /opt/vllm/requirements/common.txt (line 36))
+#8 13.53   Downloading pycountry-26.2.16-py3-none-any.whl.metadata (12 kB)
+#8 13.58 Collecting python-dotenv>=1.2.2 (from pydantic-settings>=2.0.0->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 13.61   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+#8 13.72 Collecting cryptography>=3.4.0 (from pyjwt[crypto]>=2.10.1->mcp<3.0.0,>=2.0.0->-r /opt/vllm/requirements/common.txt (line 55))
+#8 13.76   Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_aarch64.whl.metadata (4.4 kB)
+#8 13.79 Requirement already satisfied: sympy>=1.13.3 in /usr/local/lib/python3.12/site-packages (from torch>=1.10.0->xgrammar==0.2.8->-r /opt/vllm/requirements/common.txt (line 29)) (1.14.0)
+#8 13.79 Requirement already satisfied: networkx>=2.5.1 in /usr/local/lib/python3.12/site-packages (from torch>=1.10.0->xgrammar==0.2.8->-r /opt/vllm/requirements/common.txt (line 29)) (3.6.1)
+#8 13.82 Collecting shellingham>=1.3.0 (from typer->transformers<5.21.0,>=5.16.1->-r /opt/vllm/requirements/common.txt (line 10))
+#8 13.87   Downloading shellingham-1.5.4-py2.py3-none-any.whl.metadata (3.5 kB)
+#8 13.92 Collecting rich>=13.8.0 (from typer->transformers<5.21.0,>=5.16.1->-r /opt/vllm/requirements/common.txt (line 10))
+#8 13.97   Downloading rich-15.0.0-py3-none-any.whl.metadata (18 kB)
+#8 14.03 Collecting httptools>=0.8.0 (from uvicorn[standard]>=0.12.0; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 14.07   Downloading httptools-0.9.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (3.5 kB)
+#8 14.14 Collecting uvloop>=0.15.1 (from uvicorn[standard]>=0.12.0; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 14.17   Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (5.1 kB)
+#8 14.26 Collecting websockets>=13.0 (from uvicorn[standard]>=0.12.0; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 14.31   Downloading websockets-17.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl.metadata (6.3 kB)
+#8 14.40 Collecting cffi>=2.0.0 (from cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->mcp<3.0.0,>=2.0.0->-r /opt/vllm/requirements/common.txt (line 55))
+#8 14.43   Downloading cffi-2.1.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (2.5 kB)
+#8 14.51 Collecting rignore>=0.5.1 (from fastapi-cloud-cli>=0.1.1->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 14.55   Downloading rignore-0.8.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl.metadata (4.2 kB)
+#8 14.61 Collecting sentry-sdk>=2.20.0 (from fastapi-cloud-cli>=0.1.1->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 14.65   Downloading sentry_sdk-2.72.0-py3-none-any.whl.metadata (11 kB)
+#8 14.73 Collecting detect-installer>=0.1.0 (from fastapi-cloud-cli>=0.1.1->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 14.77   Downloading detect_installer-0.2.1-py3-none-any.whl.metadata (1.2 kB)
+#8 14.81 Collecting agent-detector>=1.1.0 (from fastapi-cloud-cli>=0.1.1->fastapi-cli[standard]>=0.0.8; extra == "standard"->fastapi[standard]<0.137.0,>=0.133.0->-r /opt/vllm/requirements/common.txt (line 16))
+#8 14.85   Downloading agent_detector-2.0.0-py3-none-any.whl.metadata (6.6 kB)
+#8 14.94 Collecting markdown-it-py>=2.2.0 (from rich>=13.8.0->typer->transformers<5.21.0,>=5.16.1->-r /opt/vllm/requirements/common.txt (line 10))
+#8 14.98   Downloading markdown_it_py-4.2.0-py3-none-any.whl.metadata (7.4 kB)
+#8 15.07 Collecting pygments<3.0.0,>=2.13.0 (from rich>=13.8.0->typer->transformers<5.21.0,>=5.16.1->-r /opt/vllm/requirements/common.txt (line 10))
+#8 15.11   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+#8 15.12 Requirement already satisfied: mpmath<1.4,>=1.1.0 in /usr/local/lib/python3.12/site-packages (from sympy>=1.13.3->torch>=1.10.0->xgrammar==0.2.8->-r /opt/vllm/requirements/common.txt (line 29)) (1.3.0)
+#8 15.16 Collecting pycparser (from cffi>=2.0.0->cryptography>=3.4.0->pyjwt[crypto]>=2.10.1->mcp<3.0.0,>=2.0.0->-r /opt/vllm/requirements/common.txt (line 55))
+#8 15.20   Downloading pycparser-3.11-py3-none-any.whl.metadata (8.2 kB)
+#8 15.24 Collecting mdurl~=0.1 (from markdown-it-py>=2.2.0->rich>=13.8.0->typer->transformers<5.21.0,>=5.16.1->-r /opt/vllm/requirements/common.txt (line 10))
+#8 15.28   Downloading mdurl-0.1.2-py3-none-any.whl.metadata (1.6 kB)
+#8 15.33 Downloading lm_format_enforcer-0.11.3-py3-none-any.whl (45 kB)
+#8 15.36 Downloading outlines_core-0.2.14-cp312-cp312-manylinux_2_28_aarch64.whl (2.2 MB)
+#8 15.47    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 26.6 MB/s eta 0:00:00
+#8 15.50 Downloading lark-1.2.2-py3-none-any.whl (111 kB)
+#8 15.54 Downloading xgrammar-0.2.8-cp312-cp312-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl (1.2 MB)
+#8 15.56    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 84.0 MB/s eta 0:00:00
+#8 15.60 Downloading compressed_tensors-0.17.0-py3-none-any.whl (211 kB)
+#8 15.64 Downloading depyf-0.20.0-py3-none-any.whl (39 kB)
+#8 15.68 Downloading regex-2026.9.29-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (805 kB)
+#8 15.69    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 805.9/805.9 kB 52.1 MB/s eta 0:00:00
+#8 15.73 Downloading cachetools-7.2.4-py3-none-any.whl (18 kB)
+#8 15.78 Downloading psutil-7.2.2-cp36-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (156 kB)
+#8 15.82 Downloading sentencepiece-0.2.2-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (1.3 MB)
+#8 15.83    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 90.8 MB/s eta 0:00:00
+#8 15.88 Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+#8 15.93 Downloading tqdm-4.70.1-py3-none-any.whl (80 kB)
+#8 15.98 Downloading blake3-1.0.11-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (369 kB)
+#8 16.03 Downloading py_cpuinfo-9.0.0-py3-none-any.whl (22 kB)
+#8 16.07 Downloading transformers-5.20.2-py3-none-any.whl (12.8 MB)
+#8 16.28    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 65.4 MB/s eta 0:00:00
+#8 16.31 Downloading huggingface_hub-2.2.0-py3-none-any.whl (839 kB)
+#8 16.32    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 839.9/839.9 kB 85.0 MB/s eta 0:00:00
+#8 16.36 Downloading tokenizers-0.23.3-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (3.5 MB)
+#8 16.41    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.5/3.5 MB 76.8 MB/s eta 0:00:00
+#8 16.45 Downloading safetensors-0.8.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (502 kB)
+#8 16.50 Downloading protobuf-7.36.2-cp310-abi3-manylinux2014_aarch64.whl (344 kB)
+#8 16.55 Downloading fastapi-0.136.3-py3-none-any.whl (117 kB)
+#8 16.59 Downloading starlette-1.9.0-py3-none-any.whl (80 kB)
+#8 16.63 Downloading aiohttp-3.14.5-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (1.9 MB)
+#8 16.65    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 86.4 MB/s eta 0:00:00
+#8 16.69 Downloading openai-3.35.1-py3-none-any.whl (2.3 MB)
+#8 16.72    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 67.8 MB/s eta 0:00:00
+#8 16.77 Downloading pydantic-2.14.1-py3-none-any.whl (488 kB)
+#8 16.82 Downloading pydantic_core-2.50.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (2.0 MB)
+#8 16.84    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 111.2 MB/s eta 0:00:00
+#8 16.88 Downloading prometheus_client-0.26.0-py3-none-any.whl (64 kB)
+#8 16.92 Downloading pillow-13.0.0-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (6.5 MB)
+#8 17.01    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.5/6.5 MB 77.8 MB/s eta 0:00:00
+#8 17.04 Downloading prometheus_fastapi_instrumentator-8.1.0-py3-none-any.whl (19 kB)
+#8 17.08 Downloading tiktoken-0.14.0-cp312-cp312-manylinux_2_28_aarch64.whl (1.2 MB)
+#8 17.10    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 93.8 MB/s eta 0:00:00
+#8 17.14 Downloading llguidance-1.7.6-cp39-abi3-manylinux_2_31_aarch64.whl (2.9 MB)
+#8 17.17    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.9/2.9 MB 92.4 MB/s eta 0:00:00
+#8 17.20 Downloading partial_json_parser-0.2.1.1.post7-py3-none-any.whl (10 kB)
+#8 17.25 Downloading jsonschema-4.26.0-py3-none-any.whl (90 kB)
+#8 17.28 Downloading pyzmq-27.2.0-cp312-abi3-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl (697 kB)
+#8 17.29    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 697.7/697.7 kB 78.1 MB/s eta 0:00:00
+#8 17.33 Downloading msgspec-0.22.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (224 kB)
+#8 17.37 Downloading mistral_common-1.12.0-py3-none-any.whl (6.6 MB)
+#8 17.46    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 74.6 MB/s eta 0:00:00
+#8 17.50 Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl (14.3 MB)
+#8 17.80    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.3/14.3 MB 48.2 MB/s eta 0:00:00
+#8 17.84 Downloading opencv_python_headless-5.0.0.93-cp37-abi3-manylinux_2_28_aarch64.whl (39.6 MB)
+#8 18.40    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 39.6/39.6 MB 70.8 MB/s eta 0:00:00
+#8 18.44 Downloading pyyaml-6.0.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (775 kB)
+#8 18.45    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 775.1/775.1 kB 68.9 MB/s eta 0:00:00
+#8 18.49 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#8 18.53 Downloading setuptools-80.10.2-py3-none-any.whl (1.1 MB)
+#8 18.55    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 93.5 MB/s eta 0:00:00
+#8 18.58 Downloading einops-0.8.2-py3-none-any.whl (65 kB)
+#8 18.62 Downloading cloudpickle-3.1.2-py3-none-any.whl (22 kB)
+#8 18.65 Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (454 kB)
+#8 18.70 Downloading python_json_logger-4.2.0-py3-none-any.whl (14 kB)
+#8 18.74 Downloading ninja-1.13.2-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (177 kB)
+#8 18.78 Downloading pybase64-1.5.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (84 kB)
+#8 18.82 Downloading cbor2-6.1.5-cp312-cp312-manylinux_2_28_aarch64.whl (451 kB)
+#8 18.86 Downloading ijson-3.6.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (150 kB)
+#8 18.90 Downloading setproctitle-1.3.8-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (33 kB)
+#8 18.94 Downloading oss_harmony-0.0.11-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (3.5 MB)
+#8 19.04    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.5/3.5 MB 33.9 MB/s eta 0:00:00
+#8 19.07 Downloading anthropic-1.15.0-py3-none-any.whl (2.0 MB)
+#8 19.10    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 88.1 MB/s eta 0:00:00
+#8 19.14 Downloading model_hosting_container_standards-0.1.16-py3-none-any.whl (125 kB)
+#8 19.18 Downloading mcp-2.3.0-py3-none-any.whl (368 kB)
+#8 19.23 Downloading mcp_types-2.3.0-py3-none-any.whl (69 kB)
+#8 19.27 Downloading opentelemetry_sdk-1.45.1-py3-none-any.whl (140 kB)
+#8 19.31 Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+#8 19.35 Downloading opentelemetry_semantic_conventions-0.66b1-py3-none-any.whl (206 kB)
+#8 19.40 Downloading opentelemetry_exporter_otlp-1.45.1-py3-none-any.whl (6.7 kB)
+#8 19.44 Downloading opentelemetry_exporter_otlp_proto_grpc-1.45.1-py3-none-any.whl (19 kB)
+#8 19.47 Downloading opentelemetry_exporter_otlp_proto_http-1.45.1-py3-none-any.whl (22 kB)
+#8 19.51 Downloading opentelemetry_exporter_http_transport-0.66b1-py3-none-any.whl (12 kB)
+#8 19.55 Downloading opentelemetry_exporter_otlp_common-0.66b1-py3-none-any.whl (12 kB)
+#8 19.58 Downloading opentelemetry_exporter_otlp_proto_common-1.45.1-py3-none-any.whl (15 kB)
+#8 19.62 Downloading opentelemetry_proto-1.45.1-py3-none-any.whl (72 kB)
+#8 19.65 Downloading opentelemetry_semantic_conventions_ai-0.5.1-py3-none-any.whl (11 kB)
+#8 19.70 Downloading aiohappyeyeballs-2.7.1-py3-none-any.whl (15 kB)
+#8 19.74 Downloading aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+#8 19.77 Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+#8 19.81 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#8 19.85 Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+#8 19.89 Downloading apache_tvm_ffi-0.1.15-cp312-cp312-manylinux_2_24_aarch64.manylinux_2_28_aarch64.whl (3.1 MB)
+#8 19.92    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 94.8 MB/s eta 0:00:00
+#8 19.96 Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+#8 20.00 Downloading certifi-2026.10.19-py3-none-any.whl (136 kB)
+#8 20.04 Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (246 kB)
+#8 20.08 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#8 20.12 Downloading docstring_parser-0.18.0-py3-none-any.whl (22 kB)
+#8 20.15 Downloading email_validator-2.3.0-py3-none-any.whl (35 kB)
+#8 20.20 Downloading fastapi_cli-0.0.32-py3-none-any.whl (14 kB)
+#8 20.23 Downloading fastar-0.12.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (753 kB)
+#8 20.24    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 753.8/753.8 kB 71.8 MB/s eta 0:00:00
+#8 20.29 Downloading frozenlist-1.8.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (243 kB)
+#8 20.33 Downloading hf_xet-1.7.0-cp38-abi3-manylinux_2_28_aarch64.whl (4.0 MB)
+#8 20.37    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.0/4.0 MB 107.5 MB/s eta 0:00:00
+#8 20.41 Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+#8 20.44 Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+#8 20.48 Downloading httpx2-2.15.1-py3-none-any.whl (96 kB)
+#8 20.52 Downloading httpcore2-2.15.1-py3-none-any.whl (85 kB)
+#8 20.56 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#8 20.61 Downloading interegular-0.3.3-py37-none-any.whl (23 kB)
+#8 20.64 Downloading jiter-0.17.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (341 kB)
+#8 20.68 Downloading jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+#8 20.72 Downloading multidict-7.1.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (478 kB)
+#8 20.77 Downloading packaging-26.3-py3-none-any.whl (129 kB)
+#8 20.81 Downloading propcache-0.5.4-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (251 kB)
+#8 20.85 Downloading pydantic_extra_types-2.11.1-py3-none-any.whl (79 kB)
+#8 20.89 Downloading pydantic_settings-2.16.0-py3-none-any.whl (80 kB)
+#8 20.93 Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+#8 20.97 Downloading python_multipart-0.0.32-py3-none-any.whl (30 kB)
+#8 21.02 Downloading referencing-0.37.0-py3-none-any.whl (26 kB)
+#8 21.05 Downloading rpds_py-2026.9.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (373 kB)
+#8 21.09 Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+#8 21.12 Downloading sse_starlette-3.5.0-py3-none-any.whl (17 kB)
+#8 21.16 Downloading supervisor-4.3.0-py2.py3-none-any.whl (320 kB)
+#8 21.20 Downloading typer-0.27.3-py3-none-any.whl (123 kB)
+#8 21.25 Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#8 21.29 Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+#8 21.33 Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+#8 21.38 Downloading yarl-1.25.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (115 kB)
+#8 21.42 Downloading astor-0.8.1-py2.py3-none-any.whl (27 kB)
+#8 21.46 Downloading dill-0.4.1-py3-none-any.whl (120 kB)
+#8 21.50 Downloading jmespath-1.1.0-py3-none-any.whl (20 kB)
+#8 21.54 Downloading loguru-0.7.3-py3-none-any.whl (61 kB)
+#8 21.57 Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_aarch64.whl (4.7 MB)
+#8 21.63    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.7/4.7 MB 85.9 MB/s eta 0:00:00
+#8 21.66 Downloading dnspython-2.9.0-py3-none-any.whl (354 kB)
+#8 21.70 Downloading fastapi_cloud_cli-0.26.0-py3-none-any.whl (108 kB)
+#8 21.74 Downloading googleapis_common_protos-1.75.5-py3-none-any.whl (307 kB)
+#8 21.78 Downloading grpcio-1.84.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (7.0 MB)
+#8 21.95    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.0/7.0 MB 42.9 MB/s eta 0:00:00
+#8 21.99 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#8 22.03 Downloading httptools-0.9.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (549 kB)
+#8 22.05    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 549.2/549.2 kB 24.3 MB/s eta 0:00:00
+#8 22.09 Downloading pycountry-26.2.16-py3-none-any.whl (8.0 MB)
+#8 22.30    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.0/8.0 MB 38.5 MB/s eta 0:00:00
+#8 22.35 Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#8 22.40 Downloading rich-15.0.0-py3-none-any.whl (310 kB)
+#8 22.45 Downloading rich_toolkit-0.20.6-py3-none-any.whl (39 kB)
+#8 22.49 Downloading shellingham-1.5.4-py2.py3-none-any.whl (9.8 kB)
+#8 22.54 Downloading truststore-0.10.5-py3-none-any.whl (19 kB)
+#8 22.59 Downloading uvloop-0.23.0-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (4.4 MB)
+#8 22.65    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 67.3 MB/s eta 0:00:00
+#8 22.69 Downloading websockets-17.3-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (227 kB)
+#8 22.73 Downloading agent_detector-2.0.0-py3-none-any.whl (9.4 kB)
+#8 22.77 Downloading cffi-2.1.1-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (222 kB)
+#8 22.82 Downloading detect_installer-0.2.1-py3-none-any.whl (5.4 kB)
+#8 22.86 Downloading markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+#8 22.90 Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+#8 22.92    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 66.8 MB/s eta 0:00:00
+#8 22.97 Downloading rignore-0.8.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (884 kB)
+#8 22.98    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 884.6/884.6 kB 89.0 MB/s eta 0:00:00
+#8 23.02 Downloading sentry_sdk-2.72.0-py3-none-any.whl (544 kB)
+#8 23.02    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 544.8/544.8 kB 58.4 MB/s eta 0:00:00
+#8 23.06 Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+#8 23.10 Downloading pycparser-3.11-py3-none-any.whl (51 kB)
+#8 23.37 Installing collected packages: supervisor, py-cpuinfo, websockets, uvloop, urllib3, typing-inspection, truststore, tqdm, sniffio, six, shellingham, setuptools, setproctitle, sentencepiece, safetensors, rpds-py, rignore, regex, pyzmq, pyyaml, python-multipart, python-json-logger, python-dotenv, pyjwt, pygments, pydantic-core, pycparser, pycountry, pybase64, psutil, protobuf, propcache, prometheus_client, pillow, partial-json-parser, packaging, outlines_core, opentelemetry-api, numpy, ninja, multidict, msgspec, mdurl, loguru, llguidance, lark, jmespath, jiter, interegular, ijson, idna, httptools, hf-xet, h11, grpcio, frozenlist, fastar, einops, docstring-parser, dnspython, dill, detect-installer, cloudpickle, click, charset_normalizer, certifi, cbor2, cachetools, blake3, attrs, astor, apache-tvm-ffi, annotated-types, annotated-doc, aiohappyeyeballs, agent-detector, yarl, uvicorn, sentry-sdk, requests, referencing, pydantic, opentelemetry-semantic-conventions, opentelemetry-proto, opentelemetry-exporter-http-transport, opencv-python-headless, markdown-it-py, httpcore2, httpcore, googleapis-common-protos, email-validator, depyf, cffi, anyio, aiosignal, watchfiles, tiktoken, starlette, rich, pydantic-settings, pydantic-extra-types, oss-harmony, opentelemetry-sdk, opentelemetry-exporter-otlp-proto-common, mcp-types, lm-format-enforcer, jsonschema-specifications, httpx2, httpx, cryptography, aiohttp, typer, sse-starlette, rich-toolkit, prometheus-fastapi-instrumentator, opentelemetry-semantic-conventions-ai, opentelemetry-exporter-otlp-common, openai, jsonschema, huggingface_hub, fastapi, anthropic, tokenizers, opentelemetry-exporter-otlp-proto-http, opentelemetry-exporter-otlp-proto-grpc, model-hosting-container-standards, mistral_common, mcp, fastapi-cloud-cli, fastapi-cli, transformers, opentelemetry-exporter-otlp, xgrammar, compressed-tensors
+#8 23.70   Attempting uninstall: setuptools
+#8 23.70     Found existing installation: setuptools 78.1.0
+#8 23.72     Uninstalling setuptools-78.1.0:
+#8 23.85       Successfully uninstalled setuptools-78.1.0
+#8 34.02 Successfully installed agent-detector-2.0.0 aiohappyeyeballs-2.7.1 aiohttp-3.14.5 aiosignal-1.4.0 annotated-doc-0.0.5 annotated-types-0.8.0 anthropic-1.15.0 anyio-4.15.1 apache-tvm-ffi-0.1.15 astor-0.8.1 attrs-26.1.0 blake3-1.0.11 cachetools-7.2.4 cbor2-6.1.5 certifi-2026.10.19 cffi-2.1.1 charset_normalizer-3.5.2 click-8.5.0 cloudpickle-3.1.2 compressed-tensors-0.17.0 cryptography-50.0.2 depyf-0.20.0 detect-installer-0.2.1 dill-0.4.1 dnspython-2.9.0 docstring-parser-0.18.0 einops-0.8.2 email-validator-2.3.0 fastapi-0.136.3 fastapi-cli-0.0.32 fastapi-cloud-cli-0.26.0 fastar-0.12.0 frozenlist-1.8.0 googleapis-common-protos-1.75.5 grpcio-1.84.0 h11-0.16.0 hf-xet-1.7.0 httpcore-1.0.9 httpcore2-2.15.1 httptools-0.9.0 httpx-0.28.1 httpx2-2.15.1 huggingface_hub-2.2.0 idna-3.20 ijson-3.6.0 interegular-0.3.3 jiter-0.17.0 jmespath-1.1.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 lark-1.2.2 llguidance-1.7.6 lm-format-enforcer-0.11.3 loguru-0.7.3 markdown-it-py-4.2.0 mcp-2.3.0 mcp-types-2.3.0 mdurl-0.1.2 mistral_common-1.12.0 model-hosting-container-standards-0.1.16 msgspec-0.22.0 multidict-7.1.0 ninja-1.13.2 numpy-2.3.5 openai-3.35.1 opencv-python-headless-5.0.0.93 opentelemetry-api-1.45.1 opentelemetry-exporter-http-transport-0.66b1 opentelemetry-exporter-otlp-1.45.1 opentelemetry-exporter-otlp-common-0.66b1 opentelemetry-exporter-otlp-proto-common-1.45.1 opentelemetry-exporter-otlp-proto-grpc-1.45.1 opentelemetry-exporter-otlp-proto-http-1.45.1 opentelemetry-proto-1.45.1 opentelemetry-sdk-1.45.1 opentelemetry-semantic-conventions-0.66b1 opentelemetry-semantic-conventions-ai-0.5.1 oss-harmony-0.0.11 outlines_core-0.2.14 packaging-26.3 partial-json-parser-0.2.1.1.post7 pillow-13.0.0 prometheus-fastapi-instrumentator-8.1.0 prometheus_client-0.26.0 propcache-0.5.4 protobuf-7.36.2 psutil-7.2.2 py-cpuinfo-9.0.0 pybase64-1.5.1 pycountry-26.2.16 pycparser-3.11 pydantic-2.14.1 pydantic-core-2.50.1 pydantic-extra-types-2.11.1 pydantic-settings-2.16.0 pygments-2.21.0 pyjwt-2.15.1 python-dotenv-1.2.4 python-json-logger-4.2.0 python-multipart-0.0.32 pyyaml-6.0.3 pyzmq-27.2.0 referencing-0.37.0 regex-2026.9.29 requests-2.34.2 rich-15.0.0 rich-toolkit-0.20.6 rignore-0.8.1 rpds-py-2026.9.1 safetensors-0.8.0 sentencepiece-0.2.2 sentry-sdk-2.72.0 setproctitle-1.3.8 setuptools-80.10.2 shellingham-1.5.4 six-1.17.0 sniffio-1.3.1 sse-starlette-3.5.0 starlette-1.9.0 supervisor-4.3.0 tiktoken-0.14.0 tokenizers-0.23.3 tqdm-4.70.1 transformers-5.20.2 truststore-0.10.5 typer-0.27.3 typing-inspection-0.4.4 urllib3-2.8.0 uvicorn-0.54.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.3 xgrammar-0.2.8 yarl-1.25.1
+#8 34.02 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 34.16 
+#8 34.16 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#8 34.16 [notice] To update, run: pip install --upgrade pip
+#8 DONE 35.1s
+
+#9 [6/8] RUN pip install "setuptools>=77.0.3,<81.0.0" "setuptools-scm>=8.0" "setuptools-rust>=1.9.0"     "packaging>=24.2" wheel jinja2 ninja "cmake>=3.26.1" pytest
+#9 0.736 Requirement already satisfied: setuptools<81.0.0,>=77.0.3 in /usr/local/lib/python3.12/site-packages (80.10.2)
+#9 0.866 Collecting setuptools-scm>=8.0
+#9 1.012   Downloading setuptools_scm-10.3.4-py3-none-any.whl.metadata (6.7 kB)
+#9 1.067 Collecting setuptools-rust>=1.9.0
+#9 1.112   Downloading setuptools_rust-1.13.0-py3-none-any.whl.metadata (9.6 kB)
+#9 1.117 Requirement already satisfied: packaging>=24.2 in /usr/local/lib/python3.12/site-packages (26.3)
+#9 1.171 Collecting wheel
+#9 1.212   Downloading wheel-0.48.0-py3-none-any.whl.metadata (2.3 kB)
+#9 1.215 Requirement already satisfied: jinja2 in /usr/local/lib/python3.12/site-packages (3.1.6)
+#9 1.215 Requirement already satisfied: ninja in /usr/local/lib/python3.12/site-packages (1.13.2)
+#9 1.342 Collecting cmake>=3.26.1
+#9 1.379   Downloading cmake-4.4.4-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl.metadata (7.0 kB)
+#9 1.424 Collecting pytest
+#9 1.461   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+#9 1.513 Collecting vcs-versioning<3,>=2.5.0.dev0 (from setuptools-scm>=8.0)
+#9 1.552   Downloading vcs_versioning-2.6.0-py3-none-any.whl.metadata (1.7 kB)
+#9 1.583 Collecting semantic_version<3,>=2.8.2 (from setuptools-rust>=1.9.0)
+#9 1.623   Downloading semantic_version-2.10.0-py2.py3-none-any.whl.metadata (9.7 kB)
+#9 1.634 Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/site-packages (from jinja2) (3.0.3)
+#9 1.664 Collecting iniconfig>=1.0.1 (from pytest)
+#9 1.704   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+#9 1.742 Collecting pluggy<2,>=1.5 (from pytest)
+#9 1.777   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+#9 1.781 Requirement already satisfied: pygments>=2.7.2 in /usr/local/lib/python3.12/site-packages (from pytest) (2.21.0)
+#9 1.827 Downloading setuptools_scm-10.3.4-py3-none-any.whl (33 kB)
+#9 1.876 Downloading setuptools_rust-1.13.0-py3-none-any.whl (30 kB)
+#9 1.919 Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+#9 1.965 Downloading cmake-4.4.4-py3-none-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (30.3 MB)
+#9 2.935    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 30.3/30.3 MB 33.8 MB/s eta 0:00:00
+#9 2.969 Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+#9 3.026 Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+#9 3.070 Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+#9 3.107 Downloading semantic_version-2.10.0-py2.py3-none-any.whl (15 kB)
+#9 3.145 Downloading vcs_versioning-2.6.0-py3-none-any.whl (123 kB)
+#9 3.276 Installing collected packages: wheel, vcs-versioning, semantic_version, pluggy, iniconfig, cmake, setuptools-scm, setuptools-rust, pytest
+#9 3.873 Successfully installed cmake-4.4.4 iniconfig-2.3.1 pluggy-1.7.0 pytest-9.1.1 semantic_version-2.10.0 setuptools-rust-1.13.0 setuptools-scm-10.3.4 vcs-versioning-2.6.0 wheel-0.48.0
+#9 3.873 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#9 4.032 
+#9 4.032 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#9 4.032 [notice] To update, run: pip install --upgrade pip
+#9 DONE 4.2s
+
+#10 [7/8] RUN pip install --no-build-isolation --no-deps -e /opt/vllm
+#10 0.677 Obtaining file:///opt/vllm
+#10 0.678   Checking if build backend supports build_editable: started
+#10 0.925   Checking if build backend supports build_editable: finished with status 'done'
+#10 0.925   Preparing editable metadata (pyproject.toml): started
+#10 2.708   Preparing editable metadata (pyproject.toml): finished with status 'done'
+#10 2.729 Building wheels for collected packages: vllm
+#10 2.729   Building editable for vllm (pyproject.toml): started
+#10 4.620   Building editable for vllm (pyproject.toml): finished with status 'done'
+#10 4.620   Created wheel for vllm: filename=vllm-0.32.1rc1.dev118+g3897f95cf.empty-0.editable-cp312-cp312-linux_aarch64.whl size=12012 sha256=cfa6fc74b2e215ff29710f0e35c8e91fbdcb03ef50c107d57212a2a0aea7a625
+#10 4.621   Stored in directory: /tmp/pip-ephem-wheel-cache-elbmossz/wheels/8c/1b/b0/3190842921e7e9172b98f9e3765ffaeb5a0b7269bfe0dd9357
+#10 4.624 Successfully built vllm
+#10 4.624 Installing collected packages: vllm
+#10 4.639 Successfully installed vllm-0.32.1rc1.dev118+g3897f95cf.empty
+#10 4.639 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#10 4.808 
+#10 4.808 [notice] A new release of pip is available: 25.0.1 -> 26.2.1
+#10 4.808 [notice] To update, run: pip install --upgrade pip
+#10 DONE 4.9s
+
+#11 [8/8] WORKDIR /experiment
+#11 DONE 0.0s
+
+#12 exporting to image
+#12 exporting layers
+#12 exporting layers 14.4s done
+#12 exporting manifest sha256:ab004516c3480afde7cc5ecc343e5917b97703a3e772c88b9e282b00005d3180 0.1s done
+#12 exporting config sha256:f738cb29eceb3a429792128fd085db967a5b33ceeb5b8f6b87479af6f63f15b0
+#12 exporting config sha256:f738cb29eceb3a429792128fd085db967a5b33ceeb5b8f6b87479af6f63f15b0 done
+#12 exporting attestation manifest sha256:032f415fc420bc0a65e0aa8f320b0b8b437034aa5c8d2c3efd62b525f17a599d done
+#12 exporting manifest list sha256:2f0b88823f437e6ad5309780cb1c228062241be0969a16dfb58bc4b237fda8ff done
+#12 naming to docker.io/library/e35-vllm-sched:3897f95 done
+#12 unpacking to docker.io/library/e35-vllm-sched:3897f95
+#12 unpacking to docker.io/library/e35-vllm-sched:3897f95 10.5s done
+#12 DONE 25.1s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/dqrns1ia29gn5i8xkwuzfrd9a
+exit 0

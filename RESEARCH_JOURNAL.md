@@ -2,7 +2,7 @@
 
 Owner: Kushagra Bainsla, MSCS, San Jose State University
 Created: 2026-09-23
-Last updated: 2026-10-17
+Last updated: 2026-10-20
 Protocol version: 1
 
 This is the single source of truth for the whole research journey: every idea, every
@@ -184,7 +184,7 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-17, after R-22.** Rewrite this section every session.
+**As of 2026-10-20, after R-33.** Rewrite this section every session.
 
 ### 1.1 Summary
 
@@ -239,9 +239,70 @@ maps every file to what it contains.
   I-121 is KILL. I-23 remains the best first experiment, but its novelty risk is now high.
   Write-up: `dossier/FRONTIER_R-21_2026-10-17.md`.
 - R-22 (2026-10-17) continued the same process until three total new gaps survived. It screened
-  I-122 to I-130 in two passes. I-122 and I-123 survived. Seven other candidates were killed.
-  The three total survivors are I-120, I-122, and I-123. No experiment ran.
+  I-122 to I-130 in two passes. I-122 and I-123 initially survived. Seven candidates were killed.
   Write-up: `dossier/FRONTIER_R-22_2026-10-17.md`.
+- R-23 is the required Sonnet pre-run review of E-31. It found four blockers. The abstract model
+  encoded its result, lacked liveness, misrepresented source failures, and fixed its cost result.
+  E-31 is INVALID DESIGN and did not run.
+- R-24 audited current vLLM main at `da9134bc89364465f68aa679564435936d157a14` in Docker.
+  Narrow fixes cover the closed source failures. One current reset failure remains open.
+  I-122 is PIVOT because the global version mechanism lacks evidence.
+- R-25 and R-26 reviewed E-32 before implementation. Both reviews found circular corpus encoding,
+  incomplete oracles, and unfair decision rules. E-32 did not run.
+- R-27 mapped the four upstream tests to action sequences and ran full-history blame.
+  Only one trace fits depth six. No fault line came from an earlier narrow session fix.
+  I-131 is KILL as a thesis. E-33 was cancelled before execution.
+  Write-up: `dossier/PAPER_AUDIT_I-131_2026-10-19.md`.
+- R-28 ran a fresh two-pass scoop audit for I-123. Current vLLM-Omni already owns the duplex
+  session ledgers, reconnect journal, playback acknowledgements, and output fences. Its open PR 8485
+  adds ordered per-input acknowledgements. Concordia already logs durable GPU-state epochs.
+  The old periodic-snapshot oracle is circular for world models and lacks speech-state measurements.
+  I-123 is PIVOT. I-132 is the narrower crash-consistent recovery-epoch question.
+  Write-up: `dossier/SCOOP_AUDIT_I-123_2026-10-19.md`.
+- R-29 is the required independent Sonnet review of E-34. It returned `KILL_IDEA`.
+  The proposed policy is standard checkpoint composition. Its baselines are the two endpoints
+  of the same checkpoint-interval curve. The deterministic workload removes the only possible
+  new constraint. E-34 did not run. I-132 is KILL.
+- R-30 (2026-10-19, main session) was a scoop check before the Mac test that the user asked for.
+  CacheReforge (2609.30884, 2026-09-25) already stores per-layer version anchors in the KV cache,
+  scores drift from adapter weights, and recomputes a bounded layer window. It covers LoRA updates
+  only. A positive I-106 result would only extend it to full-weight RL updates, which is an
+  evaluation result (D-29). I-106 is KILL. Nothing was downloaded and no experiment was predeclared.
+  I-60 is KILL (CacheRoute 2608.19677, llm-d affinity break). I-59 stays WEAK and open. vLLM issue
+  59907 reproduced a different priority inversion on the vLLM CPU backend, so a real-engine Mac
+  test of I-59 is possible. D-47 (recommendation, open).
+- E-35 (2026-10-19 to 2026-10-20, the user's choice under D-47) tested the I-59 premise on vLLM's
+  real scheduler in Docker on the Mac. R-31 (Sonnet, pre-run) found that code reading decides the
+  premise and replaced the planned grid with a trace check (amendment A1). Run 1 was INVALID: its
+  positive-control scenario had no in-flight window. Amendment A2 fixed the arrival steps, and run 2
+  gave KILL. R-32 (Sonnet, post-run) confirmed it with scope limits. vLLM has priority inversions
+  (budget order, KV capacity, preemption), but none depends on a shared prefix, so inheritance has no
+  dependency to fix. A paired sweep (600 scenarios) never found H later with a shared prefix. I-59 is
+  KILL. D-48 (an optional CPU-backend fidelity run) and D-49 (next step) are open.
+- The Mac-only mechanism ideas are now used up: I-106, I-60 (R-30) and I-59 (E-35) are KILL. I-116
+  stays WEAK and needs a separate NVMe test.
+- R-33 (2026-10-20, the user gave the R-21 prompt again): a fresh two-pass frontier review of eight
+  transitions not in the registry (I-133 to I-140: wide-EP failures, agentic RL recovery, multi-GPU C/R
+  with NCCL, GPU snapshots, cross-vendor KV, API rate limits, Mac RDMA meshes, RL reward verification).
+  All eight have direct prior work and are KILL. The C/R line, which fits the user's background best, is
+  now being built by NVIDIA (nvcf issue 2299, PR 2300). Pass 2 found vLLM PR 53298, which implements the
+  I-120 mechanism: I-120 KILL as research. I-23 is the only survivor with a cheap decisive test; a new
+  framing threat is 2606.07581. D-50 (recommendation, open). Write-up: `dossier/FRONTIER_R-33_2026-10-20.md`.
+- R-36 (2026-10-20, the user's request): mined the stated limitations and future work of all 496 cited
+  papers (372 recent papers state some). Eight follow-up gaps checked (I-141 to I-148): seven KILL, one WEAK
+  (I-143, FP8 TP-invariant determinism, GPU only). The closest call, crash-time KV reuse (I-141), fails the
+  simple-baseline attack. D-53 (recommendation, open). Write-up: `dossier/LIMITATIONS_R-36_2026-10-20.md`.
+- The current new-gap set is empty. I-23 remains the strongest candidate.
+- R-35 (2026-10-20, this session; D-49 decided by the user: "Do whatever you can to test locally to test
+  or plan, and keep the ideas up-to-date, so that Once we have the GPUs, we will continue on those.")
+  checked the GPU-gated ideas again and prepared the GPU work on the Mac. It found more evidence for the
+  R-33 I-120 kill (vLLM issues 61768, 61905, 61912 and the maintainers' request-level recovery proposal,
+  RFC 35780 and PR 42461) and a further weakness of I-83 (LiteTopK 2607.11976: indexer scores
+  concentrate in a narrow range). It wrote two GPU packages with tests: E-36 (I-23 Test A Session 1, one
+  H100, linked to the R-33 Test A design) and the frozen E-30 package (I-118, one GH200), plus
+  `dossier/GPU_RUNBOOK_2026-10-20.md`. R-34 (Sonnet pre-run review) returned AMEND_THEN_RUN for both
+  packages. Amendments A1 are applied, both unit-test suites pass (14 and 9 tests), and the E-36 Mac dry
+  run on the vLLM v0.32.0 CPU image passed mechanically. Both packages wait only on the user (D-51, D-52).
 - Lessons: in 2026, direct mechanism transfers into LLM infrastructure appear as preprints, issues or
   pull requests within weeks (R-10, R-13, R-17). Measure the premise on real data first. When a frozen
   rule says "no effect", check the edges of the grid (trigger size, horizon, metric power) before
@@ -253,20 +314,14 @@ maps every file to what it contains.
 
 | ID | Idea | Status | Blocker | Next step | Kill rule |
 |---|---|---|---|---|---|
-| I-23 | SafeDispatch, narrowed to Hopper and Blackwell block-scaled FP8, NVFP4 and MoE cells | MEASURE-FIRST | 1 NVIDIA GPU (Hopper, plus Blackwell for NVFP4) | Test A (Section 5, I-23) | Oracle gain under 2% and unsafe fraction under 2%: KILL. Gain under 5% but unsafe fraction at least 10%: PIVOT to measurement thesis |
-| I-120 | Atomic runtime activation for remote KV recovery | MEASURE-FIRST, high scoop risk | 1 NVIDIA GPU and a current vLLM connector | Reproduce issue 49250, then run the fault matrix in Section 5.20 | Current main passes the matrix, or fresh-block recomputation is correct and costs under 3% at realistic fault rates: KILL |
-| I-122 | Versioned commit for mutable real-time sessions | MEASURE-FIRST, medium public-gap confidence | None for the first gate | Run the CPU state-machine test in Section 5.21 after the D-29 reviews | Current main passes the matrix, or hash invalidation handles every interleaving: KILL |
-| I-123 | Commit-indexed recovery for heterogeneous real-time session state | MEASURE-FIRST, medium-low public-gap confidence, high scoop risk | None for the oracle; 1 GPU for restore tests | Run the CPU recovery oracle in Section 5.21 | Per-chunk replication costs under 3%, replay restores within 200 ms, or opaque state cannot restore exactly: KILL |
-| I-106 | Per-layer KV reuse across adjacent policy updates | WEAK, low premise confidence | Two OLMo-2 1B RLVR revisions, about 6 GB total | Run the Mac drift premise check after user approval | No fixed boundary saves 30% of layers at 99% of full-recompute quality: KILL |
+| I-23 | SafeDispatch, narrowed to Hopper and Blackwell block-scaled FP8, NVFP4 and MoE cells | MEASURE-FIRST | 1 NVIDIA GPU (Hopper, plus Blackwell for NVFP4) | E-36 Session 1 on one H100 (`dossier/GPU_RUNBOOK_2026-10-20.md`), then the full Test A (R-33 Section 7) | Oracle gain under 2% and unsafe fraction under 2%: KILL. Gain under 5% but unsafe fraction at least 10%: PIVOT to measurement thesis |
 | I-18 | Compute-aware collective engine choice | MEASURE-FIRST, low priority | NVLink node (2+ GPUs, 8 for NVLS) | Fix the test design first (within-cell test, per-call static table baseline), then Test B | Per-call static table within 2% of oracle: KILL |
 | I-33 | Feature-level divergence and speed ledger | HYPOTHESIS | GPU | Rides on the Test A matrix | None yet |
 | I-34 | NCCL new-path numerics contract | HYPOTHESIS | 4 to 8 NVLink GPUs | Bundle with Test B in one node rental | None yet |
 | I-19 | State-reuse soundness | KILL as thesis, salvage as a note | none (Mac) | Optional 1 to 2 week short note | n/a |
-| I-83 | Rank-safe block-max pruning for the DSA lightning indexer | WEAK, GPU only | A GPU node to dump real indexer keys (about 3 hours, 8 x H200) | Premise check in `dossier/ROUTES_R-17_2026-10-08.md` Section 6.3; freeze the kill rules in Section 6.1 before any run | Sign-correct bound skips under 50% of blocks at B = 16, L = 128K, K = 2048: KILL |
+| I-83 | Rank-safe block-max pruning for the DSA lightning indexer | WEAK, GPU only, lower after R-35 (indexer scores concentrate) | A GPU node to dump real indexer keys (about 3 hours, 8 x H200) | Premise check in `dossier/ROUTES_R-17_2026-10-08.md` Section 6.3; freeze the kill rules in Section 6.1 before any run | Sign-correct bound skips under 50% of blocks at B = 16, L = 128K, K = 2048: KILL |
 | I-94 | Phi-accrual detection of slow versus hung collectives (spare) | WEAK | No public collective-timing trace | None planned | None yet |
-| I-59 | Priority inheritance for shared-prefix producers (weak backup) | WEAK, simulator only | User choice (D-34) | Discrete-event simulator with synthetic priorities (the E-28 simulator can be reused) | High-priority p99 TTFT gain under 15%: KILL |
-| I-60 | Late binding for continuous-batching routers (weak backup) | WEAK, simulator only | User choice (D-34) | Simulator | p99 TTFT gain over prefix-affine P2C under 15%: KILL |
-| I-118 | Power-coupled noisy neighbor on CPU-GPU superchips (GH200, GB200) | MEASURE-FIRST, low | 1 x GH200 with root and module power telemetry (ask the provider first) | E-30 premise test (Section 6.1) | Prefill throughput change under 3% at both module limits, or best static CPU cap within 5% of an offline oracle: KILL |
+| I-118 | Power-coupled noisy neighbor on CPU-GPU superchips (GH200, GB200) | MEASURE-FIRST, low | 1 x GH200 with root and module power telemetry (ask the provider first) | E-30 package ready (`experiments/superchip_power_coupling/`, runbook Session 2); ask the provider about root and caps | Prefill throughput change under 3% at both module limits, or best static CPU cap within 5% of an offline oracle: KILL |
 | I-116 | Per-tenant I/O QoS for KV storage tiers (mClock transfer) | WEAK | A box with one NVMe-backed KV tier and two clients | None planned | Victim fetch latency rises by under 20%: KILL |
 
 ### 1.3 Closed or deprioritized. Do not reopen without new information
@@ -276,7 +331,9 @@ I-25, I-26, I-30, I-31, I-41 (as thesis mechanism), I-42, I-43 (dropped by the u
 I-46, I-47, I-48, I-49, I-50 to I-57 (R-09), I-58 (E-27, R-12), I-61 to I-75 (R-10), I-76 to I-79 and
 I-81 (R-13), I-80 (R-14, E-28, R-16; an optional E-29 is listed in D-33), I-82, I-84 to I-93 (R-17),
 I-110 to I-115, I-117, I-119 (R-20; I-114 has a WEAK dissent from the reviewer), I-121 (R-21),
-I-124 to I-130 (R-22).
+I-124 to I-130 (R-22), I-122 (PIVOT after R-23 and R-24), I-123 (PIVOT after R-28),
+I-131 (R-26 and R-27), I-132 (R-29), I-106 and I-60 (R-30), I-59 (E-35, R-31, R-32), I-120 (R-33),
+I-133 to I-140 (R-33).
 Scanned: I-44,
 I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 
@@ -304,20 +361,39 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
    on the GPU plan; grants now. Alternatives: the E-28 workshop note (D-33 option d) or the I-19 note.
 9. **D-41 (after R-21).** Accept or change the recommendation: run I-23 Test A first, then use
    remaining H100 time for the I-120 reproduction.
-10. **D-43 (after R-22).** Accept or change the recommendation: run the I-122 CPU gate first.
-    Keep I-23 as the first H100 test. Run the I-123 CPU oracle before any GPU implementation.
+10. **D-45.** DECIDED 2026-10-19. The user said "go ahead" after the R-27 handoff.
+    I-131 stays closed, and work moved to the I-123 audit.
+11. **D-46.** The R-29 review met its kill condition. Accept or change the recommendation
+    to keep I-132 closed.
+12. **D-47.** DECIDED 2026-10-19. The user chose the I-59 premise check. Done as E-35 (KILL).
+13. **D-48 (after E-35).** E-35 ran vLLM's scheduler class, not the full CPU backend that the user named.
+    Accept that substitution, or ask for a one-cell CPU-backend fidelity run.
+14. **D-49.** DECIDED 2026-10-20. The user asked for local tests and plans that keep the ideas current
+    until GPUs arrive. Done as R-35 (packages E-36 and E-30, GPU runbook).
+15. **D-50 (after R-33).** Accept or change the recommendation: no further broad frontier sweep; use the
+    first H100 session for I-23 Test A; treat I-120 as closed.
+16. **D-51 (ready: R-34 applied, Mac dry run passed).** Approve the E-36 Session 1 spend (one H100, 4-hour cap, $18 cap).
+17. **D-52 (ready: R-34 applied).** Approve the E-30 session (one GH200, 2.5-hour cap) after the provider confirms
+    root and power caps.
+18. **D-53 (after R-36).** Accept or change the recommendation: stop literature-based gap searches and
+    spend effort on the prepared GPU runs.
 
 ### 1.5 Next actions, in order
 
-1. **D-43 decision by the user (R-22).** Run the I-122 CPU state-machine gate first. Keep I-23 as
-   the first H100 test. Run the I-123 CPU oracle before any GPU implementation.
-2. **D-41 decision by the user (R-21).** Use the first H100 session for I-23 Test A. Reproduce the
-   I-120 failure only if paid time remains. Do not implement either full system before its gate passes.
+1. **D-51 and D-52 by the user.** Both GPU packages are ready: R-34 amendments applied, unit tests
+   pass, E-36 Mac dry run passed. On D-51, book one H100 and follow `dossier/GPU_RUNBOOK_2026-10-20.md`
+   Section 2. On D-52, first ask the provider about root, the module power section and writable Grace
+   caps. D-50 and D-53 are open. Do not reopen I-59, I-60, I-106 or I-120.
+1. **D-48 decision by the user.** Accept the scheduler-level substitution in E-35, or run the one-cell
+   CPU-backend fidelity check (build the vLLM CPU backend for linux/arm64, compare its scheduler output
+   stream with the fake-runner stream for one T2 scenario).
+1. **Do not implement or run E-34.** R-29 killed I-132 at design review.
+2. **D-41 decision by the user (R-21).** Use the first H100 session for I-23 Test A. Do not reproduce
+   the I-120 failure: R-33 closed I-120. Do not implement either full system before its gate passes.
 3. **D-40 decision by the user (R-20).** Accept the R-20 verdicts. If I-118 is wanted: ask the GPU
    provider about root, module power telemetry and cap settings, then predeclare E-30 with a rubber duck
    and a Sonnet pre-run review before any paid run.
-4. **D-39 and D-37 decisions by the user.** D-39: run the I-106 Mac premise check (needs a download of
-   OLMo-2 1B RLVR revisions) or skip it.
+4. **D-37 decision by the user.** D-39 (the I-106 Mac check) is superseded by R-30.
 5. **D-37 decision by the user** (supersedes the open part of D-34). If accepted: plan the first H100
    session for I-23 Test A on the Mac first (cell list, scripts, time per cell, cost cap), with kill
    rules frozen and a Sonnet pre-run review. Confirm the D-35 wording.
@@ -331,6 +407,49 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 10. Fill the June to September gap in Section 4 with what the user remembers.
 
 ### 1.6 Recent changes
+
+- 2026-10-20: R-34 recorded (Sonnet pre-run review of E-36 and E-30: AMEND_THEN_RUN). A1 applied to
+  both packages. The E-36 Mac dry run passed mechanically; it found five defects, all fixed. D-51 and
+  D-52 are ready for the user.
+
+- 2026-10-20: R-36 limitations mining. I-141 to I-148: seven KILL, one WEAK (I-143). D-53.
+
+- 2026-10-20: R-35 (this session, D-49): GPU-plan freshness check and local preparation. E-36 package
+  (I-23, one H100), E-30 frozen package (I-118, one GH200), GPU runbook. R-34 pending. D-51, D-52.
+
+- 2026-10-20: R-33 fresh frontier pass. I-133 to I-140 KILL. I-120 KILL as research (vLLM PR 53298).
+  I-23 MEASURE-FIRST with a new framing threat (2606.07581). D-50.
+
+- 2026-10-20: E-35 done. R-31 (pre-run) replaced the grid with a trace check. Run 1 INVALID, run 2
+  KILL, R-32 (post-run) CONFIRM_WITH_SCOPE_LIMITS, plus a paired supplement. I-59 KILL. D-47 decided,
+  D-48 and D-49 open. Section 8.1 rows 59 and 60.
+
+- 2026-10-19: R-30 scoop check before the Mac test. CacheReforge (2609.30884) covers the I-106
+  mechanism for LoRA updates. I-106 KILL, I-60 KILL, I-59 WEAK and Mac-testable on the vLLM CPU
+  backend. Nothing ran and nothing was downloaded. D-47.
+
+- 2026-10-19: R-29 returned `KILL_IDEA` for I-132. The design is standard checkpoint
+  composition. Its deterministic Docker workload cannot test the possible GPU replay constraint.
+  E-34 is KILL-DESIGN and did not run.
+
+- 2026-10-19: R-28 rejected the old I-123 CPU oracle. I-123 is PIVOT. I-132 narrows the question
+  to one durable epoch across model state, input, output, and playback progress. E-34 is design only.
+
+- 2026-10-19: R-26 rejected the amended E-32 design. R-27 then ran the paper audit.
+  I-131 is KILL as a thesis. E-32 and E-33 did not run.
+
+- 2026-10-17: R-23 found four blocking faults in E-31. E-31 is INVALID DESIGN and did not run.
+  R-24 audited current vLLM in Docker. I-122 is PIVOT. Added I-131 and predeclared E-32.
+
+- 2026-10-17: Claude authentication succeeded in the user's Terminal. The automation process cannot
+  read the Keychain entry. Added a read-only Sonnet review prompt and manual wrapper. E-31 did not run.
+
+- 2026-10-17: Docker Desktop now serves Linux containers through the `desktop-linux` context.
+  The server has 10 virtual CPUs and 7.65 GiB of memory. Sonnet remains signed out. E-31 did not run.
+
+- 2026-10-17: E-31 predeclared for I-122. The Docker harness, six policies, four source scenarios,
+  bounded search, scale sweep, tests, and frozen decision script are ready. No code ran. Docker
+  Desktop has an invalid signature. Sonnet is signed out. D-44 records the user's run decision.
 
 - 2026-10-17: R-22 continued R-21 until three total new gaps survived. I-122 and I-123 survive.
   I-124 to I-130 are KILL. The total set is I-120, I-122, and I-123. D-42 is done. D-43 is open.
@@ -678,8 +797,8 @@ history in Section 5.
 | ID | Idea | Status | Section |
 |---|---|---|---|
 | I-58 | Noise-shaped (sigma-delta) V-cache quantization along the token axis, enabled per head | KILL (2026-10-07, E-27, R-12) | 5.14 |
-| I-59 | Priority inheritance for shared-prefix producers in LLM schedulers | WEAK backup, simulator only | 5.14 |
-| I-60 | Late binding with a locality timeout for continuous-batching routers (Sparrow, delay scheduling) | WEAK backup, simulator only | 5.14 |
+| I-59 | Priority inheritance for shared-prefix producers in LLM schedulers | KILL (E-35, R-31, R-32: no shared-prefix dependency in vLLM 3897f95c or SGLang 476fe86a) | 5.14 |
+| I-60 | Late binding with a locality timeout for continuous-batching routers (Sparrow, delay scheduling) | KILL (R-30: CacheRoute 2608.19677, llm-d affinity break) | 5.14 |
 | I-61 | Denning working-set load control against KV thrashing | KILL, crowded | 5.14 |
 | I-62 | Bazel-style content-addressed cache of agent tool results | KILL, crowded | 5.14 |
 | I-63 | Log-structured KV cache on SSD or high-bandwidth flash | KILL, crowded | 5.14 |
@@ -712,7 +831,7 @@ history in Section 5.
 | ID | Idea | Status | Section |
 |---|---|---|---|
 | I-82 | Flash write filter for the KV cache SSD or HBF tier (Flashield, CacheSack) | KILL, published and shipping | 5.16 |
-| I-83 | Rank-safe block-max pruning for the DSA lightning indexer (Block-Max WAND) | WEAK, GPU only, premise check proposed | 5.16 |
+| I-83 | Rank-safe block-max pruning for the DSA lightning indexer (Block-Max WAND) | WEAK, GPU only, premise check proposed; lower after R-35 (LiteTopK score concentration) | 5.16 |
 | I-84 | Scale-aware ABFT for MXFP8 and NVFP4 GEMMs | KILL, reduces to the BF16 case | 5.16 |
 | I-85 | Mixed-criticality scheduling under output-length uncertainty (Vestal) | KILL, empty guarantee | 5.16 |
 | I-86 | Multi-branch speculative frames for interactive world models (Outatime) | KILL, cost | 5.16 |
@@ -745,7 +864,7 @@ history in Section 5.
 | I-103 | Verify AI-generated kernels (assumption: kernels are written by trusted experts) | KILL as new idea, folds into I-23 as motivation | 5.18 |
 | I-104 | Training under grid demand response (assumption: full power at any time) | KILL (Emerald 2507.00909 compares DVFS, pause, reallocation) | 5.18 |
 | I-105 | Agent-as-tenant cluster scheduler (assumption: users are humans with few jobs) | KILL (real logs show few duplicates; ALPS, 2603.15916) | 5.18 |
-| I-106 | Version-aware serving: per-layer KV drift across adjacent RL checkpoints (assumption: model version fixed for a session) | WEAK, MEASURE-FIRST, Mac premise check proposed | 5.18 |
+| I-106 | Version-aware serving: per-layer KV drift across adjacent RL checkpoints (assumption: model version fixed for a session) | KILL (R-30: CacheReforge 2609.30884 covers the mechanism for LoRA updates) | 5.18 |
 | I-107 | Machine-consumer decode mode (assumption: a human reads the stream) | KILL (Human-Less LLM Serving 2606.20577, jump-forward decoding) | 5.18 |
 | I-108 | Isolation vs reuse vs offload under confidential GPUs (assumption: trusted operator) | WEAK, needs a CC GPU (Azure or GCP) | 5.18 |
 | I-109 | KV policy from server-side session state (assumption: stateless server) | KILL, same as I-45 and I-50 | 5.18 |
@@ -769,15 +888,15 @@ history in Section 5.
 
 | ID | Idea | Status | Section |
 |---|---|---|---|
-| I-120 | Atomic runtime activation for remote KV recovery | MEASURE-FIRST, high scoop risk | 5.20 |
+| I-120 | Atomic runtime activation for remote KV recovery | KILL as research (R-33: vLLM PR 53298 implements the mechanism) | 5.20 |
 | I-121 | Verification-aware scheduling for coding-agent fleets | KILL (TestGRAD, PatchDiff, CI test selection) | 5.20 |
 
 ### 3.16 Phase 15: 2026-10-17 continued frontier review (R-22)
 
 | ID | Idea | Status | Section |
 |---|---|---|---|
-| I-122 | Versioned commit for mutable real-time sessions | MEASURE-FIRST, medium public-gap confidence | 5.21 |
-| I-123 | Commit-indexed recovery for heterogeneous real-time session state | MEASURE-FIRST, medium-low public-gap confidence, high scoop risk | 5.21 |
+| I-122 | Versioned commit for mutable real-time sessions | PIVOT to I-131; E-31 INVALID DESIGN | 5.21 |
+| I-123 | Commit-indexed recovery for heterogeneous real-time session state | PIVOT after R-28; old CPU oracle rejected | 5.21 |
 | I-124 | Authoritative commit frontier for speculative and async inference | KILL (LLM-42, ONNX Runtime GenAI, transactional KV caching) | 5.21 |
 | I-125 | Elastic slot batching for masked diffusion LLMs | KILL (vLLM-Omni `StepScheduler`, direct paper) | 5.21 |
 | I-126 | Cancellation-debt scheduling for agent branch races | KILL (NIXL leases, SGLang abort protocol, TAPER) | 5.21 |
@@ -785,6 +904,44 @@ history in Section 5.
 | I-128 | Topology-independent data-loader recovery | KILL (Mosaic Streaming elastic determinism) | 5.21 |
 | I-129 | Adaptive recurrent-state checkpoint placement | KILL (Sparse Prefix Caching, replay systems, vLLM RFC 52959) | 5.21 |
 | I-130 | Compiler and CUDA-graph warm state in training checkpoints | KILL (PyTorch Mega-Cache, Foundry) | 5.21 |
+
+### 3.17 Phase 16: 2026-10-17 mutable-session test pivot (R-23, R-24)
+
+| ID | Idea | Status | Section |
+|---|---|---|---|
+| I-131 | Stateful metamorphic testing for mutable inference sessions | KILL as thesis; optional tool-only salvage | 5.22 |
+
+### 3.18 Phase 17: 2026-10-19 crash-recovery cut pivot (R-28, R-29)
+
+| ID | Idea | Status | Section |
+|---|---|---|---|
+| I-132 | Crash-consistent duplex recovery epoch | KILL at design review | 5.23 |
+
+### 3.19 Phase 18: 2026-10-20 fresh frontier pass (R-33)
+
+| ID | Idea | Status | Section |
+|---|---|---|---|
+| I-133 | Elastic membership for wide expert-parallel serving | KILL (EEP 2605.10670, SGLang and vLLM elastic EP, Ray Serve) | 5.24 |
+| I-134 | Context-aligned environment recovery for agentic RL | KILL (Belayer 2608.14635, RobustRL, DSec) | 5.24 |
+| I-135 | Multi-GPU transparent C/R with NCCL P2P, IPC and NVLS on | KILL (NVIDIA nvcf issue 2299 and PR 2300, Singularity, CRIUgpu, GCR) | 5.24 |
+| I-136 | Semantics-aware GPU snapshots (skip weights and free KV) | KILL (Dynamo Snapshot, GPU Memory Service, Dynamo issue 16357) | 5.24 |
+| I-137 | Cross-vendor KV and numerics portability | KILL (2606.29986) | 5.24 |
+| I-138 | Rate-limit-aware scheduling for agent fleets on external APIs | KILL as research (no invariant, provider accounting) | 5.24 |
+| I-139 | Local tensor parallelism over Thunderbolt 5 RDMA Mac meshes | KILL (feasibility; EXO, MLX JACCL) | 5.24 |
+| I-140 | Reward verification as the agentic RL straggler | KILL as mechanism (GKE Agent Sandbox, DSec, async RL) | 5.24 |
+
+### 3.20 Phase 19: 2026-10-20 limitations mining (R-36)
+
+| ID | Idea | Status | Section |
+|---|---|---|---|
+| I-141 | Reuse in-flight KV after a serving-process crash when device memory survives | KILL (baseline: committed-length journal; Dynamo capacity argument; AnchorTP) | 5.25 |
+| I-142 | Shapley-style split of a shared prefix's cost among tenants | KILL (public repo srujan20/prefix-cost-attribution; DLPM; 2609.24991) | 5.25 |
+| I-143 | TP-size-invariant deterministic kernels for block-scaled FP8 | WEAK (extension of TBIK, needs 2+ GPUs) | 5.25 |
+| I-144 | Aging-aware rejuvenation for LLM serving engines | KILL (baseline: periodic restart with fast shadow engines) | 5.25 |
+| I-145 | Branch-scoped KV so aborted agent branches leave no residue | KILL (engineering; ForkKV, EAGLE-Pangu) | 5.25 |
+| I-146 | Integrity protection for high-fan-out shared KV blocks | KILL as thesis (HBM ECC, narrow threat model) | 5.25 |
+| I-147 | Erasure-coded KV for decode-heavy and P/D serving | KILL (GhostServe extension, needs cluster) | 5.25 |
+| I-148 | KV tier redesign when host memory is not larger than HBM (Grace) | KILL (NVIDIA ICMS, needs GB200 or GB300) | 5.25 |
 
 ---
 
@@ -1125,6 +1282,81 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   Source: dossier/FRONTIER_R-22_2026-10-17.md.
 2026-10-17  [P8]  Section 1 rewritten "as of 2026-10-17, after R-22". The previous version recorded
                   R-21, I-120, and D-41 as the latest state.
+2026-10-17  [P8]  The user approved the I-122 Mac test and requested Docker isolation (D-44). E-31
+                  was predeclared. The code and container runner were written but not executed.
+                  A static audit added an epoch-only baseline and out-of-order event checks. Docker
+                  Desktop could not start because its code signature is invalid. The Claude CLI is
+                  signed out, so the D-29 Sonnet review is also blocked. No experiment ran.
+2026-10-17  [P8]  Section 1 rewritten after the E-31 predeclaration. The previous version recorded
+                  R-22 and D-43 as the latest state.
+2026-10-17  [P8]  Docker Desktop later served Linux containers through the desktop-linux context.
+                  The server reports 10 virtual CPUs and 7.65 GiB of memory. The Claude CLI remains
+                  signed out. E-31 remains blocked by its required Sonnet review. No experiment ran.
+2026-10-17  [P8]  Claude authentication succeeded in the user's Terminal. The automation process
+                  cannot read the macOS Keychain entry. A read-only Sonnet prompt and manual review
+                  wrapper are ready. E-31 did not run.
+2026-10-17  [P8]  R-23 reviewed E-31 before execution. Sonnet found four blocking design faults.
+                  E-31 is INVALID DESIGN and did not run.
+                  Source: dossier/REVIEW_E-31_PRERUN_2026-10-17.md. Ideas: I-122. Experiment: E-31.
+2026-10-17  [P8]  R-24 audited current vLLM source and issue states in Docker. Narrow fixes cover
+                  the closed failures. The global version mechanism lacks evidence. I-122 is PIVOT.
+                  I-131 is the replacement MEASURE-FIRST question. E-32 is predeclared, not run.
+                  Source: dossier/SOURCE_AUDIT_I-122_2026-10-17.md. Ideas: I-122, I-131.
+2026-10-19  [P8]  R-25 reviewed E-32 before implementation. It found four blocking design faults.
+                  E-32 requires amendment. E-33 was predeclared as the four-case CPU corpus pilot.
+                  Source: dossier/REVIEW_E-32_PRERUN_2026-10-17.md. Ideas: I-131. Experiment: E-33.
+2026-10-19  [P8]  R-26 reviewed the amended E-32 design. It found that circularity, oracle contracts,
+                  and decision rules remained unresolved. E-32 did not run.
+                  Source: dossier/REVIEW_E-32_AMENDMENT_2026-10-19.md. Ideas: I-131.
+2026-10-19  [P8]  R-27 mapped four upstream tests to action sequences and ran full-history blame.
+                  Only one trace fits depth six. No fault line came from an earlier narrow session fix.
+                  I-131 is KILL as a thesis. E-32 and E-33 did not run.
+                  Source: dossier/PAPER_AUDIT_I-131_2026-10-19.md. Ideas: I-131.
+2026-10-19  [P9]  R-28 ran a fresh two-pass scoop audit for I-123. Current work now covers
+                  heterogeneous model snapshots, durable GPU deltas, duplex ledgers, output replay,
+                  playback acknowledgements, and ordered input acknowledgements as separate pieces.
+                  The old CPU oracle would encode its result. I-123 is PIVOT. I-132 asks whether one
+                  durable recovery epoch must join all pieces. E-34 is design only and did not run.
+                  Source: dossier/SCOOP_AUDIT_I-123_2026-10-19.md. Ideas: I-123, I-132.
+2026-10-19  [P9]  R-29 reviewed E-34 before implementation and returned KILL_IDEA.
+                  The policy is standard checkpoint composition. B1 and B2 are its interval
+                  endpoints. The deterministic workload omits nondeterministic GPU replay.
+                  I-132 is KILL. E-34 is KILL-DESIGN and did not run.
+                  Source: dossier/REVIEW_E-34_PRERUN_2026-10-19.md. Idea: I-132.
+2026-10-19  [P9]  The user chose Mac tests for now. R-30 ran a scoop check before the I-106
+                  premise run. CacheReforge (2609.30884) covers the I-106 mechanism for LoRA
+                  updates. I-106 KILL, I-60 KILL, I-59 WEAK and Mac-testable. Nothing ran.
+                  Source: this journal, Section 6.2 R-30. Ideas: I-106, I-59, I-60.
+2026-10-19  [P9]  The user chose the I-59 premise check (D-47). E-35 predeclared. R-31 (Sonnet)
+                  returned DO_NOT_RUN_CODE_DECIDES and proposed a trace check; amendment A1.
+                  Run 1 INVALID (no in-flight window, lone-request exemption); amendment A2.
+                  Source: experiments/priority_inheritance_premise/README.md. Idea: I-59.
+2026-10-20  [P9]  E-35 run 2: KILL. R-32 (Sonnet) CONFIRM_WITH_SCOPE_LIMITS: no shared-prefix
+                  dependency, but budget, capacity and preemption inversions exist. Paired
+                  supplement: a shared prefix never delayed H in 600 scenarios. I-59 KILL.
+                  Source: dossier/REVIEW_E-35_POSTRUN_2026-10-20.md. Idea: I-59.
+2026-10-20  [P9]  The user gave the R-21 research prompt again. R-33 ran a fresh two-pass
+                  frontier review on eight transitions not in the registry (I-133 to I-140).
+                  All eight have direct prior work. Pass 2 found vLLM PR 53298, which
+                  implements the I-120 mechanism: I-120 KILL as research. I-23 stays the
+                  best survivor; new framing threat 2606.07581. D-50.
+                  Source: dossier/FRONTIER_R-33_2026-10-20.md. Ideas: I-120, I-23, I-133 to I-140.
+2026-10-20  [P9]  The user asked for the weaknesses each reviewed paper leaves for a next paper.
+                  R-36 downloaded the 496 cited papers, extracted limitation and future-work text,
+                  read it for the 372 recent papers that state any, and checked eight follow-up
+                  gaps (I-141 to I-148). Seven KILL, one WEAK (I-143). D-53.
+                  Source: dossier/LIMITATIONS_R-36_2026-10-20.md. Ideas: I-141 to I-148.
+2026-10-20  [P9]  The user asked for local tests and plans until GPUs arrive (D-49). R-35 checked
+                  the GPU-gated ideas, wrote the E-36 package (I-23, one H100) and the frozen
+                  E-30 package (I-118, one GH200), and the GPU runbook. The vLLM CPU image build
+                  for the Mac dry run failed three times (network twice, memory once) and is retried.
+                  Source: dossier/GPU_RUNBOOK_2026-10-20.md. Ideas: I-23, I-118, I-120, I-83.
+2026-10-20  [P9]  R-34 (Sonnet) pre-run review of E-36 and E-30: AMEND_THEN_RUN for both. A backend
+                  flag can alias the default kernel; the E-30 prefill test hit the prefix cache.
+                  Amendments A1 applied. The vLLM CPU image built on the fourth try (one compile
+                  job). The E-36 Mac dry run passed mechanically after five fixes; one is a vLLM
+                  v0.32.0 CPU bug that vLLM main fixed in PR 61992.
+                  Source: dossier/REVIEW_E-36_E-30_PRERUN_2026-10-20.md. Ideas: I-23, I-118.
 ```
 
 ---
@@ -1831,6 +2063,25 @@ and validation. Open B200 reports: vLLM #55238 (CUDA graph replay changes greedy
 sm100 only, no root cause at fetch) and #55649 (NVFP4 gated-MoE end-padding corrupts output,
 fix PR unmerged). Scoop risk is high: the Integer Alibi author posted two papers in 12 days.
 
+**R-33 note (2026-10-20).** New framing threat: "Training-Inference Kernel Contracts" (2606.07581,
+2026-05-26) defines kernel contracts with an escalation policy that maps violations to routing actions.
+It reports no evaluation and does not mention FP8, NVFP4, MoE, Hopper or Blackwell. Add the contract
+concept to "do not claim as novel". Add 2609.25624 fixed-order kernels as a Test A baseline where they
+run on Hopper. Status unchanged: MEASURE-FIRST.
+
+**R-35 note (2026-10-20).** vLLM v0.32.0 (2026-10-18) has first-class backend switches:
+`--linear-backend`, `--moe-backend`, `linear_backend_per_quant` and `--attention-backend` (FACT,
+`vllm/config/kernel.py`, `vllm/engine/arg_utils.py`). Each backend pair in Test A is one flag, and a
+dispatch layer has a clean hook. The E-36 package (`experiments/safedispatch_testA/`) is Session 1 of
+Test A on one H100: calibration, backend inventory, two FP8 cells at a fixed batch configuration, and a
+STOP-FLAT / CONTINUE / INCONCLUSIVE rule. No direct new scoop was found.
+
+**R-34 note (2026-10-20).** FACT (v0.32.0 source): when a requested `--linear-backend` has no kernel
+for a layer, vLLM logs a warning and uses normal kernel selection. Some backend values are aliases
+of the default kernel. A backend flag is therefore no proof of a different kernel. E-36 now detects
+aliases from vLLM's kernel-selection log and uses Marlin W8A16 as a positive control.
+INTERPRETATION: a dispatch layer for I-23 must record the resolved kernel, not the requested flag.
+
 **Narrowed question (2026-09-23).** On Hopper and Blackwell, for block-scaled FP8, NVFP4 and
 fused-MoE backends, does the fastest backend that satisfies an explicit output contract
 differ across serving regimes enough to beat the best single fixed-order backend by at least
@@ -2253,6 +2504,24 @@ Next step and kill rule: a discrete-event simulator with synthetic priorities (p
 priority tags). KILL if the high-priority p99 TTFT improves by under 15%.
 Verdict history:
 - 2026-10-07 (R-10): WEAK backup.
+- 2026-10-19 (R-30): WEAK, still open. No source applies priority inheritance to a shared-prefix
+  producer. vLLM issue 59907 (open, 2026-10-04) reports a different inversion (running requests get
+  the token budget in admission order) and was reproduced with `VLLM_TARGET_DEVICE=cpu`. Fix PR 59963
+  is open. RelServe (2601.11546) updates priorities by progress but does not inherit them. A premise
+  check on the real vLLM CPU engine in Docker is therefore possible on the Mac. Open design question:
+  vLLM recomputes a shared prefix instead of waiting for an in-flight producer, so the inversion needs
+  a case where the high-priority request depends on the low-priority prefill.
+- 2026-10-20 (E-35, R-31, R-32): KILL. vLLM never makes a waiting request wait for another request's
+  prefix, and it publishes prefix blocks when it schedules them. Its running loop takes the token
+  budget in admission order and ignores priority. SGLang's shared-prefix wait cannot run together with
+  priority scheduling. Run 2 of E-35 confirmed this on the real scheduler class, and a paired sweep
+  (600 scenarios) never found the high-priority request later with a shared prefix.
+Why closed: inheritance repairs a task that is blocked on a lower-priority holder. No such block exists
+through a shared prefix. The inversions that do exist (budget order, KV capacity, preemption) do not
+depend on the prefix, and lifting an already-running producer does not change them.
+What would reopen it: an engine that makes a request wait for another request's in-flight prefix
+(for example singleflight prefill merged with priority scheduling), or a KV-connector path that does
+so in practice, measured on a real workload.
 
 ### I-60 Late binding for continuous-batching routers
 Status: WEAK backup   Confidence in gap: low
@@ -2262,6 +2531,9 @@ Next step and kill rule: a simulator. KILL if the p99 TTFT gain over prefix-affi
 choices is under 15%. Close to the killed routing family (I-55).
 Verdict history:
 - 2026-10-07 (R-10): WEAK backup.
+- 2026-10-19 (R-30): KILL. CacheRoute (2608.19677, Meta) plans prefix-affinity routing and limits
+  residual load skew. The llm-d scheduler already breaks affinity when the warm pod's predicted
+  latency is much worse. That is the delay-versus-locality trade-off of delay scheduling.
 
 ### I-61 to I-75 (screened in R-10, killed)
 See Section 3.9 and Section 6 of the R-10 dossier for the prior art behind each kill. In short:
@@ -2348,6 +2620,11 @@ operations. Full write-up: `dossier/ROUTES_R-17_2026-10-08.md`. Evidence is SNIP
   a sign split). INTERPRETATION: LayerNorm, RoPE and a Hadamard rotation make block bounds loose; a
   synthetic test pruned 0% of blocks. Proposed premise check: `dossier/ROUTES_R-17_2026-10-08.md`
   Section 6.3 (needs a GPU to dump real keys).
+  R-35 (2026-10-20): LiteTopK (2607.11976, GLM 5.2 on B200) reports that indexer scores concentrate in a
+  narrow range (FACT, abstract); that makes block bounds loose (INTERPRETATION). HPC-Ops Top-K
+  (2609.08450) and LiteTopK make exact top-k selection cheaper but still score every key, so they do not
+  take I-83's block-skipping idea. vLLM v0.32.0 has a pluggable `sparse_indexer_topk_backend`. No small
+  open model with a DSA indexer was found, so no Mac test is possible.
 - **I-84 Scale-aware ABFT for block-scaled GEMMs.** KILL. Dequantized values are exact in FP32, so it is
   the BF16 case. V-ABFT (2602.08043), FP-Sketch (2609.19758).
 - **I-85 Mixed-criticality scheduling.** KILL. The HI budget is max_tokens; priority plus preemption is
@@ -2434,6 +2711,20 @@ Write-ups: `dossier/ASSUMPTIONS_R-19_2026-10-11.md`, `dossier/R-19_PRIORART_P2-P
   FACT), Apache-2.0, about 2.97 GB each. Reviewer's estimate: about 40% chance to pass the Mac gate.
   Research log, 2026-10-17, R-21: ReKV and the Mooncake RL RFC strengthen the adjacent prior art.
   The exact adjacent-step, per-layer delta predictor was not found. The workload premise remains weak.
+  Research log, 2026-10-19, R-30: KVShareArena v2 (FACT, HTML) uses six distant pairs (a sibling
+  post-trained from the same base, or the base model). It has no adjacent steps and no per-layer
+  boundary. CacheReforge (2609.30884, FACT, abstract and HTML) represents stale KV as layerwise
+  mixed-version objects with per-layer adapter anchors, calibrated sensitivity, accumulated adapter
+  drift and restart boundaries. It reports 92.4% lower KL than stale reuse while recomputing 5.44% of
+  layers, on Qwen2.5 1.5B and 7B with continual LoRA updates. It does not test full-weight updates.
+  Verdict history: 2026-10-11 R-19 WEAK. 2026-10-19 R-30 KILL.
+  Why closed: the mechanism (per-layer version stamps, a drift score from weight changes, a bounded
+  recompute window) is published for LoRA. The residual question (does it transfer to full-weight RL
+  updates) is an evaluation of an existing system, which D-29 excludes. A negative drift result would
+  mean that no mechanism is needed.
+  What would reopen it: evidence that full-weight RL updates break CacheReforge in a way that needs a
+  new mechanism, for example drift spread over all layers with no usable restart boundary, together
+  with a workload that updates weights during live sessions.
 - **I-107 Machine-consumer decode mode.** KILL. 2606.20577 drops streaming SLOs for agent traffic;
   forced spans are SGLang jump-forward decoding.
 - **I-108 Confidential-GPU trade-off.** WEAK. PipeLLM (ASPLOS 2025), 2606.23969 and 2608.26575 measure
@@ -2487,6 +2778,16 @@ search rounds (main session), then a Sonnet attack (R-20). Write-up: `dossier/GA
   Reviewer's rejection: "a vendor power-steering knob that a static CPU cap already handles". Reviewer
   predicts an oracle gain under 5% over a static cap; likely output is a workshop measurement note.
   Next step and kill rule: E-30 (Section 6.1). First ask the provider about root and telemetry.
+  R-35 (2026-10-20): E-30 is frozen as a package (`experiments/superchip_power_coupling/`: preflight,
+  sweep driver with a dry-run mode, analysis with unit tests). KILL 2 now has a defined objective (equal
+  weight of normalized GPU throughput and normalized CPU work; a heuristic). Lambda's MIG guide shows
+  `sudo nvidia-smi` on a 1 x GH200 on-demand instance (SNIPPET), so root is likely.
+  R-34 (2026-10-20): the pre-run review found three blockers. The prefill test hit the prefix cache, the
+  hwmon glob missed the `device/` layout, and the caps ran at the default limit. It also showed that
+  the equal-weight KILL 2 objective decides KILL 2 by construction. Amendment A1 fixed all four; KILL 2
+  now uses a constrained form (best GPU term with CPU work at least 80% of uncapped). Writable Grace
+  caps need the kernel argument `acpi_power_meter.force_cap_on=y`. A cloud VM probably cannot set it,
+  so KILL 2 may be untestable there.
   Research log, 2026-10-17, R-21: NVIDIA Dynamic Power Software confirms a runtime steering
   controller. No LLM-specific CPU noisy-neighbor measurement was found. Static CPU capping remains strong.
 - **I-119 Contention as a side-channel defense.** KILL. 2609.06853 measures the effect; salts (KVGov
@@ -2499,7 +2800,7 @@ reviewer reported a GB10 forum anecdote that the main session could not find; it
 
 ### I-120 Atomic runtime activation for remote KV recovery
 
-Status: MEASURE-FIRST, high scoop risk. Confidence in gap: medium at the runtime boundary,
+Status: KILL as research (R-33, 2026-10-20). Before: MEASURE-FIRST, high scoop risk. Confidence in gap: medium at the runtime boundary,
 low for a full paper. Aliases: transactional KV activation, fail-closed KV recovery.
 
 Origin: 2026-10-17, R-21 current-frontier review.
@@ -2529,10 +2830,24 @@ Research log:
 
 - 2026-10-17: Read Mooncake, RFC 3692, Fail-Closed Lowering, LMCache, and current failure issues.
 - 2026-10-17: Found deterministic wrong output, partial-retrieve crashes, and long recovery waits.
+- 2026-10-20 (R-33): vLLM PR 53298 (open, updated 2026-10-16) says it fixes issue 49250. It orders
+  repair of shared KV blocks, blocks prefix-cache hits on invalid blocks, and transfers repair ownership.
+  PR 62282 (merged 2026-10-20) fixes a multi-peer write-after-free. PR 61578 adds KV checksums.
+
+- 2026-10-20 (R-35, this session, supports R-33): vLLM issues 61768 (open), 61905 and 61912 (opened
+  2026-10-15) and PR 61769 were found by scheduler-level CPU probes with a mock connector (an external
+  "inference-correctness-lab"), which is the local test that I-120 planned. Their fix directions
+  (allocation identity in failure reports, no prefix hits on failed blocks until repaired) are the I-120
+  mechanism. The maintainers' RFC 35780 (closed as stale) and PR 42461 (open) propose request-level
+  recovery: reset to 0 and recompute, with async-loaded blocks never hashed. That is the simple baseline.
+  Issue 49250 is still open; its fix PR 49252 closed unmerged; PRs 53298, 59793 and 45146 are open.
 
 Verdict history:
 
 - 2026-10-17, R-21: MEASURE-FIRST. The direct failure evidence is strong. RFC 3692 creates very high scoop risk.
+- 2026-10-20, R-33: KILL as research. PR 53298 claims the same scope as the surviving gap. When it merges,
+  the kill rule "current main passes the matrix" will hold. What would reopen it: PR 53298 closes unmerged,
+  and a fault class outside its claims still gives wrong output on main.
 
 Next step and kill rule: Reproduce issue 49250 on current main. Kill the paper route if current main
 passes the matrix. Also kill it if correct fresh-block recomputation costs less than 3% at realistic faults.
@@ -2577,7 +2892,7 @@ Lessons: A measured bottleneck does not imply a new scheduling mechanism.
 
 ### I-122 Versioned commit for mutable real-time sessions
 
-Status: MEASURE-FIRST. Confidence in the public gap: medium.
+Status: PIVOT to I-131. Confidence in the original public gap: low after R-24.
 
 Origin: 2026-10-17, R-22 continued frontier review.
 
@@ -2590,31 +2905,45 @@ wrong-state interleavings, with less than 2% CPU overhead at 1,000 sessions?
 What prior art already answers: vLLM implements streaming requests, cache invalidation, preemption,
 and async scheduling. Transactional KV work separates stable and tentative cache state.
 
-Exact surviving gap: I did not find a public protocol that commits one generation across logical token
-history, cache identity, materialized state, queued work, parser state, and emitted output.
+Exact surviving gap at R-22: I did not find a public protocol that commits one generation across logical
+token history, cache identity, materialized state, queued work, parser state, and emitted output.
+R-24 found no evidence that this global protocol is necessary. Narrow local fixes cover the closed failures.
 
-Experiments: none. The cheapest test is a CPU state-machine harness around the vLLM scheduler tests.
-It enumerates update, replace, cancel, preempt, stop, speculative, and parser interleavings.
+Experiments: E-31 is INVALID DESIGN and did not run. R-23 found that it encoded the expected result,
+lacked liveness, misrepresented source failures, and fixed its cost result through model constants.
 
-Reviews: R-22. The D-29 rubber-duck and different-model reviews are still required before a run.
+Reviews: R-22, R-23, and R-24.
 
 Research log:
 
 - 2026-10-17: Read the vLLM streaming design and issues 49449, 58776, 36755, and 42655.
 - 2026-10-17: Searched commit-frontier, epoch, generation, session-version, and transaction terms.
+- 2026-10-17: Predeclared E-31. A static audit added an epoch-only baseline and out-of-order checks.
+- 2026-10-17: Did not run E-31. Docker Desktop has an invalid signature. Sonnet is signed out.
+- 2026-10-17: Docker later served Linux containers through `desktop-linux`. Sonnet remains signed out.
+- 2026-10-17: Claude authenticated in the user Terminal. Automation cannot read its Keychain entry.
+  Added a manual, read-only Sonnet review wrapper. E-31 remains unrun.
+- 2026-10-17: R-23 completed the required Sonnet review. It found four blockers. E-31 did not run.
+- 2026-10-17: R-24 pinned vLLM main at `da9134bc89364465f68aa679564435936d157a14`.
+  It checked six issues, six fixes, five source paths, and the current scheduler test surface in Docker.
+- 2026-10-17: The selected seven scheduler and streaming test files contain 185 test functions,
+  54 parameterization markers, and no Hypothesis or random-action use.
 
 Verdict history:
 
 - 2026-10-17, R-22: MEASURE-FIRST. The failures are direct. The cross-component invariant is not public.
+- 2026-10-17, R-23: E-31 INVALID DESIGN. The experiment cannot falsify the mechanism.
+- 2026-10-17, R-24: PIVOT. The problem class is real, but the global version mechanism lacks evidence.
 
-Next step and kill rule: Run the CPU matrix after the required reviews. Kill if current main passes.
-Also kill if simple hash invalidation handles every interleaving. The 2% threshold is a project heuristic.
+Why closed / what would reopen it: Reopen the global version mechanism only if a real scheduler test
+shows that narrow local invariants cannot prevent a cross-component failure.
 
 Lessons: A request identifier is not a version identifier after live mutation starts.
+Absence of a version field is not evidence that a version field is necessary.
 
 ### I-123 Commit-indexed recovery for heterogeneous real-time session state
 
-Status: MEASURE-FIRST. Confidence in the public gap: medium-low. Scoop risk: high.
+Status: PIVOT to I-132. Confidence in the original public gap: low. Scoop risk: high.
 
 Origin: 2026-10-17, R-22 continued frontier review.
 
@@ -2630,8 +2959,7 @@ DéjàVu recovers KV state. vLLM-Omni RFCs define streaming state and name migra
 Exact surviving gap: I did not find a public system that joins heterogeneous model-state snapshots with
 an external input log and an acknowledged output frontier for exact real-time recovery.
 
-Experiments: none. Start with a CPU oracle over state size, chunk rate, bandwidth, failure time, and
-acknowledgement delay. Use one GPU only after the oracle passes.
+Experiments: none. R-28 rejected the planned CPU oracle before predeclaration or execution.
 
 Reviews: R-22. The D-29 rubber-duck and different-model reviews are still required before a run.
 
@@ -2639,14 +2967,20 @@ Research log:
 
 - 2026-10-17: Read vLLM-Omni RFCs 5212 and 6227, Execution-State Capsules, DéjàVu, and WorldMove.
 - 2026-10-17: Searched consistent-cut, output-commit, replay, stream-recovery, and checkpoint terms.
+- 2026-10-19: R-28 read current vLLM-Omni duplex documentation, RFC 8429, PR 8485, Concordia,
+  GhostServe, Flink fault tolerance, and Resume Means Resume.
+- 2026-10-19: WorldMove values make the old 200 ms replay oracle invalid for its world-model case.
 
 Verdict history:
 
 - 2026-10-17, R-22: MEASURE-FIRST. The cross-layer cut appears open, but public roadmaps name recovery.
+- 2026-10-19, R-28: PIVOT. Current systems expose every component separately. The old oracle is
+  circular or under-specified. I-132 keeps only the crash-consistent cross-layer recovery cut.
 
-Next step and kill rule: Run the CPU oracle first. Kill if per-chunk replication costs less than 3%,
-ordinary replay restores within 200 ms, or current interfaces cannot restore opaque state exactly.
-All numeric thresholds are project heuristics.
+Why closed: The proposed periodic snapshot and replay oracle does not test a defensible open mechanism.
+
+What would reopen it: A measured speech or world-model trace must expose a recovery trade-off that
+full per-unit protection and replay do not solve.
 
 Lessons: A state snapshot is not a session checkpoint without input and output progress.
 
@@ -2768,6 +3102,221 @@ Exact surviving gap: The training-specific cost premise is not measured. Existin
 Experiments: none. Verdict: KILL by exact-work and baseline attacks.
 
 Why closed: Reopen only after a real training restart breakdown shows a large unhandled cost.
+
+### 5.22 I-131 Stateful metamorphic testing for mutable inference sessions
+
+Status: KILL as thesis. Optional tool-only salvage. Confidence in the public gap: low.
+
+Origin: 2026-10-17, R-23 and R-24 pivot from I-122.
+
+Problem: Streaming updates, preemption, cache reset, speculative output, and queue movement can
+interact. Example tests can cover each feature but miss short transition sequences between them.
+
+Research question: Can stateful transition generation with history-equivalence oracles find more
+real mutable-session faults than current tests and equal-budget random actions?
+
+What prior art already answers:
+
+- Stateful property testing, model-based testing, and trace-guided generator synthesis are established.
+- A TOSEM 2026 study classifies 929 inference-engine bugs and recommends diverse oracles and
+  metamorphic tests.
+- Current vLLM has broad scheduler and streaming tests with many parameter grids.
+
+Exact surviving gap: I did not find a public tester that generates mutable LLM session transitions
+and checks history equivalence across scheduling, preemption, reset, and continuation paths.
+Generic property testing applied to vLLM is not a contribution by itself.
+
+Experiments: E-32 did not run. E-33 was cancelled before execution.
+
+Reviews: R-23 recommends a real scheduler test. R-24 defines the pivot. R-25 and R-26 block E-32.
+R-27 kills the thesis route after the paper audit.
+
+Research log:
+
+- 2026-10-17: Read the current vLLM issue and fix paths for session truncation, async handoff,
+  speculative stop trimming, preempted stop, and parked-session reset.
+- 2026-10-17: Audited vLLM main at `da9134bc89364465f68aa679564435936d157a14` in Docker.
+- 2026-10-17: Counted 185 tests and 54 parameter grids in seven selected files. Found no
+  Hypothesis or random-action use in those files.
+- 2026-10-17: Read the TOSEM inference-engine bug study and targeted adjacent testing work.
+- 2026-10-19: R-25 found an unstable corpus, circular bug encoding, weak baselines, and incomplete oracles.
+- 2026-10-19: Froze four merged parent-and-fix pairs for E-33. Excluded two unmerged fixes.
+- 2026-10-19: R-26 found that the amended design still lacked circularity controls and oracle contracts.
+- 2026-10-19: R-27 mapped trace lengths and ran full-history blame on the four parent commits.
+
+Verdict history:
+
+- 2026-10-17, R-24: MEASURE-FIRST. Direct failures support the problem. The contribution has a
+  high combination risk and must beat current tests plus random actions.
+- 2026-10-19, R-25: MEASURE-FIRST. Amend E-32 before implementation. Run E-33 first.
+- 2026-10-19, R-26: AMEND BEFORE IMPLEMENTATION. Do not run E-32 or E-33 as written.
+- 2026-10-19, R-27: KILL as thesis. The corpus is circular and does not show recurrence after fixes.
+
+Why closed: The known corpus comes from one feature rollout and does not show recurrence after fixes.
+The proposed contribution remains generic stateful testing plus vLLM-specific actions.
+
+What would reopen it: A prospective holdout must find new confirmed bugs after the harness freeze.
+The tool must beat bounded enumeration, Hypothesis, and equal-budget random actions.
+
+Lessons: A cluster of bugs in one new feature does not prove recurrence after local fixes.
+
+### 5.23 I-132 Crash-consistent duplex recovery epoch
+
+Status: KILL at design review. Confidence in the public gap: low.
+
+Origin: 2026-10-19, R-28 pivot from I-123.
+
+Problem: A valid model-state restore can still duplicate audio, omit accepted input, or restore
+conversation history that disagrees with output the user already consumed.
+
+Research question: Can one durable recovery epoch join complete model state, accepted input,
+durable output, client receipt, and playback progress after a fail-stop engine crash?
+
+What prior art already answers:
+
+- Execution-State Capsules captures complete heterogeneous model state at a committed boundary.
+- Concordia logs committed GPU-state deltas and restores from the last complete record.
+- vLLM-Omni owns input, response, playback, history, lease, and model state in one engine session.
+- vLLM-Omni journals events for reconnect and its open PR 8485 adds ordered per-input acknowledgements.
+- Flink coordinates replayable input, operator state, and transactional or idempotent output.
+
+Former proposed gap: R-28 did not find a public system that persists one recovery epoch across the
+heterogeneous model snapshot and the full-duplex protocol frontiers after engine loss.
+R-29 found that the proposed mechanism does not establish a new systems constraint.
+
+Do not claim exactly-once network delivery. The client must deduplicate stable event identifiers.
+
+Experiments: E-34 is KILL-DESIGN. It was not implemented or run.
+
+Reviews: R-28 and R-29.
+
+Research log:
+
+- 2026-10-19: Completed the two-pass R-28 scoop and adjacent-domain audit.
+- 2026-10-19: Designed a Docker fail-stop gate with correct replay and full-copy baselines.
+- 2026-10-19: The rubber-duck review left novelty and combination risk unresolved.
+- 2026-10-19: R-29 returned `KILL_IDEA`. It found standard checkpoint composition,
+  incomplete baselines, undefined workload targets, and no nondeterministic replay state.
+
+Verdict history:
+
+- 2026-10-19, R-28: DESIGN-REVIEW. Keep only if an independent review finds a new cross-layer
+  invariant beyond standard stream checkpointing plus a model snapshot.
+- 2026-10-19, R-29: KILL. The review found no new invariant in E-34. The Docker design
+  fixes policy costs by construction and cannot answer the important GPU replay question.
+
+Why closed: The proposed epoch is a write-ahead log, a periodic snapshot, an atomic manifest,
+and an idempotent sink. The two baselines are the endpoint checkpoint intervals of that policy.
+The design therefore met its predeclared novelty kill condition.
+
+What would reopen it: Show that replay from the same real GPU snapshot produces different visible
+events. Alternatively, show a real trace where no checkpoint interval, delta snapshot, or hot replica
+meets a sourced recovery budget.
+
+Lessons: A model checkpoint is not a session checkpoint. A known distributed-systems pattern is not
+new because one state component lives on a GPU.
+
+---
+
+### 5.24 I-133 to I-140 (fresh frontier pass, R-33)
+
+Origin for all: 2026-10-20, R-33. Full write-up: `dossier/FRONTIER_R-33_2026-10-20.md`.
+Each idea below is KILL. Experiments: none. Reviews: R-33.
+
+**I-133 Elastic membership for wide expert-parallel serving.** Status: KILL. Confidence in gap: low.
+Problem: one failed rank stops a wide-EP instance with fixed membership.
+What prior art already answers: EEP (2605.10670) repairs only invalidated state and restores 95% of
+throughput in 52 s versus 348 s for a full restart. SGLang Elastic EP, vLLM Elastic EP and Ray Serve LLM
+ship the same direction.
+Why closed: exact work and shipping systems. What would reopen it: a failure class EEP does not cover
+(a slow rank, not a dead rank) with a trace.
+
+**I-134 Context-aligned environment recovery for agentic RL.** Status: KILL. Confidence in gap: low.
+What prior art already answers: Belayer (2608.14635) checkpoints container state aligned with LLM
+context and reuses shadow workers (up to 42x faster worker recovery). RobustRL and DSec cover role
+isolation and rollout lifetime.
+Why closed: exact work. What would reopen it: none planned.
+
+**I-135 Multi-GPU transparent C/R with fast transports on.** Status: KILL. Confidence in gap: low.
+Problem: cuda-checkpoint cannot restore memory imported from another process (NCCL P2P, CUDA IPC, NVLS).
+What prior art already answers: NVIDIA nvcf issue 2299 and PR 2300 (2026-10-06) release and re-create
+these mappings at the same virtual addresses and run a multi-process quiesce, checkpoint, remap, resume
+sequence. Issue 1183 measured the transports-off path on 8x H100. Singularity (2022) used a device proxy
+and a barrier. CRIUgpu is upstream in CRIU 4.0. GCR (FAST 2026) is faster than cuda-checkpoint.
+Why closed: the vendor is building the exact mechanism. What would reopen it: a correctness failure that
+the remap approach cannot fix (for example in-flight collectives at the cut), shown on real hardware.
+Lessons: the user's C/R background is a strong fit, but the platform vendors own this space now.
+
+**I-136 Semantics-aware GPU snapshots.** Status: KILL. Confidence in gap: low.
+What prior art already answers: Dynamo Snapshot releases KV before capture (190 GiB to 6 GiB on one
+B200 example). GPU Memory Service keeps weights outside the CRIU image. Dynamo issue 16357 tracks
+per-engine gaps. Why closed: engineering, shipping. What would reopen it: none planned.
+
+**I-137 Cross-vendor KV and numerics portability.** Status: KILL. Confidence in gap: low.
+What prior art already answers: 2606.29986 converts KV formats and precision across vendors and overlaps
+the transfer by layer. Why closed: exact work.
+
+**I-138 Rate-limit-aware scheduling for agent fleets.** Status: KILL as research. Confidence in gap: low.
+Problem: providers may reserve input plus max_tokens against a tokens-per-minute budget.
+Why closed: no mechanism with a clear invariant; the gain depends on undocumented provider accounting;
+measurement needs paid API traffic; gateways and output-length prediction already exist.
+
+**I-139 Local tensor parallelism over Thunderbolt 5 RDMA Mac meshes.** Status: KILL. Confidence: low.
+Why closed: the user has one Thunderbolt 4 laptop, so the test is not feasible. EXO and MLX JACCL ship
+RDMA tensor parallelism.
+
+**I-140 Reward verification as the agentic RL straggler.** Status: KILL as mechanism. Confidence: low.
+Evidence: SandMLE reports about 196 s per code execution on MLE-bench. No source measures the share of
+RL step time. Why closed: async RL overlaps reward with generation, GKE Agent Sandbox and DSec attack
+sandbox start time, and a measurement alone is a benchmarking paper (D-29).
+
+Verdict history (all): 2026-10-20, R-33: KILL.
+
+---
+
+### 5.25 I-141 to I-148 (limitations mining, R-36)
+
+Origin for all: 2026-10-20, R-36. Full write-up: `dossier/LIMITATIONS_R-36_2026-10-20.md`.
+Experiments: none. Reviews: R-36. Each idea comes from a gap that a reviewed paper names as future work.
+
+**I-141 Crash-time KV reuse when device memory survives.** Status: KILL. Confidence in gap: low.
+Sources of the gap: Dynamo 2609.25451 (request-state preservation is future work), Belayer 2608.14635
+(flush-free KV recovery), LUMEN 2606.17787 (one KV checkpoint per request).
+Why closed: paged KV is append-only, so a committed-length and block-table journal written after each
+step's CUDA event makes reuse safe. Torn writes land beyond the committed length. In-place recurrent
+state is covered by block-boundary state checkpoints and bounded replay. Dynamo argues capacity loss,
+not request progress, dominates. AnchorTP already keeps KV in a daemon across crashes.
+What would reopen it: a real-hardware trace of torn writes inside committed blocks (for example from
+asynchronous offload or compaction kernels), plus re-prefill as a large share of recovery time.
+Lessons: three papers naming the same future work does not make it research. Apply the baseline attack.
+
+**I-142 Shapley split of shared-prefix cost.** Status: KILL. Confidence in gap: low.
+Sources of the gap: DLPM 2501.14312, PrefixShield 2608.01657.
+Why closed: the public repo srujan20/prefix-cost-attribution (2026-08-25) computes exact Shapley over the
+prefix trie and shows the conflict under recomputation. Tree cost games have a classical closed form.
+
+**I-143 TP-invariant determinism for block-scaled FP8.** Status: WEAK. Confidence in gap: low.
+Source of the gap: TBIK 2511.17826 (quantized dtypes are its stated next step).
+Why weak: extension of a published method (D-29), needs 2 or more GPUs, determinism is crowded.
+Next step and kill rule: none planned. Consider only if a second GPU joins the I-23 rental; KILL if a
+public FP8 TP-invariant kernel appears first.
+
+**I-144 Aging-aware rejuvenation.** Status: KILL. Source: Software Aging 2606.11916.
+Why closed: Dynamo shadow engines (7.3 s) and SGLang warm switches make periodic restart nearly free.
+
+**I-145 Branch-scoped KV after agent rollback.** Status: KILL. Source: Aborted but Not Forgotten 2608.15939.
+Why closed: excluding or salting aborted-branch blocks is engineering; copy-on-write branch caches exist.
+
+**I-146 Integrity of high-fan-out shared KV blocks.** Status: KILL as thesis. Source: 2604.17249.
+Why closed: datacenter HBM has ECC, so the threat needs non-ECC GPUs; vLLM PR 61578 adds KV checksums.
+
+**I-147 Erasure-coded KV for decode and P/D.** Status: KILL. Source: GhostServe 2605.00831.
+Why closed: extension of GhostServe; LUMEN and FailSafe cover recovery; needs a cluster.
+
+**I-148 KV tiers when host memory is not larger than HBM.** Status: KILL. Source: HiSparse 2608.07009.
+Why closed: NVIDIA ICMS owns the tier stack; needs GB200 or GB300 hardware.
+
+Verdict history (all): 2026-10-20, R-36: as listed above.
 
 ---
 
@@ -3671,7 +4220,8 @@ ducks), `dossier/REVIEW_E-28_PRERUN_2026-10-07.md` (R-15), `dossier/REVIEW_R-16_
 (R-16), bundle `dossier/bundles/metastable_admission_bundle.zip`. The reviewer scripts are
 copied to `experiments/metastable_admission/reviewer_r16/`.
 
-**E-30 Superchip power-coupling premise test** (drafted 2026-10-16, I-118). STATUS: DRAFT, NOT RUN.
+**E-30 Superchip power-coupling premise test** (drafted 2026-10-16, I-118). STATUS: FROZEN 2026-10-20 as a package, AMENDED 2026-10-20 (A1 after R-34), NOT RUN.
+Waiting for D-52.
 Freeze after a rubber duck and a Sonnet pre-run review (D-29).
 Question: under a binding module limit, does CPU load on Grace lower GPU prefill throughput, and how
 close is the best static CPU cap to an offline oracle?
@@ -3684,6 +4234,195 @@ cap (`nvidia-smi -pl X -sc 1`) and CPU cap (hwmon `power1_cap`). vLLM, an 8B mod
 16 out) and decode-heavy requests; vLLM pinned to reserved cores; `stress-ng --cpu` on 0, 18, 36 and 54
 other cores; control: a pure CUDA GEMM loop. Log SM clock, GPU, module and Grace power, and
 `clocks_event_reasons`.
+Frozen 2026-10-20 (R-35): the KILL 2 objective is U = f x T_p(c_p)/T_p(none) + (1 - f) x T_d(c_d)/T_d(none)
++ (f x C_p(c_p) + (1 - f) x C_d(c_d)) / (f x C_p(none) + (1 - f) x C_d(none)), with f in {0.3, 0.5, 0.7}
+(prefill time share), T the GPU throughput, C the stress-ng operations per second, and c the CPU cap in
+{none, 150, 100, 70} W. KILL 2 if the best per-phase pair beats the best single cap by under 5% for every
+f. The equal weight is a heuristic. Package: `experiments/superchip_power_coupling/`.
+Amended 2026-10-20 (A1 after R-34, before any run; the package README Section 8 wins). Prefix caching
+is off, and prefill must draw at least 60% of the GPU power limit, else INVALID. Both hwmon cap
+layouts are read. Preflight writes each knob to its current value and checks that 680 W is within the
+module range. The CPU caps run at the limit with the largest prefill loss. KILL 2 is decided on a
+constrained form: the best per-phase cap pair against the best single cap, by GPU throughput, with
+CPU work at least 80% of uncapped. KILL 2 if that gain is under 5% for every f. The weighted gains
+(CPU weight 0.25, 0.5, 1) are reported only. Loads run in random order per repeat, and N = 0 is
+measured again at the end; drift above 2% gives INCONCLUSIVE. The "only below documented limits"
+PIVOT clause is removed, because the sweep could not reach it. PIVOT now means a prefill loss of 3%
+to 10%. Each stage saves when it ends, and a stress-ng parse failure raises. The process pins its
+cores at start and needs at least 62. GEMM runs are 20 s x 5. Decision order: INVALID, INCONCLUSIVE,
+KILL 1, KILL 2, GO, PIVOT; INCOMPLETE when the data for a step is missing. 9 unit tests pass;
+`sweep.py --dry-run` passed on the Mac.
+Result: none yet.
+
+**E-31 Versioned session commit mechanism screen** (predeclared 2026-10-17, I-122).
+STATUS: INVALID DESIGN, NOT RUN. Do not run this simulator.
+Question: does generation fencing prevent stale state across cache identity, queued work, parser
+output, and materialized progress when a live session changes?
+Setup: a standard-library Python state machine in an isolated Docker container on the Apple M4 Mac.
+It tests mutable state, hash invalidation, an epoch-only fence, full abort and rebuild, synchronous
+drain, and versioned commit. It includes four source-derived scenarios, a bounded search to depth six, and a synthetic
+scale sweep from 1 to 1,000 sessions. Docker uses no network, a read-only filesystem, four virtual
+CPUs, and 4 GB of memory. Wall-clock timing is report-only because host load can affect Docker Desktop.
+Predeclared criteria, all project heuristics:
+1. INVALID if a conservative reference baseline violates a source-derived invariant.
+2. KILL-MECHANISM if the versioned policy violates any invariant.
+3. KILL-SIMPLE-BASELINE if hash invalidation handles every source-derived scenario.
+4. PIVOT-EPOCH-ONLY if one generation tag handles every source-derived scenario.
+5. PIVOT-TRIVIAL-REBUILD if full rebuild adds at most 3% synthetic token work in every 1% and 5%
+   update cell.
+6. PIVOT-WEAK-PREMISE if the mutable policy exposes fewer than two failure classes.
+7. PASS-TO-INTEGRATION only if versioning passes and hash invalidation leaves a non-cache failure.
+PASS-TO-INTEGRATION is not a GO verdict. It permits an implementation-level vLLM test.
+Validity: this is an abstract model and a synthetic workload. It cannot establish vLLM behavior,
+production update rates, GPU overhead, or publication novelty.
+Artifacts: `experiments/versioned_session_commit/`. Result: none yet.
+Blockers found before execution: Docker Desktop 4.43.2 has an invalid code signature and macOS
+refuses to launch it. The Claude CLI 2.1.289 is signed out. Two Codex CLI review attempts also failed
+while synchronizing managed preferences. Do not treat these failed attempts as an independent review.
+Later status: Docker Desktop serves Linux containers through `desktop-linux`. The server reports
+10 virtual CPUs and 7.65 GiB of memory. The Sonnet review remains the only execution blocker.
+Authentication update: Claude is authenticated in the user's Terminal. The automation process cannot
+read the macOS Keychain entry. Run `run_sonnet_review.sh` manually. Do not run E-31 first.
+Result: No experiment result exists. R-23 found four blockers before execution. The invariant checks
+were circular, one policy branch encoded the expected answer, liveness was absent, and model constants
+fixed the cost result. R-24 also found that narrow source fixes weaken the global mechanism premise.
+Validity: INVALID. Never cite this simulator as evidence for or against a runtime mechanism.
+Artifacts: `experiments/versioned_session_commit/`,
+`dossier/REVIEW_E-31_PRERUN_2026-10-17.md`, and
+`dossier/SOURCE_AUDIT_I-122_2026-10-17.md`.
+
+**E-32 Stateful metamorphic session test** (predeclared 2026-10-17, I-131).
+STATUS: KILL-DESIGN. NOT RUN. R-25 and R-26 found unresolved blockers. R-27 killed the thesis route.
+Question: can stateful transition generation with history-equivalence oracles find more mutable-session
+faults than current tests and equal-budget random actions?
+Predeclared criteria, all project heuristics:
+1. GO if the full generator rediscovers at least four of six bugs, finds two bugs missed by random
+   actions, has zero false positives in 1,000 fixed-commit sequences, minimizes traces to at most
+   12 actions, and runs at least 100 valid sequences per second.
+2. PIVOT if it finds real failures only within one fixed feature pair.
+3. KILL if current tests or random actions match it, oracle false positives exceed 1%, issue-specific
+   traces are required, or local speed is below 100 valid sequences per second.
+Setup: Real vLLM V1 scheduler objects on CPU, fake model-runner outputs, six parent and fix pairs,
+four trace-length limits, and Linux ARM64 Docker on the Apple M4 Mac. No model or GPU in this screen.
+Result: No experiment result exists. The paper audit found circular corpus actions and no recurrence
+after earlier narrow fixes.
+Validity and limits: INVALID as a thesis test. Never cite this design as bug-finding evidence.
+Artifacts: `experiments/session_state_metamorphic/`.
+
+**E-33 Mutable-session CPU corpus pilot** (predeclared 2026-10-19, I-131).
+STATUS: CANCELLED BEFORE RUN. R-26 blocked its specification. R-27 removed its thesis value.
+Question: do four merged vLLM fixes provide stable CPU parent-and-fix regression pairs?
+Predeclared criteria, all project heuristics:
+1. PASS-TO-AMEND if all four parent tests fail for the documented fault and pass on the fix.
+2. PIVOT-CORPUS if two or three pairs pass.
+3. KILL-CURRENT-CORPUS if zero or one pair passes.
+4. INVALID-ENVIRONMENT if one shared environment fault prevents three or more tests from executing.
+Setup: Run the upstream tests from PRs 59103, 58259, 58668, and 58778. Copy each fix's
+test-only diff onto its only parent. Use the pinned official ARM64 CPU image, four CPUs, 4 GiB,
+and no network during test execution. Do not replace a case after the first parent run.
+Result: No experiment result exists.
+Validity and limits: This pilot tests corpus and local setup feasibility only. It does not test a
+generator, oracle quality, novelty, or bug-finding value. Timing is informational.
+Artifacts: `experiments/session_state_corpus_pilot/`.
+
+**E-34 Crash-consistent duplex recovery epoch** (predeclared 2026-10-19, I-132).
+STATUS: KILL-DESIGN. NOT IMPLEMENTED. NOT RUN.
+Question: can one durable epoch recover opaque model state and duplex protocol state after a fail-stop
+worker crash, with the same visible event sequence as a fault-free reference?
+Predeclared criteria, all project heuristics:
+1. INVALID if an expected negative control passes.
+2. KILL-CORRECTNESS if the periodic-epoch policy fails one legal crash cut.
+3. KILL-SIMPLE if full per-unit protection adds no more than 3% steady-state overhead.
+4. KILL-REPLAY if full replay recovers within one application unit for the supported workload.
+5. PIVOT-GPU if the protocol passes but only Docker timing distinguishes the policies.
+6. GO-GPU only if the protocol passes, both simple baselines fail, and sourced workload mapping supports
+   the difference. E-34 cannot produce a thesis GO by itself.
+Setup: a deterministic opaque-state service, an independent reference model, an external durable client,
+and uniform `SIGKILL` cuts. Compare replay-all, full snapshot per unit, and periodic recovery epochs.
+Run in Linux ARM64 Docker with four CPUs, 4 GiB, no network, and a named durable volume.
+Result: R-29 returned `KILL_IDEA` before implementation. The design met its predeclared
+standard-composition kill rule.
+Validity and limits: No experiment result exists. Do not cite E-34 as empirical evidence.
+Artifacts: `experiments/crash_consistent_duplex_epoch/`.
+
+**E-35 I-59 premise check: priority inversion through a shared-prefix producer** (predeclared
+2026-10-19, I-59). STATUS: DONE 2026-10-20. Decision KILL (run 2), confirmed with scope limits by R-32.
+The Stage A grid below was withdrawn by amendment A1 after R-31 and did not run.
+Question: in current vLLM with priority scheduling and prefix caching, does a high-priority request
+get slower because a lower-priority request computes the same prefix, and how much can priority
+inheritance recover?
+Prediction (HYPOTHESIS, from code reading at vLLM `3897f95c` and SGLang `476fe86a`): no. vLLM never
+makes a waiting request wait for another request's prefix, and it publishes prefix blocks when it
+schedules them. SGLang has a shared-prefix wait, but only for cache-aware policies, and it rejects
+priority scheduling with those policies.
+Predeclared criteria (heuristics): V1 positive control (an injected wait must give C1/C2 >= 1.25 and
+a C4 gain >= 15% in one named cell, else INVALID); V2 termination. K1: in every cell, p50 and p99
+TTFT(C1) <= 1.10 x TTFT(C2). K2: in every cell, the inheritance gain (C1 - C4) / C1 is under 15%.
+KILL I-59 if K1 and K2 hold. MEASURE-FIRST (Stage B, full CPU backend) if a cell breaks K1 with a C4
+gain of at least 15%. PIVOT if K1 breaks without a 15% gain.
+Setup: Stage A drives the real vLLM `Scheduler` (synchronous) with a fake model runner in Docker
+(Python-only vLLM, CPU PyTorch 2.14.0, linux/arm64). Metric: H's time to first token in scheduler
+steps. Conditions C0 (no L), C1 (shared prefix), C2 (unshared control), C4 (L promoted). 192 cells,
+40 seeded trials each, H/M/L priorities 0/5/10. Full design: `experiments/priority_inheritance_premise/README.md`.
+Amendment A1 (after R-31, before any measurement): replace the grid with a trace check on the
+unmodified synchronous `Scheduler` (the class that the CPU backend runs). T1: H's prefix hit at
+admission equals what L has scheduled. T2: when L takes the whole budget, H's wait is budget order,
+the same with and without sharing. T3: 300 random scenarios (half with tight KV blocks), H never
+skipped. T4: an injected wait must be visible as `skip`. Decision: T4 fails, INVALID; T1 to T3 pass,
+KILL; otherwise WEAK.
+Amendment A2 (after run 1): run 1 was INVALID because L finished its prefill before H arrived (the
+lone-request exemption to `long_prefill_token_threshold`). A2 adds in-flight arrival steps to T1 and
+T4, and a T4 precondition. The assertions did not change.
+Result (run 2, `results/trace-20261020T060157Z/`): KILL. T1: H's hit equalled L's scheduled tokens at
+all 7 arrival steps (320, 832, 1344, 1856, then 2048). T2: 5 budget-wait steps in both conditions,
+same start step, hit 2048 against 0. T3: 300 runs finished, 55 preemptions, 0 skips; waits were
+`budget` 1729, `other` 310, `preempt_step` 17. T4: 29 and 13 skip steps.
+Validity and limits: VALID with scope limits (R-32). The skip detector misses waits that come from a
+failed allocation; a supplement labelled all 310 `other` waits as H's own failed allocations, and a
+paired sweep (600 scenarios) found no case where a shared prefix made H later. Scope: vLLM `3897f95c`
+synchronous scheduler with a fake runner, no KV connector, grammar, streaming, LoRA or speculative
+decoding, one model config, block size 16. No wall-clock time. SGLang by code reading only.
+What it changed: I-59 KILL. The conclusion is "no shared-prefix dependency", not "no priority
+inversion". D-48 and D-49.
+Artifacts: `experiments/priority_inheritance_premise/` (README with design, A1, A2 and result;
+Dockerfile; harness; trace check; supplement; results with manifests), `dossier/REVIEW_E-35_PRERUN_2026-10-19.md`
+(R-31), `dossier/REVIEW_E-35_POSTRUN_2026-10-20.md` (R-32).
+
+**E-36 I-23 Test A, Session 1: calibration and the first two Hopper FP8 cells** (predeclared 2026-10-20,
+I-23). STATUS: PREDECLARED, AMENDED 2026-10-20 (A1 after R-34), NOT RUN. Mac dry run passed. Waiting for D-51.
+Question: on one H100 with vLLM v0.32.0, do alternative linear and MoE backends for block-scaled FP8
+change greedy output against the default backend, and does the fastest backend change with batch size?
+Predeclared criteria (heuristics): V1 the reference backend agrees with itself on at least 95% of
+prompts; V2 at least two backends start per cell. STOP-FLAT (recommend closing I-23 for Hopper FP8) if
+in both cells every candidate flips 0 prompts (Wilson upper bound at most 1.5%) and backend speeds differ
+by under 2% at every batch size. CONTINUE if a candidate flips at least 10% of prompts and the fastest
+backend changes with batch size or is unsafe. Otherwise INCONCLUSIVE.
+Setup: `vllm/vllm-openai:v0.32.0`; Cell D `Qwen/Qwen3-8B-FP8` (`--linear-backend`), Cell M
+`Qwen/Qwen3-30B-A3B-FP8` (`--moe-backend`), BF16 control with two attention backends; 256 prompts (128
+GSM8K, 128 UltraChat, seed 20261020), greedy, 128 tokens, top-20 logprobs, `max_num_seqs` 64; throughput
+at batch 1, 8, 32 and 64 and a prefill test. Cost cap: 4 hours or $18. It is Session 1 of the full Test A
+in `dossier/FRONTIER_R-33_2026-10-20.md` Section 7 (steps 1 and 2, and a fixed-batch cut of steps 4
+and 5). Package: `experiments/safedispatch_testA/` (unit tests pass).
+Amended 2026-10-20 (A1 after R-34, before any run; the package README Sections 9 and 10 win). The
+candidates are fixed: Cell D `deep_gemm`, `cutlass`, `triton`, `torch`; Cell M `deep_gemm`,
+`flashinfer_cutlass`, `hpc`, `triton`. A candidate whose kernel-selection log shows a fallback or the
+reference kernel is an alias. It is excluded and must flip 0 prompts (negative control). Marlin
+W8A16 is the positive control in both cells. It must flip at least 5% of prompts, else STOP-FLAT
+cannot apply. Every run sets `VLLM_ENABLE_V1_MULTIPROCESSING=0` and turns prefix caching off. Flip
+runs use 256 new tokens and throughput runs 128; prompts above 3,072 tokens are dropped. R runs twice
+(R_a, R_b), and its speed spread sets the noise. V1: R_a and R_b agree on at least 95% of prompts.
+V2: each cell has at least one candidate that is not an alias. STOP-FLAT needs a Wilson upper bound
+of at most 2% (at least 189 prompts), a speed spread under max(2%, 2 x R noise) at every batch size,
+and a passed positive control. CONTINUE and STATIC-WINNER (PIVOT to static qualification) are as in
+the README; otherwise INCONCLUSIVE. There is no inventory phase and no BF16 control. Each run has a
+25-minute timeout; the session takes about 2 h 45 min.
+Mac dry run (2026-10-20, mechanics only): the vLLM v0.32.0 CPU image built from source, Qwen3-0.6B,
+16 prompts. All runs exited 0, R_a and R_b agreed on 16 of 16 prompts, and `--linear-backend torch`
+flipped 0. The dry run found five defects, all fixed. One is a vLLM v0.32.0 CPU bug (argument order
+in `_compute_slot_mapping_kernel_impl`) that vLLM main fixed in PR 61992; only the dry run mounts the
+patch. Kernel-selection lines are now parsed from each run's `log.txt`, and `compare.py` reports
+`kernel_log_found`. A BF16 model on CPU logs no selection line, so the parser is tested only on
+synthetic logs (14 unit tests pass).
 Result: none yet.
 
 ### 6.2 Review registry
@@ -4067,6 +4806,226 @@ Verdicts: I-122 and I-123 MEASURE-FIRST. I-124 to I-130 KILL. The review stopped
 survivors: I-120, I-122, and I-123.
 Full write-up: `dossier/FRONTIER_R-22_2026-10-17.md`.
 
+**R-23 E-31 different-model pre-run review** (2026-10-17).
+Scope: E-31 and I-122.
+Method: Sonnet read the frozen plan and implementation. It did not execute code or edit files.
+Findings:
+1. FACT: The version guard and invariant check use the same predicate.
+2. FACT: A policy-name branch encodes the expected preemption result.
+3. FACT: A policy can pass while it drops valid work or stalls permanently.
+4. FACT: Model constants determine the rebuild-cost result.
+5. INTERPRETATION: E-31 cannot falsify the proposed mechanism.
+Verdicts: E-31 INVALID DESIGN. I-122 requires a current-source audit before any replacement test.
+Full write-up: `dossier/REVIEW_E-31_PRERUN_2026-10-17.md`.
+
+**R-24 I-122 current-source audit and pivot review** (2026-10-17).
+Scope: I-122, E-31, current vLLM session-state fixes, and I-131.
+Method: The Docker audit pinned current main, queried six issues and six pull requests, scanned five
+source paths, and counted the selected scheduler test surface. Two targeted literature passes attacked
+stateful testing, model-based testing, inference-engine bug work, and adjacent fuzzing.
+Findings:
+1. FACT: PRs 59103, 58259, 58668, and 58778 use narrow fixes for distinct session-state failures.
+2. FACT: Issue 60744 remains open with an open narrow fix PR.
+3. FACT: The audited paths have no session generation, revision, incarnation, epoch, or commit field.
+4. INTERPRETATION: Field absence does not show that a global version mechanism is necessary.
+5. FACT: Seven selected current test files have 185 test functions and 54 parameter grids.
+6. FACT: Those files have no Hypothesis import or random-action use.
+7. INTERPRETATION: A real stateful metamorphic screen is stronger than another abstract mechanism model.
+Verdicts: I-122 PIVOT. I-131 MEASURE-FIRST with medium-low public-gap confidence. E-32 is predeclared.
+Full write-up: `dossier/SOURCE_AUDIT_I-122_2026-10-17.md`.
+
+**R-25 E-32 different-model pre-run review** (2026-10-19).
+Scope: E-32 and I-131.
+Method: Sonnet read the frozen design, source audit, audit data, and journal. It ran no code.
+Findings:
+1. FACT: Two corpus cases lacked stable merged fix controls.
+2. FACT: The action alphabet and oracles mapped directly to the known bugs.
+3. FACT: The baselines lacked equal oracle and execution budgets.
+4. FACT: Several oracles lacked an independent reference model and complete legal outcomes.
+5. INTERPRETATION: E-32 could pass by encoding its target corpus.
+Verdicts: E-32 AMEND BEFORE IMPLEMENTATION. I-131 remains MEASURE-FIRST. Run E-33 first.
+Full write-up: `dossier/REVIEW_E-32_PRERUN_2026-10-17.md`.
+
+**R-26 E-32 amendment review** (2026-10-19).
+Scope: The amended E-32 design, E-33, and I-131.
+Method: Sonnet read the amended corpus, decision rules, prior reviews, audit data, and journal.
+It ran no code.
+Findings:
+1. FACT: The action alphabet cannot express two frozen corpus bugs.
+2. FACT: The action and oracle contract still does not exist.
+3. FACT: The decision rules leave key terms and outcomes undefined.
+4. FACT: E-32 and E-33 contain conflicting corpus and environment specifications.
+5. INTERPRETATION: The amendment does not remove the circular known-bug recall test.
+Verdicts: E-32 AMEND BEFORE IMPLEMENTATION. E-33 blocked as written. I-131 remains unproven.
+Full write-up: `dossier/REVIEW_E-32_AMENDMENT_2026-10-19.md`.
+
+**R-27 I-131 paper audit** (2026-10-19).
+Scope: Four vLLM regression tests, their production fixes, E-32, E-33, and I-131.
+Method: Read every upstream test and patch. Map visible actions. Run full-history blame in Docker.
+Findings:
+1. FACT: The four traces need 4, 10, 8, and 8 visible actions.
+2. FACT: Only one trace fits a depth-six exhaustive baseline.
+3. FACT: The E-32 alphabet lacks the truncating-update and accepted-draft actions.
+4. FACT: No blamed fault line came from an earlier narrow session-state fix in this corpus.
+5. INTERPRETATION: The corpus shows interaction faults during a feature rollout, not recurrence after fixes.
+6. INTERPRETATION: The contribution remains generic stateful testing plus vLLM-specific actions.
+Verdicts: I-131 KILL as thesis. E-32 KILL-DESIGN. E-33 CANCELLED BEFORE RUN.
+Full write-up: `dossier/PAPER_AUDIT_I-131_2026-10-19.md`.
+
+**R-28 I-123 scoop audit and recovery-cut pivot** (2026-10-19).
+Scope: I-123, current full-duplex serving, inference checkpointing, world-model migration, and
+stream-processing recovery.
+Method: Two literature passes. Pass 1 mapped complete state capture, KV recovery, durable GPU deltas,
+duplex ledgers, and exact state movement. Pass 2 attacked the narrowed engine-crash recovery cut.
+Findings:
+1. FACT: Current vLLM-Omni owns input, response, playback, history, lease, and model state in one session.
+2. FACT: Its reconnect journal survives a transport drop, not engine loss.
+3. FACT: Open PR 8485 adds ordered per-input acknowledgements after caused output.
+4. FACT: Concordia appends committed GPU-state deltas to CPU-visible storage and recovers in about 1.5 s.
+5. FACT: WorldMove measures a 375.6 ms block and 1.67 GB movable state with 71% to 78% dirty data.
+6. INTERPRETATION: The old 200 ms replay oracle is impossible for one world-model replay block.
+7. INTERPRETATION: A remaining gap may exist only at the durable cut between model and protocol state.
+8. INTERPRETATION: The strongest threat is standard stream checkpointing plus existing inference snapshots.
+Verdicts: I-123 PIVOT. I-132 DESIGN-REVIEW. E-34 is predeclared but not implemented or run.
+Full write-up: `dossier/SCOOP_AUDIT_I-123_2026-10-19.md`.
+
+**R-29 E-34 independent pre-run review** (2026-10-19).
+Scope: I-132, the E-34 design, its baselines, its decision rules, and its Docker workload.
+Method: An independent Sonnet review attacked novelty, simple baselines, external validity,
+oracle quality, crash coverage, feasibility, and publication value.
+Findings:
+1. FACT ABOUT THE DESIGN: P1 combines a write-ahead log, periodic snapshots, an atomic manifest,
+   and an idempotent output sink.
+2. INTERPRETATION: This is standard checkpoint composition for a sequential worker.
+3. FACT ABOUT THE DESIGN: B2 is the checkpoint-interval endpoint `K=1`. B1 is the large-`K` endpoint.
+4. FACT ABOUT THE DESIGN: The workload is deterministic. Playback-dependent state is dead metadata.
+5. INTERPRETATION: The workload removes the possible new constraint of nondeterministic model replay.
+6. FACT ABOUT THE DESIGN: The replay target, supported workload, and sourced recovery budget are absent.
+7. INTERPRETATION: The frozen Docker sweep measures selected constants, not an external workload fact.
+8. HYPOTHESIS: A real GPU nondeterminism replay test could expose a different and narrower problem.
+Verdicts: I-132 KILL. E-34 KILL-DESIGN. Do not implement or run it.
+Full write-up: `dossier/REVIEW_E-34_PRERUN_2026-10-19.md`.
+
+**R-30 Scoop check before the Mac test** (2026-10-19).
+Scope: I-106 (the planned Mac premise check), and the Mac-only backups I-59 and I-60.
+Method: main session. Read KVShareArena v2 (HTML) and CacheReforge (abstract and HTML). Searched the
+last two weeks for KV reuse across weight updates, shared-prefix priority inversion, and late-binding
+routers. Read vLLM issue 59907 and PR 59963 with `gh`. Checked the OLMo-2 RLVR revisions and sizes with
+the Hugging Face API. Nothing was downloaded and nothing ran.
+Findings:
+1. FACT: `allenai/OLMo-2-0425-1B-RLVR1` has 13 step branches (step_200 to step_2600) and `main`, one
+   2.97 GB safetensors file each, Apache-2.0. The Mac has 16 GB RAM and 20 GB free disk.
+2. FACT: KVShareArena v2 (2026-09-27) tests six distant producer pairs, not adjacent RL steps.
+3. FACT: CacheReforge (2609.30884) implements layerwise mixed-version KV with drift-based bounded
+   recompute for continual LoRA updates.
+4. INTERPRETATION: I-106 reduces to an evaluation of CacheReforge on full-weight RL updates.
+5. FACT: CacheRoute (2608.19677) and llm-d cover the delay-versus-locality routing trade-off of I-60.
+6. FACT: vLLM issue 59907 shows a different priority inversion and runs on the vLLM CPU backend.
+Verdicts: I-106 KILL. I-60 KILL. I-59 WEAK, Mac-testable. Not reviewed by a second model; the kills
+rest on primary sources, not on an experiment.
+
+**R-31 E-35 Sonnet pre-run review** (2026-10-19).
+Scope: the frozen E-35 design and the code claims behind I-59.
+Method: an independent Sonnet agent re-checked the code claims at the pinned vLLM and SGLang commits
+and attacked the design. It ran no experiment.
+Findings:
+1. FACT: vLLM never makes a waiting request wait for another request's in-flight prefix.
+2. FACT: the running loop takes the token budget in admission order and ignores priority. The main
+   session confirmed this in `scheduler.py` lines 712 to 735.
+3. INTERPRETATION: the positive control could not pass in its named cell, and C4 is not an
+   inheritance bound; the rules had no outcome for "K1 holds, K2 fails".
+4. FACT: the CPU platform turns async scheduling off, so the synchronous `Scheduler` is the class the
+   CPU backend runs.
+5. FACT: SGLang rejects priority scheduling with the cache-aware policies that hold its shared-prefix
+   wait.
+Verdicts: DO_NOT_RUN_CODE_DECIDES. Run a minimal trace check instead (amendment A1).
+Full write-up: `dossier/REVIEW_E-35_PRERUN_2026-10-19.md`.
+
+**R-32 E-35 Sonnet post-run review** (2026-10-19 to 2026-10-20).
+Scope: amendment A2, run 2, and the conclusion.
+Method: an independent Sonnet agent re-ran the check in the pinned image (same output hash), and ran
+its own mutation, allocation-label and paired scripts in the session scratchpad. Those scripts were
+lost when the scratchpad was cleared; the main session re-implemented two of them as a supplement.
+Findings:
+1. FACT: A2 is a scenario fix; it could only add assertions.
+2. FACT: the skip detector misses waits from a failed allocation (shown by a mutation test).
+3. FACT: all 310 `other` waits are H's own failed allocations.
+4. FACT: in 600 paired scenarios a shared prefix never made H start or get its first token later.
+5. INTERPRETATION: priority inversions exist, but none depends on a shared prefix.
+Verdicts: CONFIRM_WITH_SCOPE_LIMITS. I-59 KILL, worded as "no shared-prefix dependency".
+Full write-up: `dossier/REVIEW_E-35_POSTRUN_2026-10-20.md`.
+
+
+**R-33 Fresh frontier pass** (2026-10-20).
+Scope: eight transitions not in the registry (I-133 to I-140), and a re-check of I-120 and I-23.
+Method: main session only. About 20 web searches in two passes. Primary pages opened for the closest
+works (arXiv abstracts, NVIDIA blog, nvcf issues 1183 and 2299, vLLM PRs 53298 and 62282 through `gh`).
+No Sonnet review: no experiment ran.
+Findings:
+1. FACT: EEP, SGLang, vLLM and Ray ship elastic wide-EP recovery.
+2. FACT: Belayer, RobustRL and DSec cover agentic RL recovery, including sandbox state.
+3. FACT: NVIDIA nvcf issue 2299 and PR 2300 implement multi-GPU C/R with imported-memory remap.
+4. FACT: Dynamo Snapshot and GPU Memory Service skip KV and separate weights.
+5. FACT: vLLM PR 53298 implements the I-120 mechanism; PR 62282 is merged.
+6. FACT: 2606.07581 defines kernel contracts without evaluation.
+7. INTERPRETATION: broad sweeps on this frontier now return direct matches (8 of 8). The next useful
+   information must come from a GPU measurement.
+Verdicts: I-133 to I-140 KILL. I-120 KILL as research. I-23 MEASURE-FIRST, unchanged.
+Full write-up: `dossier/FRONTIER_R-33_2026-10-20.md`.
+
+**R-34 E-36 and E-30 Sonnet pre-run review** (2026-10-20).
+Scope: the E-36 package (I-23 Test A Session 1) and the frozen E-30 package (I-118), before any run.
+Method: an independent Sonnet agent, read-only. It ran both unit-test suites and read the vLLM
+v0.32.0 source. The main session re-checked the key code claims in that source. No experiment ran.
+Findings:
+1. FACT: an unsupported `--linear-backend` falls back to normal kernel selection with only a
+   warning. Some E-36 candidates were aliases of the reference, and `triton_unfused` cannot run.
+2. FACT: offline vLLM runs are deterministic only with `VLLM_ENABLE_V1_MULTIPROCESSING=0` or batch
+   invariance. The E-36 floor check could fail by construction.
+3. FACT: a Wilson 95% upper bound of at most 1.5% for 0 flips needs at least 253 prompts, so
+   STOP-FLAT was unreachable as written. The main session corrected one reviewer number: at most 2%
+   needs n >= 189, not 188.
+4. FACT: the E-30 prefill test hit the prefix cache, the hwmon glob missed the `device/` layout, and
+   the CPU caps ran at the default limit, not at the binding limit.
+5. INTERPRETATION: the equal-weight E-30 KILL 2 objective decides KILL 2 by construction, because the
+   oracle gain comes mostly from the CPU term in decode.
+Verdicts: AMEND_THEN_RUN for both (E-30 DO_NOT_RUN as written). Amendments A1 were applied to both
+packages before any run (E-36 README Section 9, E-30 README Section 8).
+Full write-up: `dossier/REVIEW_E-36_E-30_PRERUN_2026-10-20.md`.
+
+**R-35 GPU-plan freshness check and local preparation** (2026-10-20, this session, D-49).
+Scope: the GPU-gated live ideas (I-23, I-118, I-120, I-83, I-18) and the preparation of their sessions.
+Method: main session. GitHub API reads of the vLLM KV-load-failure issues and PRs, RFC 35780 and PR
+42461; arXiv abstracts of 2609.08450 and 2607.11976; reading vLLM v0.32.0 and main `3897f95c` source for
+backend switches; web searches for small DSA models, GH200 root access, prices and CE-collective work.
+Findings:
+1. FACT: vLLM issues 61768, 61905 and 61912 come from CPU scheduler-level probes with a mock connector;
+   their fix directions are the I-120 mechanism. The maintainers propose request-level recovery (RFC
+   35780, PR 42461). This supports the R-33 I-120 kill.
+2. FACT: LiteTopK reports indexer score concentration; no small open DSA model exists.
+3. FACT: vLLM v0.32.0 exposes `--linear-backend`, `--moe-backend`, `--attention-backend`.
+4. FACT (SNIPPET): Lambda 1 x H100 about $4.29 per hour, 1 x B200 about $6.99 per hour; GH200 price not
+   found; Lambda's MIG guide shows `sudo nvidia-smi` on a 1 x GH200.
+5. No new direct work on I-18 or I-118 was found.
+Verdicts: no status change by R-35 alone (I-120 is already KILL by R-33). Outputs: the E-36 and E-30
+packages and `dossier/GPU_RUNBOOK_2026-10-20.md`.
+
+**R-36 Limitations mining** (2026-10-20).
+Scope: the stated limitations and future work of all 496 cited arXiv papers; eight follow-up gaps.
+Method: main session. Downloaded arXiv HTML for 496 papers into the scratchpad (490 full text). A script
+extracted limitation, future-work, open-problem and scope sections plus cue sentences. Read the output
+for the 372 papers from 2025 and 2026 that state any limitation. Checked eight gaps with targeted reads
+and fresh web searches. No Sonnet review: no experiment ran.
+Findings:
+1. FACT: most stated future work is multi-node scale-out, more models or hardware, or upstream integration.
+2. FACT: Dynamo, Belayer and LUMEN each leave crash-time KV reuse open; a committed-length journal solves it.
+3. FACT: a public repo computes exact Shapley prefix-cost attribution (2026-08-25).
+4. FACT: TBIK leaves quantized TP invariance open; no public FP8 result was found in one search.
+5. INTERPRETATION: named mechanism gaps are closed by upstream or other groups within weeks. Limitation
+   sections are not a productive gap source for this thesis.
+Verdicts: I-141, I-142, I-144 to I-148 KILL. I-143 WEAK.
+Full write-up: `dossier/LIMITATIONS_R-36_2026-10-20.md`.
+
 ---
 
 ## 7. Prior-art ledger
@@ -4398,6 +5357,117 @@ Check levels in this table use the 0.4 meanings with the date 2026-10-17.
 | PyTorch compile caching tutorial | current | Exports portable compiler artifacts through Mega-Cache | Kills I-130 route | checked |
 | Foundry, 2604.06664 | 2026-04 | Materializes CUDA graph contexts and reduces reported startup time | Kills I-130 route | checked |
 
+### 7.18 Mutable-session source audit and testing pivot (added 2026-10-17, R-24)
+
+Check levels in this table use the 0.4 meanings with the date 2026-10-17.
+
+| Work | Date | What it solves | What it does not solve | Effect | Check |
+|---|---|---|---|---|---|
+| vLLM PR 59103 | 2026-10-06 | Drops a stale block-hash suffix after streaming-input truncation | Does not define a global session version | Weakens I-122 and supports the I-131 bug corpus | full-text (PR) |
+| vLLM PR 58259 | 2026-09-28 | Clears stale async and speculative state at the request handoff | Does not define cross-component commit semantics | Weakens I-122 and supports the I-131 bug corpus | full-text (PR) |
+| vLLM PR 58668 | 2026-10-15 | Corrects computed-token accounting after speculative stop trimming | Does not test arbitrary transition sequences | Supports the I-131 bug corpus | full-text (PR) |
+| vLLM PR 58778 | 2026-10-17 | Corrects a token boundary and queue ownership during preemption | Does not test other state interactions | Supports the I-131 bug corpus | full-text (PR) |
+| vLLM issue 60744 and PR 60764 | 2026-10 | Reproduces a CPU reset fault and proposes parked-session draining | The fix remains open and local | Direct I-131 evidence; weakens the global I-122 mechanism | full-text (issue and PR) |
+| A First Look at Bugs in LLM Inference Engines, 2506.09713, TOSEM 2026 | 2026 | Classifies 929 bugs across five engines; more than 35% are non-crash bugs | Does not build a mutable-session transition tester | Supports I-131, but creates a strong novelty threat | full-text |
+| Trace-Guided Synthesis of Effectful Test Generators | 2026 | Synthesizes stateful generators from execution traces | Does not target inference-session semantics | Strong generic-generator and combination threat to I-131 | search-only |
+
+### 7.19 I-131 paper audit (added 2026-10-19, R-27)
+
+| Source | What it shows | Effect | Check |
+|---|---|---|---|
+| vLLM PR 59103 regression test | The trace needs four visible actions and calls a private session-update helper | Circularity threat | full-text (test and patch) |
+| vLLM PR 58259 regression test | The trace needs ten visible scheduler and completion actions | Depth-six enumeration does not cover it | full-text (test and patch) |
+| vLLM PR 58668 regression test | The trace needs accepted drafts, a stop, and eight visible actions | The E-32 alphabet cannot express it | full-text (test and patch) |
+| vLLM PR 58778 regression test | The trace needs preemption, a stop, and eight visible actions | The test calls private preemption | full-text (test and patch) |
+| Full-history blame at the four parent commits | No inspected fault line came from an earlier narrow session-state fix | Kills the recurrence premise for this corpus | full-history source check |
+
+### 7.20 Duplex crash-recovery cut (added 2026-10-19, R-28)
+
+Check levels in this table use the 0.4 meanings with the date 2026-10-19.
+
+| Work | Date | What it solves | What it does not solve | Effect | Check |
+|---|---|---|---|---|---|
+| Execution-State Capsules, 2606.20537 | 2026-06 | Complete heterogeneous model-state snapshots at committed boundaries | No durable external input and output cut | High I-132 threat | full-text |
+| WorldMove, 2607.10389 | 2026-07 | Exact live world-model state movement within an interactive block | Requires a live source; no duplex crash recovery | Kills the old I-123 oracle and threatens I-132 | full-text |
+| Concordia, 2606.23521 | 2026-06 | Committed GPU delta log and recovery from CPU-visible storage | No client input, output, or playback frontier | Very high I-132 threat | full-text |
+| GhostServe, 2605.00831, MLSys 2026 | 2026-03 | Erasure-coded KV checkpointing with under 5% chunk idle time | KV only; no full duplex session state | High checkpoint baseline | full-text |
+| vLLM-Omni full-duplex design | current | One engine owner for model state and all session ledgers; reconnect journal | State and journal do not survive engine loss | Direct I-132 system target and threat | full-text (docs) |
+| vLLM-Omni RFC 8429 and PR 8485 | 2026-10 | Ordered per-input acknowledgement after caused outputs | No durable engine-crash recovery | Very high I-132 threat | full-text (issue and PR) |
+| Apache Flink fault tolerance | current | Replayable input, state checkpoints, and transactional or idempotent sinks | No opaque GPU snapshot under an interactive deadline | Main combination threat | full-text (docs) |
+| Resume Means Resume, 2608.03836 | 2026-08 | Machine-checked crash and resume properties for workflow persistence | No model-resident inference state | Adjacent correctness threat | checked |
+
+### 7.21 Scoop check before the Mac test (added 2026-10-19, R-30)
+
+Check levels in this table use the 0.4 meanings with the date 2026-10-19.
+
+| Work | Date | What it solves | What it does not solve | Effect | Check |
+|---|---|---|---|---|---|
+| CacheReforge, 2609.30884 | 2026-09-25 | Layerwise mixed-version KV, per-layer adapter anchors, drift-based bounded recompute; 92.4% lower KL than stale reuse at 5.44% of layers recomputed | Full-weight updates; only LoRA on Qwen2.5 1.5B and 7B | Kills I-106 | full-text (HTML, partial) |
+| KVShareArena v2, 2609.10266 | 2026-09-27 | Cross-checkpoint reuse benchmark with six distant producer pairs | Adjacent RL steps, per-layer boundaries | Context for I-106 | full-text (HTML, partial) |
+| CacheRoute, 2608.19677 | 2026-08 | Planned prefix-affinity routing with bounded load skew | Per-request late binding | Kills I-60 | search-only |
+| RelServe, 2601.11546 | 2026-01 | Dynamic priority updates by execution progress | Priority inheritance through a shared prefix | Adjacent to I-59 | search-only |
+| vLLM issue 59907 and PR 59963 | 2026-10-04 | Priority scheduling faults, including a token-budget inversion, reproduced on the CPU backend | Inversion through a shared-prefix producer | Evidence that I-59 can be tested on the Mac | full-text (issue) |
+
+### 7.22 Fresh frontier pass (added 2026-10-20, R-33)
+
+Check levels in this table use the 0.4 meanings with the date 2026-10-20.
+
+| Work | Date | What it solves | What it does not solve | Effect | Check |
+|---|---|---|---|---|---|
+| EEP, 2605.10670 | 2026-05-11 | Partial rank failure in wide EP; 95% throughput in 52 s versus 348 s | Slow (not dead) ranks | Kills I-133 | checked (abstract) |
+| SGLang Elastic EP (LMSYS blog) | 2026-03-25 | Redundant experts route around failed ranks | | Kills I-133 | search-only |
+| vLLM Elastic EP (blog) | 2026-05-14 | Runtime EP resizing | | Kills I-133 | search-only |
+| Belayer, 2608.14635 | 2026-07-28 | Rollout and environment failure recovery aligned with context | | Kills I-134 | checked (abstract) |
+| RobustRL, 2512.22492 | 2025-12 | Role-based fault isolation in RL post-training | Environment state | Kills I-134 | search-only |
+| DSec, 2609.22978 | 2026-09 | Sandbox infrastructure for agentic RL | | Kills I-134, I-140 | search-only |
+| NVIDIA nvcf issue 2299, PR 2300 | 2026-10-06 | Multi-GPU C/R with NCCL P2P, IPC, NVLS mappings remapped at same addresses | Merged state, SGLang | Kills I-135 | full-text (issue body) |
+| NVIDIA nvcf issue 1183 | 2026-08-25 | Multi-GPU CRIU with transports off, measured on 8x H100 | Fast transports | Kills I-135 | full-text (issue body) |
+| Singularity, 2202.07848 | 2022 | Transparent distributed C/R with device proxy and barrier | | Kills I-135 | search-only |
+| GCR (FAST 2026) | 2026 | Faster GPU C/R, incremental checkpoints | Multi-GPU NCCL | Context for I-135 | search-only |
+| NVIDIA Dynamo Snapshot blog | 2026-05-27 | KV release before capture, GMS weight separation | Multi-GPU (planned) | Kills I-136 | checked |
+| Dynamo issue 16357 | 2026-10-13 | Tracks engine gaps in weight and KV skipping | | Kills I-136 | search-only |
+| HBM Is Not All You Need, 2606.29986 | 2026-06 | Cross-vendor P/D, KV format and precision conversion | | Kills I-137 | search-only |
+| SiliconBench, 2609.19169 | 2026-09 | TB5 RDMA Mac numbers (1.30x to 1.37x on two nodes) | | Context for I-139 | search-only |
+| vLLM PR 53298 | open, 2026-10-16 | Fixes issue 49250: shared-block repair order, invalid-block hit block, ownership transfer | Not merged | Kills I-120 | full-text (PR body) |
+| vLLM PR 62282 | merged 2026-10-20 | Multi-peer KV write-after-free on the Mooncake path | | Kills I-120 | full-text (PR body) |
+| Training-Inference Kernel Contracts, 2606.07581 | 2026-05-26 | Contract vocabulary and routing loop | Evaluation, FP8, NVFP4, MoE | Framing threat to I-23 | checked (abstract) |
+
+
+### 7.23 GPU-plan freshness check (added 2026-10-20, R-35)
+
+Check levels in this table use the 0.4 meanings with the date 2026-10-20.
+
+| Work | Date | What it shows | Effect | Check |
+|---|---|---|---|---|
+| vLLM issues 61768, 61905, 61912; PR 61769 | 2026-10-15 | KV-load failure reports orphaned by abort, block reuse or preemption; found by CPU scheduler probes with a mock connector | Supports the I-120 kill | full-text (issues) |
+| vLLM RFC 35780 (closed as stale) and PR 42461 (open) | 2026-03 to 2026-07 | Maintainers propose request-level KV-load error handling: reset to 0 and recompute | Simple baseline for I-120 | full-text (RFC and PR body) |
+| vLLM issue 49250, PRs 49252 (closed), 53298, 59793, 45146 | 2026-06 to 2026-10 | Open fixes for recompute after a rejected load | I-120 context | checked (GitHub API) |
+| LiteTopK, 2607.11976 | 2026-07-13 | Fused exact indexer top-k; indexer scores concentrate in a narrow range | Weakens I-83 | checked (abstract) |
+| HPC-Ops Top-K, 2609.08450 | 2026-09-08 | Sample-guided exact top-k for indexer score rows | I-83 context | checked (abstract) |
+| vLLM v0.32.0 kernel config | 2026-10-18 | `--linear-backend`, `--moe-backend`, `linear_backend_per_quant`, `--attention-backend`, `sparse_indexer_topk_backend` | Hook for I-23; I-83 context | full-text (source) |
+| Lambda MIG guide; GPU price lists | current | `sudo nvidia-smi` on a 1 x GH200; H100 and B200 hourly prices | Session planning | search-only |
+
+### 7.24 Limitations mining (added 2026-10-20, R-36)
+
+Check levels in this table use the 0.4 meanings with the date 2026-10-20. "partial" means the
+limitation sections and targeted passages of the full HTML were read.
+
+| Work | Date | Gap it leaves | What closes it | Effect | Check |
+|---|---|---|---|---|---|
+| Dynamo fast recovery, 2609.25451 | 2026-09 | Request-state preservation | Committed-length journal; its own capacity argument | Source of I-141 | partial |
+| LUMEN, 2606.17787 | 2026-06 | Multi-checkpoint KV replication | | Source of I-141 | partial |
+| AnchorTP, 2511.11617 | 2025-11 | Multi-node; predictive migration | | Keeps KV across crash; weakens I-141 | partial |
+| DLPM (Locality-aware Fair Scheduling), 2501.14312 | 2025-01 | Who pays for a shared prefix | srujan20/prefix-cost-attribution | Source of I-142 | partial |
+| srujan20/prefix-cost-attribution (GitHub) | 2026-08-25 | | Exact Shapley over the prefix trie | Kills I-142 | full-text (README) |
+| Who Pays for the KV Cache?, 2609.24991 | 2026-09-21 | Cross-group prefix split | | Context for I-142 | checked (abstract) |
+| TBIK, 2511.17826 | 2025-11 (ICML 2026) | Quantized dtypes | | Source of I-143 | partial |
+| Software Aging in GPU LLM Serving, 2606.11916 | 2026-06 | Growth triggers, rejuvenation | Fast shadow restarts | Source of I-144 | partial |
+| NVIDIA shadow engine recovery blog | 2026 | | 7.3 s versus 283 s cold restart | Kills I-144 | search-only |
+| Aborted but Not Forgotten, 2608.15939 | 2026-08 | Structured defenses | Branch salting, CoW caches | Source of I-145 | partial |
+| Bit-Flip Vulnerability of Shared KV Blocks, 2604.17249 | 2026-04 | Reachability, defenses | HBM ECC, checksums | Source of I-146 | partial |
+| GhostServe, 2605.00831 | 2026-05 | P/D and decode fault tolerance | | Source of I-147 | partial |
+| HiSparse, 2608.07009 | 2026-08 | Host tier smaller than HBM | NVIDIA ICMS | Source of I-148 | partial |
+
 ---
 
 ## 8. Errors, retractions, and do-not-cite list
@@ -4458,6 +5528,17 @@ Check levels in this table use the 0.4 meanings with the date 2026-10-17.
 | 50 | 2026-10-17 | Section 7.16 (R-21) names the Chen and Stratton paper "Agents of Change" and says "output rose while review work increased" | CORRECTED (source check, 2026-10-17): the PDF title is "Artificial Intelligence in the Firm: Bottlenecks in Software Production" (Harvard job market paper, version of 2026-08-04). The phrase "Agents of Change" is not in the PDF. The 718-firm and 300-million-event figures match. "Output" here means code volume; finished tasks did not rise by a significant amount (secondary summaries, not checked in the PDF) | Copy a title from the primary document, not from a search result |
 | 51 | 2026-10-17 | Section 7.16 (R-21) dates Microsoft "Data-driven test selection at scale" to 2020 | CORRECTED (source check, 2026-10-17): the paper is ESEC/FSE 2021 (Industry track), Mehta et al. | Take the year from the venue listing |
 | 52 | 2026-10-17 | R-21 and R-22 issue dates: vLLM issue 49250 as 2026-08 (Section 7.16), vLLM issue 58776 and PR 58778 as 2026-10 (R-22 dossier), Mooncake RFC 3692 as 2026-09 | CORRECTED (source check, 2026-10-17, GitHub API): 49250 opened 2026-07-20; 58776 and PR 58778 opened 2026-09-25; Mooncake 3692 opened 2026-08-26. No claim or verdict depends on these dates | Use the issue's opened date from the API |
+| 53 | 2026-10-17 | R-22 treated four mutable-session failures as one direct class and inferred that I-122 needs one global version boundary | RETRACTED by R-23 and R-24: E-31 misrepresented the source failures. Current fixes are narrow and do not show that a global version is necessary | Do not infer a required mechanism from repeated bugs or from a missing field |
+| 54 | 2026-10-19 | The I-131 dossier said issue 58776 reproduced after PR 58259 | RETRACTED by R-25: issue 58776 opened three days before PR 58259 merged. The available record does not show a later reproduction | Compare issue creation and fix merge times before claiming recurrence |
+| 55 | 2026-10-19 | R-24 linked issue 36755 to PR 37160 | CORRECTED by the GitHub timeline: PR 37160 is CPU KV offloading. Issue 36755 links PRs 36812 and 36859 | Use the issue timeline to verify a fix relationship |
+| 56 | 2026-10-19 | R-24 paired issue 42655 with merged PR 58259 | CORRECTED by R-26: issue 42655 describes GPU row mapping. Its proposed PR 43683 did not merge. PR 58259 fixes a different async handoff race | Require an explicit issue link or matching regression test before pairing a fix |
+| 57 | 2026-10-19 | The first full-history audit used a shallow clone and assigned old lines to boundary commit `d3e2888c` | INVALID and rerun: full history gives commits 91601ff4, d4d30940, and a8ff2cca | Treat a caret-prefixed blame SHA as a shallow-history boundary |
+| 58 | 2026-10-19 | The R-25 review-registry heading used 2026-10-17 | CORRECTED to 2026-10-19. The historical filename still contains 2026-10-17 | Use the review completion date, not the design date |
+| 59 | 2026-10-19 | E-35 design: condition C4 (L promoted to H's priority from step 0) was called an upper bound on what inheritance can give | CORRECTED (R-31 and the main-session smoke test): a promoted L runs before M and fills the cache before H arrives, so C4 measures prefetching, not inheritance. The grid was withdrawn (amendment A1) | An oracle for a dynamic mechanism must act only when the mechanism would act |
+| 60 | 2026-10-19 | E-35 amendment A1: "L's prefill ends after 33 steps"; E-35 rubber duck: H "computes the rest of P itself" | CORRECTED (run 1 and R-32): the lone-request exemption lets L prefill 256 tokens per step until H arrives, so it ends at step 8. T1 does not test that H computes the rest itself; that claim rests on code reading | Check engine-specific exemptions before fixing scenario timing; do not state as tested what only code reading shows |
+| 61 | 2026-10-20 | E-30 KILL 2 objective frozen in R-35 (equal weight of normalized GPU throughput and CPU work) | CORRECTED before any run (R-34): the gain comes mostly from the CPU term in decode, so the objective decides KILL 2 by construction. A1 decides on a constrained form | Test each frozen objective on a synthetic case where the mechanism clearly helps |
+| 62 | 2026-10-20 | E-36 as predeclared in R-35: candidates from an inventory of backends that start; STOP-FLAT at a Wilson upper bound of 1.5% with 256 prompts | CORRECTED before any run (R-34): a backend that starts can be an alias of the default kernel, and 0 flips in 256 prompts minus up to 12 floor exclusions cannot reach 1.5%. A1 uses a fixed list, log-based alias detection, and 2% at 189 or more prompts | Check that each pass condition can be reached with the planned sample size |
+| 63 | 2026-10-20 | R-34 reviewer: a Wilson upper bound of at most 2% for 0 flips needs n >= 188 | CORRECTED by the main session: n >= 189 (3.84 / (n + 3.84)); a unit test checks it | Recompute reviewer numbers before they enter a rule |
 
 ### 8.2 Do not cite
 
@@ -4493,6 +5574,10 @@ masters-thesis/
     ADVERSARIAL_REVIEW_2026-09-23.md      R-05 full write-up
     DOSSIER_I-41_INGEST_STRUCTURER_2026-10-04.md   R-08 dossier for I-41 to I-45
     FRONTIER_R-21_2026-10-17.md           current-frontier review and first experiment
+    REVIEW_E-31_PRERUN_2026-10-17.md      R-23 invalid-design finding for E-31
+    SOURCE_AUDIT_I-122_2026-10-17.md      R-24 source audit and I-131 pivot
+    REVIEW_E-32_AMENDMENT_2026-10-19.md   R-26 amendment review
+    PAPER_AUDIT_I-131_2026-10-19.md       R-27 paper audit and thesis kill
     bundles/                              result zips for E-17 to E-21
   archive/                                superseded files, see archive/README.md (ideas/ briefs, RESEARCH_STATUS.md)
   experiments/
@@ -4503,6 +5588,9 @@ masters-thesis/
     rq3b_layout_survey/                   E-21
     safedispatch_oracle/                  E-23 Mac pilot harness for I-23 (Test A)
     structurer_ingest_screen/             E-24 trace study and E-25 small-model screen for I-41 (aggregates only)
+    versioned_session_commit/             invalid E-31 design and reproducible R-24 source audit
+    session_state_metamorphic/            killed E-32 design; never run
+    session_state_corpus_pilot/           cancelled E-33 design; never run
   grants/                                 compute application drafts (NAIRR, ACCESS, advisor letter and email, NVIDIA outline)
   .claude/skills/research-gap-dossier/    the review workflow (SKILL.md and references)
   .gitignore                              ignores .DS_Store, __pycache__, *.pyc, .venv
@@ -4554,6 +5642,11 @@ python3 experiments/rq2_nccl_source_audit/audit_nccl_ce_selection.py /tmp/nccl
 cd experiments/rq3b_layout_survey
 .venv/bin/python probe_layouts.py && .venv/bin/python layout_survey.py
 .venv/bin/python verify_suffix_skip.py
+
+# current vLLM source audit for R-24; Docker network access is required
+./experiments/versioned_session_commit/run_source_audit_docker.sh
+
+# E-32 and E-33 did not run. See the R-27 paper audit.
 ```
 
 ### 9.4 Environment and external dependencies
@@ -4625,7 +5718,17 @@ proposed it and no acceptance is recorded.
 | D-39 | 2026-10-11 | After R-19: run the I-106 premise check on the Mac (OLMo-2 1B RLVR revisions, about 3 GB each), after a rubber duck, frozen kill rules and a Sonnet pre-run review; or skip it and go to I-23 Test A (D-37) | Recommendation (R-19). Not a decision. The download needs the user's approval | I-106 is narrow; reviewer gives about 40% to pass | **Open, waiting on the user** |
 | D-41 | 2026-10-17 | Spend the first H100 session on I-23 Test A. If time remains, reproduce the I-120 vLLM failure. Do not implement either full system until its gate passes | Recommendation (R-21). Not a decision | I-23 has the cheapest decisive oracle test. I-120 has stronger failure evidence but very high RFC scoop risk | **Open, waiting on the user** |
 | D-42 | 2026-10-17 | Continue the R-21 process until three to five total new gaps survive. Count I-120 as the first survivor | User | The user wanted repeated narrowing, not one search pass | Done. R-22 stopped at three total survivors |
-| D-43 | 2026-10-17 | Run the I-122 CPU state-machine gate first. Keep I-23 as the first H100 test. Run the I-123 CPU oracle before any GPU implementation | Recommendation (R-22). Not a decision | I-122 has direct failures and needs no GPU. I-123 has a cheap oracle. I-120 has high scoop risk | **Open, waiting on the user** |
+| D-43 | 2026-10-17 | Run the I-122 CPU state-machine gate first. Keep I-23 as the first H100 test. Run the I-123 CPU oracle before any GPU implementation | Recommendation (R-22). Not a decision | I-122 has direct failures and needs no GPU. I-123 has a cheap oracle. I-120 has high scoop risk | Superseded by R-23 and R-24. E-31 is invalid. I-131 replaces I-122 |
+| D-44 | 2026-10-17 | Run the I-122 local experiment in Docker, not directly on the Mac host | User | Isolate dependencies and reduce interference from host use | Decided. R-24 ran in Docker. E-31 did not run because its design is invalid |
+| D-45 | 2026-10-19 | Stop I-131 as a thesis direction. Do not run E-32 or E-33 for thesis evidence. Audit I-123 next | Recommendation (R-27); accepted when the user said "go ahead" | Two Sonnet reviews found circularity. Full-history audit found no recurrence after narrow fixes | Decided by the user. R-28 completed the I-123 audit |
+| D-46 | 2026-10-19 | Do not run the old I-123 CPU oracle. Review E-34 before implementation. Kill I-132 if it is only standard checkpoint composition | Recommendation (R-28). Not a user decision | R-29 found standard checkpoint composition and returned KILL_IDEA | Review condition met. I-132 is KILL. User acceptance is still open |
+| D-47 | 2026-10-19 | After R-30: for Mac work, run the I-59 premise check on the vLLM CPU backend in Docker (rubber duck, frozen kill rules, Sonnet pre-run review first), or prepare I-23 Test A on the Mac. Do not run the I-106 check | Recommendation (R-30). Not a decision. The user chose Mac tests for now | CacheReforge covers I-106; I-60 is crowded; I-59 is the only open Mac-testable mechanism idea | Decided by the user 2026-10-19 ("Start the I-59 premise check on the vLLM CPU backend in Docker"). Done as E-35: I-59 KILL |
+| D-48 | 2026-10-20 | E-35 ran vLLM's real scheduler class with a fake model runner, not the full CPU backend that the user named. Accept this substitution, or run a one-cell CPU-backend fidelity check (build the vLLM CPU backend for linux/arm64 and compare its scheduler output stream with the fake-runner stream) | Recommendation (R-31, R-32): accept; the CPU backend runs the same synchronous scheduler class, and the fidelity check cannot change the premise answer | It can only add wall-clock sizes and frontend plumbing, which do not bear on a missing dependency | **Open, waiting on the user** |
+| D-49 | 2026-10-20 | After E-35: the Mac-only mechanism ideas are used up (I-106, I-60, I-59 KILL). Plan I-23 Test A on the Mac and rent one H100 (D-35), as D-37 and D-41 recommend; or write the I-19 short note | Recommendation. Not a decision | Every live idea except I-116 now needs an NVIDIA GPU; I-23 is the strongest | Decided by the user 2026-10-20 ("Do whatever you can to test locally to test or plan, and keep the ideas up-to-date, so that Once we have the GPUs, we will continue on those."). Done as R-35 |
+| D-50 | 2026-10-20 | After R-33: no further broad frontier sweep. Use the first H100 session for I-23 Test A (with a Sonnet pre-run review and a cost cap). Treat I-120 as closed | Recommendation (R-33). Not a decision | R-33 found direct prior work for 8 of 8 new transitions, and PR 53298 took I-120 | **Open, waiting on the user** |
+| D-51 | 2026-10-20 | Approve E-36 Session 1: one H100 (Lambda, about $4.29 per hour), hard caps of 4 hours and $18, after the R-34 amendments and the Mac dry run | Recommendation (R-35). Not a decision | It is the cheapest decisive step for I-23, the strongest live idea | **Open, waiting on the user** |
+| D-52 | 2026-10-20 | Approve E-30: one GH200 for 2.5 hours, only after the provider confirms root, module power telemetry and writable CPU caps | Recommendation (R-35). Not a decision | I-118 is low priority; the preflight can fail on a cloud VM | **Open, waiting on the user** |
+| D-53 | 2026-10-20 | After R-36: stop literature-based gap searches (route sweeps, orphan scans, frontier passes and limitations mining all returned no MEASURE-FIRST gap). Put the effort into the prepared GPU runs (I-23 Test A, I-118 E-30). Add I-143 only if a second GPU joins a rental | Recommendation (R-36). Not a decision | R-36: 7 of 8 limitation-derived gaps KILL, 1 WEAK | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -4684,7 +5787,27 @@ proposed it and no acceptance is recorded.
 | `dossier/GAPS_R-20_2026-10-16.md` | 2026-10-16 | R-20: seed-topic gap search (threads versus processes, KV cache poisoning, GPU noisy neighbor), verdicts for I-110 to I-119, E-30 draft |
 | `dossier/FRONTIER_R-21_2026-10-17.md` | 2026-10-17 | R-21: current-frontier review, killed ideas, four survivors, ranking, and the exact I-23 first experiment |
 | `dossier/FRONTIER_R-22_2026-10-17.md` | 2026-10-17 | R-22: continued frontier review, I-122 to I-130, three total survivors, source ledgers, ranking, and the I-122 first experiment |
-| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-17 | This file |
+| `dossier/FRONTIER_R-33_2026-10-20.md` | 2026-10-20 | R-33: fresh frontier pass, I-133 to I-140 (all KILL), I-120 closed by vLLM PR 53298, I-23 re-check, ranking, and the Test A design with R-33 changes |
+| `dossier/LIMITATIONS_R-36_2026-10-20.md` | 2026-10-20 | R-36: limitations and future-work mining of all 496 cited papers, eight follow-up gaps (I-141 to I-148), verdicts and sources |
+| `dossier/REVIEW_E-31_PRERUN_2026-10-17.md` | 2026-10-17 | R-23: Sonnet pre-run review that invalidated E-31 before execution |
+| `dossier/SOURCE_AUDIT_I-122_2026-10-17.md` | 2026-10-17 | R-24: current-source audit, I-122 pivot, and I-131 definition |
+| `dossier/REVIEW_E-32_PRERUN_2026-10-17.md` | 2026-10-19 | R-25: first Sonnet review of E-32 |
+| `dossier/REVIEW_E-32_AMENDMENT_2026-10-19.md` | 2026-10-19 | R-26: second Sonnet review of amended E-32 |
+| `dossier/PAPER_AUDIT_I-131_2026-10-19.md` | 2026-10-19 | R-27: action-sequence and full-history blame audit; kills I-131 as thesis |
+| `dossier/SCOOP_AUDIT_I-123_2026-10-19.md` | 2026-10-19 | R-28: two-pass I-123 scoop audit, pivot, and I-132 definition |
+| `dossier/REVIEW_E-34_PRERUN_2026-10-19.md` | 2026-10-19 | R-29: independent pre-run review that kills I-132 and E-34 |
+| `experiments/versioned_session_commit/` | 2026-10-17 | Invalid E-31 design plus the reproducible Docker source audit for R-24 |
+| `experiments/session_state_metamorphic/` | 2026-10-17 to 2026-10-19 | Killed E-32 design; not implemented or run |
+| `experiments/session_state_corpus_pilot/` | 2026-10-19 | Cancelled E-33 design; not run |
+| `experiments/crash_consistent_duplex_epoch/` | 2026-10-19 | E-34 design and read-only Sonnet review wrapper; not implemented or run |
+| `experiments/priority_inheritance_premise/` | 2026-10-19 to 2026-10-20 | E-35: design, amendments A1 and A2, result, Dockerfile (Python-only vLLM at 3897f95c), harness, trace check, supplement, model config, results with manifests |
+| `dossier/REVIEW_E-35_PRERUN_2026-10-19.md` | 2026-10-19 | R-31: Sonnet pre-run review of E-35 (DO_NOT_RUN_CODE_DECIDES) |
+| `dossier/REVIEW_E-35_POSTRUN_2026-10-20.md` | 2026-10-20 | R-32: Sonnet post-run review of E-35 (CONFIRM_WITH_SCOPE_LIMITS) |
+| `dossier/GPU_RUNBOOK_2026-10-20.md` | 2026-10-20 | R-35: GPU session order, costs, commands, and the status of the GPU-gated ideas |
+| `dossier/REVIEW_E-36_E-30_PRERUN_2026-10-20.md` | 2026-10-20 | R-34: Sonnet pre-run review of E-36 and E-30 (AMEND_THEN_RUN for both), with main-session source checks |
+| `experiments/safedispatch_testA/` | 2026-10-20 | E-36: I-23 Test A Session 1 package (design with amendment A1 and the Mac dry-run record, prompts, run, compare with tests, session script, `dryrun/` with the last dry-run result; `inventory.py` unused after A1) |
+| `experiments/superchip_power_coupling/` | 2026-10-16 to 2026-10-20 | E-30: I-118 package (design with amendment A1, preflight, sweep driver, analysis with tests) |
+| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-19 | This file |
 
 ---
 
@@ -4896,6 +6019,28 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-17: R-22 continued R-21 until three total new gaps survived. Added I-122 to I-130,
   Section 5.21, R-22, Section 7.17, D-42, D-43, and `dossier/FRONTIER_R-22_2026-10-17.md`.
   I-122 and I-123 survive. I-124 to I-130 are KILL. Rewrote Section 1. No experiment ran.
+- 2026-10-17: E-31 predeclared after D-44. Added the Docker state machine, tests, bounded search,
+  synthetic scale sweep, and frozen decision script in `experiments/versioned_session_commit/`.
+  Docker has an invalid signature. Sonnet is signed out. No experiment ran. Rewrote Section 1.
+- 2026-10-17: Docker Desktop later served Linux containers through `desktop-linux`. Updated the
+  current E-31 blocker to the required Sonnet review. No experiment ran.
+- 2026-10-17: Added the E-31 read-only Sonnet prompt and manual review wrapper. Claude is authenticated
+  in the user Terminal, but automation cannot read the Keychain entry. No experiment ran.
+- 2026-10-17: R-23 found four blocking design faults in E-31. Marked E-31 INVALID DESIGN and did not run it.
+- 2026-10-17: R-24 audited current vLLM at `da9134bc89364465f68aa679564435936d157a14`
+  in Docker. Narrow fixes weaken I-122. Changed I-122 to PIVOT and added I-131.
+- 2026-10-17: Predeclared E-32 for I-131. Added its frozen design and Sonnet review wrapper.
+  E-32 is not implemented or run.
+- 2026-10-19: R-25 and R-26 reviewed E-32 before implementation. Both reviews found unresolved
+  circularity and oracle faults. E-32 did not run. E-33 was predeclared and then cancelled.
+- 2026-10-19: R-27 mapped the four upstream tests and ran full-history blame in Docker.
+  I-131 is KILL as a thesis. Added `dossier/PAPER_AUDIT_I-131_2026-10-19.md`.
+- 2026-10-19: R-28 ran the fresh I-123 scoop audit. I-123 is PIVOT. Added I-132, the E-34
+  design and review wrapper, Section 7.20, D-46, and `dossier/SCOOP_AUDIT_I-123_2026-10-19.md`.
+  E-34 is not implemented or run. Rewrote Section 1.
+- 2026-10-19: R-29 reviewed E-34 before implementation and returned `KILL_IDEA`.
+  I-132 is KILL. E-34 is KILL-DESIGN and did not run. Added
+  `dossier/REVIEW_E-34_PRERUN_2026-10-19.md`. Rewrote Section 1.
 - 2026-10-16: checked every non-arXiv source: 55 web URLs (53 load; the 2 that return 403 were confirmed
   through Crossref and a search), 66 GitHub issues and PRs (all exist; titles read with `gh`), and the named
   sources in the Section 7 ledger rows without an arXiv ID (all exist). Section 8.1 rows 47 to 49 record one
@@ -4904,3 +6049,25 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   IDs (all real, titles match), 18 web links (all load and match), 12 GitHub issues and PRs (all exist,
   titles match), and the ledger rows without links. Section 8.1 rows 50 to 52 record one wrong title, one
   wrong year and three issue-date slips. `references/` rebuilt.
+- 2026-10-19: checked the R-23 to R-29 content: every new E, R, D and I entry has its registry row; all
+  cited paths exist except the archived `dossier/RESEARCH_STATUS.md`; 1 new arXiv ID (2605.00831), 16 new
+  GitHub issues and PRs and 4 vLLM commit SHAs exist and match their claims; the new experiment folders
+  hold no secrets or large files. Mapped Sections 7.18 to 7.20 in the references build and rebuilt
+  `references/` (489 papers, 22 folders).
+- 2026-10-19: R-30 scoop check (main session) before the Mac test. I-106 and I-60 KILL, I-59 WEAK and
+  Mac-testable. Section 1, Sections 3 and 4 entries, I-59, I-60 and I-106 dossier lines, R-30, Section
+  7.21, D-47. Nothing ran and nothing was downloaded.
+- 2026-10-20: E-35 (I-59 premise check) predeclared, amended (A1 after R-31, A2 after run 1), run and
+  reviewed (R-32), plus a paired supplement. I-59 KILL. Section 1, Sections 3 and 4 entries, I-59
+  dossier, E-35, R-31, R-32, Section 8.1 rows 59 and 60, D-47 decided, D-48, D-49, Appendix A rows.
+- 2026-10-20: R-33 fresh frontier pass. I-133 to I-140 registered and KILL. I-120 KILL as research
+  (vLLM PR 53298). I-23 note (2606.07581). Section 1, Sections 3 and 4 entries, Section 5.24, I-120 and
+  I-23 dossier lines, R-33, Section 7.22, D-50.
+- 2026-10-20: R-35 (D-49 decided). Section 1, I-83 registry row, Section 4 entry, I-120, I-83, I-118 and
+  I-23 dossier lines, E-30 frozen, E-36 predeclared, R-35, Section 7.23, D-49 decided, D-51, D-52,
+  Appendix A rows. R-34 pending.
+- 2026-10-20: R-36 limitations mining. I-141 to I-148 registered (seven KILL, one WEAK). Section 1 lines,
+  Section 3.20, Section 4 entry, Section 5.25, R-36, Section 7.24, D-53, Appendix A row.
+- 2026-10-20: R-34 recorded and applied. Amendments A1 to E-36 and E-30; E-36 Mac dry run on the vLLM
+  v0.32.0 CPU image (five defects fixed). Section 1 lines, Section 4 entry, I-23 and I-118 dossier
+  lines, E-30 and E-36 entries, R-34, Section 8.1 rows 61 to 63, Appendix A rows. GPU runbook updated.

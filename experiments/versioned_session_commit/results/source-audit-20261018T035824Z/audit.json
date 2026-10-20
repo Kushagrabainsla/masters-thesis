@@ -1,0 +1,222 @@
+{
+  "audited_sha": "da9134bc89364465f68aa679564435936d157a14",
+  "collected_at": "2026-10-18T03:58:24.871850+00:00",
+  "issues": [
+    {
+      "closed_at": null,
+      "created_at": "2026-07-22T11:50:11Z",
+      "number": 49449,
+      "state": "open",
+      "state_reason": null,
+      "title": "[Bug]: V1 streaming-session rebuild leaves stale prefix-cache block hashes and can produce incorrect output",
+      "updated_at": "2026-09-24T09:27:53Z",
+      "url": "https://github.com/vllm-project/vllm/issues/49449"
+    },
+    {
+      "closed_at": "2026-10-06T02:51:06Z",
+      "created_at": "2026-07-21T23:18:10Z",
+      "number": 49377,
+      "state": "closed",
+      "state_reason": "completed",
+      "title": "[Bug]: Token truncation leaves stale Request.block_hashes and can cause incorrect KV cache hits",
+      "updated_at": "2026-10-06T02:51:06Z",
+      "url": "https://github.com/vllm-project/vllm/issues/49377"
+    },
+    {
+      "closed_at": "2026-04-08T10:10:50Z",
+      "created_at": "2026-03-11T07:49:36Z",
+      "number": 36755,
+      "state": "closed",
+      "state_reason": "completed",
+      "title": "[Bug] Preemption + async scheduling race can corrupt prompt-token accounting and crash Prometheus counters",
+      "updated_at": "2026-04-08T10:10:50Z",
+      "url": "https://github.com/vllm-project/vllm/issues/36755"
+    },
+    {
+      "closed_at": "2026-10-03T01:49:41Z",
+      "created_at": "2026-05-14T15:56:45Z",
+      "number": 42655,
+      "state": "closed",
+      "state_reason": "not_planned",
+      "title": "[Bug]: Async double streaming_update can break the request ID -> previous batch row mapping and crash the engine",
+      "updated_at": "2026-10-03T01:49:41Z",
+      "url": "https://github.com/vllm-project/vllm/issues/42655"
+    },
+    {
+      "closed_at": "2026-10-17T09:08:16Z",
+      "created_at": "2026-09-25T19:22:44Z",
+      "number": 58776,
+      "state": "closed",
+      "state_reason": "completed",
+      "title": "[Bug]: Resumable session that stops while preempted is dropped from every queue, and folds at num_computed_tokens=0",
+      "updated_at": "2026-10-17T09:08:16Z",
+      "url": "https://github.com/vllm-project/vllm/issues/58776"
+    },
+    {
+      "closed_at": null,
+      "created_at": "2026-10-09T00:26:48Z",
+      "number": 60744,
+      "state": "open",
+      "state_reason": null,
+      "title": "[Bug] pause_generation(mode=\"keep\", clear_cache=True) raises when a streaming-input session is parked between turns",
+      "updated_at": "2026-10-09T17:25:18Z",
+      "url": "https://github.com/vllm-project/vllm/issues/60744"
+    }
+  ],
+  "observed_main_sha": "da9134bc89364465f68aa679564435936d157a14",
+  "pulls": [
+    {
+      "merge_commit_sha": "2b32d9ac6a910faf786a2904b87d5abed044c228",
+      "merged": true,
+      "merged_at": "2026-10-06T02:51:04Z",
+      "number": 59103,
+      "state": "closed",
+      "title": "[Bugfix][Core] Drop stale block hashes when a session truncates tokens",
+      "updated_at": "2026-10-06T02:51:04Z",
+      "url": "https://github.com/vllm-project/vllm/pull/59103"
+    },
+    {
+      "merge_commit_sha": "91e4521f9f46f24aff9c77f275ab581af6776445",
+      "merged": true,
+      "merged_at": "2026-04-01T00:58:37Z",
+      "number": 37160,
+      "state": "closed",
+      "title": "[Feat][v1] Simple yet General CPU KV Cache Offloading",
+      "updated_at": "2026-06-04T06:28:44Z",
+      "url": "https://github.com/vllm-project/vllm/pull/37160"
+    },
+    {
+      "merge_commit_sha": null,
+      "merged": false,
+      "merged_at": null,
+      "number": 43683,
+      "state": "closed",
+      "title": "[Bugfix] Clear stale spec/async state on streaming session rebuild",
+      "updated_at": "2026-09-29T15:13:32Z",
+      "url": "https://github.com/vllm-project/vllm/pull/43683"
+    },
+    {
+      "merge_commit_sha": "2f4a9759014e9294b4402aeae0fc25c11b47fc7d",
+      "merged": true,
+      "merged_at": "2026-09-28T19:26:58Z",
+      "number": 58259,
+      "state": "closed",
+      "title": "[Bugfix] Fix resumable request + async scheduling handoff race",
+      "updated_at": "2026-09-28T19:26:58Z",
+      "url": "https://github.com/vllm-project/vllm/pull/58259"
+    },
+    {
+      "merge_commit_sha": "f98ae6a9fd2c73a2f80dd9fe4c534676f689394d",
+      "merged": true,
+      "merged_at": "2026-10-17T09:08:14Z",
+      "number": 58778,
+      "state": "closed",
+      "title": "[Bugfix][Core] Keep resumable sessions that stop while preempted",
+      "updated_at": "2026-10-17T09:08:15Z",
+      "url": "https://github.com/vllm-project/vllm/pull/58778"
+    },
+    {
+      "merge_commit_sha": "ef0cad2ee4b510f9bd3761d630b4c09154f50674",
+      "merged": false,
+      "merged_at": null,
+      "number": 60764,
+      "state": "open",
+      "title": "[Bugfix][Core] Reclaim parked streaming sessions in reset_prefix_cache",
+      "updated_at": "2026-10-17T13:12:31Z",
+      "url": "https://github.com/vllm-project/vllm/pull/60764"
+    }
+  ],
+  "repository": "vllm-project/vllm",
+  "schema": "i122-source-audit-v1",
+  "source_files": [
+    {
+      "lines": 412,
+      "path": "vllm/v1/request.py",
+      "sha256": "dd7c30bf8b0894dc123a739c299c0133566f8cc075b081e45905f1c29506e69d",
+      "term_hits": {
+        "session_id": [
+          78,
+          197,
+          265
+        ],
+        "streaming_queue": [
+          237
+        ]
+      },
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/da9134bc89364465f68aa679564435936d157a14/vllm/v1/request.py"
+    },
+    {
+      "lines": 3525,
+      "path": "vllm/v1/core/sched/scheduler.py",
+      "sha256": "ed407c3dfd28d1844dbae67dfbf25046ec85248ab6a0d1a31910f01036169f7e",
+      "term_hits": {
+        "processed_step_seq": [
+          444,
+          446,
+          2128,
+          2852,
+          2872,
+          2886
+        ],
+        "sched_step_seq": [
+          443,
+          1557,
+          1560,
+          1630,
+          1711,
+          2864
+        ],
+        "streaming_queue": [
+          2567,
+          2568,
+          2710,
+          2712,
+          2721,
+          3293
+        ]
+      },
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/da9134bc89364465f68aa679564435936d157a14/vllm/v1/core/sched/scheduler.py"
+    },
+    {
+      "lines": 80,
+      "path": "vllm/v1/core/sched/async_scheduler.py",
+      "sha256": "9981a19bfdf890e7d89f3bb07b60e30a6f12e3df5faa917f74d582d6cd8e760b",
+      "term_hits": {},
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/da9134bc89364465f68aa679564435936d157a14/vllm/v1/core/sched/async_scheduler.py"
+    },
+    {
+      "lines": 7221,
+      "path": "vllm/v1/worker/gpu_model_runner.py",
+      "sha256": "8284285caf33d7edb8c36018034bf6a0d7aec77e796faa06936b69495bee675a",
+      "term_hits": {},
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/da9134bc89364465f68aa679564435936d157a14/vllm/v1/worker/gpu_model_runner.py"
+    },
+    {
+      "lines": 1035,
+      "path": "vllm/v1/engine/output_processor.py",
+      "sha256": "5b24778b4205d56e22e316a9ef0bc067abbbdfb1bf42eb2ff21599010713ba0f",
+      "term_hits": {},
+      "url": "https://raw.githubusercontent.com/vllm-project/vllm/da9134bc89364465f68aa679564435936d157a14/vllm/v1/engine/output_processor.py"
+    }
+  ],
+  "test_stats": {
+    "archive_bytes": 45391946,
+    "archive_sha256": "1c76fda692734499d59bf982701e80af6ef3938c27dbbf1b447734c7f5dd50d0",
+    "archive_url": "https://codeload.github.com/vllm-project/vllm/tar.gz/da9134bc89364465f68aa679564435936d157a14",
+    "target_hypothesis_mentions": 0,
+    "target_parametrize_markers": 54,
+    "target_paths": [
+      "tests/v1/core/test_async_scheduler.py",
+      "tests/v1/core/test_scheduler.py",
+      "tests/v1/streaming_input/__init__.py",
+      "tests/v1/streaming_input/test_async_llm_streaming.py",
+      "tests/v1/streaming_input/test_gpu_model_runner_streaming.py",
+      "tests/v1/streaming_input/test_gpu_model_runner_v2_streaming.py",
+      "tests/v1/streaming_input/test_scheduler_streaming.py"
+    ],
+    "target_python_files": 7,
+    "target_random_mentions": 0,
+    "target_test_functions": 185,
+    "v1_python_files": 529
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "completed_at": "2026-10-20T14:36:06.599575+00:00",
+  "container_image": "e35-vllm-sched:3897f95",
+  "container_image_id": "sha256:2f0b88823f437e6ad5309780cb1c228062241be0969a16dfb58bc4b237fda8ff",
+  "network": "none",
+  "result_sha256": "04eca4ec7c32e3e7b06d7dae7973d026cd7d02bbca3838d46abe582d4ab1deea",
+  "schema": "e35-supplement-manifest-v1",
+  "sha256": {
+    "Dockerfile": "4904b3733c28928adc2d21cc7f09c422d75a40f757860909a3511bdfb646f10e",
+    "harness.py": "b91865c05dff0ff8482b0c59288553dedf25dd91dcca066e96982e5b80b86872",
+    "supplement_check.py": "d54c92410e921378155add3642c65f89769547ad8544385f78d30f05d3c7a6ca",
+    "trace_check.py": "6cb5662a1c589cfc5846440d696d5be091c44da5b0abe6ac6b828efdc0a0ef0a"
+  },
+  "status": "post-review supplement (R-32 findings 3 and 4); not part of the frozen decision",
+  "vllm_sha": "3897f95cf17619137536d2a7d325d9c2f39dc38f"
+}

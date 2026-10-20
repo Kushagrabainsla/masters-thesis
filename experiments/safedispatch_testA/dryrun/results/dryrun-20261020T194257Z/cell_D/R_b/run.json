@@ -1,0 +1,68 @@
+{
+ "args": {
+  "mode": "both",
+  "model": "Qwen/Qwen3-0.6B",
+  "prompts_dir": "/results/dryrun-20261020T194257Z/prompts",
+  "out": "/results/dryrun-20261020T194257Z/cell_D/R_b",
+  "linear_backend": "auto",
+  "moe_backend": "auto",
+  "attention_backend": null,
+  "max_num_seqs": 8,
+  "max_model_len": 2048,
+  "gpu_memory_utilization": 0.5,
+  "max_tokens": 32,
+  "throughput_max_tokens": 16,
+  "logprobs": 20,
+  "batch_sizes": [
+   1,
+   4
+  ],
+  "repeats": 2,
+  "limit": 0,
+  "enforce_eager": false
+ },
+ "vllm_version": "0.32.0",
+ "python": "3.12.15",
+ "machine": "aarch64",
+ "env": {
+  "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+  "VLLM_CPU_KVCACHE_SPACE": "2"
+ },
+ "started_at": "2026-10-20T19:44:41Z",
+ "init_seconds": 57.72,
+ "engine_kwargs": {
+  "model": "Qwen/Qwen3-0.6B",
+  "seed": 0,
+  "max_num_seqs": 8,
+  "max_model_len": 2048,
+  "gpu_memory_utilization": 0.5,
+  "enable_prefix_caching": false
+ },
+ "status": "ok",
+ "outputs_seconds": 45.519,
+ "outputs_tokens": 512,
+ "throughput": {
+  "decode": {
+   "1": {
+    "seconds": [
+     4.35345983505249,
+     6.34931755065918
+    ],
+    "median_tokens_per_s": 2.99
+   },
+   "4": {
+    "seconds": [
+     4.157453536987305,
+     4.584655046463013
+    ],
+    "median_tokens_per_s": 14.64
+   }
+  },
+  "prefill_seconds": [
+   8.37975811958313,
+   8.291012525558472
+  ],
+  "prefill_prompts": 4
+ },
+ "finished_at": "2026-10-20T19:47:16Z"
+}

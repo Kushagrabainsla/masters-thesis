@@ -4387,6 +4387,18 @@
   "published": "2026-01-15",
   "category": "cs.LG"
  },
+ "2601.11546": {
+  "title": "RelServe: Fast LLM Inference Serving on Relational Data",
+  "authors": [
+   "Xin Zhang",
+   "Shihong Gao",
+   "Yanyan Shen",
+   "Haoyang Li",
+   "Lei Chen"
+  ],
+  "published": "2025-12-04",
+  "category": "cs.DB"
+ },
  "2601.11589": {
   "title": "LAPS: A Length-Aware-Prefill LLM Serving System",
   "authors": [
@@ -4764,6 +4776,19 @@
   ],
   "published": "2026-01-25",
   "category": "cs.CL"
+ },
+ "2602.16603": {
+  "title": "FlowPrefill: Decoupling Preemption from Prefill Scheduling Granularity to Mitigate Head-of-Line Blocking in LLM Serving",
+  "authors": [
+   "Chia-chi Hsieh",
+   "Zan Zong",
+   "Xinyang Chen",
+   "Jianjiang Li",
+   "Jidong Zhai",
+   "Lijie Wen"
+  ],
+  "published": "2026-02-18",
+  "category": ""
  },
  "2602.16666": {
   "title": "Towards a Science of AI Agent Reliability",
@@ -5284,6 +5309,17 @@
    "Evangelia Kalyvianaki"
   ],
   "published": "2026-05-01",
+  "category": "cs.DC"
+ },
+ "2605.00831": {
+  "title": "GhostServe: A Lightweight Checkpointing System in the Shadow for Fault-Tolerant LLM Serving",
+  "authors": [
+   "Shakya Jayakody",
+   "Youpeng Zhao",
+   "Chinmay Dhanraj Nehate",
+   "Jun Wang"
+  ],
+  "published": "2026-03-26",
   "category": "cs.DC"
  },
  "2605.01938": {
@@ -5998,6 +6034,15 @@
   "published": "2026-05-26",
   "category": "cs.LG"
  },
+ "2606.07581": {
+  "title": "Training-Inference Kernel Contracts: Bounding Divergence in Post-Training and Deployment",
+  "authors": [
+   "Bruce Changlong Xu",
+   "Lan Wu"
+  ],
+  "published": "2026-05-26",
+  "category": "cs.LG"
+ },
  "2606.07624": {
   "title": "Sequential statistical inference for Large Language Models: Representation, validity, and monitoring",
   "authors": [
@@ -6395,6 +6440,18 @@
   "published": "2026-06-27",
   "category": "cs.MA"
  },
+ "2606.29986": {
+  "title": "HBM Is Not All You Need: Efficient Disaggregated LLM Serving across Memory-heterogeneous Accelerators",
+  "authors": [
+   "Zhixiang Wei",
+   "Yun Wang",
+   "James Yen",
+   "Mingyuan Xia",
+   "Zhengwei Qi"
+  ],
+  "published": "2026-06-29",
+  "category": "cs.AR"
+ },
  "2606.30560": {
   "title": "TraceLab: Characterizing Coding Agent Workloads for LLM Serving",
   "authors": [
@@ -6557,6 +6614,18 @@
   ],
   "published": "2026-07-11",
   "category": "cs.DC"
+ },
+ "2607.11976": {
+  "title": "LiteTopK: Exploiting the Curse of Dimensionality for a Fused Indexer-TopK Kernel in Long-Context Sparse Attention",
+  "authors": [
+   "Ziqi Yin",
+   "Jianyang Gao",
+   "Peiqi Yin",
+   "Jiangneng Li",
+   "Gao Cong"
+  ],
+  "published": "2026-07-13",
+  "category": "cs.LG"
  },
  "2607.14541": {
   "title": "Are LLM-Generated GPU Kernels Production-Ready? A Trace-Driven Benchmark and Optimization Agent",
@@ -7568,6 +7637,27 @@
   "published": "2026-09-07",
   "category": "cs.DC"
  },
+ "2609.08450": {
+  "title": "Sample-Guided Exact Top-K Selection for Long-Context Sparse Attention",
+  "authors": [
+   "Siran Liu",
+   "Yang Xue",
+   "Theo Tang",
+   "Changxu Shao",
+   "Qian Cheng",
+   "Haimeng Ren",
+   "Donghua Jiang",
+   "Haipeng Ming",
+   "Lehua Ding",
+   "Zhonghan Lin",
+   "Shengying Wei",
+   "Wei Liu",
+   "Kai Liu",
+   "Jianchen Zhu"
+  ],
+  "published": "2026-09-08",
+  "category": "cs.DC"
+ },
  "2609.09218": {
   "title": "The Double Measurement Confound in Agent Benchmarks: De-Scaffolding, Ground-Truth Scoring, and Reliability Beyond the Mean",
   "authors": [
@@ -8145,6 +8235,17 @@
    "Jiapeng Li"
   ],
   "published": "2026-09-24",
+  "category": "cs.LG"
+ },
+ "2609.30884": {
+  "title": "CacheReforge: Bounded Recovery for Stale KV Caches under Evolving Adapters",
+  "authors": [
+   "Yuhang Cao",
+   "Yanzhou Mu",
+   "Chunrong Fang",
+   "Zhenyu Chen"
+  ],
+  "published": "2026-09-25",
   "category": "cs.LG"
  },
  "2609.32278": {

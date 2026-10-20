@@ -1,0 +1,15 @@
+{
+  "seed": 20261020,
+  "max_prompt_tokens": 3072,
+  "source": "local",
+  "tokenizer": "Qwen/Qwen3-0.6B",
+  "revisions": {
+    "local": "/local/prompts.json"
+  },
+  "n_prompts": 16,
+  "n_prefill": 4,
+  "sha256": {
+    "prompts.json": "2deb3f4c1b477989b08eb743f122f4786e8c6fba82c89a8f1b7c27dc0b66925b",
+    "prefill.json": "719616cd7d40cbfc64bd134bc7bdec5c434dac0af7bab15e09fd470246a6c3f1"
+  }
+}

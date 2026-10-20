@@ -37,6 +37,12 @@ TOPICS = {
     "7.15": "17-seed-topic-search-r20",
     "7.16": "18-current-frontier-r21",
     "7.17": "19-continued-frontier-r22",
+    "7.18": "20-session-source-audit-r24",
+    "7.19": "21-paper-audit-r27",
+    "7.20": "22-duplex-recovery-r28",
+    "7.21": "23-scoop-check-r30",
+    "7.22": "24-frontier-r33",
+    "7.23": "25-gpu-plan-r35",
     "R-19": "15-assumption-removal-r19",
     "other": "16-other-journal-citations",
 }
@@ -67,6 +73,15 @@ DOSSIER_TOPIC = [
     ("GAPS_R-20", "7.15"),
     ("FRONTIER_R-21", "7.16"),
     ("FRONTIER_R-22", "7.17"),
+    ("SOURCE_AUDIT_I-122", "7.18"),
+    ("REVIEW_E-31", "7.18"),
+    ("REVIEW_E-32", "7.19"),
+    ("PAPER_AUDIT_I-131", "7.19"),
+    ("SCOOP_AUDIT_I-123", "7.20"),
+    ("REVIEW_E-34", "7.20"),
+    ("REVIEW_E-35", "7.21"),
+    ("FRONTIER_R-33", "7.22"),
+    ("GPU_RUNBOOK", "7.23"),
 ]
 
 ID_RE = re.compile(r"(?<![\d.])(\d{2})(\d{2})\.(\d{4,5})(?:v\d+)?(?!\d)")

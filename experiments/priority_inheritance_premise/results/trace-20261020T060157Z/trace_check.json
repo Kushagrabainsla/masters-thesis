@@ -1,0 +1,262 @@
+{
+ "T1": [
+  {
+   "a": 1,
+   "finished": true,
+   "h_first_scheduled_step": 1,
+   "h_hit_calls": [
+    [
+     1,
+     320
+    ]
+   ],
+   "expected_hit": 320,
+   "l_computed_at_a": 320,
+   "reasons": [],
+   "l_in_prefill_at_a": true,
+   "skip_while_l_in_prefill": false,
+   "pass": true
+  },
+  {
+   "a": 3,
+   "finished": true,
+   "h_first_scheduled_step": 3,
+   "h_hit_calls": [
+    [
+     3,
+     832
+    ]
+   ],
+   "expected_hit": 832,
+   "l_computed_at_a": 832,
+   "reasons": [],
+   "l_in_prefill_at_a": true,
+   "skip_while_l_in_prefill": false,
+   "pass": true
+  },
+  {
+   "a": 5,
+   "finished": true,
+   "h_first_scheduled_step": 5,
+   "h_hit_calls": [
+    [
+     5,
+     1344
+    ]
+   ],
+   "expected_hit": 1344,
+   "l_computed_at_a": 1344,
+   "reasons": [],
+   "l_in_prefill_at_a": true,
+   "skip_while_l_in_prefill": false,
+   "pass": true
+  },
+  {
+   "a": 7,
+   "finished": true,
+   "h_first_scheduled_step": 7,
+   "h_hit_calls": [
+    [
+     7,
+     1856
+    ]
+   ],
+   "expected_hit": 1856,
+   "l_computed_at_a": 1856,
+   "reasons": [],
+   "l_in_prefill_at_a": true,
+   "skip_while_l_in_prefill": false,
+   "pass": true
+  },
+  {
+   "a": 10,
+   "finished": true,
+   "h_first_scheduled_step": 10,
+   "h_hit_calls": [
+    [
+     10,
+     2048
+    ]
+   ],
+   "expected_hit": 2048,
+   "l_computed_at_a": 2114,
+   "reasons": [],
+   "l_in_prefill_at_a": false,
+   "skip_while_l_in_prefill": false,
+   "pass": true
+  },
+  {
+   "a": 25,
+   "finished": true,
+   "h_first_scheduled_step": 25,
+   "h_hit_calls": [
+    [
+     25,
+     2048
+    ]
+   ],
+   "expected_hit": 2048,
+   "l_computed_at_a": 2112,
+   "reasons": [],
+   "l_in_prefill_at_a": false,
+   "skip_while_l_in_prefill": false,
+   "pass": true
+  },
+  {
+   "a": 40,
+   "finished": true,
+   "h_first_scheduled_step": 40,
+   "h_hit_calls": [
+    [
+     40,
+     2048
+    ]
+   ],
+   "expected_hit": 2048,
+   "l_computed_at_a": 2112,
+   "reasons": [],
+   "l_in_prefill_at_a": false,
+   "skip_while_l_in_prefill": false,
+   "pass": true
+  }
+ ],
+ "T2": {
+  "C1": {
+   "finished": true,
+   "h_first_scheduled_step": 8,
+   "reasons_before_first": [
+    "budget",
+    "budget",
+    "budget",
+    "budget",
+    "budget"
+   ],
+   "h_hit_calls": [
+    [
+     8,
+     2048
+    ]
+   ]
+  },
+  "C2": {
+   "finished": true,
+   "h_first_scheduled_step": 8,
+   "reasons_before_first": [
+    "budget",
+    "budget",
+    "budget",
+    "budget",
+    "budget"
+   ],
+   "h_hit_calls": [
+    [
+     8,
+     0
+    ]
+   ]
+  },
+  "pass": true
+ },
+ "T3": {
+  "n": 300,
+  "tight_runs": 146,
+  "reason_counts": {
+   "skip": 0,
+   "preempt_step": 17,
+   "budget": 1729,
+   "seqs": 0,
+   "other": 310
+  },
+  "preemptions": 55,
+  "failures": [],
+  "pass": true
+ },
+ "T4": [
+  {
+   "a": 1,
+   "finished": true,
+   "h_first_scheduled_step": 30,
+   "h_hit_calls": [
+    [
+     30,
+     2048
+    ]
+   ],
+   "expected_hit": 320,
+   "l_computed_at_a": 320,
+   "reasons": [
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip"
+   ],
+   "l_in_prefill_at_a": true,
+   "skip_while_l_in_prefill": true,
+   "pass": false
+  },
+  {
+   "a": 5,
+   "finished": true,
+   "h_first_scheduled_step": 18,
+   "h_hit_calls": [
+    [
+     18,
+     2048
+    ]
+   ],
+   "expected_hit": 1344,
+   "l_computed_at_a": 1344,
+   "reasons": [
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip",
+    "skip"
+   ],
+   "l_in_prefill_at_a": true,
+   "skip_while_l_in_prefill": true,
+   "pass": false
+  }
+ ],
+ "assertions": {
+  "T1": true,
+  "T2": true,
+  "T3": true,
+  "T4": true,
+  "T4_precondition": true
+ },
+ "decision": "KILL"
+}
