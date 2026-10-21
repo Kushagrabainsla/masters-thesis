@@ -6071,3 +6071,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-20: R-34 recorded and applied. Amendments A1 to E-36 and E-30; E-36 Mac dry run on the vLLM
   v0.32.0 CPU image (five defects fixed). Section 1 lines, Section 4 entry, I-23 and I-118 dossier
   lines, E-30 and E-36 entries, R-34, Section 8.1 rows 61 to 63, Appendix A rows. GPU runbook updated.
+- 2026-10-20: mapped journal Section 7.24 to `references/26-limitations-r36/` in the references build and
+  rebuilt `references/` (497 papers, 26 folders; one new paper, 2609.24991).

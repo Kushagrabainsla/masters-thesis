@@ -4,7 +4,7 @@ Source: `RESEARCH_JOURNAL.md` outside Section 7 (idea dossiers, experiments, rev
 
 Check levels are defined in journal Section 0.4. "dossier" or "journal" means the paper is not in the ledger, so it has no check level.
 
-## Papers (22)
+## Papers (21)
 
 | Paper | Authors | Date | What we used it for | Check | Cited in |
 |---|---|---|---|---|---|
@@ -22,7 +22,6 @@ Check levels are defined in journal Section 0.4. "dossier" or "journal" means th
 | [EnerInfer: Energy-Aware On-Device LLM Inference](https://arxiv.org/abs/2606.23001) `2606.23001` | Bohua Zou, Nian Liu, Binqi Sun et al. | 2026-06-22 | Note in the citing file: I-78 Thermal pacing.** KILL. ThermE (2610.00267), EnerInfer (2606.23001), PELM (2609.09662). | journal | [Journal 5.15](../../RESEARCH_JOURNAL.md) |
 | [SCOUT: Symmetric Consensus Outlier Detection for Failure Localization in LLM Pre-Training](https://arxiv.org/abs/2608.11034) `2608.11034` | Zhuang Wang | 2026-08-11 | Note in the citing file: corruption: LLM-PRISM, The Anatomy of SDC (2605.04213), SCOUT (2608.11034), ITHICA | journal | [Journal 5.1](../../RESEARCH_JOURNAL.md) |
 | [OpScale: Operator-level Provisioning and Autoscaling for LLM Serving](https://arxiv.org/abs/2608.13499) `2608.13499` | Xingqi Cui, Chieh-Jan Mike Liang, Ziang Tang et al. | 2026-08-13 | Note in the citing file: 48; 2026-09-22; Section 7.7 (from the 2026-09-22 handoff) lists "OpScale, Murakkab (OSDI 2026)"; CORRECTED (source check, 2026-10-16): Murakkab is in the OSDI 2026 program. OpScale is not in the program; it is the arXiv preprint 2608.13499 (2026-08); Confirm a venue in the ... | journal | [Journal 8.1](../../RESEARCH_JOURNAL.md) |
-| [Aborted but Not Forgotten: KV-Cache Retention Breaks Rollback Consistency in Language Agents](https://arxiv.org/abs/2608.15939) `2608.15939` | Guijia Zhang, Harry Yang | 2026-08-16 | Note in the citing file: Blocks (2604.17249) and Aborted but Not Forgotten (2608.15939, KV retention vs rollback in | journal | [Journal 5.11](../../RESEARCH_JOURNAL.md) |
 | [TOPAS: Workflow-Aware Prefix-State Scheduling for Multi-Agent LLM Serving](https://arxiv.org/abs/2608.25523) `2608.25523` | Hongqiu Ni, Han Tian, Chi Zhang et al. | 2026-08-26 | Note in the citing file: (TOPAS is a real paper, 2608.25523). Fixes applied to the report, retractions in | journal | [Journal Phase](../../RESEARCH_JOURNAL.md) |
 | [mzCache: On-Device LLM Memory Management under Multitasking](https://arxiv.org/abs/2609.01338) `2609.01338` | Hongseung Yu, Minsung Kim, Jongseok Park et al. | 2026-09-01 | Note in the citing file: I-77 KV hibernation to SSD.** KILL. LLMS (2403.11805), mzCache (2609.01338), TierKV (2609.21172). | journal | [Journal 5.15](../../RESEARCH_JOURNAL.md) |
 | [Tuning Collective Patterns to Alleviate Congestion in Shared AI Clusters](https://arxiv.org/abs/2609.04417) `2609.04417` | Eashan Gupta, Yongzhou Chen, Apoorve Mohan et al. | 2026-09-03 | Note in the citing file: 49; 2026-09-16; I-08 (Section 5.3) and Section 7.3 count REACT as crowding the overlap crossover; CORRECTED (source check, 2026-10-16): REACT is arXiv 2609.04417, "Tuning Collective Patterns to Alleviate Congestion in Shared AI Clusters". It adapts collective patterns to ... | journal | [Journal 8.1](../../RESEARCH_JOURNAL.md) |

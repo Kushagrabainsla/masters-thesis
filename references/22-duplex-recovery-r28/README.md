@@ -8,7 +8,7 @@ Check levels are defined in journal Section 0.4. "dossier" or "journal" means th
 
 | Paper | Authors | Date | What we used it for | Check | Cited in |
 |---|---|---|---|---|---|
-| [GhostServe: A Lightweight Checkpointing System in the Shadow for Fault-Tolerant LLM Serving](https://arxiv.org/abs/2605.00831) `2605.00831` | Shakya Jayakody, Youpeng Zhao, Chinmay Dhanraj Nehate et al. | 2026-03-26 | High checkpoint baseline | full-text | [Journal 7.20](../../RESEARCH_JOURNAL.md), [SCOOP_AUDIT_I-123_2026-10-19](../../dossier/SCOOP_AUDIT_I-123_2026-10-19.md) |
+| [GhostServe: A Lightweight Checkpointing System in the Shadow for Fault-Tolerant LLM Serving](https://arxiv.org/abs/2605.00831) `2605.00831` | Shakya Jayakody, Youpeng Zhao, Chinmay Dhanraj Nehate et al. | 2026-03-26 | High checkpoint baseline | full-text | [Journal 5.25](../../RESEARCH_JOURNAL.md), [LIMITATIONS_R-36_2026-10-20](../../dossier/LIMITATIONS_R-36_2026-10-20.md), [SCOOP_AUDIT_I-123_2026-10-19](../../dossier/SCOOP_AUDIT_I-123_2026-10-19.md) |
 
 ## Other sources without an arXiv ID (3)
 

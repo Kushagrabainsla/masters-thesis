@@ -43,6 +43,7 @@ TOPICS = {
     "7.21": "23-scoop-check-r30",
     "7.22": "24-frontier-r33",
     "7.23": "25-gpu-plan-r35",
+    "7.24": "26-limitations-r36",
     "R-19": "15-assumption-removal-r19",
     "other": "16-other-journal-citations",
 }
@@ -82,6 +83,7 @@ DOSSIER_TOPIC = [
     ("REVIEW_E-35", "7.21"),
     ("FRONTIER_R-33", "7.22"),
     ("GPU_RUNBOOK", "7.23"),
+    ("LIMITATIONS_R-36", "7.24"),
 ]
 
 ID_RE = re.compile(r"(?<![\d.])(\d{2})(\d{2})\.(\d{4,5})(?:v\d+)?(?!\d)")

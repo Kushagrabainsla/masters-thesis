@@ -8153,6 +8153,14 @@
   "published": "2026-09-19",
   "category": "cs.LG"
  },
+ "2609.24991": {
+  "title": "Who Pays for the KV Cache? Attributing Shared AI Inference Spend Across Kubernetes and LLM Provider Bills",
+  "authors": [
+   "Timothy Urista"
+  ],
+  "published": "2026-09-21",
+  "category": "cs.DC"
+ },
  "2609.25451": {
   "title": "Fast Recovery for LLM Serving via Decoupled Device Memory Lifetime in Dynamo",
   "authors": [
