@@ -5,6 +5,8 @@ Status: PREDECLARED 2026-10-20, AMENDED (A1, Section 9) after the R-34 Sonnet pr
 original design; where Section 9 differs, Section 9 wins. The Mac dry run (vLLM CPU backend) passed
 mechanically on 2026-10-20 (Section 10). Section 10 also records one change to the mechanism of
 Section 9 point 2.
+Amendment A2 (Section 11, 2026-10-22) adds Runpod efficiency changes and an exploratory Phase B. Phase A
+and its rules do not change.
 
 Labels: FACT, INTERPRETATION, HYPOTHESIS. All thresholds are project heuristics.
 
@@ -137,6 +139,7 @@ Total about 3 hours 30 minutes; the margin covers slow downloads.
 - `compare.py`: flips, floor, Wilson intervals, KL, speed ratios, and the frozen Session 1 rule.
 - `session1.sh`: the whole session with the time cap.
 - `test_compare.py`: unit tests for `compare.py` on synthetic data.
+- `extras.py` (A2): telemetry, kernel-name and Phase B summaries, reported only. `test_extras.py`: its tests.
 - `dryrun/`: the Mac dry run (vLLM CPU backend); mechanics only. `dryrun.sh` runs it;
   `cpu_triton_utils_v0.32.0_pr61992.py` is the CPU-only patch it mounts; `results/` holds the last run.
 
@@ -224,3 +227,91 @@ logs (`test_compare.py`, 14 tests pass). `compare.py` now reports `reference_ker
 R_a has no selection line. If `kernel_log_found` is false on the H100, alias detection did not run.
 Then check each candidate's `log.txt` by hand before you report the decision. These are reporting
 changes only; no threshold or rule changes.
+
+## 11. Amendment A2 (2026-10-22, Runpod efficiency, before any run; amended after R-39)
+
+Reason: D-56 moves the GPU runs to Runpod. The user asked for "maximum details and data with maximum
+savings", and accepted a longer run if it gives more data. A Pod bills for each second of the session,
+setup and idle time included. The fixed cost of a session (image pull, model download, engine compile)
+is paid once. So A2 puts more measurements into the same session, keeps the GPU busy, and never loses
+a finished run. Where this section differs from Sections 9 and 10, this section wins. R-39 (Sonnet
+pre-run review, `dossier/REVIEW_E-36_A2_PRERUN_2026-10-22.md`) returned AMEND_THEN_RUN; its fixes are
+in the text below.
+
+Phase A is not changed. It has the same runs, flags, order, thresholds and 3 h 10 min cap as A1. The
+Session 1 decision comes only from the Phase A `summary.json`. `compare.py` is not changed.
+
+### 11.1 Changes to the session
+
+1. Resume. `session1.sh` skips a run whose `run.json` has status ok, and runs a failed or missing run
+   again. The results path has no time stamp (`$RESULTS_ROOT/session1`). The elapsed time is kept in
+   `elapsed_s`, so the caps count across restarts.
+2. One GPU. Each start records the GPU UUID. If it differs from the first start, the script stops
+   with exit 2 (override: `ALLOW_GPU_CHANGE=1`). `run.json` also records the GPU name, UUID and SM.
+3. Persistent disk. On Runpod, the code, results and caches are on the Pod volume disk (`/workspace`),
+   which keeps its data when the Pod stops (runbook Section 2a).
+4. One environment folder for each start (`env-<UTC stamp>/`): `nvidia-smi -q`, the GPU UUID, the
+   `experiments/runpod/hardware_record.sh` output, versions, model snapshot paths with their revision
+   hashes (`models.txt`), GPU telemetry, and a 20-second GPU microbenchmark (BF16 GEMM, device copy) at
+   the start and the end (`experiments/runpod/gpu_microbench.py`).
+5. GPU telemetry every 1000 ms, in UTC: power, SM clock, temperature, utilization and the clock event
+   reasons. If the driver rejects `clocks_event_reasons`, the script uses `clocks_throttle_reasons`.
+6. The Pod environment. An SSH shell does not get it, so the script reads only `RUNPOD_POD_ID`,
+   `RUNPOD_API_KEY` and `HF_TOKEN` from `/proc/1/environ`. It writes no value to a file.
+7. The two models download in the background while the prompts are built; the download ends before
+   the first run.
+8. `run_cell.py --profile-kernels`: after all measurements of a run, torch.profiler records the CUDA
+   kernels of one `generate()` call (32 tokens) at batch 1, 8 and 64 in `kernels.json` (top 150 and
+   every kernel with at least 0.5% of device time). It runs on Phase A R_a and every candidate, not on
+   R_b. `run.json` is written before the profile and again after it, so a profiler failure cannot lose
+   the run. `timeout -k 30` kills a hung run.
+9. Bug fix (A1 defect found by the A2 stub test): `session.log` printed `exit $?` after command
+   substitutions in the same line, so the logged exit code could be wrong. The code is now read first.
+   The analysis never used the logged code, so no A1 rule is affected.
+10. Optional `AUTO_STOP=1`: on any exit, the Pod stops itself through the Runpod REST API (three tries,
+    HTTP code logged). A watchdog also stops it at `POD_LIMIT` (6 h 40 min). Stop, not terminate, so the
+    volume disk keeps the results.
+
+### 11.2 Phase B (exploratory, reported only)
+
+Phase B starts after the Phase A analysis. No new run starts after 6 h. Each part reuses the Phase A
+layout. In order of value per GPU-minute:
+- B0: the candidate with the most flips in each cell runs again (outputs only). Are its flips
+  repeatable?
+- B1: the full flip test again at `max_num_seqs` 8 (outputs only), both cells, R twice and every
+  candidate. It measures threat 1 of Section 7 (flips that depend on the batch configuration).
+- B3: the reference in eager mode (no CUDA graphs), both cells, twice: flips and speed against Phase A
+  R_a.
+- B2: decode speed at batch sizes 1, 2, 4, 8, 16, 32, 64, 128 and 256 (`max_num_seqs` 256), both cells,
+  R twice and every candidate. It shows crossovers between and above the frozen batch sizes. It is
+  last, so the cap cuts it first.
+
+### 11.3 Exploratory summaries (`extras.py`, reported only)
+
+`extras.json` holds:
+- telemetry per run window: median SM clock and power, peak temperature, the power-cap fraction and
+  the hard-slowdown fraction (thermal or power brake);
+- `suspect_speed` for a run with a hard-slowdown fraction above 5%, or a median SM clock more than 5%
+  below the session median (heuristics);
+- a one-GPU check over all runs, and both microbenchmarks;
+- a kernel check, a weak second alias signal: the GEMM and MoE kernel names and time shares of each
+  candidate against R_a at batch 64. If it disagrees with the log-line rule, report both and read the
+  candidate's `log.txt` by hand;
+- B0 flips (repeat against first run, and against R_a), B1 flip counts (not the `compare.py` label,
+  which is always INCONCLUSIVE without speeds), B2 rankings with the Phase A status of each backend and
+  the KV cache size, and B3 eager-mode flips and speed ratios.
+
+### 11.4 Time, cost and tests
+
+Time (INTERPRETATION, from about 10 minutes for each full run; not measured): Phase A 2 h 30 min to
+3 h 10 min; B0 10 to 20 min; B1 60 to 90 min; B3 20 to 40 min; B2 60 to 100 min. The last run can start
+at 6 h, so the Pod limit is 6 h 40 min. Runpod H100 SXM Secure Cloud was $3.99 per hour on 2026-10-22,
+so the full session costs at most about $27, and Phase A only (`PHASE_B=0`) about $13 to $15. The spend
+needs the user's approval (D-51, D-57).
+
+Tests (FACT, 2026-10-22, Mac): `test_compare.py` and `test_extras.py`, 22 tests pass. A stub session
+(stub `nvidia-smi` that rejects the new field name, stub `timeout`, `pip` and `run_cell.py`, one
+candidate forced to fail) wrote 46 runs, the decision, Phase B and `extras.json`. The second start
+skipped 43 ok runs and ran the 3 failed runs again. A start with a different GPU UUID stopped with
+exit 2. `run_cell.py --profile-kernels` in the vLLM CPU image ended ok and wrote the CPU profiler
+failure as `profile_error`; the kernel table itself needs CUDA (VERIFY on the H100).

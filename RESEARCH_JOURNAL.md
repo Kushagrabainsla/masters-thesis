@@ -2,7 +2,7 @@
 
 Owner: Kushagra Bainsla, MSCS, San Jose State University
 Created: 2026-09-23
-Last updated: 2026-10-21
+Last updated: 2026-10-22
 Protocol version: 1
 
 This is the single source of truth for the whole research journey: every idea, every
@@ -184,10 +184,18 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-21, after R-37 and R-38.** Rewrite this section every session.
+**As of 2026-10-22, after D-56 (GPU provider: Runpod) and R-39 (E-36 A2).** Rewrite this section every session.
 
 ### 1.1 Summary
 
+- D-56 (user, 2026-10-22): run the GPU experiments on Runpod instead of local, and keep all details
+  about the hardware of each run. The Runpod plugin and MCP server are set up and connected (0 Pods on
+  2026-10-22). E-36 has Runpod steps (runbook Section 2a). E-30 needs root and power caps, so it stays on
+  a provider with root. Hardware records: `experiments/runpod/`. No Pod was created and nothing was spent.
+- E-36 amendment A2 (user: "maximum details and data with maximum savings"): resume, telemetry, kernel
+  profiles, a microbenchmark and AUTO_STOP, plus an exploratory Phase B in the same Pod. Phase A and its
+  rules do not change. R-39 (Sonnet) returned AMEND_THEN_RUN; all fixes are applied and tested on the
+  Mac. Full session at most about $27 at $3.99/h (D-57, recommendation).
 - No thesis direction is chosen (D-13 is open).
 - The strongest candidate that is still alive is I-23 (SafeDispatch). It needs an NVIDIA GPU. There
   is no GPU yet (D-15), and the grant drafts in `grants/` are not submitted (D-19).
@@ -385,6 +393,9 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 15. **D-50 (after R-33).** Accept or change the recommendation: no further broad frontier sweep; use the
     first H100 session for I-23 Test A; treat I-120 as closed.
 16. **D-51 (ready: R-34 applied, Mac dry run passed).** Approve the E-36 Session 1 spend (one H100, 4-hour cap, $18 cap).
+    Provider is now Runpod (D-56): H100 SXM $3.99/h on 2026-10-22. See D-57 for the A2 plan and its cost.
+17a. **D-57 (after R-39).** Approve the E-36 A2 plan: the full session (at most 6 h 40 min, about $27) or Phase A
+    only (about $11 to $14). Before booking, read the live Runpod balance (user rule, 2026-10-22: never store it).
 17. **D-52 (ready: R-34 applied).** Approve the E-30 session (one GH200, 2.5-hour cap) after the provider confirms
     root and power caps.
 18. **D-53 (after R-36).** Accept or change the recommendation: stop literature-based gap searches and
@@ -397,8 +408,9 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 ### 1.5 Next actions, in order
 
 1. **D-51 and D-52 by the user.** Both GPU packages are ready: R-34 amendments applied, unit tests
-   pass, E-36 Mac dry run passed. On D-51, book one H100 and follow `dossier/GPU_RUNBOOK_2026-10-20.md`
-   Section 2. On D-52, first ask the provider about root, the module power section and writable Grace
+   pass, E-36 Mac dry run passed. On D-51, book one Runpod H100 and follow `dossier/GPU_RUNBOOK_2026-10-20.md`
+   Section 2a (D-56, E-36 A2), with the plan the user picks in D-57. Keep the hardware record of the run
+   in `experiments/runpod/`. On D-52, first ask the provider about root, the module power section and writable Grace
    caps. D-50 and D-53 are open. Do not reopen I-59, I-60, I-106 or I-120.
 1. **D-48 decision by the user.** Accept the scheduler-level substitution in E-35, or run the one-cell
    CPU-backend fidelity check (build the vLLM CPU backend for linux/arm64, compare its scheduler output
@@ -423,6 +435,10 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 10. Fill the June to September gap in Section 4 with what the user remembers.
 
 ### 1.6 Recent changes
+
+- 2026-10-22: E-36 amendment A2 and R-39 (Sonnet pre-run review, AMEND_THEN_RUN, fixes applied). D-57.
+- 2026-10-22: D-56 (user): GPU experiments run on Runpod. Runpod plugin 1.8.0 and MCP server connected.
+  New `experiments/runpod/` (hardware record script, hardware log). Runbook Section 2a (E-36 on Runpod).
 
 - 2026-10-21: R-37 algorithmic-optimization sweep (D-54). I-149 to I-164 registered. E-37 screen run. R-38
   (Sonnet) review changed I-161 and I-163 to KILL, so all 16 are KILL. Section 8.1 rows 64 to 66. D-55.
@@ -1410,6 +1426,18 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   model. The main session verified both. I-161 and I-163 KILL; all 16 R-37
                   candidates are KILL. E-37 CONFIRM_WITH_SCOPE_LIMITS. D-55.
                   Source: dossier/REVIEW_R-37_SONNET_2026-10-21.md. Ideas: I-154, I-158, I-161, I-163.
+2026-10-22  [P9]  The user set up Runpod (plugin runpod@runpod 1.8.0, MCP server signed in with
+                  OAuth; a list-pods check returned 0 Pods). The user decided to run the GPU
+                  experiments on Runpod and to keep all hardware details (D-56). Added
+                  experiments/runpod/ and runbook Section 2a. Runpod Pods are unprivileged
+                  containers, so E-30 stays on a provider with root. No Pod created, no spend.
+                  Source: dossier/GPU_RUNBOOK_2026-10-20.md. Ideas: I-23, I-118. Experiments: E-36, E-30.
+2026-10-22  [P9]  The user asked to use Runpod efficiently ("maximum details and data with maximum
+                  savings"). E-36 amendment A2: resume, telemetry, kernel profiles, microbenchmark,
+                  AUTO_STOP, exploratory Phase B; Phase A unchanged. A read-only Runpod session read
+                  prices and billing rules. R-39 (Sonnet) returned AMEND_THEN_RUN; fixes applied, 22
+                  tests and a stub session pass. D-57.
+                  Source: dossier/REVIEW_E-36_A2_PRERUN_2026-10-22.md. Ideas: I-23. Experiments: E-36.
 ```
 
 ---
@@ -4505,7 +4533,8 @@ Dockerfile; harness; trace check; supplement; results with manifests), `dossier/
 (R-31), `dossier/REVIEW_E-35_POSTRUN_2026-10-20.md` (R-32).
 
 **E-36 I-23 Test A, Session 1: calibration and the first two Hopper FP8 cells** (predeclared 2026-10-20,
-I-23). STATUS: PREDECLARED, AMENDED 2026-10-20 (A1 after R-34), NOT RUN. Mac dry run passed. Waiting for D-51.
+I-23). STATUS: PREDECLARED, AMENDED 2026-10-20 (A1 after R-34) and 2026-10-22 (A2 after R-39), NOT RUN. Mac
+dry run passed. Waiting for D-51 and D-57.
 Question: on one H100 with vLLM v0.32.0, do alternative linear and MoE backends for block-scaled FP8
 change greedy output against the default backend, and does the fastest backend change with batch size?
 Predeclared criteria (heuristics): V1 the reference backend agrees with itself on at least 95% of
@@ -4539,6 +4568,21 @@ in `_compute_slot_mapping_kernel_impl`) that vLLM main fixed in PR 61992; only t
 patch. Kernel-selection lines are now parsed from each run's `log.txt`, and `compare.py` reports
 `kernel_log_found`. A BF16 model on CPU logs no selection line, so the parser is tested only on
 synthetic logs (14 unit tests pass).
+Amended 2026-10-22 (A2 for Runpod, D-56; R-39 Sonnet pre-run review AMEND_THEN_RUN, fixes applied;
+package README Section 11 wins). Phase A (the runs, flags, order, thresholds, 3 h 10 min cap and
+`compare.py`) does not change, and the decision comes only from Phase A. Added: resume (skip ok runs,
+elapsed time kept across restarts), a GPU UUID check at each start, code, results and caches on the Pod
+volume disk, an environment folder for each start (hardware record, model revisions, telemetry every
+1 s in UTC, a GPU microbenchmark at start and end), background model download, a torch.profiler kernel
+table at batch 1, 8 and 64 after the measurements of R_a and each candidate, and an optional AUTO_STOP
+with a watchdog. A1 defect fixed: the logged exit code could be wrong (the analysis never used it).
+Exploratory Phase B (reported only, no new run after 6 h): B0 repeat of the most-flipping candidate, B1
+flip test at `max_num_seqs` 8, B3 eager-mode reference, B2 decode sweep at batch 1 to 256. `extras.py`
+reports telemetry, `suspect_speed`, a weak GEMM-kernel alias check and the Phase B summaries. Cost on
+Runpod H100 SXM Secure ($3.99/h on 2026-10-22): at most about $27 for the full session (Pod limit
+6 h 40 min), about $11 to $14 for Phase A only. Tests: 22 unit tests pass; a stub session run checked
+resume, the GPU check, the telemetry fallback and AUTO_STOP logging; the profiler path was checked
+only on CPU (VERIFY on the H100).
 Result: none yet.
 
 **E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
@@ -5204,6 +5248,25 @@ Findings:
 5. INTERPRETATION: the replay test for I-163 was circular. No missed candidate survives.
 Verdicts: E-37 CONFIRM_WITH_SCOPE_LIMITS. I-161 KILL. I-163 KILL. I-154 and I-158 KILL with corrected reasons.
 Full write-up: `dossier/REVIEW_R-37_SONNET_2026-10-21.md`.
+
+**R-39 Sonnet pre-run review of E-36 amendment A2** (2026-10-22).
+Scope: E-36 A2 (Runpod efficiency changes and Phase B), `session1.sh`, `run_cell.py`, `extras.py`,
+`experiments/runpod/`, runbook Section 2a. Runpod facts from a read-only Runpod MCP session.
+Method: Claude Sonnet, read-only; `sh -n` and the unit tests; no GPU or cloud work.
+Findings:
+1. FACT: the runbook kept results and code on the container disk, which a Pod stop wipes, so resume
+   could not work (blocker). Fixed: volume disk at `/workspace`.
+2. INTERPRETATION: an SSH shell does not get the Pod environment, so AUTO_STOP could do nothing
+   (blocker). Fixed: three named variables read from `/proc/1/environ`.
+3. FACT: a profiler crash could lose a measured run, and AUTO_STOP ran only on the normal path. Fixed.
+4. INTERPRETATION: 200 ms telemetry was an untested new condition for Phase A. Fixed: 1 s, UTC, field
+   fallback.
+5. FACT: the kernel-name alias check was fragile. Fixed: GEMM and MoE kernels only, a weak signal.
+6. Minor items (B1 label, B2 ranking, caps across restarts, power-cap bit, KV size): all fixed.
+7. FACT: Runpod H100 SXM Secure Cloud $3.99/h, stock LOW in one data center; a $0 balance terminates a
+   Pod without a network volume.
+Verdicts: E-36 A2 AMEND_THEN_RUN; fixes applied and tested on the Mac. Phase A unchanged.
+Full write-up: `dossier/REVIEW_E-36_A2_PRERUN_2026-10-22.md`.
 
 ---
 
@@ -5954,6 +6017,8 @@ proposed it and no acceptance is recorded.
 | D-53 | 2026-10-20 | After R-36: stop literature-based gap searches (route sweeps, orphan scans, frontier passes and limitations mining all returned no MEASURE-FIRST gap). Put the effort into the prepared GPU runs (I-23 Test A, I-118 E-30). Add I-143 only if a second GPU joins a rental | Recommendation (R-36). Not a decision | R-36: 7 of 8 limitation-derived gaps KILL, 1 WEAK | **Open, waiting on the user** |
 | D-54 | 2026-10-21 | Run an algorithmic-optimization sweep of the ML infrastructure stack with the research skills, and use the PyTorch Conference NA 2026 schedule as an extra source. Done as R-37, E-37 and R-38 | User ("Think in terms of optimizing anything, any layer, that is not optimized, think fundamentally like you are solving competitive algorithmic problems ... find out places where there is a research gap, or it can be optimized more") | The user chose one more literature-based search, against the D-53 recommendation | Decided. Done |
 | D-55 | 2026-10-21 | After R-37 and R-38: repeat D-53. Do not run another gap sweep of any kind (route, orphan, frontier, limitations or algorithmic). Spend the next effort on the prepared GPU runs (D-51 E-36 for I-23; D-52 E-30 for I-118). Optional career work outside the thesis: review or benchmark the open SGLang lazy-heap PRs (38371, 38454) or extend them to the Rust core | Recommendation (R-38). Not a decision | Since R-17, sweeps have produced only WEAK or low-confidence candidates (I-83, I-118, I-143). R-37 found real slow paths, but each one was already fixed, in an open PR, or in a 2026 preprint | **Open, waiting on the user** |
+| D-56 | 2026-10-22 | Run the GPU experiments on Runpod instead of local. Keep all details about the hardware of each run (Pod record, `experiments/runpod/hardware_record.sh` output, a row in `experiments/runpod/HARDWARE_LOG.md`, hardware in each E-nn "Setup" line). Changes the provider in D-35 (AWS) and the runbook (Lambda) for E-36. E-30 needs root and power caps, which Runpod Pods do not give, so it stays on a provider with root. Each paid run still needs its own spend approval (D-51, D-52) | User ("for now, lets use runpod for our experiments instead of local. keep all the details about the hardware we are using.") | Runpod is set up and connected in Claude Code | Decided by the user |
+| D-57 | 2026-10-22 | After R-39: approve the E-36 A2 plan on one Runpod H100 SXM Secure Cloud Pod ($3.99/h on 2026-10-22): the full session with Phase B (Pod limit 6 h 40 min, at most about $27) or Phase A only (about $11 to $14). Put at least $35 of credit on the account first, because a $0 balance terminates the Pod and its volume disk | Recommendation (R-39 and the main session). Not a decision | The user asked for maximum data per dollar and accepted a longer run; Phase B reuses the paid setup of the same Pod | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6035,7 +6100,9 @@ proposed it and no acceptance is recorded.
 | `dossier/ALGORITHMIC_R-37_2026-10-21.md` | 2026-10-21 | R-37: algorithmic-optimization sweep (I-149 to I-164), PyTorch Conference 2026 session map, code facts at three commits, verdicts and sources |
 | `dossier/REVIEW_R-37_SONNET_2026-10-21.md` | 2026-10-21 | R-38: Sonnet hostile review of R-37 and post-run review of E-37 |
 | `experiments/control_plane_complexity_screen/` | 2026-10-21 | E-37: predeclared README, screen script, result JSON (SGLang evict heap rebuild, vLLM block hashing) |
-| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-21 | This file |
+| `experiments/runpod/` | 2026-10-22 | D-56: Runpod rules, `hardware_record.sh` (machine record inside a Pod, checked on the Mac), `gpu_microbench.py` (GEMM and copy health check), `HARDWARE_LOG.md` (one row per Pod, append only) |
+| `dossier/REVIEW_E-36_A2_PRERUN_2026-10-22.md` | 2026-10-22 | R-39: Sonnet pre-run review of E-36 A2 (AMEND_THEN_RUN), the fix for each finding, Runpod facts, tests |
+| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-22 | This file |
 
 ---
 
@@ -6305,3 +6372,6 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   registered (all KILL after R-38). E-37 predeclared, run and reviewed. Section 1 lines, Section 3.21,
   Section 4 entries, Section 5.26, E-37, R-37, R-38, Section 7.25, Section 8.1 rows 64 to 66, D-54, D-55,
   Appendix A rows.
+- 2026-10-22: D-56 (user): GPU experiments on Runpod, with a hardware record for each run. Section 1 lines,
+  Section 4 entry, D-56, Appendix A row. New `experiments/runpod/`; runbook Section 2a.
+- 2026-10-22: E-36 A2 and R-39. E-36 entry, R-39 entry, Section 1 lines, Section 4 entry, D-57, Appendix A rows.

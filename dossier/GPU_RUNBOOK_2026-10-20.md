@@ -7,6 +7,12 @@ from 2026-10-20; check the provider page before booking.
 Before any paid session: (1) the Sonnet pre-run review of that session is done and its amendments are
 applied (D-29); (2) the Mac dry run passed; (3) the user approved the spend.
 
+Provider (D-56, user, 2026-10-22): run the GPU experiments on Runpod. Keep all hardware details of each
+run (`experiments/runpod/README.md`, `experiments/runpod/HARDWARE_LOG.md`). Session 1 uses Section 2a
+(E-36 amendment A2 after R-39; Runpod H100 SXM $3.99/h on 2026-10-22).
+Session 2 (E-30) needs root and power caps, which Runpod Pods do not give, so it stays on a provider
+with root. The Lambda prices below are from 2026-10-20; read the Runpod price and stock before booking.
+
 ## 1. Session order
 
 | # | Session | Idea | Hardware | Time cap | Cost cap | Status |
@@ -36,6 +42,77 @@ Steps on the rented machine (Lambda on-demand images include Docker and the NVID
 5. Check `summary.json`: `kernel_log_found` must be true in each cell.
 6. Copy off: `rsync -av ubuntu@<host>:~/results/ experiments/safedispatch_testA/results/`
 7. Terminate the instance in the provider console. Check that billing stopped.
+
+## 2a. Session 1 on Runpod (D-56, E-36 amendment A2 after R-39)
+
+The steps in Section 2 assume a VM with Docker. A Runpod Pod is already a container, so the vLLM image
+is the Pod image and `session1.sh` runs directly. Phase A (the decision) is the frozen A1 design; A2 adds
+resume, telemetry, profiles and an exploratory Phase B (`experiments/safedispatch_testA/README.md`
+Section 11). Steps marked VERIFY are not yet checked on a real Pod.
+
+Prices and stock (2026-10-22, Runpod catalog): H100 SXM 80GB Secure Cloud $3.99/h, stock LOW in EU-FR-1
+only. Community Cloud and the other H100 types had no stock. Spot Pods cannot be made with the MCP tools.
+
+| Plan | Pod time | Cost at $3.99/h | Data |
+|---|---|---|---|
+| Full A2 (default) | at most 6 h 40 min | at most about $27 | Phase A decision plus B0, B1, B3, B2 |
+| Phase A only (`PHASE_B=0`) | about 2 h 45 min to 3 h 30 min | about $11 to $14 | Phase A decision, telemetry, profiles |
+
+Before you book:
+- Read the live account balance with the Runpod tools (`runpod:cost-audit`). Do not use a stored
+  number. The balance must be at least the plan's cost cap plus $35. If it is lower, stop and tell the
+  user. FACT (Runpod docs): at a $0 balance, a Pod without a network volume is terminated, and its
+  volume disk with the results is deleted.
+- Get the user's approval of the spend and the plan (D-51, D-57).
+
+Steps:
+1. Check stock and price with the `runpod:discovery` skill for 1 x H100 SXM 80GB, on-demand, Secure
+   Cloud. Record the data center and price. If the price is above $4.20/h, stop and ask the user.
+   Do not change to H100 PCIe or NVL: the design is for H100 SXM.
+2. Make sure an SSH public key is on the Runpod account (`runpod:lifecycle-crud`).
+3. Create the Pod (`runpod:pod-deploy`):
+   - image `vllm/vllm-openai:v0.32.0`, GPU 1 x H100 SXM 80GB, Secure Cloud, not interruptible;
+   - container disk 40 GB; volume disk 120 GB at `/workspace` (models about 40 GB, caches, results);
+     no network volume;
+   - ports `22/tcp`; SSH start on (this puts the account keys in `PUBLIC_KEY`);
+   - environment: `HF_HOME=/workspace/cache/hf`, `VLLM_CACHE_ROOT=/workspace/cache/vllm`, and
+     `HF_TOKEN` only if a download needs it. Do not write the token in any file;
+   - `entrypoint` `["bash", "-c"]` and `cmd` with one string, because the vLLM image does not
+     start sshd (VERIFY):
+     `apt-get update -qq && apt-get install -y -qq openssh-server rsync && mkdir -p /root/.ssh /run/sshd && echo "$PUBLIC_KEY" > /root/.ssh/authorized_keys && chmod 700 /root/.ssh && chmod 600 /root/.ssh/authorized_keys && /usr/sbin/sshd && sleep infinity`
+4. Wait for `ssh.direct` in the Pod record. Save the Pod record JSON as
+   `experiments/safedispatch_testA/results/session1/pod.json` on the Mac. Note the start time (UTC).
+5. Copy the code to the volume disk:
+   `rsync -av -e "ssh -p <port>" experiments/safedispatch_testA/ root@<ip>:/workspace/code/`
+   `rsync -av -e "ssh -p <port>" experiments/runpod/ root@<ip>:/workspace/code/runpod/`
+6. First checks on the Pod (about 2 minutes, VERIFY items):
+   - `sh /workspace/code/runpod/hardware_record.sh /workspace/check`: the GPU in `gpu.csv` must be
+     an H100 80GB HBM3 with sm_90 in `python.txt`. Read `/dev/shm` in `df.txt`.
+   - `tr '\0' '\n' < /proc/1/environ | cut -d= -f1 | grep RUNPOD_`: `RUNPOD_POD_ID` and
+     `RUNPOD_API_KEY` must be there, or `AUTO_STOP` cannot work. Print names only, never values.
+   - `nvidia-smi --query-gpu=clocks_event_reasons.active --format=csv`: if it fails, the script uses
+     the old field name; check that the first `telemetry.csv` line starts with `timestamp`.
+7. Start the session in the background, so a dropped SSH session does not stop it:
+   `CODE=/workspace/code RESULTS_ROOT=/workspace/results AUTO_STOP=1 HF_HOME=/workspace/cache/hf VLLM_CACHE_ROOT=/workspace/cache/vllm nohup sh /workspace/code/session1.sh > /workspace/nohup.txt 2>&1 &`
+   For Phase A only, add `PHASE_B=0`.
+8. Watch `/workspace/results/session1/session.log`:
+   - after setup: `setup done`, and `env-*/telemetry.csv` grows;
+   - after the first run (about 10 min): no WARNING about kernel selection, and `cell_D/R_a/kernels.json`
+     has a `by_batch` table (VERIFY: the profiler on the H100). If it has a `profile_error`, the run
+     still counts; tell the user;
+   - after Phase A: the `decision:` line.
+9. If the Pod stops or the session dies: start the Pod again and run step 7 again. Finished runs are
+   skipped. If the log says `STOP: GPU changed`, ask the user before you set `ALLOW_GPU_CHANGE=1`.
+10. At the end (`done after` in the log; with `AUTO_STOP=1` the Pod then stops itself and the volume
+    disk keeps the results): if the Pod is stopped, start it again (0 GPUs is enough to read the disk),
+    then copy off:
+    `rsync -av -e "ssh -p <port>" root@<ip>:/workspace/results/ experiments/safedispatch_testA/results/`
+    Check that `summary.json`, `extras.json` and every `env-*/` folder arrived.
+11. Terminate the Pod after the copy. A stopped Pod's volume disk costs $0.20/GB/month (about $24 per
+    month for 120 GB). Read billing (`runpod:cost-audit`) and check that nothing bills.
+12. Add the row to `experiments/runpod/HARDWARE_LOG.md`: Pod id, GPU, data center, cloud type, price,
+    image tag, driver and CUDA (`env-*/hardware/gpu.csv`, `python.txt`), vCPU, RAM, disks, start and
+    stop times, billed cost, the results path, and the microbenchmark numbers.
 
 ## 3. Session 2: I-118, E-30 on one GH200
 
@@ -72,4 +149,5 @@ Decision: INVALID, INCONCLUSIVE, KILL 1, INCOMPLETE, KILL 2, GO, PIVOT.
 
 Write the result into the experiment's README and the journal (Section 6.1 result, idea dossier,
 Section 1), run the post-run Sonnet review, and keep the raw results and manifests in the experiment's
-`results/` folder.
+`results/` folder. For a Runpod run, also add the row to `experiments/runpod/HARDWARE_LOG.md` and put
+the hardware (GPU, data center, price, driver, CUDA) in the E-nn "Setup" line (D-56).
