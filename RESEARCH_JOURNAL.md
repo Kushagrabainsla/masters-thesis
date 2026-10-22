@@ -2,7 +2,7 @@
 
 Owner: Kushagra Bainsla, MSCS, San Jose State University
 Created: 2026-09-23
-Last updated: 2026-10-20
+Last updated: 2026-10-21
 Protocol version: 1
 
 This is the single source of truth for the whole research journey: every idea, every
@@ -184,7 +184,7 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-20, after R-33.** Rewrite this section every session.
+**As of 2026-10-21, after R-37 and R-38.** Rewrite this section every session.
 
 ### 1.1 Summary
 
@@ -292,7 +292,19 @@ maps every file to what it contains.
   papers (372 recent papers state some). Eight follow-up gaps checked (I-141 to I-148): seven KILL, one WEAK
   (I-143, FP8 TP-invariant determinism, GPU only). The closest call, crash-time KV reuse (I-141), fails the
   simple-baseline attack. D-53 (recommendation, open). Write-up: `dossier/LIMITATIONS_R-36_2026-10-20.md`.
+- R-37 (2026-10-21, D-54 decided by the user): an algorithmic-optimization sweep ("like competitive
+  algorithmic problems") with the PyTorch Conference NA 2026 schedule as a source. It read SGLang, vLLM and
+  PyTorch DCP hot paths at current main and screened I-149 to I-164. After the R-38 review (Sonnet), all
+  16 are KILL: the engine already ships the better algorithm, an open upstream PR or 2026 preprint has it,
+  or a theory check shows the decision does not matter for the real objective. R-38 closed the two last
+  candidates: I-161 (SGLang eviction heap rebuild; E-37 measured 4.6 ms at 50,000 leaves) is already in
+  SGLang PRs 38371 and 38454, and I-163 (critical-path scheduling for decode megakernels) is in Hazy's
+  public scheduler, with about 10% measured by Cohere on a dense model. Section 8.1 rows 64 to 66 record
+  three R-37 errors. Write-ups: `dossier/ALGORITHMIC_R-37_2026-10-21.md`,
+  `dossier/REVIEW_R-37_SONNET_2026-10-21.md`. D-55 (recommendation, open).
 - The current new-gap set is empty. I-23 remains the strongest candidate.
+- Lesson from R-37 and R-38: for an engineering slow path, search the target repository's open PRs before
+  the literature. Confirm which code path is the default before measuring.
 - R-35 (2026-10-20, this session; D-49 decided by the user: "Do whatever you can to test locally to test
   or plan, and keep the ideas up-to-date, so that Once we have the GPUs, we will continue on those.")
   checked the GPU-gated ideas again and prepared the GPU work on the Mac. It found more evidence for the
@@ -333,7 +345,7 @@ I-81 (R-13), I-80 (R-14, E-28, R-16; an optional E-29 is listed in D-33), I-82, 
 I-110 to I-115, I-117, I-119 (R-20; I-114 has a WEAK dissent from the reviewer), I-121 (R-21),
 I-124 to I-130 (R-22), I-122 (PIVOT after R-23 and R-24), I-123 (PIVOT after R-28),
 I-131 (R-26 and R-27), I-132 (R-29), I-106 and I-60 (R-30), I-59 (E-35, R-31, R-32), I-120 (R-33),
-I-133 to I-140 (R-33).
+I-133 to I-140 (R-33), I-141, I-142, I-144 to I-148 (R-36), I-149 to I-164 (R-37 and R-38).
 Scanned: I-44,
 I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 
@@ -377,6 +389,10 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
     root and power caps.
 18. **D-53 (after R-36).** Accept or change the recommendation: stop literature-based gap searches and
     spend effort on the prepared GPU runs.
+19. **D-54.** DECIDED 2026-10-21. The user asked for an algorithmic-optimization sweep. Done as R-37, E-37
+    and R-38 (all 16 candidates KILL).
+20. **D-55 (after R-38).** Accept or change the recommendation: no further gap sweep of any kind; go to the
+    GPU runs (D-51, D-52). Optional career work: the open SGLang lazy-heap PRs or their Rust-core version.
 
 ### 1.5 Next actions, in order
 
@@ -407,6 +423,9 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 10. Fill the June to September gap in Section 4 with what the user remembers.
 
 ### 1.6 Recent changes
+
+- 2026-10-21: R-37 algorithmic-optimization sweep (D-54). I-149 to I-164 registered. E-37 screen run. R-38
+  (Sonnet) review changed I-161 and I-163 to KILL, so all 16 are KILL. Section 8.1 rows 64 to 66. D-55.
 
 - 2026-10-20: R-34 recorded (Sonnet pre-run review of E-36 and E-30: AMEND_THEN_RUN). A1 applied to
   both packages. The E-36 Mac dry run passed mechanically; it found five defects, all fixed. D-51 and
@@ -943,6 +962,27 @@ history in Section 5.
 | I-147 | Erasure-coded KV for decode-heavy and P/D serving | KILL (GhostServe extension, needs cluster) | 5.25 |
 | I-148 | KV tier redesign when host memory is not larger than HBM (Grace) | KILL (NVIDIA ICMS, needs GB200 or GB300) | 5.25 |
 
+### 3.21 Phase 20: 2026-10-21 algorithmic-optimization sweep (R-37)
+
+| ID | Idea | Status | Section |
+|---|---|---|---|
+| I-149 | Incremental cache-aware ordering of the waiting queue (SGLang drops LPM above 128 waiting requests) | KILL (PEEK 2607.02525, Requests of a Feather 2605.06046) | 5.26 |
+| I-150 | O(new tokens) front-end work for each agent turn (tokenization, template, block hashing) | KILL (vLLM RFC 47582, TokTier 2607.29678, Incremental BPE 2605.30813) | 5.26 |
+| I-151 | Optimal CUDA-graph capture sizes by one-dimensional DP | KILL (small oracle: vLLM step-8 sizes; parametrized dynamic-shape graphs) | 5.26 |
+| I-152 | Rank balancing for DP attention in DP plus EP decode | KILL (TensorRT-LLM ADP balance, NanoCP 2605.21100) | 5.26 |
+| I-153 | Exact per-step replica choice for redundant experts | KILL (shipped: SGLang `lp` dispatch; LLEP) | 5.26 |
+| I-154 | Johnson's-rule ordering for staged pipelines (PP, EPD, P/D) | KILL (proportionate flow shop theorem; online serving optimizes latency, not makespan; reason corrected by R-38) | 5.26 |
+| I-155 | Weighted tree pebbling for offline prefix-shared batches | KILL (SGLang DFS theorem, BatchLLM, BlendServe) | 5.26 |
+| I-156 | Minimal-movement resharding on elastic resize | KILL (Tenplex; small absolute time) | 5.26 |
+| I-157 | Flow-optimal source choice for RL weight sync and MLA KV pulls | KILL (vLLM NIXL spreads MLA reads; small oracle) | 5.26 |
+| I-158 | NVLS multicast for MoE dispatch on NVL72 | KILL (static group multicast raises ingress 4.5 times; dynamic addressing is DySHARP, 2026-05; R-38) | 5.26 |
+| I-159 | Incremental counts for repetition penalties | KILL (fixed in the vLLM GPU runner) | 5.26 |
+| I-160 | DCP planning complexity (read overlap, dedup order) | KILL (sweep line ships; dedup gain small) | 5.26 |
+| I-161 | Kept eviction heap for radix caches (SGLang rebuilds a heap of all leaves on each `evict()`) | KILL (R-38: SGLang PRs 38371 and 38454 already add lazy heaps; R-37 had it as an engineering PR candidate) | 5.26 |
+| I-162 | Work placement for Muon and other matrix optimizers | KILL (NorMuon, MatrixFSDP 2607.05895, FlexShard) | 5.26 |
+| I-163 | Critical-path list scheduling for decode megakernels (the per-step task graph repeats) | KILL (R-38: Hazy Megakernels list scheduler, Cohere about 10% on dense then dropped for MoE; R-37 had WEAK) | 5.26 |
+| I-164 | Scan-resistant eviction for agent sessions that return in cyclic order | KILL (2606.21238, Continuum) | 5.26 |
+
 ---
 
 ## 4. Timeline (append-only)
@@ -1357,6 +1397,19 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   job). The E-36 Mac dry run passed mechanically after five fixes; one is a vLLM
                   v0.32.0 CPU bug that vLLM main fixed in PR 61992.
                   Source: dossier/REVIEW_E-36_E-30_PRERUN_2026-10-20.md. Ideas: I-23, I-118.
+2026-10-21  [P9]  The user asked for an algorithmic-optimization sweep ("like competitive algorithmic
+                  problems") with the PyTorch Conference NA 2026 schedule as a source (D-54). R-37
+                  read SGLang, vLLM and PyTorch DCP source at current main and screened 16
+                  candidates (I-149 to I-164). Fourteen KILL, I-161 is an engineering PR candidate,
+                  I-163 is WEAK and GPU-gated. E-37 sized two CPU paths on the Mac. R-38 (Sonnet)
+                  reviewed R-37 and E-37.
+                  Source: dossier/ALGORITHMIC_R-37_2026-10-21.md. Ideas: I-149 to I-164.
+                  Experiments: E-37.
+2026-10-21  [P9]  R-38 (Sonnet) found SGLang PRs 38371 and 38454 (lazy eviction heaps, open) and
+                  Hazy's public megakernel list scheduler plus Cohere's measured 10% on a dense
+                  model. The main session verified both. I-161 and I-163 KILL; all 16 R-37
+                  candidates are KILL. E-37 CONFIRM_WITH_SCOPE_LIMITS. D-55.
+                  Source: dossier/REVIEW_R-37_SONNET_2026-10-21.md. Ideas: I-154, I-158, I-161, I-163.
 ```
 
 ---
@@ -3318,6 +3371,69 @@ Why closed: NVIDIA ICMS owns the tier stack; needs GB200 or GB300 hardware.
 
 Verdict history (all): 2026-10-20, R-36: as listed above.
 
+### 5.26 I-149 to I-164 (algorithmic-optimization sweep, R-37)
+
+Origin for all: 2026-10-21, R-37 (D-54). Full write-up with code facts and sources:
+`dossier/ALGORITHMIC_R-37_2026-10-21.md`. Experiments: E-37. Reviews: R-37, R-38.
+Lenses: full rescans where an incremental update is enough; greedy where an exact algorithm is cheap;
+online policies where the future is known; theory checks of whether the decision matters.
+
+**Closed by current source code (the engine already does it).** I-153 (SGLang `ep_dispatch_algorithm`
+`lp` with `lplb_solver.py`), I-157 (vLLM NIXL `tp_mapping.py` spreads MLA source ranks), I-159 (vLLM GPU
+runner keeps `output_bin_counts`), I-160 (PyTorch DCP read planning is a sweep line), I-151 (vLLM capture
+sizes step 8 then 16, so padding is at most 15 slots; small oracle).
+**Closed by 2026 preprints or RFCs.** I-149 (PEEK 2607.02525, Requests of a Feather 2605.06046), I-150
+(vLLM RFC 47582, TokTier 2607.29678, Incremental BPE 2605.30813), I-152 (TensorRT-LLM ADP balance,
+NanoCP 2605.21100), I-162 (NorMuon, Motif 2, INTELLECT-3, MatrixFSDP 2607.05895, FlexShard session),
+I-164 (2606.21238, Continuum), I-155 (SGLang DFS theorem, BatchLLM, BlendServe), I-156 (Tenplex).
+**Closed by theory.** I-154: balanced pipeline stages form a proportionate flow shop, where every
+permutation has makespan sum(p_j) + (m - 1) x max(p_j); for large offline EPD batches, any order without
+idle time approaches max(sum p1, sum p2). I-158: a multicast group delivers to every member, so
+group-limited routing on 9-GPU groups raises ingress from 8 to 36 receives for each token.
+Lessons: the algorithmic lens finds real slow paths (I-149, I-150 and I-161 were found in code before the
+search), but upstream engineers or 2026 preprints reach them within weeks. Check the newest code path
+first: vLLM fixed I-159 in a new runner while the old path still has the quadratic cost.
+
+**I-161 Kept eviction heap for radix caches.** Status: KILL as research; engineering PR candidate.
+FACT: SGLang a3d00eff `evict()` builds a heap of all evictable leaves on each call. E-37 S1: 4.6 ms at
+E = 50,000 and 11.2 ms at E = 100,000 on the M4; a kept heap pops 4 leaves in about 2 microseconds.
+Next step (optional, not thesis work): an upstream PR with a lazy-deletion heap, plus an SGLang benchmark
+under memory pressure to show how often `evict()` runs.
+
+**I-163 Critical-path list scheduling for decode megakernels.** Status: WEAK, MEASURE-FIRST, GPU for the
+claim. Confidence in gap: low. Scoop risk: high.
+Problem: a decode megakernel runs the task graph of one step on all SMs. The graph repeats for each batch
+size, so an offline schedule is possible. MPK uses round-robin (its author lists priority-aware policies as
+future work); Cohere North Mini deals waves round-robin with work stealing and reports that wave order
+changes performance.
+What prior art answers: Event Tensor (2604.13327, MLSys 2026) static and dynamic scheduling
+transformations; ForgeMegakernel (2609.12379) per-SM instruction streams at 50.5 to 85.9% bandwidth
+utilization; Weave (2609.21483); Fleet (2604.15379). No public work found applies HEFT or critical-path
+priority to SM task order in a decode megakernel (three searches, 2026-10-21).
+Research question: on one Hopper GPU, does a static HEFT schedule built from measured task times cut
+decode step latency by at least 5% at batch 1 to 64, compared with round-robin wave order plus work
+stealing?
+Next step and kill rule: dump one MPK decode-step task graph with measured task times on one H100 (can
+ride on an E-36 rental), replay it in an offline simulator with a shared-bandwidth limit, and compare
+round-robin, waves with stealing, HEFT and the lower bound. The simulator must take task times from the
+measurement, not from the schedule. KILL if HEFT is within 3% of waves with stealing at every batch size.
+
+Verdict history (all): 2026-10-21, R-37: as listed above.
+- 2026-10-21, R-38 (Sonnet, verified by the main session): I-161 KILL. SGLang PRs 38371 and 38454 (open since
+  2026-09-07 and 2026-09-08) add persistent lazy eviction heaps; PR 41690 amortizes eviction. The default
+  SGLang path is now the Rust tree core (PR 39627), which also rebuilds the heap on each eviction start.
+- 2026-10-21, R-38: I-163 KILL. HazyResearch/Megakernels `scheduler.py` has a list scheduler and a critical-path
+  priority function (its call is commented out). The Cohere blog (2026-09-08) reports about 10% from a
+  cost-based greedy scheduler and from random-schedule search on a dense model, and dropped both for MoE.
+  The planned replay test was circular: measured task times already contain round-robin's contention.
+- 2026-10-21, R-38: I-154 stays KILL with a corrected reason. Random order exceeds Johnson's rule by 3 to 14% at
+  n of 8 to 128 (reviewer simulation), so scale alone does not kill it. The objective does: online serving
+  optimizes latency, where SJF and SRPT apply. The O(sqrt n) bound holds only for random order.
+- 2026-10-21, R-38: I-158 stays KILL with a corrected reason. The 4.5 times ingress holds for static whole-group
+  multicast only. DySHARP (2026-05-07, search-only, no arXiv ID found) uses dynamic multimem addressing.
+- 2026-10-21, R-38: no new candidate survives (near misses: ski-rental KV TTL, close to Continuum 2511.02230;
+  tool-definition ordering, engineering).
+
 ---
 
 ## 6. Experiments and reviews
@@ -4425,6 +4541,30 @@ patch. Kernel-selection lines are now parsed from each run's `log.txt`, and `com
 synthetic logs (14 unit tests pass).
 Result: none yet.
 
+**E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
+SCREEN ONLY: an engineering screen, not a research result.
+Question: S1, what does one SGLang `evict()` call cost as a function of the number E of evictable leaves,
+compared with a heap kept between calls? S2, what does vLLM-style block hashing cost for one prompt?
+Predeclared criteria (heuristics): S1 is engineering-relevant if one call at E = 50,000 costs at least
+1 ms and the kept heap is at least 10 times cheaper. S2 is engineering-relevant at 20 ms or more for a
+131,072-token prompt, minor between 5 and 20 ms, dropped under 5 ms. No result can make a research gap.
+Setup: M4 MacBook Air, Python 3.14.6, one core. S1 copies the shape of SGLang a3d00eff `radix_cache.py`
+`evict()` (list of all evictable leaves, Python priority call, `heapify`, pop 4) with stand-in nodes. S2
+copies vLLM 90c4a1a `hash_block_tokens` with `sha256(pickle)`, block size 16. Best of 5 to 21 repeats.
+Result: S1, 0.88 ms at E = 10,000, 4.6 ms at E = 50,000, 11.2 ms at E = 100,000; the kept heap pops 4
+leaves in about 2 microseconds. S2, 7.2 ms at 131,072 tokens and 11.4 ms at 204,800 tokens.
+Verdict against the criteria: S1 passes (engineering-relevant). S2 is minor.
+Validity and limits: SCREEN ONLY. The M4 core is fast, so server times are likely higher. The S1 kept heap
+does not count its upkeep (one O(log E) push for each touched leaf). E-37 did not measure how often
+`evict()` runs under real memory pressure. Post-run review: R-38 (Sonnet).
+What it changed: I-161 becomes an upstream-PR candidate. S2 is folded into the closed I-150.
+Artifacts: `experiments/control_plane_complexity_screen/` (README.md, screen.py, result_2026-10-21.json).
+Post-run review R-38 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS. S1 models the legacy Python `RadixCache`; the
+default is the Rust unified core, which has the same O(E) heap refill with a smaller constant (not
+measured). SGLang PR 38371 measured 4.9 ms at 35,000 leaves on the Python unified cache, so E-37 S1 is a
+lower bound. The real vLLM hashing loop is about 9.6 ms at 131,072 tokens (reviewer), still minor. The
+"upstream-PR candidate" result is withdrawn: PRs 38371 and 38454 already exist (Section 8.1 row 64).
+
 ### 6.2 Review registry
 
 **R-01 Adversarial self-review** (2026-09-16, handoff section 12). Retracted or flagged: the
@@ -5026,6 +5166,45 @@ Findings:
 Verdicts: I-141, I-142, I-144 to I-148 KILL. I-143 WEAK.
 Full write-up: `dossier/LIMITATIONS_R-36_2026-10-20.md`.
 
+**R-37 Algorithmic-optimization sweep** (2026-10-21, D-54).
+Scope: 16 candidates (I-149 to I-164) from four algorithmic lenses, with the PyTorch Conference NA 2026
+schedule as an extra source.
+Method: main session. Read the hot paths of SGLang a3d00eff, vLLM 90c4a1a and PyTorch 6dbae335 (DCP)
+at current main. Pass 1: code facts plus literature searches for each candidate. Pass 2: targeted searches
+for the candidates left after pass 1, opened PEEK, NanoCP, vLLM RFC 47582, ForgeMegakernel and Event
+Tensor. E-37 sized two CPU paths. R-38 (Sonnet) is the different-model review.
+Findings:
+1. FACT: SGLang drops LPM and HRRN order above 128 waiting requests ("Arbitrary" limit) and rebuilds an
+   eviction heap of all leaves on each `evict()` call.
+2. FACT: vLLM has no cross-turn tokenization cache and hashes all prompt blocks for each request in the
+   engine input thread. RFC 47582 (open) proposes incremental encoding.
+3. FACT: SGLang ships an LP solver for redundant-expert dispatch; vLLM spreads MLA KV source ranks; the
+   vLLM GPU runner keeps persistent penalty counts; PyTorch DCP read planning is a sweep line.
+4. INTERPRETATION: the visible algorithmic slow paths in the main engines are fixed, being fixed, or covered
+   by a 2026 preprint. Three theory checks (proportionate flow shop, large-batch convergence, multicast
+   ingress) close whole idea families without experiments.
+Verdicts: I-149 to I-160, I-162 and I-164 KILL. I-161 KILL as research, engineering PR candidate. I-163
+WEAK, MEASURE-FIRST, GPU. (R-38 changed I-161 and I-163 to KILL.)
+Full write-up: `dossier/ALGORITHMIC_R-37_2026-10-21.md`.
+
+**R-38 Sonnet hostile review of R-37 and post-run review of E-37** (2026-10-21).
+Scope: E-37 code and conclusions; the theory KILLs I-154 and I-158; the survivor I-163; missed candidates.
+Method: Claude Sonnet, read-only, with the R-37 source clones and fresh web searches. The main session
+checked its key claims: SGLang default cache path (`registry.py`, `environ.py:709`, Rust `full.rs`), PRs
+38371, 38454, 41690 and 39627 with the GitHub API, the Hazy `scheduler.py` source, and the Cohere blog.
+Findings:
+1. FACT (verified): SGLang PRs 38371 and 38454 already add persistent lazy eviction heaps; R-37's "None found"
+   was wrong. The default path is the Rust core, which also refills the heap from all leaves.
+2. FACT (verified): Hazy Megakernels has a list scheduler with a critical-path priority function; Cohere
+   measured about 10% from cost-based scheduling on a dense model and dropped it for MoE.
+3. FACT (reviewer brute force): the proportionate flow shop makespan is order-invariant. INTERPRETATION
+   (reviewer simulation): Johnson's rule gains 3 to 14% at n of 8 to 128, so I-154 dies on its objective,
+   not on scale.
+4. FACT (reviewer, search-only): DySHARP uses dynamic in-switch multicast for MoE; I-158 dies on prior art.
+5. INTERPRETATION: the replay test for I-163 was circular. No missed candidate survives.
+Verdicts: E-37 CONFIRM_WITH_SCOPE_LIMITS. I-161 KILL. I-163 KILL. I-154 and I-158 KILL with corrected reasons.
+Full write-up: `dossier/REVIEW_R-37_SONNET_2026-10-21.md`.
+
 ---
 
 ## 7. Prior-art ledger
@@ -5468,6 +5647,47 @@ limitation sections and targeted passages of the full HTML were read.
 | GhostServe, 2605.00831 | 2026-05 | P/D and decode fault tolerance | | Source of I-147 | partial |
 | HiSparse, 2608.07009 | 2026-08 | Host tier smaller than HBM | NVIDIA ICMS | Source of I-148 | partial |
 
+### 7.25 Algorithmic-optimization sweep (added 2026-10-21, R-37)
+
+Check levels use the 0.4 meanings with the date 2026-10-21.
+
+| Work | Date | What it proves | Effect | Check |
+|---|---|---|---|---|
+| SGLang source, commit a3d00eff | 2026-10-21 | LPM and HRRN fall back to FCFS above 128 waiting requests; `evict()` rebuilds a heap of all evictable leaves; `ep_dispatch_algorithm` has an `lp` option | Source of I-149 and I-161; kills I-153 | full-text |
+| vLLM source, commit 90c4a1a | 2026-10-21 | No cross-turn tokenization cache; full-prompt block hashing in the engine input thread; capture sizes step 8 then 16; persistent penalty counts in the GPU runner; MLA source ranks spread | Kills I-151, I-157, I-159; source of I-150 | full-text |
+| PyTorch source, commit 6dbae335 | 2026-10-21 | DCP read planning uses a sweep line; dedup is list scheduling without LPT | Kills I-160 | full-text |
+| PEEK, 2607.02525 | 2026-05-10 (v2 2026-09-12) | Incremental radix tree over the pending queue, dual walk against the prefix cache | Kills I-149 | checked (abstract) |
+| Requests of a Feather Must Flock Together, 2605.06046 | 2026-05 | Tree work is 50 to 90% of prefix-aware scheduler latency; cumulative prefix hashes and a lazy min-heap | Kills I-149; context for I-155 | search-only |
+| DLPM, 2501.14312 | 2025-01 | Repeated prefix matching overhead in global scheduling | Context for I-149 | search-only |
+| vLLM RFC 47582 | 2026-07-03, open | Incremental prompt encoding; 782.94 ms full against 10.95 ms incremental at 512K tokens; TTFT 0.92 s to 0.47 s; cites SGLang SMG L1 prefix tokenization cache | Kills I-150 | checked |
+| TokTier, 2607.29678 | 2026-07 | Exact stateful CPU plus GPU tokenization for agent serving | Kills I-150 | search-only |
+| Incremental BPE Tokenization, 2605.30813 | 2026-05 | Incremental BPE | Kills I-150 | search-only |
+| TensorRT-LLM ADP Balance Strategy (tech blog 10) | 2025 | Per-iteration DP-attention balance | Kills I-152 | search-only |
+| NanoCP, 2605.21100 | 2026-05-20 | Dynamic context parallelism for each request in DP plus EP decode against KV imbalance | Kills I-152 | checked (abstract) |
+| LLEP, 2601.17111 | 2026-01 (ICML 2026) | Spills skewed expert load to less-used devices | Context for I-153 | search-only |
+| EasyBalance, 2608.07964 | 2026-08 | Cross-layer MoE load balancing | Context for I-153 | search-only |
+| Johnson's rule note, 2512.06119 | 2025-12 | Johnson's rule is O(n log n) for two-machine flow shop makespan | Context for I-154 | search-only |
+| EPD Disaggregation, 2501.05460 | 2025 (ICML 2025) | Separate encode, prefill and decode | Context for I-154 | search-only |
+| SGLang, 2312.07104 | 2023-12 | DFS order is optimal for hit rate when the cache holds the longest request | Kills I-155 | doc-only (via search summary) |
+| BatchLLM, 2412.03594; BlendServe, 2411.16102 | 2024-12; 2024-11 | Offline prefix-aware batching and ordering | Kill I-155 | search-only |
+| Tenplex (SOSP 2024) | 2024 | Minimal reconfiguration plans for dynamic parallelism | Kills I-156 | doc-only |
+| NorMuon, 2510.05491; Motif 2, 2511.07464; INTELLECT-3, 2512.16144; MatrixFSDP, 2607.05895 | 2025-10 to 2026-07 | Owner-rank and sorted round-robin placement for Newton-Schulz work | Kill I-162 | search-only |
+| Mirage MPK post (Zhihao Jia, Medium) | 2025 | MPK uses round-robin task placement; priority-aware policies are future work | Context for I-163 | search-only |
+| Cohere megakernel blog | 2026 | Waves dealt round-robin to SMs, work stealing; wave order changes performance | Threat to I-163 | search-only |
+| ForgeMegakernel, 2609.12379 | 2026-09-11 | Per-SM instruction streams; 50.5 to 85.9% bandwidth utilization | Threat to I-163 | checked (abstract) |
+| Event Tensor, 2604.13327 | 2026-04-14 (MLSys 2026) | Static and dynamic scheduling transformations for megakernels | Threat to I-163 | checked (abstract) |
+| Weave, 2609.21483; Fleet, 2604.15379 | 2026-09; 2026-04 | Dynamic SM scheduling in an MoE megakernel; scheduler workgroups on multi-die GPUs | Threats to I-163 | search-only |
+| Recency/Frequency Adaptive KV Caching, 2606.21238 | 2026-06 | ARC-style KV cache policy | Kills I-164 | search-only |
+| SGLang PRs 38371 and 38454 | 2026-09-07; 2026-09-08 (open) | Persistent lazy eviction heaps for the unified radix cache; 4.9 ms at 35,000 leaves before, 30 to 33 microseconds after (38371) | Kills I-161 (R-38) | checked (titles, dates, state via GitHub API; numbers from R-38) |
+| SGLang PR 41690 | 2026-09-29 (open) | Amortized L1 eviction under sustained pressure | Context for I-161 | checked (title via GitHub API) |
+| SGLang PR 39627 | merged | Rust TreeCore becomes the default | Scope limit on E-37 | checked (title via GitHub API) |
+| HazyResearch/Megakernels `megakernels/scheduler.py` | 2025 | List scheduler (ready heap, SM free-time heap) and a critical-path priority function | Kills I-163 (R-38) | full-text (grep of the file) |
+| Cohere megakernel blog | 2026-09-08 | Cost-based greedy and random-schedule search give about 10% over round-robin on a dense model; dropped for MoE | Kills I-163 (R-38); upgrades the row above | checked |
+| MPK, 2512.22219 | 2025-12-22 (v2 2026-06-10) | Mega-kernel compiler and runtime with decentralized scheduling across SMs | Context for I-163 | checked (abstract) |
+| DySHARP (Zhang et al., "Accelerating MoE with Dynamic In-Switch Computing on Multi-GPUs") | 2026-05-07 | Dynamic multimem addressing for each token's target set | Kills I-158 (R-38) | search-only (secondary digest via R-38; no arXiv ID) |
+| Ada-MK, 2605.11581; AutoMegaKernel, 2606.09682 | 2026-05; 2026-06 | Offline schedule search for megakernels | Context for I-163 | search-only (via R-38) |
+| Continuum, 2511.02230 (ICLR 2026) | 2025-11 | KV TTL across tool calls from reload cost and tool-latency distribution | Closes the R-38 near miss | search-only |
+
 ---
 
 ## 8. Errors, retractions, and do-not-cite list
@@ -5539,6 +5759,9 @@ limitation sections and targeted passages of the full HTML were read.
 | 61 | 2026-10-20 | E-30 KILL 2 objective frozen in R-35 (equal weight of normalized GPU throughput and CPU work) | CORRECTED before any run (R-34): the gain comes mostly from the CPU term in decode, so the objective decides KILL 2 by construction. A1 decides on a constrained form | Test each frozen objective on a synthetic case where the mechanism clearly helps |
 | 62 | 2026-10-20 | E-36 as predeclared in R-35: candidates from an inventory of backends that start; STOP-FLAT at a Wilson upper bound of 1.5% with 256 prompts | CORRECTED before any run (R-34): a backend that starts can be an alias of the default kernel, and 0 flips in 256 prompts minus up to 12 floor exclusions cannot reach 1.5%. A1 uses a fixed list, log-based alias detection, and 2% at 189 or more prompts | Check that each pass condition can be reached with the planned sample size |
 | 63 | 2026-10-20 | R-34 reviewer: a Wilson upper bound of at most 2% for 0 flips needs n >= 188 | CORRECTED by the main session: n >= 189 (3.84 / (n + 3.84)); a unit test checks it | Recompute reviewer numbers before they enter a rule |
+| 64 | 2026-10-21 | R-37 and E-37: I-161 "prior work: none found", "engineering PR candidate"; E-37 S1 presented as the SGLang eviction cost | CORRECTED (R-38, verified): SGLang PRs 38371 and 38454 already add lazy heaps. S1 models the legacy Python class; the default is the Rust core | Search the target repository's open PRs, not only papers, before calling an engineering fix open. Confirm which code path is the default |
+| 65 | 2026-10-21 | R-37: I-163 kept as WEAK while citing the Cohere megakernel blog | CORRECTED (R-38, verified): the same blog reports about 10% from cost-based scheduling on a dense model and why it was dropped; Hazy's public scheduler already has a critical-path priority | Read every section of a cited source that bears on the claim, not only the passage that supports it |
+| 66 | 2026-10-21 | R-37: I-154 "any order without idle time is within O(sqrt n)"; I-158 "closes the whole family" | CORRECTED (R-38): the bound holds only for random order, and the gain is 3 to 14% at n of 8 to 128; DySHARP covers dynamic multicast | State the assumptions of an asymptotic argument and check small n. An arithmetic kill covers only the variant it computes |
 
 ### 8.2 Do not cite
 
@@ -5729,6 +5952,8 @@ proposed it and no acceptance is recorded.
 | D-51 | 2026-10-20 | Approve E-36 Session 1: one H100 (Lambda, about $4.29 per hour), hard caps of 4 hours and $18, after the R-34 amendments and the Mac dry run | Recommendation (R-35). Not a decision | It is the cheapest decisive step for I-23, the strongest live idea | **Open, waiting on the user** |
 | D-52 | 2026-10-20 | Approve E-30: one GH200 for 2.5 hours, only after the provider confirms root, module power telemetry and writable CPU caps | Recommendation (R-35). Not a decision | I-118 is low priority; the preflight can fail on a cloud VM | **Open, waiting on the user** |
 | D-53 | 2026-10-20 | After R-36: stop literature-based gap searches (route sweeps, orphan scans, frontier passes and limitations mining all returned no MEASURE-FIRST gap). Put the effort into the prepared GPU runs (I-23 Test A, I-118 E-30). Add I-143 only if a second GPU joins a rental | Recommendation (R-36). Not a decision | R-36: 7 of 8 limitation-derived gaps KILL, 1 WEAK | **Open, waiting on the user** |
+| D-54 | 2026-10-21 | Run an algorithmic-optimization sweep of the ML infrastructure stack with the research skills, and use the PyTorch Conference NA 2026 schedule as an extra source. Done as R-37, E-37 and R-38 | User ("Think in terms of optimizing anything, any layer, that is not optimized, think fundamentally like you are solving competitive algorithmic problems ... find out places where there is a research gap, or it can be optimized more") | The user chose one more literature-based search, against the D-53 recommendation | Decided. Done |
+| D-55 | 2026-10-21 | After R-37 and R-38: repeat D-53. Do not run another gap sweep of any kind (route, orphan, frontier, limitations or algorithmic). Spend the next effort on the prepared GPU runs (D-51 E-36 for I-23; D-52 E-30 for I-118). Optional career work outside the thesis: review or benchmark the open SGLang lazy-heap PRs (38371, 38454) or extend them to the Rust core | Recommendation (R-38). Not a decision | Since R-17, sweeps have produced only WEAK or low-confidence candidates (I-83, I-118, I-143). R-37 found real slow paths, but each one was already fixed, in an open PR, or in a 2026 preprint | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -5807,7 +6032,10 @@ proposed it and no acceptance is recorded.
 | `dossier/REVIEW_E-36_E-30_PRERUN_2026-10-20.md` | 2026-10-20 | R-34: Sonnet pre-run review of E-36 and E-30 (AMEND_THEN_RUN for both), with main-session source checks |
 | `experiments/safedispatch_testA/` | 2026-10-20 | E-36: I-23 Test A Session 1 package (design with amendment A1 and the Mac dry-run record, prompts, run, compare with tests, session script, `dryrun/` with the last dry-run result; `inventory.py` unused after A1) |
 | `experiments/superchip_power_coupling/` | 2026-10-16 to 2026-10-20 | E-30: I-118 package (design with amendment A1, preflight, sweep driver, analysis with tests) |
-| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-19 | This file |
+| `dossier/ALGORITHMIC_R-37_2026-10-21.md` | 2026-10-21 | R-37: algorithmic-optimization sweep (I-149 to I-164), PyTorch Conference 2026 session map, code facts at three commits, verdicts and sources |
+| `dossier/REVIEW_R-37_SONNET_2026-10-21.md` | 2026-10-21 | R-38: Sonnet hostile review of R-37 and post-run review of E-37 |
+| `experiments/control_plane_complexity_screen/` | 2026-10-21 | E-37: predeclared README, screen script, result JSON (SGLang evict heap rebuild, vLLM block hashing) |
+| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-21 | This file |
 
 ---
 
@@ -6073,3 +6301,7 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   lines, E-30 and E-36 entries, R-34, Section 8.1 rows 61 to 63, Appendix A rows. GPU runbook updated.
 - 2026-10-20: mapped journal Section 7.24 to `references/26-limitations-r36/` in the references build and
   rebuilt `references/` (497 papers, 26 folders; one new paper, 2609.24991).
+- 2026-10-21: R-37 algorithmic-optimization sweep (D-54 decided) and R-38 Sonnet review. I-149 to I-164
+  registered (all KILL after R-38). E-37 predeclared, run and reviewed. Section 1 lines, Section 3.21,
+  Section 4 entries, Section 5.26, E-37, R-37, R-38, Section 7.25, Section 8.1 rows 64 to 66, D-54, D-55,
+  Appendix A rows.

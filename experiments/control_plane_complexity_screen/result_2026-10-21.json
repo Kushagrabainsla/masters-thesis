@@ -1,0 +1,61 @@
+{
+  "python": "3.14.6",
+  "machine": "arm64",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "S1_evict": [
+    {
+      "E": 1000,
+      "rebuild_ms_min": 0.0702,
+      "rebuild_ms_median": 0.0746,
+      "kept_heap_ms_min": 0.00142,
+      "ratio": 49.5
+    },
+    {
+      "E": 10000,
+      "rebuild_ms_min": 0.8772,
+      "rebuild_ms_median": 0.9017,
+      "kept_heap_ms_min": 0.00183,
+      "ratio": 478.5
+    },
+    {
+      "E": 50000,
+      "rebuild_ms_min": 4.5954,
+      "rebuild_ms_median": 5.6452,
+      "kept_heap_ms_min": 0.00204,
+      "ratio": 2250.4
+    },
+    {
+      "E": 100000,
+      "rebuild_ms_min": 11.1742,
+      "rebuild_ms_median": 11.9569,
+      "kept_heap_ms_min": 0.00221,
+      "ratio": 5060.8
+    }
+  ],
+  "S2_block_hash": [
+    {
+      "prompt_tokens": 8192,
+      "blocks": 512,
+      "sha256_pickle_ms_min": 0.44,
+      "sha256_pickle_ms_median": 0.45
+    },
+    {
+      "prompt_tokens": 32768,
+      "blocks": 2048,
+      "sha256_pickle_ms_min": 1.79,
+      "sha256_pickle_ms_median": 1.84
+    },
+    {
+      "prompt_tokens": 131072,
+      "blocks": 8192,
+      "sha256_pickle_ms_min": 7.22,
+      "sha256_pickle_ms_median": 7.37
+    },
+    {
+      "prompt_tokens": 204800,
+      "blocks": 12800,
+      "sha256_pickle_ms_min": 11.38,
+      "sha256_pickle_ms_median": 11.43
+    }
+  ]
+}
