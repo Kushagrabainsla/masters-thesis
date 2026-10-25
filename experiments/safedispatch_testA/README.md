@@ -140,6 +140,7 @@ Total about 3 hours 30 minutes; the margin covers slow downloads.
 - `session1.sh`: the whole session with the time cap.
 - `test_compare.py`: unit tests for `compare.py` on synthetic data.
 - `extras.py` (A2): telemetry, kernel-name and Phase B summaries, reported only. `test_extras.py`: its tests.
+- `to_ledger.py` (D-58): one run manifest for each ok run, for `experiments/ledger/ledger.py add`.
 - `dryrun/`: the Mac dry run (vLLM CPU backend); mechanics only. `dryrun.sh` runs it;
   `cpu_triton_utils_v0.32.0_pr61992.py` is the CPU-only patch it mounts; `results/` holds the last run.
 

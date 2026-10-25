@@ -9,6 +9,12 @@ Context file for AI agents working in this repo.
 - Older files (`dossier/`, the handoff .docx files) are historical snapshots. When they disagree with the journal, the journal wins.
 - `archive/` holds superseded files. Never delete research files: move obsolete ones to `archive/` and add a row to `archive/README.md`. Delete only true junk (`__pycache__`, `.DS_Store`).
 
+## Running GPU experiments
+- Before you plan, run or analyze any GPU experiment, read `docs/experiments/README.md`, then `PROTOCOL.md`, `MEASUREMENT.md` and `RUNPOD.md` in the same folder. Follow the stages and gates in `PROTOCOL.md`.
+- GPU runs use Runpod (journal D-56). No Pod is created without the user's approval of the plan and cost cap, and a passing live balance check (`experiments/runpod/balance.py`).
+- Credentials live only in the gitignored `.env` at the repo root. Never print or commit them.
+- Record every run in `experiments/ledger/runs.jsonl` and `experiments/runpod/HARDWARE_LOG.md`. Compare runs with `experiments/ledger/compare_runs.py`.
+
 ## Focus areas
 - Agentic systems: multi-agent orchestration, agent registries, priority-aware routing, tool-calling protocols, MCP (Model Context Protocol)
 - GPU efficiency: distributed training fault tolerance, checkpoint-restore systems, GPU memory management, NCCL/collective communication, CUDA

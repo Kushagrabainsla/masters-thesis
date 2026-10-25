@@ -2,7 +2,7 @@
 
 Owner: Kushagra Bainsla, MSCS, San Jose State University
 Created: 2026-09-23
-Last updated: 2026-10-22
+Last updated: 2026-10-25
 Protocol version: 1
 
 This is the single source of truth for the whole research journey: every idea, every
@@ -184,7 +184,7 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-22, after D-56 (GPU provider: Runpod) and R-39 (E-36 A2).** Rewrite this section every session.
+**As of 2026-10-25, after D-58 (experiment standards).** Rewrite this section every session.
 
 ### 1.1 Summary
 
@@ -196,6 +196,12 @@ maps every file to what it contains.
   profiles, a microbenchmark and AUTO_STOP, plus an exploratory Phase B in the same Pod. Phase A and its
   rules do not change. R-39 (Sonnet) returned AMEND_THEN_RUN; all fixes are applied and tested on the
   Mac. Full session at most about $27 at $3.99/h (D-57, recommendation).
+- D-58 (user, 2026-10-25): experiment standards in `docs/experiments/` (protocol with ten stage gates,
+  measurement rules, Runpod operations and incidents, templates), an append-only run ledger and a
+  noise-aware compare tool (`experiments/ledger/`, 7 tests pass), and a local `run-gpu-experiment`
+  skill. Runpod access checked 2026-10-25: MCP connected, 0 Pods, SSH key `runpod_ed25519` registered,
+  `.env` (gitignored) waits for the user's API key. E-36 now needs a cheap rehearsal Pod (stage S5)
+  before the H100 run.
 - No thesis direction is chosen (D-13 is open).
 - The strongest candidate that is still alive is I-23 (SafeDispatch). It needs an NVIDIA GPU. There
   is no GPU yet (D-15), and the grant drafts in `grants/` are not submitted (D-19).
@@ -6019,6 +6025,7 @@ proposed it and no acceptance is recorded.
 | D-55 | 2026-10-21 | After R-37 and R-38: repeat D-53. Do not run another gap sweep of any kind (route, orphan, frontier, limitations or algorithmic). Spend the next effort on the prepared GPU runs (D-51 E-36 for I-23; D-52 E-30 for I-118). Optional career work outside the thesis: review or benchmark the open SGLang lazy-heap PRs (38371, 38454) or extend them to the Rust core | Recommendation (R-38). Not a decision | Since R-17, sweeps have produced only WEAK or low-confidence candidates (I-83, I-118, I-143). R-37 found real slow paths, but each one was already fixed, in an open PR, or in a 2026 preprint | **Open, waiting on the user** |
 | D-56 | 2026-10-22 | Run the GPU experiments on Runpod instead of local. Keep all details about the hardware of each run (Pod record, `experiments/runpod/hardware_record.sh` output, a row in `experiments/runpod/HARDWARE_LOG.md`, hardware in each E-nn "Setup" line). Changes the provider in D-35 (AWS) and the runbook (Lambda) for E-36. E-30 needs root and power caps, which Runpod Pods do not give, so it stays on a provider with root. Each paid run still needs its own spend approval (D-51, D-52) | User ("for now, lets use runpod for our experiments instead of local. keep all the details about the hardware we are using.") | Runpod is set up and connected in Claude Code | Decided by the user |
 | D-57 | 2026-10-22 | After R-39: approve the E-36 A2 plan on one Runpod H100 SXM Secure Cloud Pod ($3.99/h on 2026-10-22): the full session with Phase B (Pod limit 6 h 40 min, at most about $27) or Phase A only (about $11 to $14). Put at least $35 of credit on the account first, because a $0 balance terminates the Pod and its volume disk | Recommendation (R-39 and the main session). Not a decision | The user asked for maximum data per dollar and accepted a longer run; Phase B reuses the paid setup of the same Pod | **Open, waiting on the user** |
+| D-58 | 2026-10-25 | Write experiment standards that follow frontier-lab practice, so that an agent can run the GPU experiments without issues: `docs/experiments/` (PROTOCOL, MEASUREMENT, RUNPOD, templates), the run ledger and compare tool in `experiments/ledger/`, the E-36 ledger adapter, a rehearsal stage before each paid run, and a local agent skill | User ("lets create documents so that claude can run these experiments properly without any issues. Proper flows where we follow industry standards of frontier labs during experimentation.") | The user wants reliable runs and evidence of improvement or degradation for each change | Decided by the user. Done |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6102,7 +6109,9 @@ proposed it and no acceptance is recorded.
 | `experiments/control_plane_complexity_screen/` | 2026-10-21 | E-37: predeclared README, screen script, result JSON (SGLang evict heap rebuild, vLLM block hashing) |
 | `experiments/runpod/` | 2026-10-22 | D-56: Runpod rules, `hardware_record.sh` (machine record inside a Pod, checked on the Mac), `gpu_microbench.py` (GEMM and copy health check), `HARDWARE_LOG.md` (one row per Pod, append only) |
 | `dossier/REVIEW_E-36_A2_PRERUN_2026-10-22.md` | 2026-10-22 | R-39: Sonnet pre-run review of E-36 A2 (AMEND_THEN_RUN), the fix for each finding, Runpod facts, tests |
-| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-22 | This file |
+| `docs/experiments/` | 2026-10-25 | D-58: experiment protocol (stages S0 to S9), measurement standards, Runpod operations and incidents, preregistration and run report templates |
+| `experiments/ledger/` | 2026-10-25 | D-58: append-only run ledger (`runs.jsonl`), `ledger.py`, `compare_runs.py`, tests |
+| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-25 | This file |
 
 ---
 
@@ -6375,3 +6384,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-22: D-56 (user): GPU experiments on Runpod, with a hardware record for each run. Section 1 lines,
   Section 4 entry, D-56, Appendix A row. New `experiments/runpod/`; runbook Section 2a.
 - 2026-10-22: E-36 A2 and R-39. E-36 entry, R-39 entry, Section 1 lines, Section 4 entry, D-57, Appendix A rows.
+- 2026-10-25: D-58 experiment standards, ledger and compare tool. Section 1 lines, D-58, Appendix A rows.

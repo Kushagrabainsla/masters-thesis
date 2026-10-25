@@ -59,17 +59,24 @@ only. Community Cloud and the other H100 types had no stock. Spot Pods cannot be
 | Phase A only (`PHASE_B=0`) | about 2 h 45 min to 3 h 30 min | about $11 to $14 | Phase A decision, telemetry, profiles |
 
 Before you book:
-- Read the live account balance with the Runpod tools (`runpod:cost-audit`). Do not use a stored
-  number. The balance must be at least the plan's cost cap plus $35. If it is lower, stop and tell the
+- Read the live account balance: `python3 experiments/runpod/balance.py --need <cost cap>`. The MCP
+  tools have no balance read, so the script uses `RUNPOD_API_KEY` from the gitignored `.env`. Do not
+  use a stored number. The balance must be at least the plan's cost cap plus $35. If it is lower, stop and tell the
   user. FACT (Runpod docs): at a $0 balance, a Pod without a network volume is terminated, and its
   volume disk with the results is deleted.
 - Get the user's approval of the spend and the plan (D-51, D-57).
 
-Steps:
+Steps (they implement stages S4 to S7 of `docs/experiments/PROTOCOL.md`):
+0. Rehearsal (stage S5): run steps 3 to 8 first on a 1 x L4 Pod (about $0.59/h, 20 to 30 min) with
+   `PHASE_B=0 STOP_AFTER=600 DENSE_CANDS=torch MOE_CANDS=triton`. Check every VERIFY item, then
+   terminate it. Do not change code between the rehearsal and the real run, except a required fix.
+   The FP8 kernels of the real run need sm_90, so the rehearsal checks only the mechanics.
 1. Check stock and price with the `runpod:discovery` skill for 1 x H100 SXM 80GB, on-demand, Secure
    Cloud. Record the data center and price. If the price is above $4.20/h, stop and ask the user.
    Do not change to H100 PCIe or NVL: the design is for H100 SXM.
-2. Make sure an SSH public key is on the Runpod account (`runpod:lifecycle-crud`).
+2. Check that the SSH public key is on the Runpod account (`get-ssh-keys`). The key pair is
+   `~/.ssh/runpod_ed25519` on the Mac (comment `runpod-masters-thesis`, registered 2026-10-25). The
+   private key never leaves the Mac.
 3. Create the Pod (`runpod:pod-deploy`):
    - image `vllm/vllm-openai:v0.32.0`, GPU 1 x H100 SXM 80GB, Secure Cloud, not interruptible;
    - container disk 40 GB; volume disk 120 GB at `/workspace` (models about 40 GB, caches, results);
@@ -83,8 +90,8 @@ Steps:
 4. Wait for `ssh.direct` in the Pod record. Save the Pod record JSON as
    `experiments/safedispatch_testA/results/session1/pod.json` on the Mac. Note the start time (UTC).
 5. Copy the code to the volume disk:
-   `rsync -av -e "ssh -p <port>" experiments/safedispatch_testA/ root@<ip>:/workspace/code/`
-   `rsync -av -e "ssh -p <port>" experiments/runpod/ root@<ip>:/workspace/code/runpod/`
+   `rsync -av -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" experiments/safedispatch_testA/ root@<ip>:/workspace/code/`
+   `rsync -av -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" experiments/runpod/ root@<ip>:/workspace/code/runpod/`
 6. First checks on the Pod (about 2 minutes, VERIFY items):
    - `sh /workspace/code/runpod/hardware_record.sh /workspace/check`: the GPU in `gpu.csv` must be
      an H100 80GB HBM3 with sm_90 in `python.txt`. Read `/dev/shm` in `df.txt`.
@@ -106,13 +113,17 @@ Steps:
 10. At the end (`done after` in the log; with `AUTO_STOP=1` the Pod then stops itself and the volume
     disk keeps the results): if the Pod is stopped, start it again (0 GPUs is enough to read the disk),
     then copy off:
-    `rsync -av -e "ssh -p <port>" root@<ip>:/workspace/results/ experiments/safedispatch_testA/results/`
+    `rsync -av -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" root@<ip>:/workspace/results/ experiments/safedispatch_testA/results/`
     Check that `summary.json`, `extras.json` and every `env-*/` folder arrived.
 11. Terminate the Pod after the copy. A stopped Pod's volume disk costs $0.20/GB/month (about $24 per
     month for 120 GB). Read billing (`runpod:cost-audit`) and check that nothing bills.
 12. Add the row to `experiments/runpod/HARDWARE_LOG.md`: Pod id, GPU, data center, cloud type, price,
     image tag, driver and CUDA (`env-*/hardware/gpu.csv`, `python.txt`), vCPU, RAM, disks, start and
     stop times, billed cost, the results path, and the microbenchmark numbers.
+13. Add the runs to the ledger: `python3 experiments/safedispatch_testA/to_ledger.py --res
+    experiments/safedispatch_testA/results/session1 --out experiments/safedispatch_testA/results/session1/manifests
+    --design-commit <sha> --pod experiments/safedispatch_testA/results/session1/pod.json`, then
+    `python3 experiments/ledger/ledger.py add experiments/safedispatch_testA/results/session1/manifests/*.json`.
 
 ## 3. Session 2: I-118, E-30 on one GH200
 
