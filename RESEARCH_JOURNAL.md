@@ -202,6 +202,11 @@ maps every file to what it contains.
   skill. Runpod access checked 2026-10-25: MCP connected, 0 Pods, SSH key `runpod_ed25519` registered,
   `.env` (gitignored) waits for the user's API key. E-36 now needs a cheap rehearsal Pod (stage S5)
   before the H100 run.
+- D-59 (user, 2026-10-25): the Runpod account is shared with other projects and sessions (an H200
+  Pod `okc-bf16-proj-tuning` from another session ran on 2026-10-25). Thesis resources are named
+  `msthesis-<experiment>-<purpose>-<yyyymmdd>`, tagged `THESIS_TAG=msthesis`, and registered in
+  `experiments/runpod/pods.jsonl`; thesis agents change only registered resources. The balance check
+  now counts other running spend. `RUNPOD_API_KEY` is in `.env` and the live read works.
 - No thesis direction is chosen (D-13 is open).
 - The strongest candidate that is still alive is I-23 (SafeDispatch). It needs an NVIDIA GPU. There
   is no GPU yet (D-15), and the grant drafts in `grants/` are not submitted (D-19).
@@ -6026,6 +6031,7 @@ proposed it and no acceptance is recorded.
 | D-56 | 2026-10-22 | Run the GPU experiments on Runpod instead of local. Keep all details about the hardware of each run (Pod record, `experiments/runpod/hardware_record.sh` output, a row in `experiments/runpod/HARDWARE_LOG.md`, hardware in each E-nn "Setup" line). Changes the provider in D-35 (AWS) and the runbook (Lambda) for E-36. E-30 needs root and power caps, which Runpod Pods do not give, so it stays on a provider with root. Each paid run still needs its own spend approval (D-51, D-52) | User ("for now, lets use runpod for our experiments instead of local. keep all the details about the hardware we are using.") | Runpod is set up and connected in Claude Code | Decided by the user |
 | D-57 | 2026-10-22 | After R-39: approve the E-36 A2 plan on one Runpod H100 SXM Secure Cloud Pod ($3.99/h on 2026-10-22): the full session with Phase B (Pod limit 6 h 40 min, at most about $27) or Phase A only (about $11 to $14). Put at least $35 of credit on the account first, because a $0 balance terminates the Pod and its volume disk | Recommendation (R-39 and the main session). Not a decision | The user asked for maximum data per dollar and accepted a longer run; Phase B reuses the paid setup of the same Pod | **Open, waiting on the user** |
 | D-58 | 2026-10-25 | Write experiment standards that follow frontier-lab practice, so that an agent can run the GPU experiments without issues: `docs/experiments/` (PROTOCOL, MEASUREMENT, RUNPOD, templates), the run ledger and compare tool in `experiments/ledger/`, the E-36 ledger adapter, a rehearsal stage before each paid run, and a local agent skill | User ("lets create documents so that claude can run these experiments properly without any issues. Proper flows where we follow industry standards of frontier labs during experimentation.") | The user wants reliable runs and evidence of improvement or degradation for each change | Decided by the user. Done |
+| D-59 | 2026-10-25 | The Runpod account is shared with other sessions. Label every thesis resource (`msthesis-<experiment>-<purpose>-<yyyymmdd>`, env `THESIS_TAG=msthesis`), register its id in `experiments/runpod/pods.jsonl` at creation, and change only registered resources; everything else is read-only. The balance check counts other running spend | User ("label the thesis related things with a different identifier so that we only handle those things, as other sessions will be working on the same account.") | Another session's H200 Pod used the same account and balance on 2026-10-25 | Decided by the user. Done |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6385,3 +6391,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   Section 4 entry, D-56, Appendix A row. New `experiments/runpod/`; runbook Section 2a.
 - 2026-10-22: E-36 A2 and R-39. E-36 entry, R-39 entry, Section 1 lines, Section 4 entry, D-57, Appendix A rows.
 - 2026-10-25: D-58 experiment standards, ledger and compare tool. Section 1 lines, D-58, Appendix A rows.
+- 2026-10-25: D-59 shared Runpod account, thesis labels and Pod registry. Section 1 lines, D-59.

@@ -59,7 +59,8 @@ only. Community Cloud and the other H100 types had no stock. Spot Pods cannot be
 | Phase A only (`PHASE_B=0`) | about 2 h 45 min to 3 h 30 min | about $11 to $14 | Phase A decision, telemetry, profiles |
 
 Before you book:
-- Read the live account balance: `python3 experiments/runpod/balance.py --need <cost cap>`. The MCP
+- Read the live account balance: `python3 experiments/runpod/balance.py --need <cost cap> --hours <Pod limit>`.
+  The account is shared (D-59), so the check also counts other sessions' running Pods. The MCP
   tools have no balance read, so the script uses `RUNPOD_API_KEY` from the gitignored `.env`. Do not
   use a stored number. The balance must be at least the plan's cost cap plus $35. If it is lower, stop and tell the
   user. FACT (Runpod docs): at a $0 balance, a Pod without a network volume is terminated, and its
@@ -77,7 +78,9 @@ Steps (they implement stages S4 to S7 of `docs/experiments/PROTOCOL.md`):
 2. Check that the SSH public key is on the Runpod account (`get-ssh-keys`). The key pair is
    `~/.ssh/runpod_ed25519` on the Mac (comment `runpod-masters-thesis`, registered 2026-10-25). The
    private key never leaves the Mac.
-3. Create the Pod (`runpod:pod-deploy`):
+3. Create the Pod (`runpod:pod-deploy`), labelled for the thesis (D-59):
+   - name from `python3 experiments/runpod/pods.py name E-36 session1`; env `THESIS_TAG=msthesis`
+     and `THESIS_EXPERIMENT=E-36`; right after the create returns, `pods.py add <id> <name> E-36 pod`;
    - image `vllm/vllm-openai:v0.32.0`, GPU 1 x H100 SXM 80GB, Secure Cloud, not interruptible;
    - container disk 40 GB; volume disk 120 GB at `/workspace` (models about 40 GB, caches, results);
      no network volume;
@@ -115,7 +118,7 @@ Steps (they implement stages S4 to S7 of `docs/experiments/PROTOCOL.md`):
     then copy off:
     `rsync -av -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" root@<ip>:/workspace/results/ experiments/safedispatch_testA/results/`
     Check that `summary.json`, `extras.json` and every `env-*/` folder arrived.
-11. Terminate the Pod after the copy. A stopped Pod's volume disk costs $0.20/GB/month (about $24 per
+11. Run `pods.py check <id>`, terminate the Pod after the copy, then `pods.py end <id>`. A stopped Pod's volume disk costs $0.20/GB/month (about $24 per
     month for 120 GB). Read billing (`runpod:cost-audit`) and check that nothing bills.
 12. Add the row to `experiments/runpod/HARDWARE_LOG.md`: Pod id, GPU, data center, cloud type, price,
     image tag, driver and CUDA (`env-*/hardware/gpu.csv`, `python.txt`), vCPU, RAM, disks, start and

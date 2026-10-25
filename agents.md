@@ -12,6 +12,7 @@ Context file for AI agents working in this repo.
 ## Running GPU experiments
 - Before you plan, run or analyze any GPU experiment, read `docs/experiments/README.md`, then `PROTOCOL.md`, `MEASUREMENT.md` and `RUNPOD.md` in the same folder. Follow the stages and gates in `PROTOCOL.md`.
 - GPU runs use Runpod (journal D-56). No Pod is created without the user's approval of the plan and cost cap, and a passing live balance check (`experiments/runpod/balance.py`).
+- The Runpod account is shared with other projects and sessions (journal D-59). Name thesis resources `msthesis-<experiment>-<purpose>-<yyyymmdd>`, register each id in `experiments/runpod/pods.jsonl` with `pods.py add`, and change only resources that `pods.py check <id>` accepts.
 - Credentials live only in the gitignored `.env` at the repo root. Never print or commit them.
 - Record every run in `experiments/ledger/runs.jsonl` and `experiments/runpod/HARDWARE_LOG.md`. Compare runs with `experiments/ledger/compare_runs.py`.
 

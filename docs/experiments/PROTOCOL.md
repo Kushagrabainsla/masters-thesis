@@ -59,6 +59,8 @@ them.
 - Do not read results before the run ends and then change the plan. If the plan must change during
   a run (for example, an abort), log the reason first.
 - Never print, log or commit a credential. Credentials live in the repo's gitignored `.env`.
+- The Runpod account is shared (D-59). Label and register every thesis resource, and change only
+  resources that `experiments/runpod/pods.py check` accepts (`RUNPOD.md` Section 0).
 - If anything in this protocol conflicts with the journal, the journal wins. Tell the user about the
   conflict.
 
@@ -81,6 +83,6 @@ Stop the run, keep the data, and tell the user if:
 | Runpod operations and incidents | `docs/experiments/RUNPOD.md` |
 | Templates | `docs/experiments/templates/` |
 | Run ledger and compare tool | `experiments/ledger/` |
-| Hardware log, Runpod tools | `experiments/runpod/` |
+| Hardware log, Runpod tools, thesis Pod registry | `experiments/runpod/` (`pods.jsonl`) |
 | Reviews | `dossier/REVIEW_*.md` |
 | Credentials | `.env` (gitignored) |

@@ -9,7 +9,8 @@ hardware of each run. This folder holds the shared tools for that.
 |---|---|
 | `hardware_record.sh` | Runs inside the Pod before the experiment. Writes `<results>/hardware/` (GPU, driver, CUDA, NVLink, clocks, power limits, CPU, memory, disk, OS, cgroup limits, Python stack). Never fails. Reads only an allowlist of `RUNPOD_*` variables, so the API key in the Pod environment is not written. |
 | `gpu_microbench.py` | 20-second GPU health check (BF16 GEMM TFLOPS, device copy GB/s). Run at the start and the end of a session, so a weak or throttled host shows. |
-| `balance.py` | Prints the live balance, spend per hour and spend limit (GraphQL `myself`; the MCP tools have no balance read). `--need <cap>` exits 1 below the cap plus $35. Reads `RUNPOD_API_KEY` from the gitignored `.env` at the repo root and never prints it. |
+| `balance.py` | Prints the live balance, spend per hour and spend limit (GraphQL `myself`; the MCP tools have no balance read). `--need <cap> --hours <h>` exits 1 below the cap plus $35 plus the other sessions' spend for <h> hours. Reads `RUNPOD_API_KEY` from the gitignored `.env` at the repo root and never prints it. |
+| `pods.py`, `pods.jsonl` | D-59: label and registry of thesis-owned Runpod resources on the shared account. Change only what `pods.py check <id>` accepts. Append only. |
 | `HARDWARE_LOG.md` | One row for each Pod that ran an experiment. Append only. |
 
 ## What to keep for each run

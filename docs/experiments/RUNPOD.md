@@ -3,6 +3,27 @@
 Purpose: run a GPU experiment on Runpod with no lost data and no wasted money. This file is general.
 An experiment's own steps are in its README and in `dossier/GPU_RUNBOOK_2026-10-20.md`.
 
+## 0. Shared account: what belongs to the thesis (D-59)
+
+The Runpod account, its balance, its SSH keys and its $80/h spend limit are shared with other projects
+and sessions. Thesis work acts only on its own resources.
+
+- **Label every thesis resource.** Name: `msthesis-<experiment>-<purpose>-<yyyymmdd>` (make it with
+  `python3 experiments/runpod/pods.py name E-36 rehearsal`). Pod env: `THESIS_TAG=msthesis` and
+  `THESIS_EXPERIMENT=<E-nn>`. The same prefix applies to templates and volumes.
+- **Register it at once.** Right after a create call returns the id:
+  `python3 experiments/runpod/pods.py add <id> <name> <E-nn> pod`. After a terminate or delete:
+  `python3 experiments/runpod/pods.py end <id>`.
+- **Check before every change.** Before a stop, restart, update, terminate or delete:
+  `python3 experiments/runpod/pods.py check <id>`. If it fails, do not touch the resource.
+- **A label alone is not proof.** Another session can use the same words. Only a registry line made
+  by a thesis session proves ownership.
+- **Everything else is read-only.** List it, report it to the user if it matters (for example, it
+  uses the shared balance), and never change it.
+- **Count the other spend.** The balance check uses `--hours`, so another session's running Pods are
+  part of the check. Our Pod plus theirs must also stay under the $80/h spend limit.
+- **Billing per run.** Use `list-pod-billing` filtered to the thesis Pod id, not the account total.
+
 ## 1. Access and credentials
 
 | Need | How | Where it lives |
@@ -21,7 +42,8 @@ key is missing, stop and ask the user to add it to `.env`; do not ask for it in 
 2. Read live stock and price (`get-gpu-type` with availability, product POD, cloud SECURE, and a CUDA
    floor of 12.8). Quote the price from that read.
 3. Compute the cost cap: Pod time limit x price per hour, plus disk. Round up.
-4. Read the live balance: `python3 experiments/runpod/balance.py --need <cap>`. It must pass.
+4. Read the live balance: `python3 experiments/runpod/balance.py --need <cap> --hours <Pod time limit>`.
+   It must pass. It counts the spend of Pods from other sessions that already run.
 5. Check that the SSH key is on the account (`get-ssh-keys`).
 6. Get the user's approval of the plan and the cap in chat (journal D-nn).
 
@@ -47,6 +69,7 @@ Terminate the rehearsal Pod, then book the real one.
 
 | When | Check | If it fails |
 |---|---|---|
+| Create returned | Register the id (`pods.py add`) before anything else |  |
 | Pod RUNNING | Save the Pod record JSON; note the start time (UTC) | Wait; do not create a second Pod while the image pulls |
 | After setup | `setup done` in the log; telemetry grows; the GPU in `gpu.csv` is the planned GPU | Abort rule 1 (`PROTOCOL.md`) |
 | After the first run | `run.json` ok; no kernel-selection WARNING; the profile table exists | Read `log.txt`; fix only with an amendment |
@@ -58,9 +81,9 @@ Terminate the rehearsal Pod, then book the real one.
 1. If the Pod is stopped, start it again (0 GPUs is enough to read the disk).
 2. Copy the results to the Mac with rsync. Then write and compare a checksum list on both sides:
    `find <dir> -type f -exec shasum -a 256 {} + | sort -k 2`.
-3. Terminate the Pod (a stopped Pod's volume disk bills $0.20/GB/month). Read it again to confirm it
-   is gone.
-4. Read billing (`list-pod-billing` or `list-billing`) and record the billed cost.
+3. Run `pods.py check <id>`, then terminate the Pod (a stopped Pod's volume disk bills
+   $0.20/GB/month). Read it again to confirm it is gone, then run `pods.py end <id>`.
+4. Read billing with `list-pod-billing` for the thesis Pod id and record the billed cost.
 5. Add the row to `experiments/runpod/HARDWARE_LOG.md`.
 6. Write the run manifests and add them to the ledger.
 

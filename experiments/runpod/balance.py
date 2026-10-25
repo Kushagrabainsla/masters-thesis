@@ -4,8 +4,10 @@ every experiment, never store it).
 REST v2 and the MCP tools have no balance route, so this uses the GraphQL `myself` query with
 RUNPOD_API_KEY from the repo's gitignored `.env` (or the environment). It never prints the key.
 
-Usage: python3 experiments/runpod/balance.py [--need <dollars>]
-With --need, it exits 1 if the balance is below <dollars> + 35 (the floor in runbook Section 2a).
+Usage: python3 experiments/runpod/balance.py [--need <dollars> --hours <pod hours>]
+The account is shared with other projects (D-59). `currentSpendPerHr` is what already runs, for
+example another session's Pod. With --need, it exits 1 if the balance is below
+<dollars> + 35 (the floor in runbook Section 2a) + currentSpendPerHr x <hours>.
 """
 
 from __future__ import annotations
@@ -36,6 +38,7 @@ def api_key() -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--need", type=float, default=None, help="cost cap of the planned run in dollars")
+    parser.add_argument("--hours", type=float, default=0.0, help="Pod time limit of the planned run")
     args = parser.parse_args()
     req = urllib.request.Request(
         "https://api.runpod.io/graphql",
@@ -49,9 +52,14 @@ def main() -> None:
         sys.exit(f"Runpod API error: {body['errors'][0].get('message', body['errors'])}")
     me = body["data"]["myself"]
     print(json.dumps(me))
-    if args.need is not None and float(me["clientBalance"]) < args.need + FLOOR:
-        print(f"Balance is below the run cap plus ${FLOOR:.0f}. Do not book the Pod.", file=sys.stderr)
-        sys.exit(1)
+    if args.need is not None:
+        others = float(me.get("currentSpendPerHr") or 0) * args.hours
+        required = args.need + FLOOR + others
+        print(json.dumps({"run_cap": args.need, "floor": FLOOR, "other_spend_during_run": round(others, 2),
+                          "required": round(required, 2), "ok": float(me["clientBalance"]) >= required}))
+        if float(me["clientBalance"]) < required:
+            print("Balance is below the run cap + floor + other spend. Do not book the Pod.", file=sys.stderr)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
