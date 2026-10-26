@@ -5,6 +5,10 @@ Modes:
   outputs     greedy outputs with top-k logprobs for the whole prompt set -> outputs.jsonl
   throughput  output tokens/s at several batch sizes and prefill tokens/s -> throughput.json
   both        outputs, then throughput, on one engine
+  warmup      A3: the first process of a config, before its measured runs. It does the same kinds of
+              work at a small size (greedy outputs with logprobs, every decode batch size, prefill), so
+              that the compile, JIT and autotune caches on disk exist. Its outputs are kept to measure
+              the cold-cache effect (extras.py), and are never used for a decision.
 
 The batch configuration (max_num_seqs, one generate() call) is the same for every backend.
 
@@ -166,9 +170,28 @@ def gpu_identity() -> dict:
         return {"error": f"{type(exc).__name__}: {exc}"[:300]}
 
 
+def run_warmup(llm, prompts, prefill, args, out: Path) -> dict:
+    from vllm import SamplingParams
+
+    n = args.warmup_prompts
+    params = SamplingParams(temperature=0.0, max_tokens=args.warmup_tokens, logprobs=args.logprobs, seed=0)
+    started = time.time()
+    results = llm.generate([p["prompt"] for p in prompts[:n]], params, use_tqdm=False)
+    with open(out / "outputs.jsonl", "w", encoding="utf-8") as sink:
+        for meta, res in zip(prompts[:n], results):
+            c = res.outputs[0]
+            sink.write(json.dumps({"id": meta["id"], "token_ids": list(c.token_ids),
+                                   "topk": [topk(pos) for pos in (c.logprobs or [])]}) + "\n")
+    texts = [p["prompt"] for p in prompts]
+    for bs in args.batch_sizes:
+        timed_generate(llm, (texts * (bs // len(texts) + 1))[:bs], 8)
+    timed_generate(llm, prefill[:2], 1)
+    return {"warmup_seconds": round(time.time() - started, 3), "warmup_prompts": n}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("smoke", "outputs", "throughput", "both"), required=True)
+    parser.add_argument("--mode", choices=("smoke", "outputs", "throughput", "both", "warmup"), required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--prompts-dir", required=True)
     parser.add_argument("--out", required=True)
@@ -186,6 +209,8 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=0, help="use only the first N prompts (dry run)")
     parser.add_argument("--enforce-eager", action="store_true")
     parser.add_argument("--profile-kernels", action="store_true", help="A2: kernel table after the measurements")
+    parser.add_argument("--warmup-prompts", type=int, default=64, help="A3 (R-40): prompts in a warm-up run")
+    parser.add_argument("--warmup-tokens", type=int, default=64, help="A3 (R-40): new tokens in a warm-up run")
     parser.add_argument("--profile-batches", type=int, nargs="+", default=[1, 8, 64])
     parser.add_argument("--profile-tokens", type=int, default=32)
     args = parser.parse_args()
@@ -215,6 +240,8 @@ def main() -> None:
             from vllm import SamplingParams
 
             llm.generate([p["prompt"] for p in prompts[:4]], SamplingParams(temperature=0.0, max_tokens=8), use_tqdm=False)
+        if args.mode == "warmup":
+            record.update(run_warmup(llm, prompts, prefill, args, out))
         if args.mode in ("outputs", "both"):
             record.update(run_outputs(llm, prompts, args, out))
         if args.mode in ("throughput", "both"):
@@ -224,7 +251,7 @@ def main() -> None:
         # A2 (R-39 item 3): write the record before profiling, so a profiler crash, hang or timeout
         # cannot lose the measured run. run.json is written again after the profile.
         (out / "run.json").write_text(json.dumps(record, indent=1))
-        if args.profile_kernels:  # a profiler failure never fails the run
+        if args.profile_kernels and args.mode != "warmup":  # a profiler failure never fails the run
             try:
                 (out / "kernels.json").write_text(json.dumps(profile_kernels(llm, prompts, args), indent=1))
             except Exception as exc:

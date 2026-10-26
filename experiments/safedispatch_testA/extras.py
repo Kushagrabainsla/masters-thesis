@@ -11,6 +11,10 @@
    R-39 item 7), B2 decode speeds with the Phase A status of each backend and the KV cache size, B3
    eager-mode flips and speed against Phase A R_a.
 
+4. A3: the cold-cache effect. Each warm_<name>/ run is the first (cold) process of a config. Its first
+   tokens are compared with the same prompts of the warm measured run (warm_R with R_a, warm_<v> with
+   cand_<v>). Low agreement means the cold caches change the output for that config.
+
 Usage: extras.py --res <session dir> --out extras.json
 """
 
@@ -34,9 +38,9 @@ GEMM = re.compile(r"gemm|cutlass|marlin|moe|deep_gemm|fp8|sm90|wgmma", re.IGNORE
 KV = re.compile(r"KV cache size: ([\d,]+) tokens")
 
 
-def column(header: list[str], prefix: str) -> int | None:
+def column(header: list[str], *prefixes: str) -> int | None:
     for i, name in enumerate(header):
-        if name.strip().startswith(prefix):
+        if any(name.strip().startswith(p) for p in prefixes):
             return i
     return None
 
@@ -49,10 +53,12 @@ def read_telemetry(paths: list[Path]) -> list[dict]:
             header = next(reader, None)
             if not header or not header[0].strip().startswith("timestamp"):
                 continue
+            # Driver 595 prints the SM clock as clocks.current.sm (rehearsal 2026-10-25); older ones as clocks.sm.
             idx = {
-                k: column(header, p)
-                for k, p in (("power", "power.draw"), ("sm", "clocks.sm"), ("temp", "temperature.gpu"),
-                             ("util", "utilization.gpu"), ("reasons", "clocks_"))
+                k: column(header, *p)
+                for k, p in (("power", ("power.draw",)), ("sm", ("clocks.sm", "clocks.current.sm")),
+                             ("temp", ("temperature.gpu",)), ("util", ("utilization.gpu",)),
+                             ("reasons", ("clocks_event_reasons", "clocks_throttle_reasons")))
             }
             for rec in reader:
                 if len(rec) != len(header):
@@ -139,12 +145,47 @@ def phase_a_status(summary: dict, cell: str) -> dict[str, str]:
 
 def fastest_by_batch(cell: Path, status: dict[str, str]) -> dict:
     """Rank R and the Phase A candidates only; aliases, the control and failed runs are listed apart."""
-    speeds = {d.name: speeds_of(load_run(d)) for d in sorted(cell.iterdir()) if d.is_dir()}
+    speeds = {d.name: speeds_of(load_run(d)) for d in sorted(cell.iterdir()) if d.is_dir() and not d.name.startswith("warm_")}
     out = {"kv_cache_tokens": kv_tokens(cell / "R_a"), "status": {n: status.get(n, "unknown") for n in speeds}}
     for bs in sorted({b for s in speeds.values() for b in s}, key=int):
         ranked = sorted(((n, s[bs]) for n, s in speeds.items() if bs in s), key=lambda x: -x[1])
         eligible = [r for r in ranked if status.get(r[0]) in ("reference", "candidate")]
         out[bs] = {"ranking": ranked, "fastest_eligible": eligible[0][0] if eligible else None}
+    return out
+
+
+def aot_hit(run_dir: Path) -> bool | None:
+    path = run_dir / "log.txt"
+    if not path.exists():
+        return None
+    return "Directly load AOT" in path.read_text(errors="replace")
+
+
+def cold_vs_warm(res: Path) -> dict:
+    """R-40: compare top-20 logprobs at positions 0 to 15 for exact equality (position 0 differed on
+    256 of 256 prompts in rehearsal 1), and the token prefix."""
+    out = {}
+    for w in sorted(res.rglob("warm_*")):
+        if not w.is_dir():
+            continue
+        name = w.name[len("warm_"):]
+        measured = w.parent / ("R_a" if name == "R" else f"cand_{name}")
+        cold, warm = load_outputs(w), load_outputs(measured)
+        ids = [i for i in cold if i in warm]
+        if not ids:
+            out[str(w.relative_to(res))] = None
+            continue
+        same = pos0 = first16 = 0
+        for i in ids:
+            a, b = cold[i]["token_ids"], warm[i]["token_ids"]
+            k = min(len(a), len(b))
+            same += a[:k] == b[:k]
+            ta, tb = cold[i].get("topk") or [], warm[i].get("topk") or []
+            pos0 += bool(ta and tb) and ta[0] == tb[0]
+            first16 += bool(ta and tb) and ta[:16] == tb[:16]
+        n = len(ids)
+        out[str(w.relative_to(res))] = {"prompts": n, "agreement": same / n, "position0_topk_equal": pos0 / n,
+                                        "first16_topk_equal": first16 / n, "measured_aot_hit": aot_hit(measured)}
     return out
 
 
@@ -155,15 +196,18 @@ def summarize(res: Path) -> dict:
         run = load_run(d)
         result["runs"][str(d.relative_to(res))] = {
             "status": (run or {}).get("status"),
+            "aot_hit": aot_hit(d),
             "gpu_uuid": ((run or {}).get("gpu") or {}).get("uuid"),
             "telemetry": telemetry_for(run, rows),
         }
-    clocks = [r["telemetry"]["median_sm_mhz"] for r in result["runs"].values()
+    # R-41: warm-ups are short runs with a lower idle clock; leave them out of the session median and the flag.
+    measured = {k: r for k, r in result["runs"].items() if not k.split("/")[-1].startswith("warm_")}
+    clocks = [r["telemetry"]["median_sm_mhz"] for r in measured.values()
               if r["telemetry"] and r["telemetry"].get("samples")]
     session_clock = statistics.median(clocks) if clocks else None
-    for r in result["runs"].values():
+    for k, r in result["runs"].items():
         t = r["telemetry"]
-        r["suspect_speed"] = bool(
+        r["suspect_speed"] = k in measured and bool(
             t and t.get("samples")
             and (t["hard_slowdown_fraction"] > HARD_LIMIT
                  or (session_clock and t["median_sm_mhz"] < (1 - CLOCK_LIMIT) * session_clock))
@@ -175,6 +219,7 @@ def summarize(res: Path) -> dict:
     for p in sorted(res.glob("env-*/microbench_*.json")):
         result["microbench"][f"{p.parent.name}/{p.stem}"] = json.loads(p.read_text())
 
+    result["cold_vs_warm"] = cold_vs_warm(res)
     summary = json.loads((res / "summary.json").read_text()) if (res / "summary.json").exists() else {}
     x = res / "extra"
     for cell in ("cell_D", "cell_M"):

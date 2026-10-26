@@ -316,3 +316,81 @@ candidate forced to fail) wrote 46 runs, the decision, Phase B and `extras.json`
 skipped 43 ok runs and ran the 3 failed runs again. A start with a different GPU UUID stopped with
 exit 2. `run_cell.py --profile-kernels` in the vLLM CPU image ended ok and wrote the CPU profiler
 failure as `profile_error`; the kernel table itself needs CUDA (VERIFY on the H100).
+
+## 12. Rehearsal 1 and amendment A3 (2026-10-25, before the H100 run)
+
+Rehearsal 1 (stage S5, `results/rehearsal-20261025/`): 1 x L4 (sm_89), vLLM v0.32.0, driver 595.91.07,
+`CELLS` both with the dense model, `PHASE_B=0`. Mechanics passed (SSH, environment, telemetry, profiler
+tables, resume layout, microbenchmark, checksums). Three defects were fixed: AUTO_STOP now uses GraphQL
+`podStop` (REST stop returned HTTP 403 with the Pod key); `rsync -rlt` instead of `-a` (the volume is
+MooseFS and refuses `chown`); `extras.py` reads `clocks.current.sm` (driver 595).
+
+Finding (FACT, L4, Marlin reference; corrected after R-40): four runs had the same reference config.
+The first run of the session (cell_D/R_a) agreed with the three later ones (cell_D/R_b, cell_M/R_a,
+cell_M/R_b) on 34.8% of prompts, and its top-20 logprobs differed at position 0 on 256 of 256 prompts.
+The three later runs matched each other exactly (tokens and top-20 logprobs on 256 of 256), and each
+logged "Directly load AOT compilation". A fifth run had a no-op flag (`--moe-backend triton` on the
+dense model; it still selected Marlin) and a new cache hash, so it compiled cold in-process. It matched
+the warm runs at position 0 on 256 of 256, and its tokens differed on 1 of 256 prompts (at position
+240). Engine start: 126 s for the first run, 49 s warm.
+INTERPRETATION (R-40, mechanism not proven): the best fit is the first compile in a fresh container,
+with empty Inductor, Triton and autotune disk caches. A later cold compile gets partial cache hits and
+differs much less. A difference between an in-process compile and an AOT-loaded artifact is the second
+suspect. In the A2 design, R_a and every candidate are the first process of their config, so V1 and
+the negative control would be confounded.
+
+Amendment A3 (the fix):
+1. Each config gets one warm-up process (`run_cell.py --mode warmup`) right before its first measured
+   run: engine start, greedy outputs with top-20 logprobs for 16 prompts and 16 tokens, one decode at
+   each batch size, and a prefill. Its folder is `warm_R` (before R_a) or `warm_<backend>`. R_b uses the
+   warm-up of R_a. B0 uses the Phase A warm-ups. Each Phase B config gets its own warm-up.
+2. The warm-up outputs are not used for any decision. `extras.py` reports their agreement with the
+   measured run (`cold_vs_warm`), so the cold-cache effect is measured for every config (exploratory,
+   relevant to I-23).
+3. The Phase A cap rises from 3 h 10 min to 3 h 45 min (12 warm-ups of about 2 to 3 min). The Pod
+   limit (6 h 40 min) and the cost cap (about $27) do not change, so Phase B gets less time.
+4. `CELLS` (default "D M") lets a rehearsal run one cell.
+
+Changes after R-40 (Sonnet review of A3, AMEND_THEN_RUN, `dossier/REVIEW_E-36_A3_PRERUN_2026-10-25.md`):
+5. The warm-up is a full-size pass: 64 prompts, 64 tokens, top-20 logprobs, at the run's own
+   `max_num_seqs`.
+6. Each measured run that is not eager must log "Directly load AOT"; otherwise the log has a WARNING.
+   `extras.py` reports `aot_hit` for each run. A failed warm-up also logs a WARNING.
+7. `TORCHINDUCTOR_CACHE_DIR` and `TRITON_CACHE_DIR` go under `VLLM_CACHE_ROOT` (on `/workspace`), so a
+   Pod restart keeps the cache state. `env-*/cache_dirs.txt` records them.
+8. `cold_vs_warm` compares the top-20 logprobs at positions 0 to 15 for exact equality, not only the
+   token prefix.
+9. Residual threat (stays open): V1 now compares two AOT-loaded runs, so it no longer measures
+   cold-start noise, and candidate process noise (timing-based autotune held in memory) is not
+   measured. The MoE alias `triton` stays the zero-flip control; report its flips with its `aot_hit`.
+
+Not changed: the measured runs, their flags and order, `compare.py` and every threshold.
+Tests: 24 unit tests pass; a stub session showed the order (warm-up, then the measured runs of each
+config), 38 warm-ups in a full session, and 0 new runs on a resume.
+
+Rehearsal 2 (frozen prediction, before it runs): 1 x L4, fresh container, `CELLS=D PHASE_B=0`,
+`DENSE_CANDS="marlin triton"`. `marlin` is the same kernel as the L4 reference, so it is a no-op flag.
+Prediction: R_a equals R_b exactly (tokens and top-20 logprobs, 256 of 256), cand_marlin equals R_a
+exactly, and every measured run logs "Directly load AOT". `triton` is reported only. If R_a and R_b
+differ, or cand_marlin differs from R_a, A3 failed: stop and redesign before any H100 run.
+
+Rehearsal 2e result (2026-10-26, stage S5 gate): PASS. 1 x RTX 4090 (sm_89, 128 SMs), EU-RO-1, network
+volume, fresh container, `CELLS=D PHASE_B=0 DENSE_CANDS="marlin triton"`, 872 s, all 7 processes exit 0,
+60 files copied with matching checksums (`results/rehearsal2e-20261026/`).
+- FACT: R_a and R_b are exactly equal (tokens and top-20 logprobs, 256 of 256; the two outputs.jsonl
+  files have the same md5). cand_marlin (no-op flag) is exactly equal to R_a. Every measured run logged
+  "Directly load AOT". The frozen prediction holds.
+- FACT (exploratory): cand_triton (`TritonFp8BlockScaledMMKernel`, untuned default block-FP8 config)
+  has equal tokens with R_a on 37 of 256 prompts and different top-20 logprobs on 256 of 256. A real
+  kernel change is detected, so the comparator works.
+- FACT (scope limit): each cold warm-up (in-process compile, 39.6 s) equalled its warm, AOT-loaded
+  measured run on 64 of 64 prompts over 64 tokens. So the rehearsal 1 cold-start divergence did not
+  reproduce on the 4090. INTERPRETATION (R-41): neither "empty caches in a fresh container" nor
+  "in-process against AOT" is supported on the 4090. The cause of the rehearsal 1 divergence (L4) is
+  open: it may be specific to the GPU (SM count, Marlin or Inductor choices, clocks) or a one-off.
+- Decision: keep A3 as a cheap guard on the H100 (a different GPU class with native FP8 kernels).
+  `cold_vs_warm` is the data that says whether R_a can be trusted there.
+- Changes after R-41: warm-ups are left out of the session clock median and `suspect_speed` (their
+  lower clock is a short-run effect, not throttling); `session1.sh` logs a "V1 precheck" line after
+  R_b (reported only). The `_topk_log_softmax_kernel` JIT warning appears in every run and is
+  expected.

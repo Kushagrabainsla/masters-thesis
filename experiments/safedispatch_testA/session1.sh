@@ -9,7 +9,7 @@
 # RES and the caches on the volume disk (/workspace), which survives a Pod stop.
 set -u
 
-STOP_AFTER=${STOP_AFTER:-11400}            # Phase A: 3 h 10 min (frozen)
+STOP_AFTER=${STOP_AFTER:-13500}            # Phase A: 3 h 45 min (A3: +35 min for the warm-up runs)
 EXTRA_STOP_AFTER=${EXTRA_STOP_AFTER:-21600} # Phase B: no new run after 6 h
 POD_LIMIT=${POD_LIMIT:-24000}              # AUTO_STOP watchdog: stop the Pod after 6 h 40 min
 RUN_TIMEOUT=${RUN_TIMEOUT:-1500}           # 25 min per run
@@ -17,7 +17,10 @@ CODE=${CODE:-/code}
 RESULTS_ROOT=${RESULTS_ROOT:-/results}
 RES=${RES:-$RESULTS_ROOT/session1}
 PHASE_B=${PHASE_B:-1}
+CELLS=${CELLS:-"D M"}                      # rehearsal: CELLS=D
+WARM=1                                     # A3: warm each config before its measured runs
 AUTO_STOP=${AUTO_STOP:-0}                  # 1: stop this Runpod Pod at the end (README Section 11)
+AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-600}    # rehearsal 2: wait this long before the stop, so the Mac can copy
 TELEMETRY_MS=${TELEMETRY_MS:-1000}
 DENSE=${DENSE:-Qwen/Qwen3-8B-FP8}
 MOE=${MOE:-Qwen/Qwen3-30B-A3B-FP8}
@@ -25,6 +28,12 @@ MOE=${MOE:-Qwen/Qwen3-30B-A3B-FP8}
 DENSE_CANDS=${DENSE_CANDS:-"deep_gemm cutlass triton torch marlin"}   # marlin = W8A16 positive control
 MOE_CANDS=${MOE_CANDS:-"deep_gemm flashinfer_cutlass hpc marlin triton"}  # triton = expected alias (negative control)
 export VLLM_ENABLE_V1_MULTIPROCESSING=0
+# A3 (R-40): keep every compile, JIT and autotune cache under the vLLM cache root (on /workspace on
+# Runpod), so that a Pod restart keeps the same cache state as an uninterrupted session.
+if [ -n "${VLLM_CACHE_ROOT:-}" ]; then
+    export TORCHINDUCTOR_CACHE_DIR=${TORCHINDUCTOR_CACHE_DIR:-$VLLM_CACHE_ROOT/inductor}
+    export TRITON_CACHE_DIR=${TRITON_CACHE_DIR:-$VLLM_CACHE_ROOT/triton}
+fi
 
 # A2 (R-39 item 2): an SSH shell on Runpod does not get the Pod environment. Read only these names
 # from PID 1, and never write their values to a file.
@@ -57,12 +66,17 @@ stop_pod() {  # $1 reason; stop (not terminate), so the volume disk keeps the re
         return 0
     fi
     for try in 1 2 3; do
+        # Rehearsal 2026-10-25: the Pod-scoped key gets HTTP 403 on REST POST /v1/pods/{id}/stop, but
+        # GraphQL podStop works with it (HTTP 200, desiredStatus EXITED). Use GraphQL.
         code=$(python3 -c "
-import os, urllib.request
-req = urllib.request.Request('https://rest.runpod.io/v1/pods/%s/stop' % os.environ['RUNPOD_POD_ID'], method='POST',
-    headers={'Authorization': 'Bearer ' + os.environ['RUNPOD_API_KEY']})
+import json, os, urllib.request
+q = {'query': 'mutation { podStop(input: {podId: \\\"%s\\\"}) { id desiredStatus } }' % os.environ['RUNPOD_POD_ID']}
+req = urllib.request.Request('https://api.runpod.io/graphql', data=json.dumps(q).encode(), method='POST',
+    headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + os.environ['RUNPOD_API_KEY']})
 try:
-    print(urllib.request.urlopen(req, timeout=30).status)
+    r = urllib.request.urlopen(req, timeout=30)
+    body = json.load(r)
+    print(r.status if not body.get('errors') else 'graphql-error')
 except Exception as e:
     print(getattr(e, 'code', type(e).__name__))
 " 2>&1)
@@ -78,6 +92,10 @@ finish() {
     [ -n "$TELEMETRY" ] && kill "$TELEMETRY" 2>/dev/null
     [ -n "$WATCHDOG" ] && kill "$WATCHDOG" 2>/dev/null
     save_elapsed
+    if [ "$AUTO_STOP" = 1 ] && [ "$AUTO_STOP_DELAY" -gt 0 ]; then
+        log "AUTO_STOP in $AUTO_STOP_DELAY s; copy the results now"
+        sleep "$AUTO_STOP_DELAY"
+    fi
     stop_pod "exit"
 }
 trap finish EXIT
@@ -96,6 +114,13 @@ run() {  # $1 out dir, then run_cell.py arguments; never fails the script; skips
     rc=$?  # read first: a command substitution in the log line would replace $? (A1 bug, fixed in A2)
     log "$(basename "$(dirname "$out")")/$(basename "$out"): exit $rc after $(elapsed) s"
     save_elapsed
+    # A3 (R-40): a measured run must load the compiled graph that its warm-up made.
+    case "$(basename "$out")" in warm_*) ;; *)
+        case " $* " in *" --enforce-eager "*) ;; *)
+            [ "$WARM" = 1 ] && [ "$rc" = 0 ] && ! grep -q "Directly load AOT" "$out/log.txt" \
+                && log "WARNING: $out did not load the AOT compile cache (cold run)";;
+        esac;;
+    esac
     sleep 10  # let the GPU memory of the finished process be released
 }
 
@@ -145,25 +170,46 @@ if [ ! -f "$RES/prompts/prompts.json" ]; then
         || { log "prompts failed"; exit 1; }
 fi
 wait "$PREFETCH" || log "WARNING: model prefetch failed; vLLM downloads at engine start"
+env | grep -E "^(VLLM_CACHE_ROOT|TORCHINDUCTOR_CACHE_DIR|TRITON_CACHE_DIR|HF_HOME)=" > "$ENV/cache_dirs.txt"
 log "setup done after $(elapsed) s"
 
 PROFILE="--profile-kernels"
 
+# A3 (rehearsal 2026-10-25): the first process of a config ran with cold compile and JIT caches and gave
+# different greedy output from every later process of the same config (34.8% agreement on the L4; all
+# later runs 100%). So every config gets one warm-up process (run_cell.py --mode warmup) before its
+# measured runs. The last --mode wins in argparse, so "$@" may hold another --mode. Kept as warm_<name>/.
+warm() {  # $1 warm-up dir, then the run_cell.py arguments of the measured run
+    [ "$WARM" = 1 ] || return 0
+    out=$1; shift
+    run "$out" "$@" --mode warmup
+    done_ok "$out" || log "WARNING: warm-up $out failed; the next measured run starts cold"
+}
+
 cell() {  # $1 cell dir, $2 model, $3 flag, $4 candidates (Phase A, frozen)
     dir=$1; model=$2; flag=$3; cands=$4
     over_time && { log "time cap: skip $dir"; return; }
+    warm "$dir/warm_R" --model "$model" --prompts-dir "$RES/prompts"
     run "$dir/R_a" --mode both --model "$model" --prompts-dir "$RES/prompts" $PROFILE
     grep -qE "Selected [^ ]+ for |Fp8 MoE backend out of" "$dir/R_a/log.txt" \
         || log "WARNING: no kernel-selection line in $dir/R_a/log.txt; alias detection cannot work"
     run "$dir/R_b" --mode both --model "$model" --prompts-dir "$RES/prompts"
+    # R-41: an early look at V1. Reported only; the decision still comes from compare.py.
+    python3 -c "
+import json, sys
+a, b = ([json.loads(l) for l in open(p + '/outputs.jsonl')] for p in sys.argv[1:3])
+same = sum(x == y for x, y in zip(a, b))
+print('V1 precheck: R_a and R_b exactly equal on %d of %d prompts' % (same, len(a)))
+" "$dir/R_a" "$dir/R_b" 2>&1 | while read -r line; do log "$line"; done
     for v in $cands; do
         over_time && { log "time cap: stop candidates in $dir"; break; }
+        warm "$dir/warm_$v" --model "$model" --prompts-dir "$RES/prompts" "$flag" "$v"
         run "$dir/cand_$v" --mode both --model "$model" --prompts-dir "$RES/prompts" $PROFILE "$flag" "$v"
     done
 }
 
-cell "$RES/cell_D" "$DENSE" --linear-backend "$DENSE_CANDS"
-cell "$RES/cell_M" "$MOE" --moe-backend "$MOE_CANDS"
+case " $CELLS " in *" D "*) cell "$RES/cell_D" "$DENSE" --linear-backend "$DENSE_CANDS";; esac
+case " $CELLS " in *" M "*) cell "$RES/cell_M" "$MOE" --moe-backend "$MOE_CANDS";; esac
 
 # Phase A analysis (the decision).
 python3 "$CODE/compare.py" --cells "$RES/cell_D" "$RES/cell_M" --out "$RES/summary.json" > "$RES/decision.txt" 2>&1 || true
@@ -172,12 +218,14 @@ log "decision: $(cat "$RES/decision.txt")"
 # Phase B (A2, exploratory, reported only; README Section 11). In order of value.
 xcell() {  # $1 cell dir, $2 model, $3 flag, $4 candidates, $5 runs of R (e.g. "R_a R_b"), then run_cell.py arguments
     dir=$1; model=$2; flag=$3; cands=$4; refs=$5; shift 5
+    [ -n "$refs" ] && ! over_extra && warm "$dir/warm_R" --model "$model" --prompts-dir "$RES/prompts" "$@"
     for r in $refs; do
         over_extra && { log "extra cap: skip $dir/$r"; return; }
         run "$dir/$r" --model "$model" --prompts-dir "$RES/prompts" "$@"
     done
     for v in $cands; do
         over_extra && { log "extra cap: stop candidates in $dir"; break; }
+        warm "$dir/warm_$v" --model "$model" --prompts-dir "$RES/prompts" "$@" "$flag" "$v"
         run "$dir/cand_$v" --model "$model" --prompts-dir "$RES/prompts" "$@" "$flag" "$v"
     done
 }
@@ -191,9 +239,12 @@ print(max(ok)[1] if ok and max(ok)[0] > 0 else '')
 }
 if [ "$PHASE_B" = 1 ]; then
     X="$RES/extra"
-    # B0: the most-flipping candidate again (are its flips repeatable?). Outputs only.
+    # B0: the most-flipping candidate again (are its flips repeatable?). Outputs only. Its config was
+    # warmed in Phase A, so no warm-up here.
+    WARM=0
     xcell "$X/b0_cell_D" "$DENSE" --linear-backend "$(most_flipping cell_D)" "" --mode outputs
     xcell "$X/b0_cell_M" "$MOE" --moe-backend "$(most_flipping cell_M)" "" --mode outputs
+    WARM=1
     # B1: the same flip test at max_num_seqs 8 (batch dependence of flips, README Section 7).
     xcell "$X/b1_cell_D" "$DENSE" --linear-backend "$DENSE_CANDS" "R_a R_b" --mode outputs --max-num-seqs 8
     xcell "$X/b1_cell_M" "$MOE" --moe-backend "$MOE_CANDS" "R_a R_b" --mode outputs --max-num-seqs 8

@@ -59,6 +59,15 @@ def test_old_driver_field_name_is_read(tmp_path: Path) -> None:
     assert out["runs"]["cell_D/R_a"]["telemetry"]["hard_slowdown_fraction"] == 1.0
 
 
+def test_driver_595_sm_clock_name_is_read(tmp_path: Path) -> None:
+    env = tmp_path / "env-1"
+    env.mkdir()
+    header = HEADER.replace("clocks.sm [MHz]", "clocks.current.sm [MHz]")
+    (env / "telemetry.csv").write_text(header + "2026/10/22 10:00:01.000, 600, 1755, 60, 99, 0x0000000000000000\n")
+    write_run(tmp_path / "cell_D" / "R_a", "2026-10-22T10:00:00Z", "2026-10-22T10:00:05Z")
+    assert extras.summarize(tmp_path)["runs"]["cell_D/R_a"]["telemetry"]["median_sm_mhz"] == 1755
+
+
 def test_telemetry_error_text_is_skipped(tmp_path: Path) -> None:
     env = tmp_path / "env-1"
     env.mkdir()
@@ -108,6 +117,30 @@ def test_b0_repeat(tmp_path: Path) -> None:
     out = extras.summarize(tmp_path)["phase_b"]["b0_cell_D"]
     assert out["repeat_vs_first"]["flipped"] == 1
     assert out["repeat_vs_R_a"]["flipped"] == 2
+
+
+def test_cold_vs_warm_compares_first_tokens(tmp_path: Path) -> None:
+    write_outputs(tmp_path / "cell_D" / "warm_R", {"a": [1, 2], "b": [1, 9]})
+    write_outputs(tmp_path / "cell_D" / "R_a", {"a": [1, 2, 3, 4], "b": [1, 2, 3, 4], "c": [5]})
+    write_outputs(tmp_path / "cell_D" / "warm_x", {"a": [1, 2]})
+    write_outputs(tmp_path / "cell_D" / "cand_x", {"a": [1, 2, 7]})
+    (tmp_path / "cell_D" / "R_a" / "log.txt").write_text("INFO Directly load AOT compilation from path\n")
+    out = extras.summarize(tmp_path)["cold_vs_warm"]
+    assert out["cell_D/warm_R"]["agreement"] == 0.5 and out["cell_D/warm_R"]["measured_aot_hit"] is True
+    assert out["cell_D/warm_x"]["agreement"] == 1.0 and out["cell_D/warm_x"]["measured_aot_hit"] is None
+
+
+def test_warm_runs_are_never_suspect(tmp_path: Path) -> None:
+    env = tmp_path / "env-1"
+    env.mkdir()
+    lines = ["2026/10/22 10:00:01.000, 70, 1500, 50, 99, 0x0000000000000000",
+             "2026/10/22 10:00:11.000, 700, 2700, 60, 99, 0x0000000000000000"]
+    (env / "telemetry.csv").write_text(HEADER + "\n".join(lines) + "\n")
+    write_run(tmp_path / "cell_D" / "warm_R", "2026-10-22T10:00:00Z", "2026-10-22T10:00:05Z")
+    write_run(tmp_path / "cell_D" / "R_a", "2026-10-22T10:00:10Z", "2026-10-22T10:00:15Z")
+    out = extras.summarize(tmp_path)
+    assert out["runs"]["cell_D/warm_R"]["suspect_speed"] is False
+    assert out["session_median_sm_mhz"] == 2700
 
 
 def test_missing_everything(tmp_path: Path) -> None:

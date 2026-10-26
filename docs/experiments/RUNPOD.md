@@ -79,7 +79,8 @@ Terminate the rehearsal Pod, then book the real one.
 ## 6. Teardown (stage S7)
 
 1. If the Pod is stopped, start it again (0 GPUs is enough to read the disk).
-2. Copy the results to the Mac with rsync. Then write and compare a checksum list on both sides:
+2. Copy the results to the Mac with `rsync -rlt` (the Pod volume disk is a network filesystem that
+   refuses `chown`, so `rsync -a` fails). Then write and compare a checksum list on both sides:
    `find <dir> -type f -exec shasum -a 256 {} + | sort -k 2`.
 3. Run `pods.py check <id>`, then terminate the Pod (a stopped Pod's volume disk bills
    $0.20/GB/month). Read it again to confirm it is gone, then run `pods.py end <id>`.

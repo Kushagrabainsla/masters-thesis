@@ -1,0 +1,16 @@
+{"at": "2026-10-25T21:11:44Z", "event": "created", "experiment": "E-36", "id": "f6qrn1p79awqni", "kind": "pod", "name": "msthesis-e-36-rehearsal-20261025", "note": "L4 rehearsal, EU-RO-1, 0.59/h, created 2026-10-25T21:11:39Z"}
+{"at": "2026-10-25T21:59:15Z", "event": "ended", "id": "f6qrn1p79awqni", "note": "terminated 2026-10-25 after rehearsal; results copied, 55 checksums match"}
+{"at": "2026-10-26T01:52:30Z", "event": "created", "experiment": "E-36", "id": "kl92d047s69by3", "kind": "pod", "name": "msthesis-e-36-rehearsal2-20261026", "note": "L4 rehearsal 2 (A3 check), EU-RO-1, 0.59/h, created 2026-10-26T01:52:23Z"}
+{"at": "2026-10-26T02:47:59Z", "event": "ended", "id": "kl92d047s69by3", "note": "terminated 2026-10-26 after 0-GPU recovery failed (host GPU taken); results lost; rerun with a network volume"}
+{"at": "2026-10-26T02:48:18Z", "event": "created", "experiment": "E-36", "id": "y65q281goj", "kind": "volume", "name": "msthesis-e-36-volume-20261026", "note": "network volume 40 GB STANDARD, EU-RO-1, for rehearsal 2b"}
+{"at": "2026-10-26T02:48:24Z", "event": "created", "experiment": "E-36", "id": "4x1xnk82wtp6jl", "kind": "pod", "name": "msthesis-e-36-rehearsal2b-20261026", "note": "L4 rehearsal 2b, EU-RO-1, 0.59/h, network volume y65q281goj at /workspace"}
+{"at": "2026-10-26T02:52:58Z", "event": "ended", "id": "4x1xnk82wtp6jl", "note": "terminated 2026-10-26: host Docker storage failed to pull the image (register layer error)"}
+{"at": "2026-10-26T02:52:58Z", "event": "created", "experiment": "E-36", "id": "s6s3wmzyedvksw", "kind": "pod", "name": "msthesis-e-36-rehearsal2c-20261026", "note": "L4 rehearsal 2c, EU-RO-1, network volume y65q281goj"}
+{"at": "2026-10-26T02:54:14Z", "event": "ended", "id": "s6s3wmzyedvksw", "note": "terminated 2026-10-26: same broken host (image pull register layer error)"}
+{"at": "2026-10-26T02:54:14Z", "event": "created", "experiment": "E-36", "id": "ed46i9y6likpxa", "kind": "pod", "name": "msthesis-e-36-rehearsal2d-20261026", "note": "RTX 4090 rehearsal 2d, EU-RO-1, 0.89/h, network volume y65q281goj"}
+{"at": "2026-10-26T02:59:50Z", "event": "ended", "id": "ed46i9y6likpxa", "note": "terminated 2026-10-26 03:00 for the user's pause; rehearsal 2 stopped after setup"}
+{"at": "2026-10-26T02:59:50Z", "event": "ended", "id": "y65q281goj", "note": "deleted 2026-10-26 03:00 for the user's pause"}
+{"at": "2026-10-26T18:02:40Z", "event": "created", "experiment": "E-36", "id": "llptimyjo8", "kind": "volume", "name": "msthesis-e-36-volume2-20261026", "note": "network volume 40 GB STANDARD, EU-RO-1, rehearsal 2e"}
+{"at": "2026-10-26T18:02:50Z", "event": "created", "experiment": "E-36", "id": "rxs88rtvab06a9", "kind": "pod", "name": "msthesis-e-36-rehearsal2e-20261026", "note": "RTX 4090 rehearsal 2e, EU-RO-1, 0.89/h, network volume llptimyjo8"}
+{"at": "2026-10-26T18:34:44Z", "event": "ended", "id": "rxs88rtvab06a9", "note": "terminated 2026-10-26 18:29 after copy (60 checksums match); A3 prediction passed"}
+{"at": "2026-10-26T18:34:44Z", "event": "ended", "id": "llptimyjo8", "note": "deleted 2026-10-26 18:30 after the rehearsal"}

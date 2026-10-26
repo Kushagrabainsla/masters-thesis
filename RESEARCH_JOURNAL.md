@@ -184,7 +184,22 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-25, after D-58 (experiment standards).** Rewrite this section every session.
+**As of 2026-10-26 18:45 UTC, after E-36 rehearsal 2e (A3 PASS) and R-41.** Rewrite this section every session.
+
+**RESUME POINT (read this first).**
+- State: E-36 passed stage S5. Rehearsal 2e (1 x RTX 4090, network volume, A3 warm-ups) met the frozen
+  prediction: R_a = R_b exactly and the no-op candidate = R_a exactly (tokens and top-20 logprobs, 256
+  of 256), every measured run loaded the AOT compile. R-41 (Sonnet post-run review):
+  CONFIRM_WITH_SCOPE_LIMITS. The rehearsal 1 cold-start divergence (L4) did not reproduce on the 4090;
+  its cause is open. A3 stays as a guard.
+- Runpod: 0 thesis Pods, 0 thesis volumes (registry all ended; MCP reads 2026-10-26 18:30). Thesis
+  spend so far about $1.35 (billing read plus the 2e estimate).
+- Next step: the H100 session (stage S6), runbook Section 2a (network volume, copy window, broken-host
+  rule). It needs the user's go in chat first (D-60 approved the plan; the user asked to be asked again
+  before the H100 run). Read the live balance with `balance.py --need 27 --hours 6.7`.
+- Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
+  before each use). Rotate the write key after the experiments (it was pasted in chat).
+
 
 ### 1.1 Summary
 
@@ -207,6 +222,22 @@ maps every file to what it contains.
   `msthesis-<experiment>-<purpose>-<yyyymmdd>`, tagged `THESIS_TAG=msthesis`, and registered in
   `experiments/runpod/pods.jsonl`; thesis agents change only registered resources. The balance check
   now counts other running spend. `RUNPOD_API_KEY` is in `.env` and the live read works.
+- E-36 rehearsal (stage S5, 2026-10-25, 1 x L4, about $0.48, Pod f6qrn1p79awqni, terminated). The user
+  approved D-57 (full session) and D-51 at the H100 price. Mechanics passed: SSH start command, Pod
+  environment, telemetry, profiler kernel tables, resume layout, microbenchmark, copy with checksums
+  (55 files). Defects found and fixed: AUTO_STOP REST stop gets HTTP 403 with the Pod key (GraphQL
+  podStop works, now used); `rsync -a` fails on the MooseFS volume (use `-rlt`); driver 595 names the
+  SM clock `clocks.current.sm` (`extras.py` fixed). FINDING (FACT, L4, vLLM v0.32.0, Marlin reference):
+  the first run of the session (cold torch.compile and Triton JIT) agreed with the later identical runs
+  on only 34.8% of prompts; all later identical runs agreed 100%. A new config (cold) differed on 1 of
+  256. So cold caches change greedy output. This would fail V1 on the H100. Amendment A3 (warm every
+  config before its measured runs) is needed before the H100 run; it is not written yet.
+- E-36 rehearsal 2e (2026-10-26, RTX 4090, about $0.40): A3 prediction PASS (README Section 12, R-41).
+  cand_triton (a real kernel change) kept the same tokens on only 37 of 256 prompts (exploratory).
+- E-36 rehearsal 2 (2026-10-26, about $0.50 over four Pods, all deleted): AUTO_STOP via GraphQL podStop
+  works. A stopped Pod with a volume disk could not restart (host GPU taken) and the API refused a
+  0-GPU resume, so results were lost. Lesson: use a network volume. One EU-RO-1 L4 host has broken
+  Docker storage (image pull fails in a loop). `AUTO_STOP_DELAY` (default 600 s) added to session1.sh.
 - No thesis direction is chosen (D-13 is open).
 - The strongest candidate that is still alive is I-23 (SafeDispatch). It needs an NVIDIA GPU. There
   is no GPU yet (D-15), and the grant drafts in `grants/` are not submitted (D-19).
@@ -6032,6 +6063,7 @@ proposed it and no acceptance is recorded.
 | D-57 | 2026-10-22 | After R-39: approve the E-36 A2 plan on one Runpod H100 SXM Secure Cloud Pod ($3.99/h on 2026-10-22): the full session with Phase B (Pod limit 6 h 40 min, at most about $27) or Phase A only (about $11 to $14). Put at least $35 of credit on the account first, because a $0 balance terminates the Pod and its volume disk | Recommendation (R-39 and the main session). Not a decision | The user asked for maximum data per dollar and accepted a longer run; Phase B reuses the paid setup of the same Pod | **Open, waiting on the user** |
 | D-58 | 2026-10-25 | Write experiment standards that follow frontier-lab practice, so that an agent can run the GPU experiments without issues: `docs/experiments/` (PROTOCOL, MEASUREMENT, RUNPOD, templates), the run ledger and compare tool in `experiments/ledger/`, the E-36 ledger adapter, a rehearsal stage before each paid run, and a local agent skill | User ("lets create documents so that claude can run these experiments properly without any issues. Proper flows where we follow industry standards of frontier labs during experimentation.") | The user wants reliable runs and evidence of improvement or degradation for each change | Decided by the user. Done |
 | D-59 | 2026-10-25 | The Runpod account is shared with other sessions. Label every thesis resource (`msthesis-<experiment>-<purpose>-<yyyymmdd>`, env `THESIS_TAG=msthesis`), register its id in `experiments/runpod/pods.jsonl` at creation, and change only registered resources; everything else is read-only. The balance check counts other running spend | User ("label the thesis related things with a different identifier so that we only handle those things, as other sessions will be working on the same account.") | Another session's H200 Pod used the same account and balance on 2026-10-25 | Decided by the user. Done |
+| D-60 | 2026-10-25 | Approve D-57 (the full E-36 A2 session on one H100 SXM, Pod limit 6 h 40 min, cap about $27) and D-51, with the L4 rehearsal first (cap 1 h, about $1) | User (picked "Full session (Recommended)" for the question "Which E-36 plan do you approve for the H100 run after the L4 rehearsal (rehearsal cap: 1 h, about $1)?") | Runpod H100 SXM $3.99/h on 2026-10-25 | Decided by the user. Rehearsal done; H100 run waits on amendment A3 |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6392,3 +6424,6 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-22: E-36 A2 and R-39. E-36 entry, R-39 entry, Section 1 lines, Section 4 entry, D-57, Appendix A rows.
 - 2026-10-25: D-58 experiment standards, ledger and compare tool. Section 1 lines, D-58, Appendix A rows.
 - 2026-10-25: D-59 shared Runpod account, thesis labels and Pod registry. Section 1 lines, D-59.
+- 2026-10-25: E-36 L4 rehearsal, D-60, Section 1 lines, hardware log and ledger rows.
+- 2026-10-26: pause, resume point, rehearsal 2 attempts, hardware log rows.
+- 2026-10-26: rehearsal 2e PASS, R-41, runbook network volume, resume point rewritten.

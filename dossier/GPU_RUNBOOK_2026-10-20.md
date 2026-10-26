@@ -78,12 +78,18 @@ Steps (they implement stages S4 to S7 of `docs/experiments/PROTOCOL.md`):
 2. Check that the SSH public key is on the Runpod account (`get-ssh-keys`). The key pair is
    `~/.ssh/runpod_ed25519` on the Mac (comment `runpod-masters-thesis`, registered 2026-10-25). The
    private key never leaves the Mac.
-3. Create the Pod (`runpod:pod-deploy`), labelled for the thesis (D-59):
+3. Create a network volume first (`create-network-volume`, 120 GB, STANDARD, in a data center with
+   H100 SXM stock; $0.07/GB/month). Name it with `pods.py name E-36 volume`, then `pods.py add <id>
+   <name> E-36 volume`. Rehearsal 2 (2026-10-26) showed why: a volume disk is tied to one host, and
+   a stopped Pod could not restart (host GPU taken) and the API refused a 0-GPU resume, so the
+   results were lost. A network volume can be mounted on any new Pod in its data center.
+   Then create the Pod (`runpod:pod-deploy`), labelled for the thesis (D-59), with `dataCenterIds` set
+   to the volume's data center:
    - name from `python3 experiments/runpod/pods.py name E-36 session1`; env `THESIS_TAG=msthesis`
      and `THESIS_EXPERIMENT=E-36`; right after the create returns, `pods.py add <id> <name> E-36 pod`;
    - image `vllm/vllm-openai:v0.32.0`, GPU 1 x H100 SXM 80GB, Secure Cloud, not interruptible;
-   - container disk 40 GB; volume disk 120 GB at `/workspace` (models about 40 GB, caches, results);
-     no network volume;
+   - container disk 40 GB; `mounts.network` = the volume at `/workspace` (models about 40 GB, caches,
+     results); no volume disk;
    - ports `22/tcp`; SSH start on (this puts the account keys in `PUBLIC_KEY`);
    - environment: `HF_HOME=/workspace/cache/hf`, `VLLM_CACHE_ROOT=/workspace/cache/vllm`, and
      `HF_TOKEN` only if a download needs it. Do not write the token in any file;
@@ -92,9 +98,11 @@ Steps (they implement stages S4 to S7 of `docs/experiments/PROTOCOL.md`):
      `apt-get update -qq && apt-get install -y -qq openssh-server rsync && mkdir -p /root/.ssh /run/sshd && echo "$PUBLIC_KEY" > /root/.ssh/authorized_keys && chmod 700 /root/.ssh && chmod 600 /root/.ssh/authorized_keys && /usr/sbin/sshd && sleep infinity`
 4. Wait for `ssh.direct` in the Pod record. Save the Pod record JSON as
    `experiments/safedispatch_testA/results/session1/pod.json` on the Mac. Note the start time (UTC).
-5. Copy the code to the volume disk:
-   `rsync -av -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" experiments/safedispatch_testA/ root@<ip>:/workspace/code/`
-   `rsync -av -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" experiments/runpod/ root@<ip>:/workspace/code/runpod/`
+5. Copy the code to the volume disk. Use `rsync -rlt`, not `-a`: `/workspace` is a network filesystem
+   (MooseFS, `mfs#<region>.runpod.net`) that refuses `chown` (rehearsal 2026-10-25). Exclude
+   `results`, `dryrun`, `__pycache__` and `.pytest_cache`:
+   `rsync -rlt -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" experiments/safedispatch_testA/ root@<ip>:/workspace/code/`
+   `rsync -rlt -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" experiments/runpod/ root@<ip>:/workspace/code/runpod/`
 6. First checks on the Pod (about 2 minutes, VERIFY items):
    - `sh /workspace/code/runpod/hardware_record.sh /workspace/check`: the GPU in `gpu.csv` must be
      an H100 80GB HBM3 with sm_90 in `python.txt`. Read `/dev/shm` in `df.txt`.
@@ -103,7 +111,10 @@ Steps (they implement stages S4 to S7 of `docs/experiments/PROTOCOL.md`):
    - `nvidia-smi --query-gpu=clocks_event_reasons.active --format=csv`: if it fails, the script uses
      the old field name; check that the first `telemetry.csv` line starts with `timestamp`.
 7. Start the session in the background, so a dropped SSH session does not stop it:
-   `CODE=/workspace/code RESULTS_ROOT=/workspace/results AUTO_STOP=1 HF_HOME=/workspace/cache/hf VLLM_CACHE_ROOT=/workspace/cache/vllm nohup sh /workspace/code/session1.sh > /workspace/nohup.txt 2>&1 &`
+   `ssh -f -n ... 'cd /workspace && CODE=/workspace/code RESULTS_ROOT=/workspace/results AUTO_STOP=1 AUTO_STOP_DELAY=600 HF_HOME=/workspace/cache/hf VLLM_CACHE_ROOT=/workspace/cache/vllm setsid nohup sh /workspace/code/session1.sh > /workspace/nohup.txt 2>&1 < /dev/null &'`
+   (`ssh -f -n` and `setsid` keep the local SSH from hanging.) If the Pod logs show the image pull
+   failing in a loop ("failed to register layer"), the host is broken: terminate the Pod and create
+   it again, if needed with another data center or GPU type (rehearsal 2, 2026-10-26).
    For Phase A only, add `PHASE_B=0`.
 8. Watch `/workspace/results/session1/session.log`:
    - after setup: `setup done`, and `env-*/telemetry.csv` grows;
@@ -111,15 +122,16 @@ Steps (they implement stages S4 to S7 of `docs/experiments/PROTOCOL.md`):
      has a `by_batch` table (VERIFY: the profiler on the H100). If it has a `profile_error`, the run
      still counts; tell the user;
    - after Phase A: the `decision:` line.
-9. If the Pod stops or the session dies: start the Pod again and run step 7 again. Finished runs are
-   skipped. If the log says `STOP: GPU changed`, ask the user before you set `ALLOW_GPU_CHANGE=1`.
-10. At the end (`done after` in the log; with `AUTO_STOP=1` the Pod then stops itself and the volume
-    disk keeps the results): if the Pod is stopped, start it again (0 GPUs is enough to read the disk),
-    then copy off:
-    `rsync -av -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" root@<ip>:/workspace/results/ experiments/safedispatch_testA/results/`
+9. If the session dies: run step 7 again. If the Pod stopped and cannot start (host GPU taken):
+   terminate it, create a new Pod with the same network volume, and run step 7 again. Finished runs
+   are skipped. If the log says `STOP: GPU changed`, ask the user before you set `ALLOW_GPU_CHANGE=1`.
+10. At the end, the log prints `AUTO_STOP in 600 s; copy the results now`. Copy off in that window
+    (if the Pod already stopped, mount the network volume on a new cheap Pod and copy from there):
+    `rsync -rlt -e "ssh -i ~/.ssh/runpod_ed25519 -p <port>" root@<ip>:/workspace/results/ experiments/safedispatch_testA/results/`
     Check that `summary.json`, `extras.json` and every `env-*/` folder arrived.
-11. Run `pods.py check <id>`, terminate the Pod after the copy, then `pods.py end <id>`. A stopped Pod's volume disk costs $0.20/GB/month (about $24 per
-    month for 120 GB). Read billing (`runpod:cost-audit`) and check that nothing bills.
+11. Compare checksums, then `pods.py check <id>`, terminate the Pod, and `pods.py end <id>`. Delete
+    the network volume the same way (`delete-network-volume`) after the results are safe on the Mac.
+    Read `list-pod-billing` for the Pod id and check that nothing thesis-owned bills.
 12. Add the row to `experiments/runpod/HARDWARE_LOG.md`: Pod id, GPU, data center, cloud type, price,
     image tag, driver and CUDA (`env-*/hardware/gpu.csv`, `python.txt`), vCPU, RAM, disks, start and
     stop times, billed cost, the results path, and the microbenchmark numbers.
