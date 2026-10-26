@@ -184,19 +184,19 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-26 18:45 UTC, after E-36 rehearsal 2e (A3 PASS) and R-41.** Rewrite this section every session.
+**As of 2026-10-26 22:00 UTC, after E-36 Session 1 on the H100 and R-42.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
-- State: E-36 passed stage S5. Rehearsal 2e (1 x RTX 4090, network volume, A3 warm-ups) met the frozen
-  prediction: R_a = R_b exactly and the no-op candidate = R_a exactly (tokens and top-20 logprobs, 256
-  of 256), every measured run loaded the AOT compile. R-41 (Sonnet post-run review):
-  CONFIRM_WITH_SCOPE_LIMITS. The rehearsal 1 cold-start divergence (L4) did not reproduce on the 4090;
-  its cause is open. A3 stays as a guard.
-- Runpod: 0 thesis Pods, 0 thesis volumes (registry all ended; MCP reads 2026-10-26 18:30). Thesis
-  spend so far about $1.35 (billing read plus the 2e estimate).
-- Next step: the H100 session (stage S6), runbook Section 2a (network volume, copy window, broken-host
-  rule). It needs the user's go in chat first (D-60 approved the plan; the user asked to be asked again
-  before the H100 run). Read the live balance with `balance.py --need 27 --hours 6.7`.
+- State: E-36 Session 1 ran on one H100 SXM (Pod sm57l4ssfngmvm, EU-NL-1, about $11.20) and is at stage
+  S9 done (post-run review R-42: CONFIRM_WITH_SCOPE_LIMITS). Frozen decision: INCONCLUSIVE (safe set =
+  {R}). Every FP8 alternative flips 87.5% to 95.3% of prompts; R is the fastest FP8 backend. Under exact
+  match, headroom is untested, not absent (Section 8.1 row 67). Run report: package README Section 13.
+- Runpod: 0 thesis Pods, 0 thesis volumes (registry all ended; MCP reads 2026-10-26 21:33). Thesis spend
+  so far about $12.55 (rehearsals about $1.35 plus the H100 run).
+- Next: D-61 decided (user): preregister Test A2 (E-38) with a tolerance contract, prepared on the Mac
+  (stages S1 to S3), then ask the user for the H100 spend. Follow `docs/experiments/PROTOCOL.md`.
+- Uncommitted: the H100 path fix in `session1.sh`, README Section 13, R-42 review file, journal, hardware
+  log, ledger (74 H100 rows), Pod registry. Results folders stay out of git (large).
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4575,8 +4575,8 @@ Dockerfile; harness; trace check; supplement; results with manifests), `dossier/
 (R-31), `dossier/REVIEW_E-35_POSTRUN_2026-10-20.md` (R-32).
 
 **E-36 I-23 Test A, Session 1: calibration and the first two Hopper FP8 cells** (predeclared 2026-10-20,
-I-23). STATUS: PREDECLARED, AMENDED 2026-10-20 (A1 after R-34) and 2026-10-22 (A2 after R-39), NOT RUN. Mac
-dry run passed. Waiting for D-51 and D-57.
+I-23). STATUS: RUN 2026-10-26 on one H100 SXM (A1, A2, A3). Decision INCONCLUSIVE (only one safe backend).
+Rehearsals 1 and 2e on L4 and RTX 4090; post-run review R-42.
 Question: on one H100 with vLLM v0.32.0, do alternative linear and MoE backends for block-scaled FP8
 change greedy output against the default backend, and does the fastest backend change with batch size?
 Predeclared criteria (heuristics): V1 the reference backend agrees with itself on at least 95% of
@@ -4625,7 +4625,23 @@ Runpod H100 SXM Secure ($3.99/h on 2026-10-22): at most about $27 for the full s
 6 h 40 min), about $11 to $14 for Phase A only. Tests: 22 unit tests pass; a stub session run checked
 resume, the GPU check, the telemetry fallback and AUTO_STOP logging; the profiler path was checked
 only on CPU (VERIFY on the H100).
-Result: none yet.
+Result (2026-10-26, Pod sm57l4ssfngmvm, 1 x H100 80GB HBM3, EU-NL-1, about $11.20; package README
+Section 13): frozen decision INCONCLUSIVE, failed condition "only one safe backend". FACT: V1 256 of 256
+in both cells; positive control flipped 243 and 224 of 256; the MoE alias flipped 0. Every working
+alternative changed greedy output on 86% to 95% of prompts (dense deep_gemm 232, cutlass 244, triton
+240; MoE deep_gemm 235, flashinfer_cutlass 233); torch and hpc are unsupported. The default backend R
+was the fastest at batch 1, 8, 32 and 64 in both cells (dense 10,281 tok/s at batch 64). Phase B: the
+flips repeat exactly (B0); the same pattern at max_num_seqs 8 (B1); dense R fastest at batch 1 to 256,
+MoE differences inside the R noise (B2); eager mode changes 233 and 238 of 256 prompts (B3).
+Incident: the FlashInfer TRT-LLM DeepGEMM JIT needs nvcc on PATH; fixed in session1.sh.
+Post-run review R-42 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS. Corrections: the flip range is 87.5% to 95.3%;
+R misses a literal STATIC-WINNER only at dense batch 32 (2.7% gap); the Marlin W8A16 control is 1% to 5%
+faster than R in the MoE cell at batch 4 to 32; dense deep_gemm flips because of different fused
+activation-quantization kernels, not the GEMM. INTERPRETATION (after R-42): no exact-output-preserving
+alternative exists, and R is the fastest FP8 backend; speed headroom under a tolerance contract is
+untested. Exact match detects any numerical change (eager mode alone flips 233 and 238 of 256), so the
+KILL condition is trivially true for a safe set of {R}. A first draft said "close to the KILL
+condition"; R-42 refuted that wording (Section 8.1).
 
 **E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
 SCREEN ONLY: an engineering screen, not a research result.
@@ -5310,6 +5326,21 @@ Findings:
 Verdicts: E-36 A2 AMEND_THEN_RUN; fixes applied and tested on the Mac. Phase A unchanged.
 Full write-up: `dossier/REVIEW_E-36_A2_PRERUN_2026-10-22.md`.
 
+**R-42 Sonnet post-run review of E-36 Session 1 (H100)** (2026-10-26).
+Scope: the H100 results, README Section 13, and the main-session claims. Method: Claude Sonnet,
+read-only, its own checks of `summary.json`, `extras_mac.json`, `kernels.json` and the outputs.
+Findings: (1) FACT: INCONCLUSIVE is what `compare.py` computes; flip range 87.5% to 95.3%. (2) FACT: a
+literal STATIC-WINNER reading fails only at dense batch 32. (3) FACT: R is the fastest eligible backend
+at every frozen batch size; Marlin W8A16 beats R in the MoE cell at batch 4 to 32 by 1% to 5%. (4)
+INTERPRETATION: "close to the KILL condition" is not justified; exact match flags any numerical change
+(eager flips 233 and 238 of 256); margins at divergence are 0.25. (5) INTERPRETATION: a tolerance
+contract is legitimate only as a new, preregistered Test A2. (6) FACT: B0 to B3 confirmed; R's batch
+invariance (8 against 64) unmeasured. (7) FACT: cold_vs_warm in B1 reflects batch composition; the Phase
+A MoE Marlin warm-up is a nondeterminism flag. (8) FACT: dense deep_gemm and R share the GEMM kernel but
+use different activation-quantization kernels. (9) FACT: validity holds.
+Verdicts: E-36 Session 1 CONFIRM_WITH_SCOPE_LIMITS. I-23 stays MEASURE-FIRST; next step D-61.
+Full write-up: `dossier/REVIEW_E-36_SESSION1_POSTRUN_2026-10-26.md`.
+
 ---
 
 ## 7. Prior-art ledger
@@ -5867,6 +5898,7 @@ Check levels use the 0.4 meanings with the date 2026-10-21.
 | 64 | 2026-10-21 | R-37 and E-37: I-161 "prior work: none found", "engineering PR candidate"; E-37 S1 presented as the SGLang eviction cost | CORRECTED (R-38, verified): SGLang PRs 38371 and 38454 already add lazy heaps. S1 models the legacy Python class; the default is the Rust core | Search the target repository's open PRs, not only papers, before calling an engineering fix open. Confirm which code path is the default |
 | 65 | 2026-10-21 | R-37: I-163 kept as WEAK while citing the Cohere megakernel blog | CORRECTED (R-38, verified): the same blog reports about 10% from cost-based scheduling on a dense model and why it was dropped; Hazy's public scheduler already has a critical-path priority | Read every section of a cited source that bears on the claim, not only the passage that supports it |
 | 66 | 2026-10-21 | R-37: I-154 "any order without idle time is within O(sqrt n)"; I-158 "closes the whole family" | CORRECTED (R-38): the bound holds only for random order, and the gain is 3 to 14% at n of 8 to 128; DySHARP covers dynamic multicast | State the assumptions of an asymptotic argument and check small n. An arithmetic kill covers only the variant it computes |
+| 67 | 2026-10-26 | E-36 Session 1 first draft: "no dispatch headroom ... close to the Test A KILL condition"; "86% to 95%" flipped; kernel check "different scaling or layout code" | CORRECTED (R-42): under exact match the KILL condition is trivially true for a safe set of {R}, so headroom is untested, not absent; the flip range is 87.5% to 95.3%; dense deep_gemm differs in fused activation-quantization kernels | An exact-match contract that flags every numerical change cannot measure headroom. Check what the rule can show before reading its result as evidence |
 
 ### 8.2 Do not cite
 
@@ -6064,6 +6096,7 @@ proposed it and no acceptance is recorded.
 | D-58 | 2026-10-25 | Write experiment standards that follow frontier-lab practice, so that an agent can run the GPU experiments without issues: `docs/experiments/` (PROTOCOL, MEASUREMENT, RUNPOD, templates), the run ledger and compare tool in `experiments/ledger/`, the E-36 ledger adapter, a rehearsal stage before each paid run, and a local agent skill | User ("lets create documents so that claude can run these experiments properly without any issues. Proper flows where we follow industry standards of frontier labs during experimentation.") | The user wants reliable runs and evidence of improvement or degradation for each change | Decided by the user. Done |
 | D-59 | 2026-10-25 | The Runpod account is shared with other sessions. Label every thesis resource (`msthesis-<experiment>-<purpose>-<yyyymmdd>`, env `THESIS_TAG=msthesis`), register its id in `experiments/runpod/pods.jsonl` at creation, and change only registered resources; everything else is read-only. The balance check counts other running spend | User ("label the thesis related things with a different identifier so that we only handle those things, as other sessions will be working on the same account.") | Another session's H200 Pod used the same account and balance on 2026-10-25 | Decided by the user. Done |
 | D-60 | 2026-10-25 | Approve D-57 (the full E-36 A2 session on one H100 SXM, Pod limit 6 h 40 min, cap about $27) and D-51, with the L4 rehearsal first (cap 1 h, about $1) | User (picked "Full session (Recommended)" for the question "Which E-36 plan do you approve for the H100 run after the L4 rehearsal (rehearsal cap: 1 h, about $1)?") | Runpod H100 SXM $3.99/h on 2026-10-25 | Decided by the user. Rehearsal done; H100 run waits on amendment A3 |
+| D-61 | 2026-10-26 | After E-36 Session 1 and R-42: preregister Test A2 for I-23 with a tolerance contract (teacher-forced logprob distance on R's tokens, GSM8K accuracy as the primary metric, kill rules frozen first), including Marlin W8A16 and the fused activation-quantization variant; keep Session 1 labelled INCONCLUSIVE. Alternative: close I-23 for Hopper block-FP8 under exact match and move to NVFP4 on Blackwell | User (chose option 1, "Test 'good enough' instead of 'identical'", with "go ahead!") | Exact match makes every alternative unsafe; R is the fastest FP8 backend; only a tolerance contract can show usable headroom | Decided by the user 2026-10-26. Test A2 planned as E-38 |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6427,3 +6460,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-25: E-36 L4 rehearsal, D-60, Section 1 lines, hardware log and ledger rows.
 - 2026-10-26: pause, resume point, rehearsal 2 attempts, hardware log rows.
 - 2026-10-26: rehearsal 2e PASS, R-41, runbook network volume, resume point rewritten.
+- 2026-10-26: E-36 Session 1 result, R-42, D-61, Section 8.1 row 67, resume point rewritten.

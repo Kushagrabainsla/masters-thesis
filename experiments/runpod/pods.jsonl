@@ -14,3 +14,7 @@
 {"at": "2026-10-26T18:02:50Z", "event": "created", "experiment": "E-36", "id": "rxs88rtvab06a9", "kind": "pod", "name": "msthesis-e-36-rehearsal2e-20261026", "note": "RTX 4090 rehearsal 2e, EU-RO-1, 0.89/h, network volume llptimyjo8"}
 {"at": "2026-10-26T18:34:44Z", "event": "ended", "id": "rxs88rtvab06a9", "note": "terminated 2026-10-26 18:29 after copy (60 checksums match); A3 prediction passed"}
 {"at": "2026-10-26T18:34:44Z", "event": "ended", "id": "llptimyjo8", "note": "deleted 2026-10-26 18:30 after the rehearsal"}
+{"at": "2026-10-26T18:44:58Z", "event": "created", "experiment": "E-36", "id": "y460qmr64y", "kind": "volume", "name": "msthesis-e-36-h100volume-20261026", "note": "network volume 120 GB STANDARD, EU-NL-1, E-36 Session 1 (H100)"}
+{"at": "2026-10-26T18:45:07Z", "event": "created", "experiment": "E-36", "id": "sm57l4ssfngmvm", "kind": "pod", "name": "msthesis-e-36-session1-20261026", "note": "H100 SXM Session 1, EU-NL-1, 3.99/h, network volume y460qmr64y, created 2026-10-26T18:44:59Z"}
+{"at": "2026-10-26T21:33:32Z", "event": "ended", "id": "sm57l4ssfngmvm", "note": "terminated 2026-10-26 21:33 after copy (306 checksums match)"}
+{"at": "2026-10-26T21:33:32Z", "event": "ended", "id": "y460qmr64y", "note": "deleted 2026-10-26 21:33"}

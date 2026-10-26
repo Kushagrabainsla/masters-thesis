@@ -33,7 +33,11 @@ export VLLM_ENABLE_V1_MULTIPROCESSING=0
 if [ -n "${VLLM_CACHE_ROOT:-}" ]; then
     export TORCHINDUCTOR_CACHE_DIR=${TORCHINDUCTOR_CACHE_DIR:-$VLLM_CACHE_ROOT/inductor}
     export TRITON_CACHE_DIR=${TRITON_CACHE_DIR:-$VLLM_CACHE_ROOT/triton}
+    export TRTLLM_DG_CACHE_DIR=${TRTLLM_DG_CACHE_DIR:-$VLLM_CACHE_ROOT/trtllm_dg}
 fi
+# H100 session 2026-10-26: the FlashInfer TRT-LLM DeepGEMM JIT calls nvcc through the shell, and the
+# vllm/vllm-openai:v0.32.0 image does not put the CUDA bin folder on PATH ("sh: 1: nvcc: not found").
+[ -d /usr/local/cuda/bin ] && export PATH=/usr/local/cuda/bin:$PATH
 
 # A2 (R-39 item 2): an SSH shell on Runpod does not get the Pod environment. Read only these names
 # from PID 1, and never write their values to a file.

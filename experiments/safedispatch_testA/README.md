@@ -394,3 +394,89 @@ volume, fresh container, `CELLS=D PHASE_B=0 DENSE_CANDS="marlin triton"`, 872 s,
   lower clock is a short-run effect, not throttling); `session1.sh` logs a "V1 precheck" line after
   R_b (reported only). The `_topk_log_softmax_kernel` JIT warning appears in every run and is
   expected.
+
+## 13. Session 1 run report (H100, 2026-10-26)
+
+### 13.1 Decision
+INCONCLUSIVE by the frozen rule (Section 9 point 7). In `compare.py`, "safe" means 0 flips, so the safe
+set is {R} in both cells, and CONTINUE and STATIC-WINNER (which compare safe backends) cannot apply.
+R-42 note: if STATIC-WINNER is read against all backends, R misses it only at dense batch 32 (deep_gemm
+at 0.974 of R, a 2.7% gap against the 3% margin). The label is INCONCLUSIVE under both readings.
+V1, V2 and both controls passed.
+
+### 13.2 What ran
+| Item | Value |
+|---|---|
+| Pod, GPU, data center, cloud | sm57l4ssfngmvm, 1 x H100 80GB HBM3 (sm_90, 132 SMs, 700 W), EU-NL-1, Secure on-demand |
+| Price, Pod time, cost | $3.99/h, 18:44:59 to 21:33 (2 h 48 min), about $11.20 (first billing read $7.30, lagging) |
+| Image, driver, CUDA | vllm/vllm-openai:v0.32.0 (sha256:befccf0e7e40...), 595.91.07, CUDA 13.0 |
+| Design | A1, A2, A3 with R-40 and R-41 fixes; plus a PATH fix (below) |
+| Runs | Phase A 24 processes (12 warm-ups, 12 measured); 2 failed as unsupported (dense `torch`: CUBLAS_STATUS_NOT_SUPPORTED; MoE `hpc`: not supported for this configuration). Phase B ran to the end (B0, B1, B3, B2) |
+| Storage | network volume y460qmr64y (120 GB), 306 files copied with matching checksums, then deleted |
+
+Incident: the first start failed in every run that used the FlashInfer TRT-LLM DeepGEMM JIT ("sh: 1:
+nvcc: not found"): the image does not put `/usr/local/cuda/bin` on PATH. The session was killed after
+about 6 minutes, two debug runs found the cause, and `session1.sh` now exports
+`PATH=/usr/local/cuda/bin:$PATH` and `TRTLLM_DG_CACHE_DIR` under the vLLM cache root. This changes only
+the environment. Cost of the incident: about 20 minutes ($1.30). Side effect: the killed start left a
+1 s telemetry logger running, so two loggers polled NVML during the whole session (a small, equal load).
+
+### 13.3 Validity
+V1: R_a = R_b on 256 of 256 in both cells (exact tokens; the V1 precheck logged it). V2: passed.
+Positive control (Marlin W8A16): 243 and 224 of 256 flipped. Negative control (MoE `triton`, an alias
+by the log rule): 0 of 256 flipped (Wilson upper bound 1.5%). One GPU UUID; 18,273 telemetry samples;
+no suspect run; microbenchmark 776.5 / 773.6 TFLOPS BF16 and 3,033 GB/s at start and end. Every
+measured run that worked loaded the AOT compile. R speed noise (R_a against R_b): up to 2.4% (dense)
+and 3.5% (MoE) at batch 8 and 32.
+
+### 13.4 Primary result (FACT)
+| Cell | Candidate | Kernel | Flipped of 256 | Speed against R at batch 1 / 8 / 32 / 64 |
+|---|---|---|---|---|
+| D | R (auto) | FlashInferFp8DeepGEMMDynamicBlockScaledKernel | reference | 231 / 1,723 / 5,901 / 10,281 tok/s |
+| D | deep_gemm | DeepGemmFp8BlockScaledMMKernel | 232 | 0.88 / 0.95 / 0.97 / 0.97 |
+| D | cutlass | CutlassFp8BlockScaledMMKernel | 244 | 0.93 / 0.78 / 0.75 / 0.64 |
+| D | triton | TritonFp8BlockScaledMMKernel | 240 | 0.35 / 0.44 / 0.47 / 0.49 |
+| M | R (auto) | DeepGEMM linear + TRITON MoE | reference | 244 / 1,081 / 3,121 / 5,439 tok/s |
+| M | deep_gemm | DEEPGEMM MoE | 235 | 0.76 / 0.82 / 0.82 / 0.83 |
+| M | flashinfer_cutlass | FLASHINFER_CUTLASS MoE | 233 | 0.73 / 0.93 / 0.92 / 0.90 |
+In both cells, every working alternative changes greedy output on 87.5% to 95.3% of prompts (the
+Marlin control included), and R is the fastest of the eligible backends at every frozen batch size. At
+dense batch 32 and 64 the deep_gemm gap (2.7% to 3.5%) is only 2 to 3 times the R noise. `compare_runs.py` (A/A with R_b) gives dense `deep_gemm` WORSE at
+batch 1, 8 and 64 and UNCLEAR at 32.
+
+### 13.5 Exploratory results (Phase B, do not change the decision)
+- B0: the most-flipping candidate run again gives exactly its first output (0 of 256 differ) in both
+  cells. The flips are deterministic kernel effects, not noise.
+- B1 (`max_num_seqs` 8): R agrees with itself on 256 of 256; the alternatives flip 227 to 241; the MoE
+  alias flips 0.
+- B2 (batch 1 to 256): dense R is the fastest at every batch size; `deep_gemm` is 1% to 6% slower. In
+  the MoE cell, the alias (same kernels as R) is up to 3% above R, which shows the noise; the Marlin
+  W8A16 control (a different arithmetic contract) is 1% to 5% faster than R at batch 4 to 32. So a
+  faster, non-exact alternative already exists in the MoE cell.
+- B3 (eager, no CUDA graphs): 233 (dense) and 238 (MoE) of 256 prompts differ from the graph-mode
+  reference, at 0.27 to 0.30 (dense) and 0.09 to 0.24 (MoE) of its speed. The execution mode alone
+  changes greedy output.
+- cold_vs_warm: exact in Phase A except MoE Marlin; all B1 warm-ups differ from their measured runs.
+  INTERPRETATION: the warm-up (64 prompts) and the measured run (256 prompts) make different batches at
+  `max_num_seqs` 8, so this metric is confounded by batch composition (threat 1), not only by cold
+  caches. The Phase A MoE Marlin warm-up (50% agreement, position-0 top-k 0%) has no batch explanation:
+  treat it as a Marlin MoE nondeterminism flag. R's own batch invariance (8 against 64) was not measured.
+- Kernel-name check: dense `deep_gemm` shares the GEMM kernel with R (`deep_gemm::sm90_fp8_gemm_1d2d_impl`)
+  but flips 232. FACT (R-42, from `kernels.json`): R quantizes activations with the separate
+  `per_token_group_quant_8bit_register_kernel`; `deep_gemm` uses the fused
+  `silu_and_mul_per_block_quant_kernel` and `rms_norm_per_block_quant_kernel`. The activation FP8 values
+  differ, so the flips come from the dispatch pipeline (quantization and fusion), not from the GEMM.
+  The GEMM-only name check is correct but misleading; the log rule decides aliases.
+
+### 13.6 Interpretation
+Corrected after R-42. Safe statement: no exact-output-preserving alternative exists, and among the FP8
+backends R is also the fastest. Speed headroom under a tolerance contract is untested. The exact-match
+contract detects any numerical change: B3 shows that the same R kernels in eager mode flip 233 and 238
+of 256 prompts. The median top-2 logprob margin at the first divergence is 0.25, and the first
+divergence is near token 24 to 32, which fits near-tie BF16 logit quantization followed by chaotic
+divergence, not large errors. So the Test A KILL condition (oracle gain under 2% over the safe set) is
+trivially true when the safe set is {R}; this session could not have shown headroom. A first draft of
+this section said "close to the Test A KILL condition"; R-42 refuted that wording.
+Next (recommendation, not a decision): preregister Test A2 with a tolerance contract (teacher-forced
+logprob distance on R's tokens, GSM8K accuracy as the primary metric), including Marlin W8A16 and the
+fused-quantization variant. Keep this Session 1 result labelled INCONCLUSIVE.
