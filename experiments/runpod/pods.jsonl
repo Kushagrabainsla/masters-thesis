@@ -23,3 +23,6 @@
 {"at": "2026-10-27T05:23:14Z", "event": "ended", "id": "tlkcp7qylpj9re", "note": "terminated 2026-10-27 05:24: stopped by AUTO_STOP, host GPU taken; results on network volume aqi8y8mku7"}
 {"at": "2026-10-27T05:23:23Z", "event": "created", "experiment": "E-38", "id": "okt9do1tj7ta0e", "kind": "pod", "name": "msthesis-e-38-recovery-20261027", "note": "CPU recovery Pod cpu3g x4, US-MO-1, 0.16/h, mounts aqi8y8mku7"}
 {"at": "2026-10-27T05:29:30Z", "event": "ended", "id": "okt9do1tj7ta0e", "note": "terminated 2026-10-27 after the results copy (71 checksums match)"}
+{"at": "2026-10-27T05:38:19Z", "event": "created", "experiment": "E-38", "id": "79jekplym1wxsh", "kind": "pod", "name": "msthesis-e-38-rerun-20261027", "note": "H100 SXM E-38 rerun (D-62), US-MO-1, 3.99/h, network volume aqi8y8mku7, created 2026-10-27T05:38:12Z"}
+{"at": "2026-10-27T07:30:49Z", "event": "ended", "id": "79jekplym1wxsh", "note": "terminated 2026-10-27 07:31 after copy (157 checksums match)"}
+{"at": "2026-10-27T07:30:49Z", "event": "ended", "id": "aqi8y8mku7", "note": "deleted 2026-10-27 07:31"}

@@ -187,13 +187,13 @@ maps every file to what it contains.
 **As of 2026-10-26 22:00 UTC, after E-36 Session 1 on the H100 and R-42.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
-- State: E-38 (Test A2) ran on 2026-10-27 and is INCOMPLETE: a reference-load defect made every scoring
-  step time out ($14.32 spent). The MoE accuracy data survived: every candidate keeps GSM8K accuracy
-  within 1 pp of R (Marlin +0.23 pp), so all pass A1. Not measured: A2 (teacher-forced KL), the Marlin
-  speed test (the only GO path), and the dense cell. The defect is fixed and tested at the real size.
-- Runpod: one thesis resource is live: network volume aqi8y8mku7 (200 GB, US-MO-1, about $0.47 per day)
-  with the four models, R_a's reference files and all cell M completions. No Pods.
-- Next: D-62 decided (user): rerun the missing E-38 parts on the kept volume, cap $10.
+- State: E-38 rerun (D-62) done 2026-10-27, Pod 79jekplym1wxsh, about $7.60. Frozen decision: KILL (I-23
+  closed for Hopper block-FP8 at these configs). All real candidates pass A1 (accuracy) but fail A2
+  (KL 0.6 to 0.8 x BF16, bar 0.5); Marlin MoE speed not BETTER (bs 8 +5.5% UNCLEAR, bs 256 WORSE).
+  Results: `experiments/safedispatch_testA2/results/e38-rerun-20261027/` (summary.json, short.txt).
+- Runpod: 0 thesis Pods, 0 volumes (deleted 07:31 UTC).
+- TODO: post-run review (different model, D-29) not run yet; write README run report and E-38 result;
+  then the user picks the next idea (NVFP4 on Blackwell, or another).
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -6495,3 +6495,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-26: E-36 Session 1 result, R-42, D-61, Section 8.1 row 67, resume point rewritten.
 - 2026-10-26: E-38 predeclared and amended (A1), R-43, resume point.
 - 2026-10-27: E-38 H100 run (INCOMPLETE), partial A1 result, defect fix, lessons, D-62, resume point.
+- 2026-10-27: E-38 rerun KILL; resume point. Review pending.
