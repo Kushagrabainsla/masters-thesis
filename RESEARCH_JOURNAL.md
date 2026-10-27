@@ -192,8 +192,8 @@ maps every file to what it contains.
   (KL 0.6 to 0.8 x BF16, bar 0.5); Marlin MoE speed not BETTER (bs 8 +5.5% UNCLEAR, bs 256 WORSE).
   Results: `experiments/safedispatch_testA2/results/e38-rerun-20261027/` (summary.json, short.txt).
 - Runpod: 0 thesis Pods, 0 volumes (deleted 07:31 UTC).
-- Done: R-44 review, README Section 14, E-38 result. Next: the user decides D-63 and picks the next GPU
-  question.
+- Done: R-44, E-38 report. E-39 (Marlin MoE speed) prepared and reviewed (R-45); waits for the user's
+  H100 approval (cap $8). D-63 open.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4672,6 +4672,13 @@ real candidates pass A1 (within about 1 pp of R) and fail A2 (TF KL 0.60 to 0.93
 R-44 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS; open lead: a 5% to 7% Marlin MoE gain at batch 4 to 8 is not
 excluded by the 2 against 2 design. D-63 (recommendation): close I-23 for Hopper block-FP8.
 
+**E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: PREDECLARED,
+AMENDED (A1 after R-45), NOT RUN. Package: `experiments/marlin_moe_speed/`. Question: is
+`--moe-backend marlin` at least 3% faster than R for Qwen3-30B-A3B-FP8 at batch 4, 8, 16 or 32 (10 paired
+rounds, one-sided t, Bonferroni over 4)? Accuracy reused from E-38 (Marlin = R on GSM8K); E-38's A2 retired
+post hoc; a GO is PIVOT-grade. GO resolves about 5.5% or more. Cap $8. Tests: 7 pass.
+Result: none yet.
+
 **E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
 SCREEN ONLY: an engineering screen, not a research result.
 Question: S1, what does one SGLang `evict()` call cost as a function of the number E of evictable leaves,
@@ -5380,6 +5387,9 @@ Full write-up: `dossier/REVIEW_E-38_PRERUN_2026-10-26.md`.
 **R-44 Sonnet post-run review of the E-38 rerun** (2026-10-27). Verdict: CONFIRM_WITH_SCOPE_LIMITS. KILL is
 what the frozen rule gives; A2 fails on top-1 as well as the tail-dominated KL; "not BETTER" means a 3%
 gain was not shown with 2 against 2 processes; do not claim beyond H100, Qwen3 FP8, GSM8K.
+
+**R-45 Sonnet pre-run review of E-39** (2026-10-27). AMEND_THEN_RUN (power, V1, V3, framing, budget); all
+fixed in E-39 amendment A1. Write-up: `dossier/REVIEW_E-39_PRERUN_2026-10-27.md`.
 
 ---
 
@@ -6507,3 +6517,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: E-38 H100 run (INCOMPLETE), partial A1 result, defect fix, lessons, D-62, resume point.
 - 2026-10-27: E-38 rerun KILL; resume point. Review pending.
 - 2026-10-27: E-38 rerun report, R-44, D-63.
+- 2026-10-27: E-39 predeclared and amended, R-45.
