@@ -1,6 +1,6 @@
 # E-39: Marlin W8A16 MoE small-batch speed on H100 (preregistration)
 
-Status: PREDECLARED 2026-10-27, AMENDED (A1 after R-45). NOT RUN. Idea: I-23. Follows E-36 B2 and E-38 (R-44 open lead).
+Status: PREDECLARED 2026-10-27, AMENDED (A1 after R-45). RUN 2026-10-27: INCONCLUSIVE. Idea: I-23. Follows E-36 B2 and E-38 (R-44 open lead).
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics.
 
 ## 1. Question
@@ -82,5 +82,7 @@ pass, no hard slowdown, 74 checksums match): frozen decision INCONCLUSIVE (4, 8,
 1.011 [0.992, 1.031]; batch 32 0.995 [0.976, 1.015]. Reported: batch 1 0.949, 2 0.959, 64 0.959, 128 0.976,
 256 0.887 (all below 1). INTERPRETATION: Marlin MoE is about 1% to 2.5% faster at batch 4 to 16 (batch 8 is
 above 1 at this level) and slower everywhere else; the gain is below the 3% bar and its upper bound is
-under 5%. A batch-dependent dispatch would gain at most a few percent on a narrow band. Post-run review
-pending.
+under 5%. A batch-dependent dispatch would gain at most a few percent on a narrow band. Post-run review R-46 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS. Corrections: batch 32 is a tie
+(0.995 [0.976, 1.015]), so "slower" holds at batch 1, 2, 64, 128 and 256 only; "gain below 3%" is about the
+point estimates, and the batch 8 upper bound (1.049) does not exclude 3%; round 1 was a cold low outlier
+(positive drift slopes); the metric includes prefill.

@@ -193,8 +193,8 @@ maps every file to what it contains.
   Results: `experiments/safedispatch_testA2/results/e38-rerun-20261027/` (summary.json, short.txt).
 - Runpod: 0 thesis Pods, 0 volumes (deleted 07:31 UTC).
 - Done: E-39 ran 2026-10-27 (about $5.20): INCONCLUSIVE; Marlin MoE +1% to 2.5% at batch 4 to 16, slower
-  elsewhere. 0 Pods, 0 volumes. Next: post-run review of E-39; the user decides D-63 (close I-23 for
-  Hopper) and the next question.
+  elsewhere. 0 Pods, 0 volumes. R-46 done. D-63 decided (user). Next: E-40, I-23 NVFP4 on one B200
+  (user, 2026-10-27), prepared on the Mac.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4684,8 +4684,8 @@ pass, no hard slowdown, 74 checksums match): frozen decision INCONCLUSIVE (4, 8,
 1.011 [0.992, 1.031]; batch 32 0.995 [0.976, 1.015]. Reported: batch 1 0.949, 2 0.959, 64 0.959, 128 0.976,
 256 0.887 (all below 1). INTERPRETATION: Marlin MoE is about 1% to 2.5% faster at batch 4 to 16 (batch 8 is
 above 1 at this level) and slower everywhere else; the gain is below the 3% bar and its upper bound is
-under 5%. A batch-dependent dispatch would gain at most a few percent on a narrow band. Post-run review
-pending.
+under 5%. A batch-dependent dispatch would gain at most a few percent on a narrow band. R-46 (Sonnet):
+CONFIRM_WITH_SCOPE_LIMITS; batch 32 is a tie; a 3% gain at batch 8 is not excluded (upper 1.049).
 
 **E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
 SCREEN ONLY: an engineering screen, not a research result.
@@ -5398,6 +5398,10 @@ gain was not shown with 2 against 2 processes; do not claim beyond H100, Qwen3 F
 
 **R-45 Sonnet pre-run review of E-39** (2026-10-27). AMEND_THEN_RUN (power, V1, V3, framing, budget); all
 fixed in E-39 amendment A1. Write-up: `dossier/REVIEW_E-39_PRERUN_2026-10-27.md`.
+
+**R-46 Sonnet post-run review of E-39** (2026-10-27). CONFIRM_WITH_SCOPE_LIMITS. The rule gives INCONCLUSIVE
+(4, 8, 16); only batch 8 has a lower bound above 1; batch 32 is a tie; round 1 was a cold low outlier;
+closing I-23 for Hopper block-FP8 (D-63, decided by the user) is justified as a decision, not as a proof.
 
 ---
 
@@ -6528,3 +6532,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: E-39 predeclared and amended, R-45.
 - 2026-10-27: E-39 result INCONCLUSIVE; resume point.
 - 2026-10-27: D-63 decided (I-23 closed for Hopper block-FP8).
+- 2026-10-27: R-46 (E-39 post-run review).
