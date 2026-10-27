@@ -192,8 +192,8 @@ maps every file to what it contains.
   (KL 0.6 to 0.8 x BF16, bar 0.5); Marlin MoE speed not BETTER (bs 8 +5.5% UNCLEAR, bs 256 WORSE).
   Results: `experiments/safedispatch_testA2/results/e38-rerun-20261027/` (summary.json, short.txt).
 - Runpod: 0 thesis Pods, 0 volumes (deleted 07:31 UTC).
-- TODO: post-run review (different model, D-29) not run yet; write README run report and E-38 result;
-  then the user picks the next idea (NVFP4 on Blackwell, or another).
+- Done: R-44 review, README Section 14, E-38 result. Next: the user decides D-63 and picks the next GPU
+  question.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4641,7 +4641,7 @@ KILL condition is trivially true for a safe set of {R}. A first draft said "clos
 condition"; R-42 refuted that wording (Section 8.1).
 
 **E-38 I-23 Test A2: a tolerance contract for Hopper block-FP8 backends** (predeclared 2026-10-26, I-23,
-D-61). STATUS: RUN 2026-10-27, INCOMPLETE (scoring defect). Package: `experiments/safedispatch_testA2/`.
+D-61). STATUS: RUN 2026-10-27 (first run INCOMPLETE; rerun D-62 KILL). Package: `experiments/safedispatch_testA2/`.
 Question: on one H100, is there a block-FP8 backend (or Marlin W8A16) that keeps GSM8K accuracy within
 2 pp of the default R (paired bootstrap non-inferiority, 1,319 problems) and stays within half of the
 BF16 anchor's teacher-forced KL and top-1 disagreement, and that is also faster than R by at least 3%
@@ -4666,6 +4666,11 @@ triton alias +0.00 pp; marlin +0.23 pp [-0.61, +1.06]; BF16 -0.30 pp; every cand
 82 to 134 of 1,319 outputs are identical to R_a. INTERPRETATION: exact match was not a quality
 contract. The defect is fixed (11 tests pass, one at the real size). Lessons: watch for every non-zero
 exit; time every per-item loop at the real size (PROTOCOL S3, RUNPOD Section 5).
+Rerun (D-62, 2026-10-27, Pod 79jekplym1wxsh, about $7.60; README Section 14): frozen decision KILL. All
+real candidates pass A1 (within about 1 pp of R) and fail A2 (TF KL 0.60 to 0.93 x BF16, top-1 0.72 to
+0.95 x BF16; bar 0.5). Marlin MoE speed not BETTER (batch 8 +5.5% UNCLEAR, batch 256 -10.7% WORSE).
+R-44 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS; open lead: a 5% to 7% Marlin MoE gain at batch 4 to 8 is not
+excluded by the 2 against 2 design. D-63 (recommendation): close I-23 for Hopper block-FP8.
 
 **E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
 SCREEN ONLY: an engineering screen, not a research result.
@@ -5371,6 +5376,10 @@ cell D speed tests before cell M (the only GO path); A2 was close to vacuous (sa
 forcing misses the decode path; speed power is limited (n = 2 against 2 processes, 3% band); code and
 README differed in four places; the budget was underestimated. All handled in E-38 amendment A1.
 Full write-up: `dossier/REVIEW_E-38_PRERUN_2026-10-26.md`.
+
+**R-44 Sonnet post-run review of the E-38 rerun** (2026-10-27). Verdict: CONFIRM_WITH_SCOPE_LIMITS. KILL is
+what the frozen rule gives; A2 fails on top-1 as well as the tail-dominated KL; "not BETTER" means a 3%
+gain was not shown with 2 against 2 processes; do not claim beyond H100, Qwen3 FP8, GSM8K.
 
 ---
 
@@ -6129,6 +6138,7 @@ proposed it and no acceptance is recorded.
 | D-60 | 2026-10-25 | Approve D-57 (the full E-36 A2 session on one H100 SXM, Pod limit 6 h 40 min, cap about $27) and D-51, with the L4 rehearsal first (cap 1 h, about $1) | User (picked "Full session (Recommended)" for the question "Which E-36 plan do you approve for the H100 run after the L4 rehearsal (rehearsal cap: 1 h, about $1)?") | Runpod H100 SXM $3.99/h on 2026-10-25 | Decided by the user. Rehearsal done; H100 run waits on amendment A3 |
 | D-61 | 2026-10-26 | After E-36 Session 1 and R-42: preregister Test A2 for I-23 with a tolerance contract (teacher-forced logprob distance on R's tokens, GSM8K accuracy as the primary metric, kill rules frozen first), including Marlin W8A16 and the fused activation-quantization variant; keep Session 1 labelled INCONCLUSIVE. Alternative: close I-23 for Hopper block-FP8 under exact match and move to NVFP4 on Blackwell | User (chose option 1, "Test 'good enough' instead of 'identical'", with "go ahead!") | Exact match makes every alternative unsafe; R is the fastest FP8 backend; only a tolerance contract can show usable headroom | Decided by the user 2026-10-26. Test A2 planned as E-38 |
 | D-62 | 2026-10-27 | After the incomplete E-38 run: rerun the missing parts (cell M scoring and the Marlin MoE speed A/B first, then cell D) on the kept network volume with the fixed code, cap about $10; or stop and delete the volume | User ("D-62: rerun the missing E-38 parts (cell M scoring and the Marlin MoE speed A/B first, then cell D) on the kept volume with the fixed code, cap $10.") | A1 passed for every MoE candidate, so the Marlin speed test now decides GO or KILL | Decided by the user 2026-10-27. Rerun in progress |
+| D-63 | 2026-10-27 | After the E-38 rerun (KILL) and R-44: close I-23 for Hopper block-FP8 at these configurations; keep NVFP4 on Blackwell as the only open I-23 cell; log the Marlin MoE batch 4 to 8 hint as an open lead | Recommendation (frozen rule and R-44). Not a decision | Every real backend fails A2, and no backend is 3% or more faster | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6496,3 +6506,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-26: E-38 predeclared and amended (A1), R-43, resume point.
 - 2026-10-27: E-38 H100 run (INCOMPLETE), partial A1 result, defect fix, lessons, D-62, resume point.
 - 2026-10-27: E-38 rerun KILL; resume point. Review pending.
+- 2026-10-27: E-38 rerun report, R-44, D-63.

@@ -183,3 +183,38 @@ INTERPRETATION: on GSM8K, every MoE backend keeps accuracy within 1 pp of R alth
 the outputs differ token by token. Exact match was not a quality contract. Whether Marlin is also
 faster (the only GO path) is still unmeasured.
 
+## 14. Rerun report (D-62, 2026-10-27): KILL
+
+What ran: Pod 79jekplym1wxsh, 1 x H100 SXM (GPU-942e1a01), US-MO-1, 05:38 to 07:31 UTC, about $7.60 (Pod
+time; billing read pending), network volume aqi8y8mku7 (deleted). Fresh results folder `a2r` (both cells,
+R_a again on the new GPU). 157 files copied with matching checksums. No run failed.
+
+Decision (frozen rule, A1 amendment): KILL. V1 to V5 pass in both cells; no errored candidate; anchors
+present; the Marlin MoE speed test is complete; no HEADROOM; no PIVOT.
+
+| Cell | Config | GSM8K | Diff vs R_a, 95% | TF KL / BF16 KL | TF top-1 / BF16 | A1 | A2 |
+|---|---|---|---|---|---|---|---|
+| D | R_a | 93.78% | | | | | |
+| D | cutlass | 93.63% | -0.15 [-1.06, +0.76] | 0.93 | 0.95 | pass | fail |
+| D | deep_gemm | 93.48% | -0.30 [-1.21, +0.61] | 0.60 | 0.72 | pass | fail |
+| D | marlin | 93.48% | -0.30 [-1.21, +0.61] | 0.76 | 0.84 | pass | fail |
+| D | triton | 93.63% | -0.15 [-1.14, +0.83] | 0.92 | 0.95 | pass | fail |
+| D | BF16 | | -0.83 [-1.82, +0.15] | 1 | 1 | | |
+| M | R_a | 95.07% | | | | | |
+| M | deep_gemm | 95.07% | +0.00 [-0.83, +0.83] | 0.82 | 0.91 | pass | fail |
+| M | flashinfer_cutlass | 95.07% | +0.00 [-0.83, +0.83] | 0.72 | 0.82 | pass | fail |
+| M | marlin | 95.07% | +0.00 [-0.76, +0.76] | 0.62 | 0.74 | pass | fail |
+| M | triton (alias) | 95.07% | +0.00 [+0.00, +0.00] | 0 | 0 | pass | pass |
+| M | BF16 | | -0.30 [-1.06, +0.45] | 1 | 1 | | |
+
+Marlin MoE speed (R, C, R, C): batch 8 ratio 1.055 [1.022, 1.070] UNCLEAR (band 3%); batch 256 0.893
+WORSE; no batch size BETTER.
+
+Post-run review R-44 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS. The KL means are tail-dominated (medians 2e-8 to
+1.5e-7, p99 0.04 to 0.07), but top-1 disagreement also fails. With 2 against 2 processes, "not BETTER"
+means "a gain of 3% or more was not shown"; a 5% to 7% Marlin gain at batch 4 to 8 is not excluded
+(open lead). Marlin fails A2, so even a real gain would give PIVOT, not GO. Not measured: dense speed
+(E-36 data used), other tasks, GPUs and models.
+Claim: on H100 with Qwen3 FP8 (8B dense, 30B-A3B MoE), no backend passed A1 and A2 and was 3% or more
+faster; GSM8K accuracy stays within about 1 pp of R for every backend; kernel-level deviation is 0.6 to 0.93
+of the FP8-against-BF16 deviation.
