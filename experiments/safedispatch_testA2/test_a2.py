@@ -136,3 +136,16 @@ def test_decode_prefix_stops_after_first_divergence() -> None:
     out = run_a2.compare_decode_prefix(ref, [[[(1, -0.1)], [(5, -0.1)], [(9, -0.1)]]], ["a"],
                                        {"a": [1, 2, 3]}, {"a": [1, 5, 9]})
     assert out["positions"] == 2 and out["top1_disagree_rate"] == 0.5
+
+
+def test_reference_round_trip_is_fast_at_realistic_size(tmp_path: Path) -> None:
+    """E-38 defect: the reference load must scale to about 400,000 positions (here 20,000 in under 2 s)."""
+    import time
+
+    dists = [[[(j, -0.1 * k) for k in range(20)] for j in range(400)] for _ in range(50)]
+    ids = [f"q{i}" for i in range(50)]
+    run_a2.save_reference(dists, ids, tmp_path / "ref.npz")
+    t = time.time()
+    ref = run_a2.load_reference(tmp_path / "ref.npz")
+    assert time.time() - t < 2.0
+    assert len(ref["q3"]) == 400 and ref["q3"][5][0] == (5, -0.0)

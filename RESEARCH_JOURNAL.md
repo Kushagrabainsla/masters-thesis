@@ -187,17 +187,13 @@ maps every file to what it contains.
 **As of 2026-10-26 22:00 UTC, after E-36 Session 1 on the H100 and R-42.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
-- State: E-36 Session 1 ran on one H100 SXM (Pod sm57l4ssfngmvm, EU-NL-1, about $11.20) and is at stage
-  S9 done (post-run review R-42: CONFIRM_WITH_SCOPE_LIMITS). Frozen decision: INCONCLUSIVE (safe set =
-  {R}). Every FP8 alternative flips 87.5% to 95.3% of prompts; R is the fastest FP8 backend. Under exact
-  match, headroom is untested, not absent (Section 8.1 row 67). Run report: package README Section 13.
-- Runpod: 0 thesis Pods, 0 thesis volumes (registry all ended; MCP reads 2026-10-26 21:33). Thesis spend
-  so far about $12.55 (rehearsals about $1.35 plus the H100 run).
-- Next: E-38 (Test A2) is prepared and reviewed (stage S3 done; R-43 handled in amendment A1). It waits
-  for the user's approval of the H100 spend (about 2 h 45 min, cap $15). Follow runbook Section 2a with
-  the E-38 session script `experiments/safedispatch_testA2/session_a2.sh` and a 200 GB network volume.
-- Uncommitted: the H100 path fix in `session1.sh`, README Section 13, R-42 review file, journal, hardware
-  log, ledger (74 H100 rows), Pod registry. Results folders stay out of git (large).
+- State: E-38 (Test A2) ran on 2026-10-27 and is INCOMPLETE: a reference-load defect made every scoring
+  step time out ($14.32 spent). The MoE accuracy data survived: every candidate keeps GSM8K accuracy
+  within 1 pp of R (Marlin +0.23 pp), so all pass A1. Not measured: A2 (teacher-forced KL), the Marlin
+  speed test (the only GO path), and the dense cell. The defect is fixed and tested at the real size.
+- Runpod: one thesis resource is live: network volume aqi8y8mku7 (200 GB, US-MO-1, about $0.47 per day)
+  with the four models, R_a's reference files and all cell M completions. No Pods.
+- Next: D-62 decided (user): rerun the missing E-38 parts on the kept volume, cap $10.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4645,7 +4641,7 @@ KILL condition is trivially true for a safe set of {R}. A first draft said "clos
 condition"; R-42 refuted that wording (Section 8.1).
 
 **E-38 I-23 Test A2: a tolerance contract for Hopper block-FP8 backends** (predeclared 2026-10-26, I-23,
-D-61). STATUS: PREDECLARED, AMENDED (A1 after R-43), NOT RUN. Package: `experiments/safedispatch_testA2/`.
+D-61). STATUS: RUN 2026-10-27, INCOMPLETE (scoring defect). Package: `experiments/safedispatch_testA2/`.
 Question: on one H100, is there a block-FP8 backend (or Marlin W8A16) that keeps GSM8K accuracy within
 2 pp of the default R (paired bootstrap non-inferiority, 1,319 problems) and stays within half of the
 BF16 anchor's teacher-forced KL and top-1 disagreement, and that is also faster than R by at least 3%
@@ -4661,7 +4657,15 @@ cap 3 h new runs, Pod limit 3 h 30 min, $15.
 Verification (FACT, Mac): 10 unit tests pass; two vLLM CPU dry runs (Qwen3-0.6B, 4 problems) passed
 mechanically (warm-ups, reference distributions, teacher-forced and decode-prefix scoring, accept,
 speed A/B, decision). Pre-run review R-43 (Sonnet): AMEND_THEN_RUN, all 13 findings handled in A1.
-Result: none yet.
+Result (2026-10-27, Pod tlkcp7qylpj9re, 1 x H100, US-MO-1, $14.32; package README Section 13):
+INCOMPLETE. A software defect (the reference load decompressed the whole array per position, about
+503 min per array) made every scoring step time out; the cap then skipped the Marlin speed test and
+cell D. The frozen `decide` printed INVALID, but V3 to V5 were not measured. Surviving data (FACT, cell
+M, 1,319 problems): R_a 95.07%; R_b identical (1,319 of 1,319); deep_gemm, flashinfer_cutlass and the
+triton alias +0.00 pp; marlin +0.23 pp [-0.61, +1.06]; BF16 -0.30 pp; every candidate passes A1 although
+82 to 134 of 1,319 outputs are identical to R_a. INTERPRETATION: exact match was not a quality
+contract. The defect is fixed (11 tests pass, one at the real size). Lessons: watch for every non-zero
+exit; time every per-item loop at the real size (PROTOCOL S3, RUNPOD Section 5).
 
 **E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
 SCREEN ONLY: an engineering screen, not a research result.
@@ -6124,6 +6128,7 @@ proposed it and no acceptance is recorded.
 | D-59 | 2026-10-25 | The Runpod account is shared with other sessions. Label every thesis resource (`msthesis-<experiment>-<purpose>-<yyyymmdd>`, env `THESIS_TAG=msthesis`), register its id in `experiments/runpod/pods.jsonl` at creation, and change only registered resources; everything else is read-only. The balance check counts other running spend | User ("label the thesis related things with a different identifier so that we only handle those things, as other sessions will be working on the same account.") | Another session's H200 Pod used the same account and balance on 2026-10-25 | Decided by the user. Done |
 | D-60 | 2026-10-25 | Approve D-57 (the full E-36 A2 session on one H100 SXM, Pod limit 6 h 40 min, cap about $27) and D-51, with the L4 rehearsal first (cap 1 h, about $1) | User (picked "Full session (Recommended)" for the question "Which E-36 plan do you approve for the H100 run after the L4 rehearsal (rehearsal cap: 1 h, about $1)?") | Runpod H100 SXM $3.99/h on 2026-10-25 | Decided by the user. Rehearsal done; H100 run waits on amendment A3 |
 | D-61 | 2026-10-26 | After E-36 Session 1 and R-42: preregister Test A2 for I-23 with a tolerance contract (teacher-forced logprob distance on R's tokens, GSM8K accuracy as the primary metric, kill rules frozen first), including Marlin W8A16 and the fused activation-quantization variant; keep Session 1 labelled INCONCLUSIVE. Alternative: close I-23 for Hopper block-FP8 under exact match and move to NVFP4 on Blackwell | User (chose option 1, "Test 'good enough' instead of 'identical'", with "go ahead!") | Exact match makes every alternative unsafe; R is the fastest FP8 backend; only a tolerance contract can show usable headroom | Decided by the user 2026-10-26. Test A2 planned as E-38 |
+| D-62 | 2026-10-27 | After the incomplete E-38 run: rerun the missing parts (cell M scoring and the Marlin MoE speed A/B first, then cell D) on the kept network volume with the fixed code, cap about $10; or stop and delete the volume | User ("D-62: rerun the missing E-38 parts (cell M scoring and the Marlin MoE speed A/B first, then cell D) on the kept volume with the fixed code, cap $10.") | A1 passed for every MoE candidate, so the Marlin speed test now decides GO or KILL | Decided by the user 2026-10-27. Rerun in progress |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6489,3 +6494,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-26: rehearsal 2e PASS, R-41, runbook network volume, resume point rewritten.
 - 2026-10-26: E-36 Session 1 result, R-42, D-61, Section 8.1 row 67, resume point rewritten.
 - 2026-10-26: E-38 predeclared and amended (A1), R-43, resume point.
+- 2026-10-27: E-38 H100 run (INCOMPLETE), partial A1 result, defect fix, lessons, D-62, resume point.

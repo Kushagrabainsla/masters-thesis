@@ -153,3 +153,33 @@ AMEND_THEN_RUN, `dossier/REVIEW_E-38_PRERUN_2026-10-26.md`) found the issues fix
 8. Budget, re-estimated: the four models are about 117 GB (volume 200 GB); setup with downloads about
    15 to 20 min; cell M accuracy about 50 to 60 min; the Marlin speed A/B about 20 to 25 min; cell D
    accuracy about 40 to 50 min. No new run after 3 h, Pod limit 3 h 30 min, cost cap $15 (at $3.99/h).
+
+## 13. H100 run report (2026-10-27): INCOMPLETE
+
+What ran: Pod tlkcp7qylpj9re, 1 x H100 SXM, US-MO-1, 00:14 to 03:49 UTC, $14.32 (billing read), network
+volume aqi8y8mku7 (200 GB). The frozen `decide` printed "INVALID (cell_M: V3, V4, V5)", but that label
+only reflects missing files: V3 to V5 were never measured. The correct status is INCOMPLETE.
+
+Defect (FACT): `load_reference` read `z["toks"][p]` inside the per-position loop. An `NpzFile` decompresses
+the whole array on every access, so loading the 383,821-position reference took about 503 min per
+array. Every non-reference run hit the 25-minute timeout (exit 124) in its scoring step, after its
+accuracy pass had finished. The time cap then skipped the Marlin speed test and cell D. The CPU dry
+runs did not show it (192 positions). Fixed: each array is loaded once; a unit test now loads 20,000
+positions in under 2 s (11 tests pass). Monitoring gap: the watcher looked only for the acceptance line,
+so it missed the first exit 124 at 01:14.
+
+Result that survived (FACT, cell M, all 1,319 problems; exploratory because A2 and speed are missing):
+| Config | Accuracy | Difference against R_a, 95% paired interval | Same tokens as R_a | A1 |
+|---|---|---|---|---|
+| R_a (auto) | 95.07% | reference | | |
+| R_b | 95.07% | +0.00 [+0.00, +0.00] | 1,319 | pass |
+| deep_gemm | 95.07% | +0.00 [-0.83, +0.83] | 82 | pass |
+| flashinfer_cutlass | 95.07% | +0.00 [-0.83, +0.83] | 124 | pass |
+| marlin (W8A16) | 95.30% | +0.23 [-0.61, +1.06] | 134 | pass |
+| triton (alias) | 95.07% | +0.00 [+0.00, +0.00] | 1,319 | pass |
+| BF16 anchor | 94.77% | -0.30 [-1.06, +0.45] | 79 | pass |
+V1 passes (R_a = R_b exactly on 1,319 of 1,319), V2 passes (95.07%), and the alias equals R_a exactly.
+INTERPRETATION: on GSM8K, every MoE backend keeps accuracy within 1 pp of R although 90% or more of
+the outputs differ token by token. Exact match was not a quality contract. Whether Marlin is also
+faster (the only GO path) is still unmeasured.
+

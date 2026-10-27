@@ -74,6 +74,7 @@ Terminate the rehearsal Pod, then book the real one.
 | After setup | `setup done` in the log; telemetry grows; the GPU in `gpu.csv` is the planned GPU | Abort rule 1 (`PROTOCOL.md`) |
 | After the first run | `run.json` ok; no kernel-selection WARNING; the profile table exists | Read `log.txt`; fix only with an amendment |
 | Every hour | Elapsed cost against the cap; balance | Abort rules 2 and 5 |
+| Every run | The watcher matches any non-zero exit (`exit [1-9]`), not only the success markers | Stop and diagnose before the next run (E-38: a missed exit 124 cost about 3 h) |
 | End | `done after` in the log; Pod stopped (AUTO_STOP) | Stop the Pod with the MCP tools |
 
 ## 6. Teardown (stage S7)

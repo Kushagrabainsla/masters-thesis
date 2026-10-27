@@ -129,11 +129,14 @@ def save_reference(dists, ids, path: Path) -> None:
 def load_reference(path: Path) -> dict[str, list[list[tuple[int, float]]]]:
     import numpy as np
 
+    # E-38 H100 run 2026-10-27: z["toks"] reads and decompresses the whole array on every access, so the
+    # old per-position z["toks"][p] took about 503 min per array at 383,821 positions. Load each once.
     z = np.load(path)
+    ids, offsets, toks, lps = z["ids"], z["offsets"], z["toks"].tolist(), z["lps"].tolist()
     ref = {}
-    for i, rid in enumerate(z["ids"]):
-        a, b = int(z["offsets"][i]), int(z["offsets"][i + 1])
-        ref[str(rid)] = [[(int(t), float(v)) for t, v in zip(z["toks"][p], z["lps"][p]) if t >= 0] for p in range(a, b)]
+    for i, rid in enumerate(ids):
+        a, b = int(offsets[i]), int(offsets[i + 1])
+        ref[str(rid)] = [[(t, v) for t, v in zip(toks[p], lps[p]) if t >= 0] for p in range(a, b)]
     return ref
 
 
