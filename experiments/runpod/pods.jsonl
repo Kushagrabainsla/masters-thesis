@@ -26,3 +26,7 @@
 {"at": "2026-10-27T05:38:19Z", "event": "created", "experiment": "E-38", "id": "79jekplym1wxsh", "kind": "pod", "name": "msthesis-e-38-rerun-20261027", "note": "H100 SXM E-38 rerun (D-62), US-MO-1, 3.99/h, network volume aqi8y8mku7, created 2026-10-27T05:38:12Z"}
 {"at": "2026-10-27T07:30:49Z", "event": "ended", "id": "79jekplym1wxsh", "note": "terminated 2026-10-27 07:31 after copy (157 checksums match)"}
 {"at": "2026-10-27T07:30:49Z", "event": "ended", "id": "aqi8y8mku7", "note": "deleted 2026-10-27 07:31"}
+{"at": "2026-10-27T16:58:02Z", "event": "created", "experiment": "E-39", "id": "lz4isl2vah", "kind": "volume", "name": "msthesis-e-39-volume-20261027", "note": "80 GB STANDARD, US-MO-1"}
+{"at": "2026-10-27T16:58:10Z", "event": "created", "experiment": "E-39", "id": "cj79arezidx9ax", "kind": "pod", "name": "msthesis-e-39-session-20261027", "note": "H100 SXM, US-MO-1, 3.99/h, volume lz4isl2vah, created 2026-10-27T16:58:03Z"}
+{"at": "2026-10-27T18:32:56Z", "event": "ended", "id": "cj79arezidx9ax", "note": "terminated 2026-10-27 18:15 after copy (74 checksums match)"}
+{"at": "2026-10-27T18:32:56Z", "event": "ended", "id": "lz4isl2vah", "note": "deleted 2026-10-27 18:15"}

@@ -192,8 +192,9 @@ maps every file to what it contains.
   (KL 0.6 to 0.8 x BF16, bar 0.5); Marlin MoE speed not BETTER (bs 8 +5.5% UNCLEAR, bs 256 WORSE).
   Results: `experiments/safedispatch_testA2/results/e38-rerun-20261027/` (summary.json, short.txt).
 - Runpod: 0 thesis Pods, 0 volumes (deleted 07:31 UTC).
-- Done: R-44, E-38 report. E-39 (Marlin MoE speed) prepared and reviewed (R-45); waits for the user's
-  H100 approval (cap $8). D-63 open.
+- Done: E-39 ran 2026-10-27 (about $5.20): INCONCLUSIVE; Marlin MoE +1% to 2.5% at batch 4 to 16, slower
+  elsewhere. 0 Pods, 0 volumes. Next: post-run review of E-39; the user decides D-63 (close I-23 for
+  Hopper) and the next question.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4672,12 +4673,19 @@ real candidates pass A1 (within about 1 pp of R) and fail A2 (TF KL 0.60 to 0.93
 R-44 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS; open lead: a 5% to 7% Marlin MoE gain at batch 4 to 8 is not
 excluded by the 2 against 2 design. D-63 (recommendation): close I-23 for Hopper block-FP8.
 
-**E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: PREDECLARED,
-AMENDED (A1 after R-45), NOT RUN. Package: `experiments/marlin_moe_speed/`. Question: is
+**E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
+INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
 `--moe-backend marlin` at least 3% faster than R for Qwen3-30B-A3B-FP8 at batch 4, 8, 16 or 32 (10 paired
 rounds, one-sided t, Bonferroni over 4)? Accuracy reused from E-38 (Marlin = R on GSM8K); E-38's A2 retired
 post hoc; a GO is PIVOT-grade. GO resolves about 5.5% or more. Cap $8. Tests: 7 pass.
-Result: none yet.
+Result (2026-10-27, Pod cj79arezidx9ax, 1 x H100 SXM, US-MO-1, about $5.20; 10 complete rounds, V2 and V3
+pass, no hard slowdown, 74 checksums match): frozen decision INCONCLUSIVE (4, 8, 16). Marlin / R ratio
+(one-sided bounds at alpha 0.0125): batch 4 1.015 [0.983, 1.047]; batch 8 1.025 [1.002, 1.049]; batch 16
+1.011 [0.992, 1.031]; batch 32 0.995 [0.976, 1.015]. Reported: batch 1 0.949, 2 0.959, 64 0.959, 128 0.976,
+256 0.887 (all below 1). INTERPRETATION: Marlin MoE is about 1% to 2.5% faster at batch 4 to 16 (batch 8 is
+above 1 at this level) and slower everywhere else; the gain is below the 3% bar and its upper bound is
+under 5%. A batch-dependent dispatch would gain at most a few percent on a narrow band. Post-run review
+pending.
 
 **E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
 SCREEN ONLY: an engineering screen, not a research result.
@@ -6518,3 +6526,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: E-38 rerun KILL; resume point. Review pending.
 - 2026-10-27: E-38 rerun report, R-44, D-63.
 - 2026-10-27: E-39 predeclared and amended, R-45.
+- 2026-10-27: E-39 result INCONCLUSIVE; resume point.

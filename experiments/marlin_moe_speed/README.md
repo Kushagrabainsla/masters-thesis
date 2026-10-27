@@ -75,3 +75,12 @@ R-45 (Sonnet pre-run review): AMEND_THEN_RUN.
 5. Budget: about 90 min with setup (up to 25 min pull and download) and 20 processes; no new round after
    95 min of session time; watchdog at 105 min; cost cap $8.
 
+## Result (2026-10-27)
+Result (2026-10-27, Pod cj79arezidx9ax, 1 x H100 SXM, US-MO-1, about $5.20; 10 complete rounds, V2 and V3
+pass, no hard slowdown, 74 checksums match): frozen decision INCONCLUSIVE (4, 8, 16). Marlin / R ratio
+(one-sided bounds at alpha 0.0125): batch 4 1.015 [0.983, 1.047]; batch 8 1.025 [1.002, 1.049]; batch 16
+1.011 [0.992, 1.031]; batch 32 0.995 [0.976, 1.015]. Reported: batch 1 0.949, 2 0.959, 64 0.959, 128 0.976,
+256 0.887 (all below 1). INTERPRETATION: Marlin MoE is about 1% to 2.5% faster at batch 4 to 16 (batch 8 is
+above 1 at this level) and slower everywhere else; the gain is below the 3% bar and its upper bound is
+under 5%. A batch-dependent dispatch would gain at most a few percent on a narrow band. Post-run review
+pending.
