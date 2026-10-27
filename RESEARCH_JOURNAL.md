@@ -193,8 +193,8 @@ maps every file to what it contains.
   Results: `experiments/safedispatch_testA2/results/e38-rerun-20261027/` (summary.json, short.txt).
 - Runpod: 0 thesis Pods, 0 volumes (deleted 07:31 UTC).
 - Done: E-39 ran 2026-10-27 (about $5.20): INCONCLUSIVE; Marlin MoE +1% to 2.5% at batch 4 to 16, slower
-  elsewhere. 0 Pods, 0 volumes. R-46 done. D-63 decided (user). Next: E-40, I-23 NVFP4 on one B200
-  (user, 2026-10-27), prepared on the Mac.
+  elsewhere. 0 Pods, 0 volumes. R-46 done. D-63 decided (user). E-40 (I-23 NVFP4, one B200) is prepared
+  and reviewed (R-47); it waits for the user's spend approval (cap $25).
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4673,6 +4673,13 @@ real candidates pass A1 (within about 1 pp of R) and fail A2 (TF KL 0.60 to 0.93
 R-44 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS; open lead: a 5% to 7% Marlin MoE gain at batch 4 to 8 is not
 excluded by the 2 against 2 design. D-63 (recommendation): close I-23 for Hopper block-FP8.
 
+**E-40 I-23 NVFP4 backend choice on one B200** (predeclared 2026-10-27, I-23, user request). STATUS:
+PREDECLARED, AMENDED (A1 after R-47), NOT RUN. Package: `experiments/nvfp4_dispatch/`. Screen every NVFP4
+linear (cell D, nvidia/Qwen3-8B-NVFP4) and MoE (cell M, nvidia/Qwen3-30B-A3B-NVFP4) backend once, keep the
+best per cell (ratio at least 1.02), check GSM8K A1, then 6 paired rounds. GO: A1 pass and a lower bound
+at least 1.03 at batch 1, 8, 32 or 128. Cap $25. Tests: 5 pass.
+Result: none yet.
+
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
 `--moe-backend marlin` at least 3% faster than R for Qwen3-30B-A3B-FP8 at batch 4, 8, 16 or 32 (10 paired
@@ -5402,6 +5409,9 @@ fixed in E-39 amendment A1. Write-up: `dossier/REVIEW_E-39_PRERUN_2026-10-27.md`
 **R-46 Sonnet post-run review of E-39** (2026-10-27). CONFIRM_WITH_SCOPE_LIMITS. The rule gives INCONCLUSIVE
 (4, 8, 16); only batch 8 has a lower bound above 1; batch 32 is a tie; round 1 was a cold low outlier;
 closing I-23 for Hopper block-FP8 (D-63, decided by the user) is justified as a decision, not as a proof.
+
+**R-47 Sonnet pre-run review of E-40** (2026-10-27). AMEND_THEN_RUN: broken NVFP4 MoE alias regex (fixed),
+budget off by 2x (scope cut), R_2 order, timeouts, AOT gate. Write-up: `dossier/REVIEW_E-40_PRERUN_2026-10-27.md`.
 
 ---
 
@@ -6533,3 +6543,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: E-39 result INCONCLUSIVE; resume point.
 - 2026-10-27: D-63 decided (I-23 closed for Hopper block-FP8).
 - 2026-10-27: R-46 (E-39 post-run review).
+- 2026-10-27: E-40 predeclared and amended, R-47.

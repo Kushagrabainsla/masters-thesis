@@ -72,7 +72,8 @@ def accuracy_run(llm, items, args, out: Path):
     """A1 (R-43): greedy with top-20 logprobs, so the decode path can be compared with R_a (decode_prefix)."""
     from vllm import SamplingParams
 
-    params = SamplingParams(temperature=0.0, max_tokens=args.max_tokens, logprobs=TOPK, seed=0)
+    params = SamplingParams(temperature=0.0, max_tokens=args.max_tokens,
+                            logprobs=None if getattr(args, "no_score", False) else TOPK, seed=0)
     started = time.time()
     results = llm.generate([x["prompt"] for x in items], params, use_tqdm=False)
     seconds = time.time() - started
@@ -206,6 +207,7 @@ def main() -> None:
     parser.add_argument("--max-model-len", type=int, default=4096)
     parser.add_argument("--gpu-memory-utilization", type=float, default=0.9)
     parser.add_argument("--limit", type=int, default=0, help="first N problems only (dry run)")
+    parser.add_argument("--no-score", action="store_true", help="E-40: accuracy only (no logprobs, no scoring)")
     parser.add_argument("--warmup-problems", type=int, default=64)
     parser.add_argument("--warmup-tokens", type=int, default=64)
     args = parser.parse_args()
@@ -224,11 +226,18 @@ def main() -> None:
             args.max_tokens = args.warmup_tokens
             acc, _ = accuracy_run(llm, items[: args.warmup_problems], args, args.out)
             record.update(acc)
-            rows = [json.loads(l) for l in (args.out / "completions.jsonl").read_text().splitlines()]
-            score(llm, rows[:16])
+            if not args.no_score:
+                rows = [json.loads(l) for l in (args.out / "completions.jsonl").read_text().splitlines()]
+                score(llm, rows[:16])
         else:
             acc, decode = accuracy_run(llm, items, args, args.out)
             record.update(acc)
+            if args.no_score:
+                record["status"] = "ok"
+                record["finished_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+                (args.out / "run.json").write_text(json.dumps(record, indent=1))
+                print(json.dumps({"status": "ok", "accuracy": record.get("accuracy")}))
+                return
             own = [json.loads(l) for l in (args.out / "completions.jsonl").read_text().splitlines()]
             own_ids = [r["id"] for r in own]
             started = time.time()
