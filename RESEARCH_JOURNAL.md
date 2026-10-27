@@ -196,7 +196,9 @@ maps every file to what it contains.
   elsewhere. 0 Pods, 0 volumes. R-46 done. D-63 decided (user). E-40 ran 2026-10-27 (about $9): INCONCLUSIVE;
   the default NVFP4 backend is fastest at batch 1 to 128; open lead at dense batch 256. 0 Pods, 0 volumes.
   R-48 done (E-40 confirmed with scope limits). E-41 (dense NVFP4 large-batch paired test) predeclared in
-  `experiments/nvfp4_large_batch/`; NOT RUN. R-49 done, A1 applied, tests and Mac stub run pass. Next: the user approves the spend (cap $16) or closes I-23.
+  `experiments/nvfp4_large_batch/`; RUN 2026-10-27 (about $10.70): INCONCLUSIVE, no evidence of a lead; cutlass at most about 4% at batch 256 and
+  6% slower at 128; cudnn fails at start 7 of 10 times. 0 Pods, 0 volumes. Next: E-41 post-run review; the user
+  decides whether to close I-23 for NVFP4 (draft D-64).
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4696,11 +4698,15 @@ INTERPRETATION: as on Hopper, the default NVFP4 backend is the fastest at batch 
 The only possible headroom is at batch 256 in the dense cell. R-48 (post-run review): CONFIRM_WITH_SCOPE_LIMITS;
 the batch-256 lead is inside noise (alias paired sd about 3.4% at 256).
 
-**E-41 Dense NVFP4 large-batch paired test on one B200** (predeclared 2026-10-27, I-23). STATUS: NOT RUN.
+**E-41 Dense NVFP4 large-batch paired test on one B200** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
+INCONCLUSIVE (no evidence of a lead).
 Package: `experiments/nvfp4_large_batch/`. Question: is flashinfer_cudnn or flashinfer_cutlass at least 3%
 faster than R (CuTe-DSL) for nvidia/Qwen3-8B-NVFP4 at batch 256 or 512, with GSM8K A1? 8 paired rounds,
 one-sided t, Bonferroni over 4. Kill criteria: README Section 5 (written before any run). Amended (A1, R-49):
 10 rounds, V2 at least 6 good rounds, watchdog 1 h 50 min, expected about $11, cap $16.
+Result (Pod rm31hzrhgrql7x, about $10.70, 140 checksums match): all three backends give identical GSM8K tokens
+(92.27%). cudnn: 7 of 10 runs failed at start (CudnnPlanBuildInCaptureError), V2 fails. cutlass (10 rounds):
+batch 128 0.937 [0.927, 0.947], 256 1.015 [0.988, 1.043], 512 1.001 [0.985, 1.018]. The E-40 lead was noise.
 
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
@@ -6576,3 +6582,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: E-40 result INCONCLUSIVE; resume point.
 - 2026-10-27: R-48 (E-40 post-run review); E-41 predeclared.
 - 2026-10-27: E-41 amended (A1), R-49.
+- 2026-10-27: E-41 result INCONCLUSIVE (no evidence of a lead); resume point.

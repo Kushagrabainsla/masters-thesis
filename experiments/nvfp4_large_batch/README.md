@@ -1,6 +1,6 @@
 # E-41: Dense NVFP4 large-batch lead on one B200 (preregistration)
 
-Status: PREDECLARED 2026-10-27. NOT RUN. Idea: I-23. Follows E-40 (open lead). User request 2026-10-27:
+Status: PREDECLARED 2026-10-27, AMENDED (A1 after R-49). RUN 2026-10-27: INCONCLUSIVE. Idea: I-23. Follows E-40 (open lead). User request 2026-10-27:
 "plan a short paired test of the dense batch-256 lead (cudnn, flashinfer_cutlass) on a B200."
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics.
 
@@ -70,3 +70,18 @@ R-49 (Sonnet pre-run review): AMEND_THEN_RUN, no code bug. Changes:
    parsed (V0 true). Stub session (stub run_cell.py and run_a2.py, shims for timeout, pip, nvidia-smi):
    a failed run is logged with exit 1, a resume redoes only that run (49 skips), the time cap skips
    new work, and the decision is GO for a stub 1.08 gain and not for a stub 1.00.
+
+## Result
+Result (2026-10-27, Pod rm31hzrhgrql7x, 1 x B200 sm_100, US-NE-1, 22:34 to 23:56, about $10.70 by the
+balance; 140 checksums match): frozen decision INCONCLUSIVE (flashinfer_cudnn paired speed incomplete;
+flashinfer_cutlass not resolved; every deciding ratio below 1.03: no evidence of a lead). V0 and V3 pass.
+FACT, accuracy: R, flashinfer_cudnn and flashinfer_cutlass give the same tokens on all 1,319 GSM8K items
+(92.27%), with three different kernels in the logs (CuTe-DSL, cuDNN, CUTLASS).
+FACT, flashinfer_cudnn: 7 of 10 C runs failed at start with `CudnnPlanBuildInCaptureError` (FlashInfer
+refuses a cuDNN plan build during CUDA graph capture). 3 good rounds (V2 needs 6). Ratios on 3 rounds:
+256 1.017 [0.903, 1.145], 512 1.002 [0.951, 1.056].
+FACT, flashinfer_cutlass (10 good rounds; ratio [one-sided bounds]): 128 0.937 [0.927, 0.947],
+256 1.015 [0.988, 1.043], 384 1.010 [0.986, 1.035], 512 1.001 [0.985, 1.018].
+INTERPRETATION: the E-40 lead (cudnn 1.07, cutlass 1.05 at batch 256) was mostly noise. Cutlass is at
+most about 4% faster at batch 256 and is 6% slower at batch 128. cuDNN is not usable with CUDA graphs
+in this image without the FlashInfer override. The default stays the best choice across batch sizes.

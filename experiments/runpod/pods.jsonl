@@ -34,3 +34,7 @@
 {"at": "2026-10-27T20:53:52Z", "event": "created", "experiment": "E-40", "id": "50uqmcyz64wqvu", "kind": "pod", "name": "msthesis-e-40-session-20261027", "note": "B200, US-NE-1, 7.99/h, volume ict9e8p0tg, created 2026-10-27T20:53:44Z"}
 {"at": "2026-10-27T22:01:15Z", "event": "ended", "id": "50uqmcyz64wqvu", "note": "terminated 2026-10-27 22:01 after copy (118 checksums match)"}
 {"at": "2026-10-27T22:01:15Z", "event": "ended", "id": "ict9e8p0tg", "note": "deleted 2026-10-27 22:01"}
+{"at": "2026-10-27T22:34:45Z", "event": "created", "experiment": "E-41", "id": "3ty3mnlrsn", "kind": "volume", "name": "msthesis-e-41-volume-20261027", "note": "60 GB STANDARD, US-NE-1"}
+{"at": "2026-10-27T22:34:45Z", "event": "created", "experiment": "E-41", "id": "rm31hzrhgrql7x", "kind": "pod", "name": "msthesis-e-41-session-20261027", "note": "B200, US-NE-1, 7.99/h, volume 3ty3mnlrsn, created 2026-10-27T22:34:33Z"}
+{"at": "2026-10-27T23:56:32Z", "event": "ended", "id": "rm31hzrhgrql7x", "note": "terminated 2026-10-27 23:56 after copy (140 checksums match)"}
+{"at": "2026-10-27T23:56:32Z", "event": "ended", "id": "3ty3mnlrsn", "note": "deleted 2026-10-27 23:56"}
