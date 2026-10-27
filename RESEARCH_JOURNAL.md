@@ -193,8 +193,9 @@ maps every file to what it contains.
   match, headroom is untested, not absent (Section 8.1 row 67). Run report: package README Section 13.
 - Runpod: 0 thesis Pods, 0 thesis volumes (registry all ended; MCP reads 2026-10-26 21:33). Thesis spend
   so far about $12.55 (rehearsals about $1.35 plus the H100 run).
-- Next: D-61 decided (user): preregister Test A2 (E-38) with a tolerance contract, prepared on the Mac
-  (stages S1 to S3), then ask the user for the H100 spend. Follow `docs/experiments/PROTOCOL.md`.
+- Next: E-38 (Test A2) is prepared and reviewed (stage S3 done; R-43 handled in amendment A1). It waits
+  for the user's approval of the H100 spend (about 2 h 45 min, cap $15). Follow runbook Section 2a with
+  the E-38 session script `experiments/safedispatch_testA2/session_a2.sh` and a 200 GB network volume.
 - Uncommitted: the H100 path fix in `session1.sh`, README Section 13, R-42 review file, journal, hardware
   log, ledger (74 H100 rows), Pod registry. Results folders stay out of git (large).
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
@@ -4643,6 +4644,25 @@ untested. Exact match detects any numerical change (eager mode alone flips 233 a
 KILL condition is trivially true for a safe set of {R}. A first draft said "close to the KILL
 condition"; R-42 refuted that wording (Section 8.1).
 
+**E-38 I-23 Test A2: a tolerance contract for Hopper block-FP8 backends** (predeclared 2026-10-26, I-23,
+D-61). STATUS: PREDECLARED, AMENDED (A1 after R-43), NOT RUN. Package: `experiments/safedispatch_testA2/`.
+Question: on one H100, is there a block-FP8 backend (or Marlin W8A16) that keeps GSM8K accuracy within
+2 pp of the default R (paired bootstrap non-inferiority, 1,319 problems) and stays within half of the
+BF16 anchor's teacher-forced KL and top-1 disagreement, and that is also faster than R by at least 3%
+(R, C, R, C in one Pod, `compare_runs.py` verdict BETTER) at some batch size?
+Predeclared rule: GO = a candidate with HEADROOM (acceptable and BETTER) in a valid cell; KILL = both
+cells valid, no errored candidate, anchors present, the planned Marlin MoE speed test complete, and no
+HEADROOM; PIVOT = faster but not acceptable; otherwise INCONCLUSIVE; a cell failing V1 to V5 is INVALID
+for that cell. Prior (HYPOTHESIS): KILL is most likely; the only GO path is MoE Marlin (E-36 B2: 1% to 5%
+faster at batch 4 to 32). Speed runs only for MoE Marlin; the other candidates are slower in E-36 data.
+Setup: vllm/vllm-openai:v0.32.0 with the E-36 fixes; Qwen3-8B-FP8 and Qwen3-30B-A3B-FP8, BF16 anchors
+Qwen3-8B and Qwen3-30B-A3B; greedy, 768 tokens, max_num_seqs 256; budget about 2 h 15 min to 2 h 45 min,
+cap 3 h new runs, Pod limit 3 h 30 min, $15.
+Verification (FACT, Mac): 10 unit tests pass; two vLLM CPU dry runs (Qwen3-0.6B, 4 problems) passed
+mechanically (warm-ups, reference distributions, teacher-forced and decode-prefix scoring, accept,
+speed A/B, decision). Pre-run review R-43 (Sonnet): AMEND_THEN_RUN, all 13 findings handled in A1.
+Result: none yet.
+
 **E-37 Control-plane complexity screen** (predeclared and run 2026-10-21, I-161, I-150). STATUS: RUN.
 SCREEN ONLY: an engineering screen, not a research result.
 Question: S1, what does one SGLang `evict()` call cost as a function of the number E of evictable leaves,
@@ -5340,6 +5360,13 @@ A MoE Marlin warm-up is a nondeterminism flag. (8) FACT: dense deep_gemm and R s
 use different activation-quantization kernels. (9) FACT: validity holds.
 Verdicts: E-36 Session 1 CONFIRM_WITH_SCOPE_LIMITS. I-23 stays MEASURE-FIRST; next step D-61.
 Full write-up: `dossier/REVIEW_E-36_SESSION1_POSTRUN_2026-10-26.md`.
+
+**R-43 Sonnet pre-run review of E-38 (I-23 Test A2)** (2026-10-26).
+Scope: the E-38 package and the first dry run. Verdict: AMEND_THEN_RUN. Main findings: the session ran
+cell D speed tests before cell M (the only GO path); A2 was close to vacuous (same FP8 weights); teacher
+forcing misses the decode path; speed power is limited (n = 2 against 2 processes, 3% band); code and
+README differed in four places; the budget was underestimated. All handled in E-38 amendment A1.
+Full write-up: `dossier/REVIEW_E-38_PRERUN_2026-10-26.md`.
 
 ---
 
@@ -6461,3 +6488,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-26: pause, resume point, rehearsal 2 attempts, hardware log rows.
 - 2026-10-26: rehearsal 2e PASS, R-41, runbook network volume, resume point rewritten.
 - 2026-10-26: E-36 Session 1 result, R-42, D-61, Section 8.1 row 67, resume point rewritten.
+- 2026-10-26: E-38 predeclared and amended (A1), R-43, resume point.
