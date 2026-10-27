@@ -106,4 +106,5 @@ was 7% (V1).
 Open lead (reported size, one process each): at batch 256, flashinfer_cudnn 1.07, flashinfer_cutlass 1.05
 and cutlass 1.04 against R. A large-batch crossover is possible but not measured.
 INTERPRETATION: as on Hopper, the default NVFP4 backend is the fastest at batch 1 to 128 in both cells.
-The only possible headroom is at batch 256 in the dense cell. Post-run review pending.
+The only possible headroom is at batch 256 in the dense cell. R-48 (post-run review): CONFIRM_WITH_SCOPE_LIMITS; the
+batch-256 lead is inside noise (alias paired sd about 3.4% at batch 256).

@@ -195,7 +195,8 @@ maps every file to what it contains.
 - Done: E-39 ran 2026-10-27 (about $5.20): INCONCLUSIVE; Marlin MoE +1% to 2.5% at batch 4 to 16, slower
   elsewhere. 0 Pods, 0 volumes. R-46 done. D-63 decided (user). E-40 ran 2026-10-27 (about $9): INCONCLUSIVE;
   the default NVFP4 backend is fastest at batch 1 to 128; open lead at dense batch 256. 0 Pods, 0 volumes.
-  Next: E-40 post-run review; the user decides whether to test the batch-256 lead or close I-23.
+  R-48 done (E-40 confirmed with scope limits). E-41 (dense NVFP4 large-batch paired test) predeclared in
+  `experiments/nvfp4_large_batch/`; NOT RUN. R-49 done, A1 applied, tests and Mac stub run pass. Next: the user approves the spend (cap $16) or closes I-23.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4692,7 +4693,14 @@ was 7% (V1).
 Open lead (reported size, one process each): at batch 256, flashinfer_cudnn 1.07, flashinfer_cutlass 1.05
 and cutlass 1.04 against R. A large-batch crossover is possible but not measured.
 INTERPRETATION: as on Hopper, the default NVFP4 backend is the fastest at batch 1 to 128 in both cells.
-The only possible headroom is at batch 256 in the dense cell. Post-run review pending.
+The only possible headroom is at batch 256 in the dense cell. R-48 (post-run review): CONFIRM_WITH_SCOPE_LIMITS;
+the batch-256 lead is inside noise (alias paired sd about 3.4% at 256).
+
+**E-41 Dense NVFP4 large-batch paired test on one B200** (predeclared 2026-10-27, I-23). STATUS: NOT RUN.
+Package: `experiments/nvfp4_large_batch/`. Question: is flashinfer_cudnn or flashinfer_cutlass at least 3%
+faster than R (CuTe-DSL) for nvidia/Qwen3-8B-NVFP4 at batch 256 or 512, with GSM8K A1? 8 paired rounds,
+one-sided t, Bonferroni over 4. Kill criteria: README Section 5 (written before any run). Amended (A1, R-49):
+10 rounds, V2 at least 6 good rounds, watchdog 1 h 50 min, expected about $11, cap $16.
 
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
@@ -5426,6 +5434,13 @@ closing I-23 for Hopper block-FP8 (D-63, decided by the user) is justified as a 
 
 **R-47 Sonnet pre-run review of E-40** (2026-10-27). AMEND_THEN_RUN: broken NVFP4 MoE alias regex (fixed),
 budget off by 2x (scope cut), R_2 order, timeouts, AOT gate. Write-up: `dossier/REVIEW_E-40_PRERUN_2026-10-27.md`.
+
+**R-48 Sonnet post-run review of E-40** (2026-10-27). CONFIRM_WITH_SCOPE_LIMITS. INCONCLUSIVE is correct (cell D
+V0 and V1; cell M noise 4.3% bars KILL). Dense default is fastest at batch 1 to 32; the batch-256 lead (cudnn
+1.07) is 1 to 2 sd of noise. A paired E-41 is worth it only if cheap. Write-up: `dossier/REVIEW_E-40_POSTRUN_2026-10-27.md`.
+
+**R-49 Sonnet pre-run review of E-41** (2026-10-27). AMEND_THEN_RUN, no code bug: watchdog over the cost cap,
+V2 stricter than the README, weak KILL, 10 rounds adopted, test record added. Write-up: `dossier/REVIEW_E-41_PRERUN_2026-10-27.md`.
 
 ---
 
@@ -6559,3 +6574,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: R-46 (E-39 post-run review).
 - 2026-10-27: E-40 predeclared and amended, R-47.
 - 2026-10-27: E-40 result INCONCLUSIVE; resume point.
+- 2026-10-27: R-48 (E-40 post-run review); E-41 predeclared.
+- 2026-10-27: E-41 amended (A1), R-49.
