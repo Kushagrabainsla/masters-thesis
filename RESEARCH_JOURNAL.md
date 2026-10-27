@@ -193,8 +193,9 @@ maps every file to what it contains.
   Results: `experiments/safedispatch_testA2/results/e38-rerun-20261027/` (summary.json, short.txt).
 - Runpod: 0 thesis Pods, 0 volumes (deleted 07:31 UTC).
 - Done: E-39 ran 2026-10-27 (about $5.20): INCONCLUSIVE; Marlin MoE +1% to 2.5% at batch 4 to 16, slower
-  elsewhere. 0 Pods, 0 volumes. R-46 done. D-63 decided (user). E-40 (I-23 NVFP4, one B200) is prepared
-  and reviewed (R-47); it waits for the user's spend approval (cap $25).
+  elsewhere. 0 Pods, 0 volumes. R-46 done. D-63 decided (user). E-40 ran 2026-10-27 (about $9): INCONCLUSIVE;
+  the default NVFP4 backend is fastest at batch 1 to 128; open lead at dense batch 256. 0 Pods, 0 volumes.
+  Next: E-40 post-run review; the user decides whether to test the batch-256 lead or close I-23.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4674,11 +4675,24 @@ R-44 (Sonnet): CONFIRM_WITH_SCOPE_LIMITS; open lead: a 5% to 7% Marlin MoE gain 
 excluded by the 2 against 2 design. D-63 (recommendation): close I-23 for Hopper block-FP8.
 
 **E-40 I-23 NVFP4 backend choice on one B200** (predeclared 2026-10-27, I-23, user request). STATUS:
-PREDECLARED, AMENDED (A1 after R-47), NOT RUN. Package: `experiments/nvfp4_dispatch/`. Screen every NVFP4
+RUN 2026-10-27, INCONCLUSIVE. Package: `experiments/nvfp4_dispatch/`. Screen every NVFP4
 linear (cell D, nvidia/Qwen3-8B-NVFP4) and MoE (cell M, nvidia/Qwen3-30B-A3B-NVFP4) backend once, keep the
 best per cell (ratio at least 1.02), check GSM8K A1, then 6 paired rounds. GO: A1 pass and a lower bound
 at least 1.03 at batch 1, 8, 32 or 128. Cap $25. Tests: 5 pass.
-Result: none yet.
+Result (2026-10-27, Pod 50uqmcyz64wqvu, 1 x B200 sm_100, US-NE-1, about $9; 118 checksums match): frozen
+decision INCONCLUSIVE (cell D invalid: V0, V1; cell M: no screen pass, but R noise at batch 128 was 4.3%).
+FACT, cell M: R = FLASHINFER_TRTLLM; the alias was caught; every real backend is slower at every size
+(cutedsl 0.84 to 0.95, flashinfer_cutlass 0.65 to 0.76, marlin 0.42 to 0.70, humming 0.55 to 0.70,
+cutlass 0.51 to 0.61); b12x failed to start.
+FACT, cell D: the linear selection line reads "Using FlashInferCuteDslNvFp4LinearKernel for NVFP4 GEMM",
+which the E-40 regex did not match (V0). R was CuTe-DSL, so the selected flashinfer_cutedsl was an
+undetected alias: accuracy identical (+0.00 pp [0.00, 0.00]) and paired ratios about 1 (batch 8 1.016
+[1.005, 1.028]). At the deciding sizes every real backend is slower (0.27 to 0.94). R noise at batch 128
+was 7% (V1).
+Open lead (reported size, one process each): at batch 256, flashinfer_cudnn 1.07, flashinfer_cutlass 1.05
+and cutlass 1.04 against R. A large-batch crossover is possible but not measured.
+INTERPRETATION: as on Hopper, the default NVFP4 backend is the fastest at batch 1 to 128 in both cells.
+The only possible headroom is at batch 256 in the dense cell. Post-run review pending.
 
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
@@ -6544,3 +6558,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: D-63 decided (I-23 closed for Hopper block-FP8).
 - 2026-10-27: R-46 (E-39 post-run review).
 - 2026-10-27: E-40 predeclared and amended, R-47.
+- 2026-10-27: E-40 result INCONCLUSIVE; resume point.

@@ -1,6 +1,6 @@
 # E-40: I-23 NVFP4 backend choice on one B200 (preregistration)
 
-Status: PREDECLARED 2026-10-27, AMENDED (A1 after R-47). NOT RUN. Idea: I-23 (the last open cell after D-63). User request
+Status: PREDECLARED 2026-10-27, AMENDED (A1 after R-47). RUN 2026-10-27: INCONCLUSIVE. Idea: I-23 (the last open cell after D-63). User request
 2026-10-27: "Prepare the I-23 NVFP4 test on one B200 (backend speed plus GSM8K accuracy, paired rounds),
 preregistered and reviewed on the Mac."
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics.
@@ -92,3 +92,18 @@ R-47 (Sonnet pre-run review): AMEND_THEN_RUN. Changes:
    and 7% gives INCONCLUSIVE. The Bonferroni correction covers the 4 sizes, not the 2 candidate-cells.
 7. V3 is session-wide (screen and accuracy samples included). Analysis exit codes are logged.
 
+## Result
+Result (2026-10-27, Pod 50uqmcyz64wqvu, 1 x B200 sm_100, US-NE-1, about $9; 118 checksums match): frozen
+decision INCONCLUSIVE (cell D invalid: V0, V1; cell M: no screen pass, but R noise at batch 128 was 4.3%).
+FACT, cell M: R = FLASHINFER_TRTLLM; the alias was caught; every real backend is slower at every size
+(cutedsl 0.84 to 0.95, flashinfer_cutlass 0.65 to 0.76, marlin 0.42 to 0.70, humming 0.55 to 0.70,
+cutlass 0.51 to 0.61); b12x failed to start.
+FACT, cell D: the linear selection line reads "Using FlashInferCuteDslNvFp4LinearKernel for NVFP4 GEMM",
+which the E-40 regex did not match (V0). R was CuTe-DSL, so the selected flashinfer_cutedsl was an
+undetected alias: accuracy identical (+0.00 pp [0.00, 0.00]) and paired ratios about 1 (batch 8 1.016
+[1.005, 1.028]). At the deciding sizes every real backend is slower (0.27 to 0.94). R noise at batch 128
+was 7% (V1).
+Open lead (reported size, one process each): at batch 256, flashinfer_cudnn 1.07, flashinfer_cutlass 1.05
+and cutlass 1.04 against R. A large-batch crossover is possible but not measured.
+INTERPRETATION: as on Hopper, the default NVFP4 backend is the fastest at batch 1 to 128 in both cells.
+The only possible headroom is at batch 256 in the dense cell. Post-run review pending.
