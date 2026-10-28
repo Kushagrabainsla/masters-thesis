@@ -1,0 +1,68 @@
+{
+ "cells": {
+  "cell_M": {
+   "validity": {
+    "V1_agreement": 1.0,
+    "V1": true,
+    "V2_accuracy": 0.9507202426080363,
+    "V2": true,
+    "V3": false,
+    "V3_values": [
+     null,
+     null
+    ],
+    "V5": false,
+    "V5_values": [
+     null,
+     null
+    ],
+    "V4": false,
+    "V4_value": null
+   },
+   "accept": {
+    "bf16_kl": null,
+    "bf16_top1": null,
+    "bf16_accuracy_diff": [
+     -0.003032600454890068,
+     -0.01061410159211524,
+     0.004548900682335102
+    ],
+    "R_b_accuracy_diff": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "anchor_missing": true,
+    "errored": [
+     "deep_gemm",
+     "flashinfer_cutlass",
+     "marlin",
+     "triton"
+    ],
+    "candidates": {
+     "deep_gemm": {
+      "status": "missing"
+     },
+     "flashinfer_cutlass": {
+      "status": "missing"
+     },
+     "marlin": {
+      "status": "missing"
+     },
+     "triton": {
+      "status": "missing"
+     }
+    },
+    "acceptable": []
+   },
+   "headroom": {},
+   "headroom_unacceptable": {}
+  }
+ },
+ "speed_plan": {
+  "cell_M": [
+   "marlin"
+  ]
+ },
+ "decision": "INVALID (cell_M: V3, V4, V5)"
+}

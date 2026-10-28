@@ -1,0 +1,55 @@
+22:37:15 setup done after 76 s
+22:39:17 acc/warm_R: exit 0 after 198 s
+22:40:22 acc/R_a: exit 0 after 263 s
+22:42:51 acc/warm_flashinfer_cudnn: exit 0 after 412 s
+22:45:06 acc/cand_flashinfer_cudnn: exit 0 after 547 s
+22:46:34 acc/warm_flashinfer_cutlass: exit 0 after 635 s
+22:47:45 acc/cand_flashinfer_cutlass: exit 0 after 706 s
+22:47:57 accuracy pass: flashinfer_cudnn flashinfer_cutlass (analysis exit 0)
+22:49:14 paired/flashinfer_cudnn/warm_R: exit 0 after 795 s
+22:51:54 paired/flashinfer_cudnn/warm_C: exit 0 after 955 s
+22:53:09 paired/flashinfer_cudnn/R_1: exit 0 after 1030 s
+22:55:37 paired/flashinfer_cudnn/C_1: exit 0 after 1178 s
+22:58:08 paired/flashinfer_cudnn/C_2: exit 0 after 1329 s
+22:59:24 paired/flashinfer_cudnn/R_2: exit 0 after 1405 s
+23:00:44 paired/flashinfer_cudnn/R_3: exit 0 after 1485 s
+23:02:33 paired/flashinfer_cudnn/C_3: exit 1 after 1594 s
+23:05:01 paired/flashinfer_cudnn/C_4: exit 0 after 1742 s
+23:06:22 paired/flashinfer_cudnn/R_4: exit 0 after 1823 s
+23:07:38 paired/flashinfer_cudnn/R_5: exit 0 after 1899 s
+23:09:28 paired/flashinfer_cudnn/C_5: exit 1 after 2009 s
+23:11:25 paired/flashinfer_cudnn/C_6: exit 1 after 2126 s
+23:12:42 paired/flashinfer_cudnn/R_6: exit 0 after 2203 s
+23:13:58 paired/flashinfer_cudnn/R_7: exit 0 after 2279 s
+23:15:56 paired/flashinfer_cudnn/C_7: exit 1 after 2397 s
+23:17:47 paired/flashinfer_cudnn/C_8: exit 1 after 2508 s
+23:19:06 paired/flashinfer_cudnn/R_8: exit 0 after 2587 s
+23:20:23 paired/flashinfer_cudnn/R_9: exit 0 after 2664 s
+23:22:15 paired/flashinfer_cudnn/C_9: exit 1 after 2776 s
+23:24:04 paired/flashinfer_cudnn/C_10: exit 1 after 2885 s
+23:25:20 paired/flashinfer_cudnn/R_10: exit 0 after 2961 s
+23:26:22 paired/flashinfer_cutlass/warm_R: exit 0 after 3023 s
+23:27:55 paired/flashinfer_cutlass/warm_C: exit 0 after 3116 s
+23:29:13 paired/flashinfer_cutlass/R_1: exit 0 after 3194 s
+23:30:40 paired/flashinfer_cutlass/C_1: exit 0 after 3281 s
+23:32:01 paired/flashinfer_cutlass/C_2: exit 0 after 3362 s
+23:33:17 paired/flashinfer_cutlass/R_2: exit 0 after 3438 s
+23:34:33 paired/flashinfer_cutlass/R_3: exit 0 after 3514 s
+23:35:55 paired/flashinfer_cutlass/C_3: exit 0 after 3596 s
+23:37:15 paired/flashinfer_cutlass/C_4: exit 0 after 3676 s
+23:38:32 paired/flashinfer_cutlass/R_4: exit 0 after 3753 s
+23:39:49 paired/flashinfer_cutlass/R_5: exit 0 after 3830 s
+23:41:12 paired/flashinfer_cutlass/C_5: exit 0 after 3913 s
+23:42:33 paired/flashinfer_cutlass/C_6: exit 0 after 3994 s
+23:43:49 paired/flashinfer_cutlass/R_6: exit 0 after 4070 s
+23:45:08 paired/flashinfer_cutlass/R_7: exit 0 after 4149 s
+23:46:32 paired/flashinfer_cutlass/C_7: exit 0 after 4233 s
+23:47:56 paired/flashinfer_cutlass/C_8: exit 0 after 4317 s
+23:49:14 paired/flashinfer_cutlass/R_8: exit 0 after 4395 s
+23:50:31 paired/flashinfer_cutlass/R_9: exit 0 after 4472 s
+23:51:57 paired/flashinfer_cutlass/C_9: exit 0 after 4558 s
+23:53:21 paired/flashinfer_cutlass/C_10: exit 0 after 4642 s
+23:54:37 paired/flashinfer_cutlass/R_10: exit 0 after 4718 s
+23:54:50 decision: INCONCLUSIVE (flashinfer_cudnn paired speed incomplete; flashinfer_cutlass not resolved; every deciding ratio below 1.03: no evidence of a lead)
+23:54:50 done after 4731 s
+23:54:50 AUTO_STOP in 600 s; copy the results now

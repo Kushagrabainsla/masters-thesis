@@ -1,0 +1,14 @@
+03:35:54 setup done after 81 s
+03:37:06 R_1: exit 0 after 153 s
+03:37:56 R_2: exit 0 after 203 s
+03:40:34 flashinfer_cudnn: exit 0 after 361 s
+03:41:29 flashinfer_cutlass: exit 0 after 416 s
+03:42:31 marlin: exit 0 after 478 s
+03:45:08 R_g: exit 0 after 635 s
+03:47:02 flashinfer_cutlass_g: exit 0 after 749 s
+03:48:04 R_m: exit 0 after 811 s
+03:48:50 cutlass: exit 0 after 857 s
+03:49:40 flashinfer_trtllm: exit 0 after 907 s
+03:49:56 decision: HYPOTHESIS HOLDS (flashinfer_cudnn BIT_EQUAL, flashinfer_cutlass BIT_EQUAL, cutlass BIT_EQUAL, flashinfer_trtllm BIT_EQUAL; M sensitivity shown)
+03:49:56 done after 923 s
+03:49:56 AUTO_STOP in 900 s; copy the results now

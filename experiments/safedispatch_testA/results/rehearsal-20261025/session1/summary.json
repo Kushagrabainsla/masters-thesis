@@ -1,0 +1,113 @@
+{
+ "cells": {
+  "cell_D": {
+   "reference_agreement": 0.34765625,
+   "floor_prompts": 167,
+   "reference_speed_noise": {
+    "1": 0.00033806626098708626,
+    "8": 0.0010849419104019217,
+    "32": 0.0003648201156199008,
+    "64": 0.0003964047015441933
+   },
+   "V1": false,
+   "V2": false,
+   "reference_kernels": [
+    "Selected MarlinFP8ScaledMMLinearKernel for Fp8LinearMethod"
+   ],
+   "kernel_log_found": true,
+   "candidates": {
+    "torch": {
+     "status": "error",
+     "error": "ValueError: Failed to find a kernel that can implement the ScaledMM linear layer. Reasons: \nBlockWiseTorchFP8ScaledMMLinearKernel DeepSeek-style (1x128, 128x128) block scaling on CUDA requires compute capability 90 (Hopper).."
+    }
+   },
+   "aliases_negative_control": {},
+   "w8a16_positive_control": {},
+   "speeds": {
+    "R": {
+     "1": 29.575,
+     "8": 221.09,
+     "32": 712.55,
+     "64": 1084.5349999999999
+    }
+   },
+   "safe": [
+    "R"
+   ],
+   "unsafe": [],
+   "fastest_safe_by_batch": {},
+   "unsafe_faster_than_safe": {},
+   "flat_spread_by_batch": {},
+   "flat": false,
+   "continue": false,
+   "static_winner": false
+  },
+  "cell_M": {
+   "reference_agreement": 1.0,
+   "floor_prompts": 0,
+   "reference_speed_noise": {
+    "1": 0.00033806626098708626,
+    "8": 0.001175247479998151,
+    "32": 0.00037902716361336677,
+    "64": 9.20157899094648e-06
+   },
+   "V1": true,
+   "V2": false,
+   "reference_kernels": [
+    "Selected MarlinFP8ScaledMMLinearKernel for Fp8LinearMethod"
+   ],
+   "kernel_log_found": true,
+   "candidates": {},
+   "aliases_negative_control": {
+    "triton": {
+     "status": "ok",
+     "kernels": [
+      "Selected MarlinFP8ScaledMMLinearKernel for Fp8LinearMethod"
+     ],
+     "n": 256,
+     "flipped": 1,
+     "flip_fraction": 0.00390625,
+     "wilson95": [
+      0.0006898644160236098,
+      0.02179152424537626
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 0,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 1,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 240,
+     "median_margin_at_divergence": 0.0,
+     "mean_approx_kl_first32": 6.10453028043119e-19,
+     "reason": "same kernel as R"
+    }
+   },
+   "w8a16_positive_control": {},
+   "speeds": {
+    "R": {
+     "1": 29.575,
+     "8": 221.1,
+     "32": 712.215,
+     "64": 1086.7649999999999
+    }
+   },
+   "safe": [
+    "R"
+   ],
+   "unsafe": [],
+   "fastest_safe_by_batch": {},
+   "unsafe_faster_than_safe": {},
+   "flat_spread_by_batch": {},
+   "flat": false,
+   "continue": false,
+   "static_winner": false
+  }
+ },
+ "missing_cells": [],
+ "decision": "INCONCLUSIVE (V2: a cell has no working alternative backend)"
+}

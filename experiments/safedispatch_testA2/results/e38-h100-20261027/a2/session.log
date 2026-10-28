@@ -1,0 +1,40 @@
+00:38:41 setup done after 499 s
+00:44:40 cell_M/warm_R_a: exit 0 after 858 s
+00:49:35 cell_M/R_a: exit 0 after 1153 s
+01:14:46 cell_M/R_b: exit 124 after 2664 s
+01:17:30 cell_M/warm_cand_deep_gemm: exit 0 after 2828 s
+01:42:41 cell_M/cand_deep_gemm: exit 124 after 4339 s
+01:45:01 cell_M/warm_cand_flashinfer_cutlass: exit 0 after 4479 s
+02:10:12 cell_M/cand_flashinfer_cutlass: exit 124 after 5990 s
+02:12:19 cell_M/warm_cand_marlin: exit 0 after 6117 s
+02:37:29 cell_M/cand_marlin: exit 124 after 7627 s
+02:42:47 cell_M/warm_cand_triton: exit 0 after 7945 s
+03:07:58 cell_M/cand_triton: exit 124 after 9456 s
+03:14:06 cell_M/warm_bf16: exit 0 after 9824 s
+03:39:16 cell_M/bf16: exit 124 after 11334 s
+03:39:29 cell_M acceptable: none
+03:39:29 time cap: skip speed /workspace/results/a2/cell_M/marlin
+03:39:29 time cap: skip /workspace/results/a2/cell_D/R_a
+03:39:29 time cap: skip /workspace/results/a2/cell_D/R_b
+03:39:29 time cap: skip /workspace/results/a2/cell_D/cand_deep_gemm
+03:39:29 time cap: skip /workspace/results/a2/cell_D/cand_cutlass
+03:39:29 time cap: skip /workspace/results/a2/cell_D/cand_triton
+03:39:29 time cap: skip /workspace/results/a2/cell_D/cand_marlin
+03:39:29 time cap: skip /workspace/results/a2/cell_D/bf16
+Traceback (most recent call last):
+  File "/workspace/code/safedispatch_testA2/analyze_a2.py", line 208, in <module>
+    main()
+  File "/workspace/code/safedispatch_testA2/analyze_a2.py", line 187, in main
+    args.out.write_text(json.dumps(result, indent=1))
+  File "/usr/lib/python3.12/pathlib.py", line 1049, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/pathlib.py", line 1015, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/results/a2/cell_D/accept.json'
+03:39:29 cell_D acceptable: none
+03:39:31 decision: INVALID (cell_M: V3, V4, V5)
+03:39:34 done after 11352 s; copy /workspace/results/a2 off the machine before terminating it
+03:39:34 AUTO_STOP in 600 s; copy the results now
+03:49:35 AUTO_STOP (exit): try 1, HTTP 200

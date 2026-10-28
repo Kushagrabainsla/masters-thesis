@@ -1,0 +1,107 @@
+18:50:05 setup done after 93 s
+18:52:41 cell_D/warm_R: exit 1 after 249 s
+18:52:51 WARNING: warm-up /workspace/results/session1/cell_D/warm_R failed; the next measured run starts cold
+18:53:17 cell_D/R_a: exit 1 after 285 s
+18:53:52 cell_D/R_b: exit 1 after 320 s
+18:54:02 Traceback (most recent call last):
+18:54:02 File "<string>", line 3, in <module>
+18:54:02 File "<string>", line 3, in <genexpr>
+18:54:02 FileNotFoundError: [Errno 2] No such file or directory: '/workspace/results/session1/cell_D/R_a/outputs.jsonl'
+19:06:19 setup done after 341 s
+19:07:17 cell_D/warm_R: exit 0 after 399 s
+19:08:42 cell_D/R_a: exit 0 after 484 s
+19:10:09 cell_D/R_b: exit 0 after 571 s
+19:10:21 V1 precheck: R_a and R_b exactly equal on 256 of 256 prompts
+19:11:21 cell_D/warm_deep_gemm: exit 0 after 643 s
+19:12:44 cell_D/cand_deep_gemm: exit 0 after 726 s
+19:14:01 cell_D/warm_cutlass: exit 0 after 803 s
+19:15:36 cell_D/cand_cutlass: exit 0 after 898 s
+19:16:57 cell_D/warm_triton: exit 0 after 979 s
+19:18:51 cell_D/cand_triton: exit 0 after 1093 s
+19:19:57 cell_D/warm_torch: exit 1 after 1159 s
+19:20:07 WARNING: warm-up /workspace/results/session1/cell_D/warm_torch failed; the next measured run starts cold
+19:20:38 cell_D/cand_torch: exit 1 after 1200 s
+19:21:44 cell_D/warm_marlin: exit 0 after 1266 s
+19:23:22 cell_D/cand_marlin: exit 0 after 1364 s
+19:29:01 cell_M/warm_R: exit 0 after 1703 s
+19:31:23 cell_M/R_a: exit 0 after 1845 s
+19:33:16 cell_M/R_b: exit 0 after 1958 s
+19:33:28 V1 precheck: R_a and R_b exactly equal on 256 of 256 prompts
+19:35:31 cell_M/warm_deep_gemm: exit 0 after 2093 s
+19:37:30 cell_M/cand_deep_gemm: exit 0 after 2212 s
+19:39:15 cell_M/warm_flashinfer_cutlass: exit 0 after 2317 s
+19:41:06 cell_M/cand_flashinfer_cutlass: exit 0 after 2428 s
+19:41:34 cell_M/warm_hpc: exit 1 after 2456 s
+19:41:44 WARNING: warm-up /workspace/results/session1/cell_M/warm_hpc failed; the next measured run starts cold
+19:42:00 cell_M/cand_hpc: exit 1 after 2482 s
+19:43:43 cell_M/warm_marlin: exit 0 after 2585 s
+19:45:35 cell_M/cand_marlin: exit 0 after 2697 s
+19:46:54 cell_M/warm_triton: exit 0 after 2776 s
+19:48:43 cell_M/cand_triton: exit 0 after 2885 s
+19:49:07 decision: INCONCLUSIVE
+19:50:11 b0_cell_D/cand_cutlass: exit 0 after 2973 s
+19:51:34 b0_cell_M/cand_deep_gemm: exit 0 after 3056 s
+19:52:42 b1_cell_D/warm_R: exit 0 after 3124 s
+19:54:04 b1_cell_D/R_a: exit 0 after 3206 s
+19:55:24 b1_cell_D/R_b: exit 0 after 3286 s
+19:56:32 b1_cell_D/warm_deep_gemm: exit 0 after 3354 s
+19:57:55 b1_cell_D/cand_deep_gemm: exit 0 after 3437 s
+19:59:03 b1_cell_D/warm_cutlass: exit 0 after 3505 s
+20:00:31 b1_cell_D/cand_cutlass: exit 0 after 3593 s
+20:01:43 b1_cell_D/warm_triton: exit 0 after 3665 s
+20:03:48 b1_cell_D/cand_triton: exit 0 after 3790 s
+20:04:46 b1_cell_D/warm_torch: exit 1 after 3848 s
+20:04:56 WARNING: warm-up /workspace/results/session1/extra/b1_cell_D/warm_torch failed; the next measured run starts cold
+20:05:21 b1_cell_D/cand_torch: exit 1 after 3883 s
+20:06:30 b1_cell_D/warm_marlin: exit 0 after 3952 s
+20:07:56 b1_cell_D/cand_marlin: exit 0 after 4038 s
+20:09:24 b1_cell_M/warm_R: exit 0 after 4126 s
+20:11:26 b1_cell_M/R_a: exit 0 after 4248 s
+20:13:26 b1_cell_M/R_b: exit 0 after 4368 s
+20:14:59 b1_cell_M/warm_deep_gemm: exit 0 after 4461 s
+20:17:19 b1_cell_M/cand_deep_gemm: exit 0 after 4601 s
+20:18:48 b1_cell_M/warm_flashinfer_cutlass: exit 0 after 4690 s
+20:20:50 b1_cell_M/cand_flashinfer_cutlass: exit 0 after 4812 s
+20:21:14 b1_cell_M/warm_hpc: exit 1 after 4836 s
+20:21:25 WARNING: warm-up /workspace/results/session1/extra/b1_cell_M/warm_hpc failed; the next measured run starts cold
+20:21:40 b1_cell_M/cand_hpc: exit 1 after 4862 s
+20:23:01 b1_cell_M/warm_marlin: exit 0 after 4943 s
+20:24:53 b1_cell_M/cand_marlin: exit 0 after 5055 s
+20:26:12 b1_cell_M/warm_triton: exit 0 after 5134 s
+20:28:08 b1_cell_M/cand_triton: exit 0 after 5250 s
+20:29:11 b3_cell_D/warm_R: exit 0 after 5313 s
+20:31:17 b3_cell_D/R_a: exit 0 after 5439 s
+20:33:39 b3_cell_D/R_b: exit 0 after 5581 s
+20:34:39 b3_cell_M/warm_R: exit 0 after 5641 s
+20:38:36 b3_cell_M/R_a: exit 0 after 5878 s
+20:42:38 b3_cell_M/R_b: exit 0 after 6120 s
+20:43:52 b2_cell_D/warm_R: exit 0 after 6194 s
+20:45:27 b2_cell_D/R_a: exit 0 after 6289 s
+20:47:03 b2_cell_D/R_b: exit 0 after 6385 s
+20:48:30 b2_cell_D/warm_deep_gemm: exit 0 after 6472 s
+20:50:06 b2_cell_D/cand_deep_gemm: exit 0 after 6568 s
+20:51:25 b2_cell_D/warm_cutlass: exit 0 after 6647 s
+20:53:21 b2_cell_D/cand_cutlass: exit 0 after 6763 s
+20:54:42 b2_cell_D/warm_triton: exit 0 after 6844 s
+20:57:05 b2_cell_D/cand_triton: exit 0 after 6987 s
+20:58:06 b2_cell_D/warm_torch: exit 1 after 7048 s
+20:58:16 WARNING: warm-up /workspace/results/session1/extra/b2_cell_D/warm_torch failed; the next measured run starts cold
+20:58:45 b2_cell_D/cand_torch: exit 1 after 7087 s
+20:59:58 b2_cell_D/warm_marlin: exit 0 after 7160 s
+21:02:04 b2_cell_D/cand_marlin: exit 0 after 7286 s
+21:04:43 b2_cell_M/warm_R: exit 0 after 7445 s
+21:07:02 b2_cell_M/R_a: exit 0 after 7584 s
+21:09:27 b2_cell_M/R_b: exit 0 after 7729 s
+21:11:11 b2_cell_M/warm_deep_gemm: exit 0 after 7833 s
+21:13:40 b2_cell_M/cand_deep_gemm: exit 0 after 7982 s
+21:15:21 b2_cell_M/warm_flashinfer_cutlass: exit 0 after 8083 s
+21:17:41 b2_cell_M/cand_flashinfer_cutlass: exit 0 after 8223 s
+21:18:09 b2_cell_M/warm_hpc: exit 1 after 8251 s
+21:18:19 WARNING: warm-up /workspace/results/session1/extra/b2_cell_M/warm_hpc failed; the next measured run starts cold
+21:18:34 b2_cell_M/cand_hpc: exit 1 after 8276 s
+21:20:00 b2_cell_M/warm_marlin: exit 0 after 8362 s
+21:22:17 b2_cell_M/cand_marlin: exit 0 after 8499 s
+21:24:03 b2_cell_M/warm_triton: exit 0 after 8605 s
+21:26:39 b2_cell_M/cand_triton: exit 0 after 8761 s
+21:27:31 done after 8813 s; copy /workspace/results/session1 off the machine before terminating it
+21:27:31 AUTO_STOP in 600 s; copy the results now

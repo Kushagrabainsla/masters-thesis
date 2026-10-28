@@ -1,0 +1,108 @@
+{
+ "cells": {
+  "cell_D": {
+   "reference_agreement": 1.0,
+   "floor_prompts": 0,
+   "reference_speed_noise": {
+    "1": 0.00010223903486356319,
+    "8": 0.00016161833829412455,
+    "32": 0.00046569007916726145,
+    "64": 0.00016997317610823237
+   },
+   "V1": true,
+   "V2": true,
+   "reference_kernels": [
+    "Selected MarlinFP8ScaledMMLinearKernel for Fp8LinearMethod"
+   ],
+   "kernel_log_found": true,
+   "candidates": {
+    "triton": {
+     "status": "ok",
+     "kernels": [
+      "Selected TritonFp8BlockScaledMMKernel for Fp8LinearMethod"
+     ],
+     "n": 256,
+     "flipped": 219,
+     "flip_fraction": 0.85546875,
+     "wilson95": [
+      0.8071367963503525,
+      0.8932899251599832
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 98,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 121,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 44,
+     "median_margin_at_divergence": 0.125,
+     "mean_approx_kl_first32": 1.291315442614501
+    }
+   },
+   "aliases_negative_control": {
+    "marlin": {
+     "status": "ok",
+     "kernels": [
+      "Selected MarlinFP8ScaledMMLinearKernel for Fp8LinearMethod"
+     ],
+     "n": 256,
+     "flipped": 0,
+     "flip_fraction": 0.0,
+     "wilson95": [
+      0.0,
+      0.014784391721725852
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 0,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 0,
+       "n": 128
+      }
+     },
+     "median_first_divergence": null,
+     "median_margin_at_divergence": null,
+     "mean_approx_kl_first32": 0.0,
+     "reason": "same kernel as R"
+    }
+   },
+   "w8a16_positive_control": {},
+   "speeds": {
+    "R": {
+     "1": 97.805,
+     "8": 742.4300000000001,
+     "32": 2447.41,
+     "64": 3764.98
+    },
+    "triton": {
+     "1": 55.3,
+     "8": 525.79,
+     "32": 1914.06,
+     "64": 3410.0
+    }
+   },
+   "safe": [
+    "R"
+   ],
+   "unsafe": [
+    "triton"
+   ],
+   "fastest_safe_by_batch": {},
+   "unsafe_faster_than_safe": {},
+   "flat_spread_by_batch": {},
+   "flat": false,
+   "continue": false,
+   "static_winner": false
+  }
+ },
+ "missing_cells": [
+  "/workspace/results/session1/cell_M"
+ ],
+ "decision": "INCONCLUSIVE (cell missing)"
+}

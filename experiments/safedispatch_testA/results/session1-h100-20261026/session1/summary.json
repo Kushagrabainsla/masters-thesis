@@ -1,0 +1,344 @@
+{
+ "cells": {
+  "cell_D": {
+   "reference_agreement": 1.0,
+   "floor_prompts": 0,
+   "reference_speed_noise": {
+    "1": 0.002987659666594491,
+    "8": 0.02347514801046391,
+    "32": 0.006129631225301075,
+    "64": 0.015442215478699972
+   },
+   "V1": true,
+   "V2": true,
+   "reference_kernels": [
+    "Selected FlashInferFp8DeepGEMMDynamicBlockScaledKernel for Fp8LinearMethod"
+   ],
+   "kernel_log_found": true,
+   "candidates": {
+    "cutlass": {
+     "status": "ok",
+     "kernels": [
+      "Selected CutlassFp8BlockScaledMMKernel for Fp8LinearMethod"
+     ],
+     "n": 256,
+     "flipped": 244,
+     "flip_fraction": 0.953125,
+     "wilson95": [
+      0.9198662271464744,
+      0.9729854178557116
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 117,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 127,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 29,
+     "median_margin_at_divergence": 0.25,
+     "mean_approx_kl_first32": 1.8808488083279526
+    },
+    "deep_gemm": {
+     "status": "ok",
+     "kernels": [
+      "Selected DeepGemmFp8BlockScaledMMKernel for Fp8LinearMethod"
+     ],
+     "n": 256,
+     "flipped": 232,
+     "flip_fraction": 0.90625,
+     "wilson95": [
+      0.8642970784410525,
+      0.9361906032850452
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 107,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 125,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 29,
+     "median_margin_at_divergence": 0.25,
+     "mean_approx_kl_first32": 1.7703766368082638
+    },
+    "torch": {
+     "status": "error",
+     "error": "RuntimeError: CUDA error: CUBLAS_STATUS_NOT_SUPPORTED when calling `cublasLtMatmulAlgoGetHeuristic( ltHandle, computeDesc.descriptor(), Adesc.descriptor(), Bdesc.descriptor(), Cdesc.descriptor(), Ddesc.descriptor(), preference.descriptor(), 1, &heuristicResult, &returnedResult)`"
+    },
+    "triton": {
+     "status": "ok",
+     "kernels": [
+      "Selected TritonFp8BlockScaledMMKernel for Fp8LinearMethod"
+     ],
+     "n": 256,
+     "flipped": 240,
+     "flip_fraction": 0.9375,
+     "wilson95": [
+      0.9008969618819807,
+      0.9611666953615092
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 113,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 127,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 24,
+     "median_margin_at_divergence": 0.25,
+     "mean_approx_kl_first32": 2.063817671739831
+    }
+   },
+   "aliases_negative_control": {},
+   "w8a16_positive_control": {
+    "marlin": {
+     "status": "ok",
+     "kernels": [
+      "Selected MarlinFP8ScaledMMLinearKernel for Fp8LinearMethod"
+     ],
+     "n": 256,
+     "flipped": 243,
+     "flip_fraction": 0.94921875,
+     "wilson95": [
+      0.915068172873268,
+      0.9700864751892441
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 117,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 126,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 30,
+     "median_margin_at_divergence": 0.25,
+     "mean_approx_kl_first32": 1.7752231925680868
+    }
+   },
+   "speeds": {
+    "R": {
+     "1": 230.605,
+     "8": 1722.6599999999999,
+     "32": 5900.65,
+     "64": 10280.564999999999
+    },
+    "cutlass": {
+     "1": 213.73,
+     "8": 1345.48,
+     "32": 4452.82,
+     "64": 6566.7
+    },
+    "deep_gemm": {
+     "1": 203.9,
+     "8": 1638.31,
+     "32": 5744.01,
+     "64": 9975.09
+    },
+    "triton": {
+     "1": 80.58,
+     "8": 760.37,
+     "32": 2791.21,
+     "64": 5016.96
+    }
+   },
+   "safe": [
+    "R"
+   ],
+   "unsafe": [
+    "cutlass",
+    "deep_gemm",
+    "triton"
+   ],
+   "fastest_safe_by_batch": {},
+   "unsafe_faster_than_safe": {},
+   "flat_spread_by_batch": {},
+   "flat": false,
+   "continue": false,
+   "static_winner": false
+  },
+  "cell_M": {
+   "reference_agreement": 1.0,
+   "floor_prompts": 0,
+   "reference_speed_noise": {
+    "1": 0.0028606456885982372,
+    "8": 0.03517222575661188,
+    "32": 0.03066371807045709,
+    "64": 0.017474252450824068
+   },
+   "V1": true,
+   "V2": true,
+   "reference_kernels": [
+    "Selected FlashInferFp8DeepGEMMDynamicBlockScaledKernel for Fp8LinearMethod",
+    "Using TRITON Fp8 MoE backend"
+   ],
+   "kernel_log_found": true,
+   "candidates": {
+    "deep_gemm": {
+     "status": "ok",
+     "kernels": [
+      "Selected FlashInferFp8DeepGEMMDynamicBlockScaledKernel for Fp8LinearMethod",
+      "Using DEEPGEMM Fp8 MoE backend"
+     ],
+     "n": 256,
+     "flipped": 235,
+     "flip_fraction": 0.91796875,
+     "wilson95": [
+      0.8778558535002986,
+      0.9457228190448214
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 110,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 125,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 24,
+     "median_margin_at_divergence": 0.25,
+     "mean_approx_kl_first32": 1.727503812531024
+    },
+    "flashinfer_cutlass": {
+     "status": "ok",
+     "kernels": [
+      "Selected FlashInferFp8DeepGEMMDynamicBlockScaledKernel for Fp8LinearMethod",
+      "Using FLASHINFER_CUTLASS Fp8 MoE backend"
+     ],
+     "n": 256,
+     "flipped": 233,
+     "flip_fraction": 0.91015625,
+     "wilson95": [
+      0.8687976076657988,
+      0.939387070999973
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 111,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 122,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 24,
+     "median_margin_at_divergence": 0.25,
+     "mean_approx_kl_first32": 1.7909799336448469
+    },
+    "hpc": {
+     "status": "error",
+     "error": "ValueError: FP8 MoE backend HPC does not support the deployment configuration since kernel does not support current device cuda."
+    }
+   },
+   "aliases_negative_control": {
+    "triton": {
+     "status": "ok",
+     "kernels": [
+      "Selected FlashInferFp8DeepGEMMDynamicBlockScaledKernel for Fp8LinearMethod",
+      "Using TRITON Fp8 MoE backend"
+     ],
+     "n": 256,
+     "flipped": 0,
+     "flip_fraction": 0.0,
+     "wilson95": [
+      0.0,
+      0.014784391721725852
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 0,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 0,
+       "n": 128
+      }
+     },
+     "median_first_divergence": null,
+     "median_margin_at_divergence": null,
+     "mean_approx_kl_first32": 0.0,
+     "reason": "same kernel as R"
+    }
+   },
+   "w8a16_positive_control": {
+    "marlin": {
+     "status": "ok",
+     "kernels": [
+      "Selected FlashInferFp8DeepGEMMDynamicBlockScaledKernel for Fp8LinearMethod",
+      "Using MARLIN Fp8 MoE backend"
+     ],
+     "n": 256,
+     "flipped": 224,
+     "flip_fraction": 0.875,
+     "wilson95": [
+      0.8288629915476174,
+      0.9100487146610882
+     ],
+     "flips_by_source": {
+      "gsm8k": {
+       "flipped": 102,
+       "n": 128
+      },
+      "ultrachat": {
+       "flipped": 122,
+       "n": 128
+      }
+     },
+     "median_first_divergence": 28,
+     "median_margin_at_divergence": 0.25,
+     "mean_approx_kl_first32": 1.5323483018009405
+    }
+   },
+   "speeds": {
+    "R": {
+     "1": 244.35,
+     "8": 1080.9499999999998,
+     "32": 3121.27,
+     "64": 5438.99
+    },
+    "deep_gemm": {
+     "1": 185.61,
+     "8": 889.33,
+     "32": 2555.57,
+     "64": 4508.55
+    },
+    "flashinfer_cutlass": {
+     "1": 178.31,
+     "8": 1007.77,
+     "32": 2874.06,
+     "64": 4876.4
+    }
+   },
+   "safe": [
+    "R"
+   ],
+   "unsafe": [
+    "deep_gemm",
+    "flashinfer_cutlass"
+   ],
+   "fastest_safe_by_batch": {},
+   "unsafe_faster_than_safe": {},
+   "flat_spread_by_batch": {},
+   "flat": false,
+   "continue": false,
+   "static_winner": false
+  }
+ },
+ "missing_cells": [],
+ "decision": "INCONCLUSIVE"
+}

@@ -1,0 +1,113 @@
+{
+ "accept": {
+  "flashinfer_cudnn": {
+   "diff": 0.0,
+   "interval95": [
+    0.0,
+    0.0
+   ],
+   "A1": true,
+   "status": "ok"
+  },
+  "flashinfer_cutlass": {
+   "diff": 0.0,
+   "interval95": [
+    0.0,
+    0.0
+   ],
+   "A1": true,
+   "status": "ok"
+  }
+ },
+ "paired": {
+  "flashinfer_cudnn": {
+   "rounds": 10,
+   "good": 3,
+   "failed_rounds": [
+    3,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "V2": false,
+   "R_kernels": [
+    "FlashInferCuteDslNvFp4LinearKernel"
+   ],
+   "C_kernels": [
+    "FlashInferCudnnNvFp4LinearKernel"
+   ],
+   "alias": false,
+   "by_batch": {
+    "128": {
+     "ratio": 0.9558,
+     "lower": 0.8578,
+     "upper": 1.0649,
+     "rounds": 3
+    },
+    "256": {
+     "ratio": 1.0165,
+     "lower": 0.9026,
+     "upper": 1.1447,
+     "rounds": 3
+    },
+    "384": {
+     "ratio": 0.9936,
+     "lower": 0.9034,
+     "upper": 1.0927,
+     "rounds": 3
+    },
+    "512": {
+     "ratio": 1.0021,
+     "lower": 0.9508,
+     "upper": 1.0561,
+     "rounds": 3
+    }
+   }
+  },
+  "flashinfer_cutlass": {
+   "rounds": 10,
+   "good": 10,
+   "failed_rounds": [],
+   "V2": true,
+   "R_kernels": [
+    "FlashInferCuteDslNvFp4LinearKernel"
+   ],
+   "C_kernels": [
+    "FlashInferCutlassNvFp4LinearKernel"
+   ],
+   "alias": false,
+   "by_batch": {
+    "128": {
+     "ratio": 0.937,
+     "lower": 0.9274,
+     "upper": 0.9466,
+     "rounds": 10
+    },
+    "256": {
+     "ratio": 1.0154,
+     "lower": 0.9883,
+     "upper": 1.0431,
+     "rounds": 10
+    },
+    "384": {
+     "ratio": 1.0104,
+     "lower": 0.9864,
+     "upper": 1.0351,
+     "rounds": 10
+    },
+    "512": {
+     "ratio": 1.0013,
+     "lower": 0.9852,
+     "upper": 1.0177,
+     "rounds": 10
+    }
+   }
+  }
+ },
+ "V0": true,
+ "V3": true,
+ "decision": "INCONCLUSIVE (flashinfer_cudnn paired speed incomplete; flashinfer_cutlass not resolved; every deciding ratio below 1.03: no evidence of a lead)"
+}

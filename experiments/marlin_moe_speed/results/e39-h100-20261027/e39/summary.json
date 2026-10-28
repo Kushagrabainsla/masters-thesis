@@ -1,0 +1,90 @@
+{
+ "validity": {
+  "complete_rounds": 10,
+  "rounds_started": 10,
+  "V2": true,
+  "V3": true,
+  "telemetry": {
+   "rows": 4214,
+   "busy": 1850,
+   "hard_fraction": 0.0
+  },
+  "R_cv_reported": {
+   "1": 0.0043,
+   "2": 0.0011,
+   "4": 0.0234,
+   "8": 0.0169,
+   "16": 0.0141,
+   "32": 0.0129,
+   "64": 0.0106,
+   "128": 0.0085,
+   "256": 0.0079
+  }
+ },
+ "by_batch": {
+  "1": {
+   "ratio": 0.9489,
+   "lower": 0.9304,
+   "upper": 0.9676,
+   "rounds": 10,
+   "drift_slope": -0.00123
+  },
+  "2": {
+   "ratio": 0.9586,
+   "lower": 0.9373,
+   "upper": 0.9803,
+   "rounds": 10,
+   "drift_slope": 0.00309
+  },
+  "4": {
+   "ratio": 1.0146,
+   "lower": 0.9832,
+   "upper": 1.0469,
+   "rounds": 10,
+   "drift_slope": 0.00721
+  },
+  "8": {
+   "ratio": 1.0252,
+   "lower": 1.002,
+   "upper": 1.0489,
+   "rounds": 10,
+   "drift_slope": 0.00506
+  },
+  "16": {
+   "ratio": 1.0113,
+   "lower": 0.9917,
+   "upper": 1.0312,
+   "rounds": 10,
+   "drift_slope": 0.00354
+  },
+  "32": {
+   "ratio": 0.9952,
+   "lower": 0.9757,
+   "upper": 1.0151,
+   "rounds": 10,
+   "drift_slope": 0.00228
+  },
+  "64": {
+   "ratio": 0.9592,
+   "lower": 0.9429,
+   "upper": 0.9758,
+   "rounds": 10,
+   "drift_slope": 0.00089
+  },
+  "128": {
+   "ratio": 0.976,
+   "lower": 0.9622,
+   "upper": 0.9901,
+   "rounds": 10,
+   "drift_slope": 0.00079
+  },
+  "256": {
+   "ratio": 0.8873,
+   "lower": 0.8795,
+   "upper": 0.8951,
+   "rounds": 10,
+   "drift_slope": 0.00179
+  }
+ },
+ "decision": "INCONCLUSIVE (4, 8, 16)"
+}

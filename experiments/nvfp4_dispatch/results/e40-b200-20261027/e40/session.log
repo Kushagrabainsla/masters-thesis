@@ -1,0 +1,47 @@
+21:04:39 setup done after 414 s
+21:07:40 cell_M/screen/warm_R: exit 0 after 595 s
+21:09:33 cell_M/screen/R_1: exit 0 after 708 s
+21:11:54 cell_M/screen/cand_flashinfer_trtllm: exit 0 after 849 s
+21:14:08 cell_M/screen/cand_flashinfer_cutlass: exit 0 after 983 s
+21:16:14 cell_M/screen/cand_flashinfer_cutedsl: exit 0 after 1109 s
+21:18:08 cell_M/screen/R_2: exit 0 after 1223 s
+21:20:04 cell_M/screen/cand_cutlass: exit 0 after 1339 s
+21:20:29 cell_M/screen/cand_b12x: exit 1 after 1364 s
+21:22:44 cell_M/screen/cand_marlin: exit 0 after 1499 s
+21:24:59 cell_M/screen/cand_humming: exit 0 after 1634 s
+21:25:09 cell_M screen selected: none (analysis exit 0)
+21:27:18 cell_D/screen/warm_R: exit 0 after 1773 s
+21:28:17 cell_D/screen/R_1: exit 0 after 1832 s
+21:28:27 WARNING: no backend selection line in /workspace/results/e40/cell_D/screen/R_1
+21:29:39 cell_D/screen/cand_cutlass: exit 0 after 1914 s
+21:31:10 cell_D/screen/cand_flashinfer_cutlass: exit 0 after 2005 s
+21:32:41 cell_D/screen/cand_flashinfer_trtllm: exit 0 after 2096 s
+21:35:20 cell_D/screen/cand_flashinfer_cudnn: exit 0 after 2255 s
+21:36:18 cell_D/screen/R_2: exit 0 after 2313 s
+21:37:44 cell_D/screen/cand_flashinfer_cutedsl: exit 0 after 2399 s
+21:38:09 cell_D/screen/cand_b12x: exit 1 after 2424 s
+21:39:58 cell_D/screen/cand_marlin: exit 0 after 2533 s
+21:41:40 cell_D/screen/cand_humming: exit 0 after 2635 s
+21:41:50 cell_D screen selected: flashinfer_cutedsl (analysis exit 0)
+21:42:31 cell_D/acc/warm_R: exit 0 after 2686 s
+21:43:34 cell_D/acc/R_a: exit 0 after 2749 s
+21:44:25 cell_D/acc/warm_flashinfer_cutedsl: exit 0 after 2800 s
+21:45:43 cell_D/acc/cand_flashinfer_cutedsl: exit 0 after 2878 s
+21:45:54 cell_D accuracy pass: flashinfer_cutedsl (analysis exit 0)
+21:46:36 cell_D/paired/flashinfer_cutedsl/warm_R: exit 0 after 2931 s
+21:47:29 cell_D/paired/flashinfer_cutedsl/warm_C: exit 0 after 2984 s
+21:48:27 cell_D/paired/flashinfer_cutedsl/R_1: exit 0 after 3042 s
+21:49:25 cell_D/paired/flashinfer_cutedsl/C_1: exit 0 after 3100 s
+21:50:24 cell_D/paired/flashinfer_cutedsl/C_2: exit 0 after 3159 s
+21:51:21 cell_D/paired/flashinfer_cutedsl/R_2: exit 0 after 3216 s
+21:52:21 cell_D/paired/flashinfer_cutedsl/R_3: exit 0 after 3276 s
+21:53:20 cell_D/paired/flashinfer_cutedsl/C_3: exit 0 after 3335 s
+21:54:18 cell_D/paired/flashinfer_cutedsl/C_4: exit 0 after 3393 s
+21:55:16 cell_D/paired/flashinfer_cutedsl/R_4: exit 0 after 3451 s
+21:56:13 cell_D/paired/flashinfer_cutedsl/R_5: exit 0 after 3508 s
+21:57:12 cell_D/paired/flashinfer_cutedsl/C_5: exit 0 after 3567 s
+21:58:10 cell_D/paired/flashinfer_cutedsl/C_6: exit 0 after 3625 s
+21:59:09 cell_D/paired/flashinfer_cutedsl/R_6: exit 0 after 3684 s
+21:59:20 decision: INCONCLUSIVE (cell_D invalid (V0, V1); cell_M no screen pass, but R noise above 2%)
+21:59:20 done after 3695 s
+21:59:20 AUTO_STOP in 600 s; copy the results now

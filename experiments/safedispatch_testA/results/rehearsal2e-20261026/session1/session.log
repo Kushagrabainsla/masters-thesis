@@ -1,0 +1,11 @@
+18:08:10 setup done after 56 s
+18:09:35 cell_D/warm_R: exit 0 after 141 s
+18:11:58 cell_D/R_a: exit 0 after 284 s
+18:14:18 cell_D/R_b: exit 0 after 424 s
+18:15:27 cell_D/warm_marlin: exit 0 after 493 s
+18:17:50 cell_D/cand_marlin: exit 0 after 636 s
+18:19:08 cell_D/warm_triton: exit 0 after 714 s
+18:21:28 cell_D/cand_triton: exit 0 after 854 s
+18:21:41 decision: INCONCLUSIVE (cell missing)
+18:21:46 done after 872 s; copy /workspace/results/session1 off the machine before terminating it
+18:21:46 AUTO_STOP in 600 s; copy the results now

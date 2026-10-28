@@ -1,0 +1,12 @@
+21:18:04 setup done after 105 s
+21:25:53 cell_D/R_a: exit 0 after 574 s
+21:32:26 cell_D/R_b: exit 0 after 967 s
+21:32:51 cell_D/cand_torch: exit 1 after 992 s
+21:39:28 cell_M/R_a: exit 0 after 1389 s
+21:46:00 cell_M/R_b: exit 0 after 1781 s
+21:53:52 cell_M/cand_triton: exit 0 after 2253 s
+21:54:07 decision: INCONCLUSIVE (V2: a cell has no working alternative backend)
+21:54:11 done after 2272 s; copy /workspace/results/session1 off the machine before terminating it
+21:54:11 AUTO_STOP (exit): try 1, HTTP 403
+21:54:32 AUTO_STOP (exit): try 2, HTTP 403
+21:54:52 AUTO_STOP (exit): try 3, HTTP 403

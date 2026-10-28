@@ -1,0 +1,101 @@
+{
+ "R_kernel": "FlashInferCuteDslNvFp4LinearKernel",
+ "controls": {
+  "R_2": {
+   "label": "BIT_EQUAL",
+   "kernel": "FlashInferCuteDslNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 256,
+   "positions": 16384,
+   "short": 0,
+   "bit_equal_fraction": 1.0,
+   "max_abs_diff": 0.0
+  },
+  "marlin": {
+   "label": "DIFFERENT",
+   "kernel": "MarlinNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 12,
+   "positions": 4367,
+   "short": 0,
+   "bit_equal_fraction": 0.0,
+   "max_abs_diff": 13.874732971191406
+  },
+  "R_m": {
+   "label": "DIFFERENT",
+   "kernel": "FlashInferCuteDslNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 132,
+   "positions": 13077,
+   "short": 0,
+   "bit_equal_fraction": 0.6765313145216793,
+   "max_abs_diff": 11.6875
+  }
+ },
+ "backends": {
+  "flashinfer_cudnn": {
+   "label": "BIT_EQUAL",
+   "kernel": "FlashInferCudnnNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 256,
+   "positions": 16384,
+   "short": 0,
+   "bit_equal_fraction": 1.0,
+   "max_abs_diff": 0.0
+  },
+  "flashinfer_cutlass": {
+   "label": "BIT_EQUAL",
+   "kernel": "FlashInferCutlassNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 256,
+   "positions": 16384,
+   "short": 0,
+   "bit_equal_fraction": 1.0,
+   "max_abs_diff": 0.0
+  },
+  "cutlass": {
+   "label": "BIT_EQUAL",
+   "kernel": "CutlassNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 256,
+   "positions": 16384,
+   "short": 0,
+   "bit_equal_fraction": 1.0,
+   "max_abs_diff": 0.0
+  },
+  "flashinfer_trtllm": {
+   "label": "BIT_EQUAL",
+   "kernel": "FlashInferTrtllmNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 256,
+   "positions": 16384,
+   "short": 0,
+   "bit_equal_fraction": 1.0,
+   "max_abs_diff": 0.0
+  }
+ },
+ "graph": {
+  "R_g_vs_R_1": {
+   "label": "DIFFERENT",
+   "kernel": "FlashInferCuteDslNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 7,
+   "positions": 3662,
+   "short": 0,
+   "bit_equal_fraction": 0.0,
+   "max_abs_diff": 15.066686630249023
+  },
+  "flashinfer_cutlass_g_vs_R_g": {
+   "label": "BIT_EQUAL",
+   "kernel": "FlashInferCutlassNvFp4LinearKernel",
+   "prompts": 256,
+   "same_tokens": 256,
+   "positions": 16384,
+   "short": 0,
+   "bit_equal_fraction": 1.0,
+   "max_abs_diff": 0.0
+  }
+ },
+ "sensitivity": "shown",
+ "decision": "HYPOTHESIS HOLDS (flashinfer_cudnn BIT_EQUAL, flashinfer_cutlass BIT_EQUAL, cutlass BIT_EQUAL, flashinfer_trtllm BIT_EQUAL; M sensitivity shown)"
+}

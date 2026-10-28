@@ -1,0 +1,292 @@
+{
+ "cells": {
+  "cell_D": {
+   "screen": {
+    "noise": {
+     "1": 0.008942237469665186,
+     "8": 0.008226878338847516,
+     "32": 0.023818108781232375,
+     "128": 0.0698373289697137
+    },
+    "V1": false,
+    "V0": false,
+    "reference_kernels": [],
+    "noisy": true,
+    "candidates": {
+     "b12x": {
+      "status": "error"
+     },
+     "cutlass": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [],
+      "ratios": {
+       "1": 0.7238,
+       "4": 0.718,
+       "8": 0.7731,
+       "32": 0.8205,
+       "128": 0.9387,
+       "256": 1.0388
+      },
+      "best_deciding": 0.9387
+     },
+     "flashinfer_cudnn": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [],
+      "ratios": {
+       "1": 0.8719,
+       "4": 0.8748,
+       "8": 0.849,
+       "32": 0.8885,
+       "128": 1.0146,
+       "256": 1.0697
+      },
+      "best_deciding": 1.0146
+     },
+     "flashinfer_cutedsl": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [],
+      "ratios": {
+       "1": 1.0023,
+       "4": 1.0053,
+       "8": 1.0132,
+       "32": 0.9758,
+       "128": 1.0382,
+       "256": 0.9805
+      },
+      "best_deciding": 1.0382
+     },
+     "flashinfer_cutlass": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [],
+      "ratios": {
+       "1": 0.8112,
+       "4": 0.8137,
+       "8": 0.8263,
+       "32": 0.8611,
+       "128": 0.9925,
+       "256": 1.0525
+      },
+      "best_deciding": 0.9925
+     },
+     "flashinfer_trtllm": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [],
+      "ratios": {
+       "1": 0.7576,
+       "4": 0.7345,
+       "8": 0.7631,
+       "32": 0.8393,
+       "128": 0.9234,
+       "256": 0.9673
+      },
+      "best_deciding": 0.9234
+     },
+     "humming": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [],
+      "ratios": {
+       "1": 0.6639,
+       "4": 0.6651,
+       "8": 0.7125,
+       "32": 0.6007,
+       "128": 0.6466,
+       "256": 0.6587
+      },
+      "best_deciding": 0.7125
+     },
+     "marlin": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [],
+      "ratios": {
+       "1": 0.6678,
+       "4": 0.6583,
+       "8": 0.6956,
+       "32": 0.5522,
+       "128": 0.3033,
+       "256": 0.2658
+      },
+      "best_deciding": 0.6956
+     }
+    },
+    "selected": [
+     "flashinfer_cutedsl"
+    ]
+   },
+   "accept": {
+    "flashinfer_cutedsl": {
+     "diff": 0.0,
+     "interval95": [
+      0.0,
+      0.0
+     ],
+     "A1": true,
+     "status": "ok"
+    }
+   },
+   "paired": {
+    "flashinfer_cutedsl": {
+     "rounds": 6,
+     "good": 6,
+     "aot_all": true,
+     "V2": true,
+     "by_batch": {
+      "1": {
+       "ratio": 1.0109,
+       "lower": 0.9995,
+       "upper": 1.0225,
+       "rounds": 6
+      },
+      "8": {
+       "ratio": 1.0163,
+       "lower": 1.0052,
+       "upper": 1.0275,
+       "rounds": 6
+      },
+      "32": {
+       "ratio": 0.9837,
+       "lower": 0.9611,
+       "upper": 1.0068,
+       "rounds": 6
+      },
+      "128": {
+       "ratio": 0.9967,
+       "lower": 0.9733,
+       "upper": 1.0207,
+       "rounds": 6
+      }
+     }
+    }
+   },
+   "V3": true
+  },
+  "cell_M": {
+   "screen": {
+    "noise": {
+     "1": 0.01167546144702529,
+     "8": 0.004024233979821611,
+     "32": 0.0199035072817659,
+     "128": 0.04269797671958627
+    },
+    "V1": true,
+    "V0": true,
+    "reference_kernels": [
+     "Using 'FLASHINFER_TRTLLM' NvFp4 MoE backend"
+    ],
+    "noisy": true,
+    "candidates": {
+     "b12x": {
+      "status": "error"
+     },
+     "cutlass": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [
+       "Using 'VLLM_CUTLASS' NvFp4 MoE backend"
+      ],
+      "ratios": {
+       "1": 0.5097,
+       "4": 0.5457,
+       "8": 0.5621,
+       "32": 0.5926,
+       "128": 0.6071,
+       "256": 0.5912
+      },
+      "best_deciding": 0.6071
+     },
+     "flashinfer_cutedsl": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [
+       "Using 'FLASHINFER_CUTEDSL' NvFp4 MoE backend"
+      ],
+      "ratios": {
+       "1": 0.8388,
+       "4": 0.9037,
+       "8": 0.8692,
+       "32": 0.9032,
+       "128": 0.9494,
+       "256": 0.9354
+      },
+      "best_deciding": 0.9494
+     },
+     "flashinfer_cutlass": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [
+       "Using 'FLASHINFER_CUTLASS' NvFp4 MoE backend"
+      ],
+      "ratios": {
+       "1": 0.6487,
+       "4": 0.7112,
+       "8": 0.7166,
+       "32": 0.7427,
+       "128": 0.7568,
+       "256": 0.7363
+      },
+      "best_deciding": 0.7568
+     },
+     "flashinfer_trtllm": {
+      "status": "ok",
+      "alias": true,
+      "kernels": [
+       "Using 'FLASHINFER_TRTLLM' NvFp4 MoE backend"
+      ],
+      "ratios": {
+       "1": 0.9747,
+       "4": 0.979,
+       "8": 0.9795,
+       "32": 0.986,
+       "128": 1.0061,
+       "256": 0.9906
+      },
+      "best_deciding": 1.0061
+     },
+     "humming": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [
+       "Using 'HUMMING' NvFp4 MoE backend"
+      ],
+      "ratios": {
+       "1": 0.6995,
+       "4": 0.6893,
+       "8": 0.6386,
+       "32": 0.6095,
+       "128": 0.555,
+       "256": 0.5512
+      },
+      "best_deciding": 0.6995
+     },
+     "marlin": {
+      "status": "ok",
+      "alias": false,
+      "kernels": [
+       "Using 'MARLIN' NvFp4 MoE backend"
+      ],
+      "ratios": {
+       "1": 0.7043,
+       "4": 0.6963,
+       "8": 0.6814,
+       "32": 0.617,
+       "128": 0.5036,
+       "256": 0.4165
+      },
+      "best_deciding": 0.7043
+     }
+    },
+    "selected": []
+   },
+   "accept": {},
+   "paired": {},
+   "V3": true
+  }
+ },
+ "decision": "INCONCLUSIVE (cell_D invalid (V0, V1); cell_M no screen pass, but R noise above 2%)"
+}

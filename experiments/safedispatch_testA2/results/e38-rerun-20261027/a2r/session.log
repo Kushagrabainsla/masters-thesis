@@ -1,0 +1,38 @@
+05:43:40 setup done after 39 s
+05:49:19 cell_M/warm_R_a: exit 0 after 378 s
+05:53:45 cell_M/R_a: exit 0 after 644 s
+05:58:09 cell_M/R_b: exit 0 after 908 s
+06:00:02 cell_M/warm_cand_deep_gemm: exit 0 after 1021 s
+06:04:35 cell_M/cand_deep_gemm: exit 0 after 1294 s
+06:06:11 cell_M/warm_cand_flashinfer_cutlass: exit 0 after 1390 s
+06:10:42 cell_M/cand_flashinfer_cutlass: exit 0 after 1661 s
+06:12:32 cell_M/warm_cand_marlin: exit 0 after 1771 s
+06:16:49 cell_M/cand_marlin: exit 0 after 2028 s
+06:18:24 cell_M/warm_cand_triton: exit 0 after 2123 s
+06:23:00 cell_M/cand_triton: exit 0 after 2399 s
+06:28:41 cell_M/warm_bf16: exit 0 after 2740 s
+06:33:50 cell_M/bf16: exit 0 after 3049 s
+06:34:04 cell_M acceptable: triton
+06:35:09 marlin/warm_R: exit 0 after 3128 s
+06:36:42 marlin/warm_C: exit 0 after 3221 s
+06:39:00 marlin/R_1: exit 0 after 3359 s
+06:41:19 marlin/C_1: exit 0 after 3498 s
+06:43:49 marlin/R_2: exit 0 after 3648 s
+06:46:04 marlin/C_2: exit 0 after 3783 s
+06:53:02 cell_D/warm_R_a: exit 0 after 4201 s
+06:56:52 cell_D/R_a: exit 0 after 4431 s
+07:00:45 cell_D/R_b: exit 0 after 4664 s
+07:02:21 cell_D/warm_cand_deep_gemm: exit 0 after 4760 s
+07:06:15 cell_D/cand_deep_gemm: exit 0 after 4994 s
+07:08:10 cell_D/warm_cand_cutlass: exit 0 after 5109 s
+07:12:05 cell_D/cand_cutlass: exit 0 after 5344 s
+07:13:31 cell_D/warm_cand_triton: exit 0 after 5430 s
+07:17:29 cell_D/cand_triton: exit 0 after 5668 s
+07:18:43 cell_D/warm_cand_marlin: exit 0 after 5742 s
+07:22:46 cell_D/cand_marlin: exit 0 after 5985 s
+07:24:56 cell_D/warm_bf16: exit 0 after 6115 s
+07:28:52 cell_D/bf16: exit 0 after 6351 s
+07:29:09 cell_D acceptable: none
+07:29:21 decision: KILL
+07:29:24 done after 6383 s; copy /workspace/results/a2r off the machine before terminating it
+07:29:24 AUTO_STOP in 600 s; copy the results now

@@ -1,0 +1,26 @@
+17:03:43 setup done after 47 s
+17:16:21 warm_R: exit 0 after 805 s
+17:19:38 warm_C: exit 0 after 1002 s
+17:22:24 R_1: exit 0 after 1168 s
+17:25:03 C_1: exit 0 after 1327 s
+17:27:38 C_2: exit 0 after 1482 s
+17:30:17 R_2: exit 0 after 1641 s
+17:32:56 R_3: exit 0 after 1800 s
+17:35:27 C_3: exit 0 after 1951 s
+17:38:07 C_4: exit 0 after 2111 s
+17:40:56 R_4: exit 0 after 2280 s
+17:43:48 R_5: exit 0 after 2452 s
+17:46:30 C_5: exit 0 after 2614 s
+17:49:13 C_6: exit 0 after 2777 s
+17:52:07 R_6: exit 0 after 2951 s
+17:54:57 R_7: exit 0 after 3121 s
+17:57:39 C_7: exit 0 after 3283 s
+18:00:24 C_8: exit 0 after 3448 s
+18:03:08 R_8: exit 0 after 3612 s
+18:05:52 R_9: exit 0 after 3776 s
+18:08:22 C_9: exit 0 after 3926 s
+18:10:56 C_10: exit 0 after 4080 s
+18:13:35 R_10: exit 0 after 4239 s
+18:13:48 decision: INCONCLUSIVE (4, 8, 16)
+18:13:48 done after 4252 s
+18:13:48 AUTO_STOP in 600 s; copy the results now
