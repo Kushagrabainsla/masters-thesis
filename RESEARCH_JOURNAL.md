@@ -202,8 +202,9 @@ maps every file to what it contains.
   and stub run pass. E-42 RUN 2026-10-28: HYPOTHESIS HOLDS (NVFP4 FP4 kernels bit-equal).
   Cost overrun: about $21.60 against a $7 cap (idle Pod before the session; fix in RUNPOD.md). 0 Pods, 0 volumes.
   R-52 done (CONFIRM_WITH_SCOPE_LIMITS). R-53 done; D-65 decided (user): I-34 killed.
-  I-23 chapter DRAFT 1 written: `thesis/chapters/i23-safedispatch-negative-result.md`.
-  Next: the user reviews the draft. Pending: rehearse the boot watchdog on an L4.
+  I-23 chapter DRAFT 1 written and pushed. R-54 frontier
+  review (2026-10-28): no strong survivor; I-165 (version-exact rollout lifecycle) and I-166 are WEAK. D-66 open:
+  next step is the free I-165 source audit. Write-up: `dossier/FRONTIER_R-54_2026-10-28.md`. Pending: rehearse the boot watchdog on an L4.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -1047,6 +1048,13 @@ history in Section 5.
 | I-162 | Work placement for Muon and other matrix optimizers | KILL (NorMuon, MatrixFSDP 2607.05895, FlexShard) | 5.26 |
 | I-163 | Critical-path list scheduling for decode megakernels (the per-step task graph repeats) | KILL (R-38: Hazy Megakernels list scheduler, Cohere about 10% on dense then dropped for MoE; R-37 had WEAK) | 5.26 |
 | I-164 | Scan-resistant eviction for agent sessions that return in cyclic order | KILL (2606.21238, Continuum) | 5.26 |
+| I-165 | Version-exact rollout lifecycle: per-token policy-version invariant for engine pause, update and resume; epoch-tagged KV (RCU-style) | WEAK, MEASURE-FIRST (R-54); premise check = source audit | R-54 |
+| I-166 | Copy-engine versus SM AlltoAll for MoE EP inference on one node (from I-18) | WEAK, leaning KILL (R-54) | R-54 |
+| I-167 | Speculative tool execution | KILL (R-54: PASTE, AOSpec, Cordon, Atomix, Speculative Actions) | R-54 |
+| I-168 | Long-tail rollout migration in agentic RL | KILL (R-54: WAR, Heddle, VenusRL, DORA, ROLLART, ROSE) | R-54 |
+| I-169 | Session state after the stateless MCP spec | KILL (R-54: spec, gateway 2607.15593; engineering) | R-54 |
+| I-170 | Live forking of computer-use environments | KILL (R-54: TClone, AgentENV, forkd) | R-54 |
+| I-171 | Systems state of FP4 pretraining | KILL for this thesis (R-54: numerics work, checkpoint compression crowded) | R-54 |
 
 ---
 
@@ -5484,6 +5492,10 @@ idle gap about 2 h 20 min; boot watchdog command changed to python3 with a log. 
 **R-53 Two-pass novelty check of I-34** (2026-10-28; Opus pass 1, Sonnet pass 2). KILL recommended (D-65):
 upstream fixes and policies, residue is characterization, small oracle. Write-up: `dossier/REVIEW_I-34_NOVELTY_2026-10-28.md`.
 
+**R-54 Frontier review** (2026-10-28; Opus pass 1, Sonnet pass 2). Seven new candidates (I-165 to I-171): five KILL,
+two WEAK (I-165 version-exact rollout lifecycle, I-166 CE AlltoAll). No strong survivor. D-66 (recommendation).
+Write-up: `dossier/FRONTIER_R-54_2026-10-28.md`.
+
 ---
 
 ## 7. Prior-art ledger
@@ -6244,6 +6256,7 @@ proposed it and no acceptance is recorded.
 | D-63 | 2026-10-27 | After the E-38 rerun (KILL) and R-44: close I-23 for Hopper block-FP8 at these configurations; keep NVFP4 on Blackwell as the only open I-23 cell; log the Marlin MoE batch 4 to 8 hint as an open lead | User ("Go ahead" on "close I-23 for Hopper (D-63) and plan the next question") | Every real backend fails A2, and no backend is 3% or more faster | Decided by the user 2026-10-27, after E-39 (INCONCLUSIVE, gain under 3%) |
 | D-64 | 2026-10-27 | After E-40, E-41 (INCONCLUSIVE, no evidence of a lead) and R-50: close I-23 for NVFP4 on B200. Scope: one dense model (Qwen3-8B-NVFP4) and the E-40 MoE screen, one B200, GSM8K, end-to-end tokens/s for 128 new tokens, batch up to 512, TP 1, no long context. cudnn is unresolved (start failures, override not tested), not killed. A cutlass gain up to about 4% at batch 256 is not excluded; cutlass is 6% slower at batch 128. The A1 gate is vacuous here (identical tokens); the bit-equal cause is a hypothesis | User ("lets do the recommended steps in order", on the list whose step 2 was "Close I-23 for NVFP4 (your decision, D-64)") | No NVFP4 backend is 3% or more faster with a resolved bound, in two runs on B200 | Decided by the user 2026-10-27; with D-63, I-23 is closed for both cells |
 | D-65 | 2026-10-28 | Kill I-34 (NCCL new-path numerics contract): solved or in progress upstream; the remaining part is characterization; oracle about 1.7% | User ("kill this", on the R-53 KILL recommendation) | R-53 two-pass novelty check | Decided by the user 2026-10-28 |
+| D-66 | pending | After R-54: run the free I-165 source audit (no GPU) as the premise check; if it gives KILL, stop literature mining (D-37) and choose a direction from a mechanism with a clear invariant | User (recommendation, not a decision) | R-54: two weak survivors after four frontier passes | **Open** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6629,3 +6642,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-28: R-53 (I-34 novelty check, KILL recommended), D-65 opened.
 - 2026-10-28: D-65 decided (I-34 killed).
 - 2026-10-28: I-23 negative-result chapter, draft 1 (`thesis/chapters/`).
+- 2026-10-28: R-54 frontier review; I-165 to I-171; D-66 opened. User: keep the Runpod write key as is.
