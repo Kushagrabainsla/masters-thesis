@@ -192,7 +192,7 @@ maps every file to what it contains.
   without per-token version records or a check. Scope limits: vLLM and SGLang already emit per-token version
   spans (vLLM RFC #54443); the documented recipes train on rollout logprobs. Publication potential LOW.
   R-55 (Sonnet): AMEND, fixes applied. D-67 open: what to do with I-165. Result:
-  `experiments/rollout_version_audit/audit.md`. Branch `e43-rollout-version-audit` (not merged to main).
+  `experiments/rollout_version_audit/audit.md`. Merged to main 2026-10-28 (fast-forward from branch `e43-rollout-version-audit`).
 - State: E-38 rerun (D-62) done 2026-10-27, Pod 79jekplym1wxsh, about $7.60. Frozen decision: KILL (I-23
   closed for Hopper block-FP8 at these configs). All real candidates pass A1 (accuracy) but fail A2
   (KL 0.6 to 0.8 x BF16, bar 0.5); Marlin MoE speed not BETTER (bs 8 +5.5% UNCLEAR, bs 256 WORSE).
