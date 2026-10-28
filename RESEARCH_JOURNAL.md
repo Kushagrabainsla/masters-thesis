@@ -4707,6 +4707,8 @@ one-sided t, Bonferroni over 4. Kill criteria: README Section 5 (written before 
 Result (Pod rm31hzrhgrql7x, about $10.70, 140 checksums match): all three backends give identical GSM8K tokens
 (92.27%). cudnn: 7 of 10 runs failed at start (CudnnPlanBuildInCaptureError), V2 fails. cutlass (10 rounds):
 batch 128 0.937 [0.927, 0.947], 256 1.015 [0.988, 1.043], 512 1.001 [0.985, 1.018]. The E-40 lead was noise.
+Post-run audit (README): metrics recomputed and R stable (CV under 3%); OPEN: bit-identical tokens across three
+FP4 kernels is unexplained (HYPOTHESIS: same block-scaled MMA and K order); not cited as a fact.
 
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
@@ -6583,3 +6585,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: R-48 (E-40 post-run review); E-41 predeclared.
 - 2026-10-27: E-41 amended (A1), R-49.
 - 2026-10-27: E-41 result INCONCLUSIVE (no evidence of a lead); resume point.
+- 2026-10-27: E-41 post-run audit (metrics, R stability, telemetry, identical-token question).

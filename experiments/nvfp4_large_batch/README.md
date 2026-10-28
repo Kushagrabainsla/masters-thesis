@@ -85,3 +85,18 @@ FACT, flashinfer_cutlass (10 good rounds; ratio [one-sided bounds]): 128 0.937 [
 INTERPRETATION: the E-40 lead (cudnn 1.07, cutlass 1.05 at batch 256) was mostly noise. Cutlass is at
 most about 4% faster at batch 256 and is 6% slower at batch 128. cuDNN is not usable with CUDA graphs
 in this image without the FlashInfer override. The default stays the best choice across batch sizes.
+
+## Post-run audit (2026-10-27, on the Mac, before R-50)
+- FACT: tokens/s is correct: `ignore_eos=True`, so each request makes exactly 128 tokens; the decide
+  ratios recomputed by hand from the per-round data match `summary.json` (batch 256: 1.015).
+- FACT: R is stable: 20 R runs, CV 0.5% to 2.7% per size; R at 256 is 44.8k to 45.6k tok/s, which agrees
+  with E-40 (43.5k, 45.5k). Repeats inside one run differ by under 2%.
+- FACT: telemetry: 4,693 rows, 0 hard-slowdown samples, max 54 C, busy SM clock median 1,965 MHz.
+- FACT: cutlass is slower at batch 128 in all 10 rounds (0.923 to 0.961). At 256 two rounds (1 and 8)
+  near 1.07 lift the mean; the other 8 are 0.97 to 1.02.
+- OPEN: identical tokens for three kernels (1,319 of 1,319) are unusual. On H100 FP8 (E-38), real
+  different kernels changed most outputs (Marlin 149 of 1,319 the same, DeepGEMM 82). The flag did act
+  (kernel line, engine kwargs, and the cudnn accuracy run took 16.0 s against 13.3 s). HYPOTHESIS: all
+  three use the same Blackwell block-scaled FP4 MMA with the same K order and no split-K, so the results
+  are bit-equal. Not tested; do not cite it as a fact.
+- Limit: the 3 good cudnn rounds are survivors of a 70% start failure rate.
