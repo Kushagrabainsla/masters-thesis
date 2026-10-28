@@ -201,7 +201,8 @@ maps every file to what it contains.
   NVFP4. E-42 predeclared, R-51 done, A1 applied, tests
   and stub run pass. E-42 RUN 2026-10-28: HYPOTHESIS HOLDS (NVFP4 FP4 kernels bit-equal).
   Cost overrun: about $21.60 against a $7 cap (idle Pod before the session; fix in RUNPOD.md). 0 Pods, 0 volumes.
-  Next: E-42 post-run review; then choose the next idea.
+  R-52 done (CONFIRM_WITH_SCOPE_LIMITS). Next: the user chooses
+  between an I-23 write-up and a novelty check of I-34. Pending: rehearse the boot watchdog on an L4.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -5471,6 +5472,10 @@ for these backends; cudnn unresolved. Write-up: `dossier/REVIEW_E-41_POSTRUN_202
 **R-51 Sonnet pre-run review of E-42** (2026-10-28). AMEND_THEN_RUN: alias check, small-change control,
 short-list guard, failed backend gives INCONCLUSIVE, tie-safe compare, run order, watchdog. Write-up: `dossier/REVIEW_E-42_PRERUN_2026-10-28.md`.
 
+**R-52 Sonnet post-run review of E-42** (2026-10-28). CONFIRM_WITH_SCOPE_LIMITS. Recomputed: labels match.
+"Vacuous by construction" narrowed to these kernels, model and shape; R_m shows composition sensitivity, not GEMM-level;
+idle gap about 2 h 20 min; boot watchdog command changed to python3 with a log. Notes: `experiments/nvfp4_bitequal/README.md`.
+
 ---
 
 ## 7. Prior-art ledger
@@ -6611,3 +6616,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: R-50 (E-41 post-run review); D-64 decided (I-23 closed for NVFP4).
 - 2026-10-28: E-42 predeclared and amended (A1), R-51.
 - 2026-10-28: E-42 result HYPOTHESIS HOLDS; cost incident and boot watchdog rule.
+- 2026-10-28: R-52 (E-42 post-run review); boot watchdog command fixed.

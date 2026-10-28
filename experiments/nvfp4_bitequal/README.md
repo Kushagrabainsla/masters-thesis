@@ -83,18 +83,25 @@ FACT (eager, 256 prompts, 16,384 positions of top-20 logprobs against R_1, CuTe-
   token lists, every position bit-equal, max difference 0.0). Each log names its own kernel.
 - R_2 (same settings): BIT_EQUAL. Marlin (W4A16): DIFFERENT (12 of 256 token lists the same, max 13.9).
 - R_m (R with max_num_seqs 64): DIFFERENT (132 of 256 the same, 67.7% of positions bit-equal). A change of
-  batch composition changes the logits, so the test can see small numeric changes.
+  batch composition changes the logits (R-52: composition sensitivity, not GEMM-level; marlin is the
+  kernel-level control).
 - Graph mode: flashinfer_cutlass_g is BIT_EQUAL to R_g. R_g against R_1 (graph against eager) is
   DIFFERENT (7 of 256 the same): the compiled graph changes the numerics, but not between these backends.
 INTERPRETATION: the five FP4 x FP4 NVFP4 linear kernels in vLLM v0.32.0 give bit-equal results for this
-model on B200, in eager and graph mode. So the E-41 accuracy gate (A1) was vacuous by construction, and the
-backend choice for these kernels is a pure speed choice. Batch composition and compile mode change the
+model on B200, in eager and graph mode. So the E-41 accuracy gate (A1) was vacuous for these kernels on this model and
+shape, and here the backend choice among them is a speed choice only. Batch composition and compile mode change the
 numerics far more than the kernel choice.
 
 ## Incident (cost)
 FACT: the Pod billed from 01:14 UTC, but the session started at 03:34 UTC. The agent waited for a 2-minute
-background timer, and the wake-up reached it about 2 h 15 min late. The B200 was idle and billed during
+background timer, and the wake-up reached it about 2 h 20 min late. The B200 was idle and billed during
 that time. Cost: about $21.60 by the balance (billing $14.08 through 03:00, last hour not yet posted),
 against a $7 cap: about $15 over. The session watchdog starts with the session, so it did not cover this
 gap. Fix: `docs/experiments/RUNPOD.md` Section 3 now requires a boot watchdog in the start command, and the
 create-to-start steps in one tool call.
+
+## Post-run review R-52 (2026-10-28): CONFIRM_WITH_SCOPE_LIMITS
+Recomputed independently: all labels match. Scope limits for any citation: one dense model
+(Qwen3-8B-NVFP4), 256 GSM8K prompts with 64 greedy tokens, one B200, vLLM v0.32.0, max_num_seqs 256 (M below
+about 8 not tested), eager mode for all backends (graph mode only for R and flashinfer_cutlass), whole
+linear path (activation quantization plus GEMM). Do not generalize to other GPUs, models or versions.
