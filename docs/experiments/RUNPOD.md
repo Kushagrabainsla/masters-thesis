@@ -56,6 +56,13 @@ key is missing, stop and ask the user to add it to `.env`; do not ask for it in 
 - Ports `22/tcp`, SSH start on. A non-Runpod image needs a start command that installs and starts
   sshd (see the runbook).
 - Pin the CUDA floor (`minCudaVersion` 12.8, or 13.0 for a CUDA 13 image).
+- Boot watchdog (E-42 incident): the start command must stop the Pod by itself at the cost cap, counted
+  from boot, before any session starts. Put it before sshd in the start command:
+  `(sleep <cap seconds>; curl -s -X POST https://api.runpod.io/graphql -H "Authorization: Bearer $RUNPOD_API_KEY"
+  -H 'Content-Type: application/json' -d "{\"query\":\"mutation{podStop(input:{podId:\\\"$RUNPOD_POD_ID\\\"}){id}}\"}") &`.
+  The session watchdog (POD_LIMIT) starts only with the session, so it does not cover the time before.
+- Do the steps from create to session start in one tool call, with a wait loop inside the call. Do not
+  wait for a background timer or a notification while a GPU Pod bills and no session runs.
 
 ## 4. Rehearsal (stage S5)
 
@@ -101,6 +108,7 @@ Terminate the rehearsal Pod, then book the real one.
 | Balance low | Spend higher than planned | Abort rule 5: stop the Pod, copy the data, tell the user |
 | AUTO_STOP did not stop the Pod | Key scope or missing variable | Stop the Pod with the MCP tools; log the HTTP code from `session.log` |
 | Results incomplete after copy | rsync stopped | Run rsync again, then compare the checksums |
+| GPU Pod idle before the session starts | The agent waited for a background timer, and the wake-up came late | Stop the Pod at once; tell the user the cost; the boot watchdog (Section 3) prevents it |
 
 After any incident, write a short note in the run report: what happened, the evidence, the cost, and
 what changes next time. No blame, only facts.

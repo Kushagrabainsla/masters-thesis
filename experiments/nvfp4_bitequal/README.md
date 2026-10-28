@@ -1,6 +1,6 @@
 # E-42: Are the NVFP4 GEMM kernels bit-equal on B200? (preregistration)
 
-Status: PREDECLARED 2026-10-27, AMENDED (A1 after R-51). NOT RUN. Idea: I-23 (closed by D-64; this test explains a result, it does not
+Status: PREDECLARED 2026-10-27, AMENDED (A1 after R-51). RUN 2026-10-28: HYPOTHESIS HOLDS. Idea: I-23 (closed by D-64; this test explains a result, it does not
 reopen I-23). Source: E-41 audit and R-50 item 3. User request 2026-10-27: "lets do the recommended steps in
 order" (step 3: a small GPU check that compares the three NVFP4 kernels bit for bit).
 Labels: FACT, INTERPRETATION, HYPOTHESIS.
@@ -74,3 +74,27 @@ R-51 (Sonnet pre-run review): AMEND_THEN_RUN. Changes:
    Watchdog 40 min of script time. Cost cap $7.
 9. Test record (S3, S5, Mac): `test_e42.py` 5 pass; a stub session runs all 10 runs and gives the expected
    decision.
+
+## Result
+Result (2026-10-28, Pod r37oa2sniy92lq, 1 x B200 sm_100, US-NC-2, Pod volume disk; 59 checksums match):
+HYPOTHESIS HOLDS. V0, V1, V2 pass; M sensitivity shown.
+FACT (eager, 256 prompts, 16,384 positions of top-20 logprobs against R_1, CuTe-DSL):
+- flashinfer_cudnn, flashinfer_cutlass, cutlass (vLLM CUTLASS), flashinfer_trtllm: BIT_EQUAL (256 of 256
+  token lists, every position bit-equal, max difference 0.0). Each log names its own kernel.
+- R_2 (same settings): BIT_EQUAL. Marlin (W4A16): DIFFERENT (12 of 256 token lists the same, max 13.9).
+- R_m (R with max_num_seqs 64): DIFFERENT (132 of 256 the same, 67.7% of positions bit-equal). A change of
+  batch composition changes the logits, so the test can see small numeric changes.
+- Graph mode: flashinfer_cutlass_g is BIT_EQUAL to R_g. R_g against R_1 (graph against eager) is
+  DIFFERENT (7 of 256 the same): the compiled graph changes the numerics, but not between these backends.
+INTERPRETATION: the five FP4 x FP4 NVFP4 linear kernels in vLLM v0.32.0 give bit-equal results for this
+model on B200, in eager and graph mode. So the E-41 accuracy gate (A1) was vacuous by construction, and the
+backend choice for these kernels is a pure speed choice. Batch composition and compile mode change the
+numerics far more than the kernel choice.
+
+## Incident (cost)
+FACT: the Pod billed from 01:14 UTC, but the session started at 03:34 UTC. The agent waited for a 2-minute
+background timer, and the wake-up reached it about 2 h 15 min late. The B200 was idle and billed during
+that time. Cost: about $21.60 by the balance (billing $14.08 through 03:00, last hour not yet posted),
+against a $7 cap: about $15 over. The session watchdog starts with the session, so it did not cover this
+gap. Fix: `docs/experiments/RUNPOD.md` Section 3 now requires a boot watchdog in the start command, and the
+create-to-start steps in one tool call.

@@ -38,3 +38,5 @@
 {"at": "2026-10-27T22:34:45Z", "event": "created", "experiment": "E-41", "id": "rm31hzrhgrql7x", "kind": "pod", "name": "msthesis-e-41-session-20261027", "note": "B200, US-NE-1, 7.99/h, volume 3ty3mnlrsn, created 2026-10-27T22:34:33Z"}
 {"at": "2026-10-27T23:56:32Z", "event": "ended", "id": "rm31hzrhgrql7x", "note": "terminated 2026-10-27 23:56 after copy (140 checksums match)"}
 {"at": "2026-10-27T23:56:32Z", "event": "ended", "id": "3ty3mnlrsn", "note": "deleted 2026-10-27 23:56"}
+{"at": "2026-10-28T01:14:05Z", "event": "created", "experiment": "E-42", "id": "r37oa2sniy92lq", "kind": "pod", "name": "msthesis-e-42-session-20261028", "note": "B200, US-NC-2, 7.99/h, Pod volume disk 60 GB (no network volume in US-NC-2), created 2026-10-28T01:14:00Z"}
+{"at": "2026-10-28T03:59:33Z", "event": "ended", "id": "r37oa2sniy92lq", "note": "terminated 2026-10-28 after copy (59 checksums match)"}

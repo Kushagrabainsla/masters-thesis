@@ -199,7 +199,9 @@ maps every file to what it contains.
   `experiments/nvfp4_large_batch/`; RUN 2026-10-27 (about $10.70): INCONCLUSIVE, no evidence of a lead; cutlass at most about 4% at batch 256 and
   6% slower at 128; cudnn fails at start 7 of 10 times. 0 Pods, 0 volumes. R-50 done. D-64 decided (user): I-23 closed for
   NVFP4. E-42 predeclared, R-51 done, A1 applied, tests
-  and stub run pass. Next: the user approves the E-42 spend (cap $7), then the next idea.
+  and stub run pass. E-42 RUN 2026-10-28: HYPOTHESIS HOLDS (NVFP4 FP4 kernels bit-equal).
+  Cost overrun: about $21.60 against a $7 cap (idle Pod before the session; fix in RUNPOD.md). 0 Pods, 0 volumes.
+  Next: E-42 post-run review; then choose the next idea.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4716,6 +4718,11 @@ R-50 (post-run review): CONFIRM_WITH_SCOPE_LIMITS. D-64 (user): I-23 closed for 
 E-41, does not reopen I-23). STATUS: NOT RUN. Package: `experiments/nvfp4_bitequal/`. Question: do the NVFP4 linear
 backends give bit-equal top-20 logprobs against R? Controls: R_2 (determinism), marlin (large difference), R_m
 (small change). Rule: README Section 5 and A1. Cap $7.
+Result (2026-10-28, Pod r37oa2sniy92lq, US-NC-2): HYPOTHESIS HOLDS. cudnn, flashinfer_cutlass, cutlass and
+flashinfer_trtllm are bit-equal to R at all 16,384 top-20 positions (eager), and flashinfer_cutlass equals R in graph
+mode. Controls pass: R_2 equal; marlin and R_m (max_num_seqs 64) differ. So E-41 A1 was vacuous by construction.
+INCIDENT: the Pod was idle about 2 h 15 min before the session started (late wake-up); cost about $21.60 against a
+$7 cap. Fix: boot watchdog rule in `docs/experiments/RUNPOD.md`.
 
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
@@ -6603,3 +6610,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: E-41 post-run audit (metrics, R stability, telemetry, identical-token question).
 - 2026-10-27: R-50 (E-41 post-run review); D-64 decided (I-23 closed for NVFP4).
 - 2026-10-28: E-42 predeclared and amended (A1), R-51.
+- 2026-10-28: E-42 result HYPOTHESIS HOLDS; cost incident and boot watchdog rule.
