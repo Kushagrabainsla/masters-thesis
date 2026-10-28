@@ -201,8 +201,8 @@ maps every file to what it contains.
   NVFP4. E-42 predeclared, R-51 done, A1 applied, tests
   and stub run pass. E-42 RUN 2026-10-28: HYPOTHESIS HOLDS (NVFP4 FP4 kernels bit-equal).
   Cost overrun: about $21.60 against a $7 cap (idle Pod before the session; fix in RUNPOD.md). 0 Pods, 0 volumes.
-  R-52 done (CONFIRM_WITH_SCOPE_LIMITS). Next: the user chooses
-  between an I-23 write-up and a novelty check of I-34. Pending: rehearse the boot watchdog on an L4.
+  R-52 done (CONFIRM_WITH_SCOPE_LIMITS). R-53: I-34 KILL recommended (D-65 open,
+  user decides). Next: the user decides D-65; the I-23 write-up is the default next step. Pending: rehearse the boot watchdog on an L4.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -385,7 +385,7 @@ maps every file to what it contains.
 | I-23 | SafeDispatch, narrowed to Hopper and Blackwell block-scaled FP8, NVFP4 and MoE cells | CLOSED (D-63 Hopper FP8, D-64 NVFP4 on B200; default dispatch near-optimal) | 1 NVIDIA GPU (Hopper, plus Blackwell for NVFP4) | E-36 Session 1 on one H100 (`dossier/GPU_RUNBOOK_2026-10-20.md`), then the full Test A (R-33 Section 7) | Oracle gain under 2% and unsafe fraction under 2%: KILL. Gain under 5% but unsafe fraction at least 10%: PIVOT to measurement thesis |
 | I-18 | Compute-aware collective engine choice | MEASURE-FIRST, low priority | NVLink node (2+ GPUs, 8 for NVLS) | Fix the test design first (within-cell test, per-call static table baseline), then Test B | Per-call static table within 2% of oracle: KILL |
 | I-33 | Feature-level divergence and speed ledger | HYPOTHESIS | GPU | Rides on the Test A matrix | None yet |
-| I-34 | NCCL new-path numerics contract | HYPOTHESIS | 4 to 8 NVLink GPUs | Bundle with Test B in one node rental | None yet |
+| I-34 | NCCL new-path numerics contract | KILL recommended (R-53, D-65 pending) | 4 to 8 NVLink GPUs | Bundle with Test B in one node rental | None yet |
 | I-19 | State-reuse soundness | KILL as thesis, salvage as a note | none (Mac) | Optional 1 to 2 week short note | n/a |
 | I-83 | Rank-safe block-max pruning for the DSA lightning indexer | WEAK, GPU only, lower after R-35 (indexer scores concentrate) | A GPU node to dump real indexer keys (about 3 hours, 8 x H200) | Premise check in `dossier/ROUTES_R-17_2026-10-08.md` Section 6.3; freeze the kill rules in Section 6.1 before any run | Sign-correct bound skips under 50% of blocks at B = 16, L = 128K, K = 2048: KILL |
 | I-94 | Phi-accrual detection of slow versus hung collectives (spare) | WEAK | No public collective-timing trace | None planned | None yet |
@@ -840,7 +840,7 @@ history in Section 5.
 | ID | Idea | Status | Section |
 |---|---|---|---|
 | I-33 | Feature-level divergence and speed ledger for cached multi-turn workloads on MoE and hybrid models | HYPOTHESIS, low confidence | 5.10 |
-| I-34 | Reduction-order and precision contract of NCCL's newer collective paths | HYPOTHESIS, low confidence | 5.10 |
+| I-34 | Reduction-order and precision contract of NCCL's newer collective paths | KILL recommended 2026-10-28 (R-53) | 5.10 |
 | I-35 | Multi-GPU process-level checkpoint/restore for inference engines | SCANNED, crowded, NVIDIA in progress | 5.11 |
 | I-36 | Runtime cache-integrity verification | SCANNED, crowded | 5.11 |
 | I-37 | Fault-tolerant LLM inference | SCANNED, crowded | 5.11 |
@@ -2351,6 +2351,10 @@ Status HYPOTHESIS, confidence low.
   and message size on a real node, then the effect on token flips in TP inference.
 - Threat: NVIDIA fixing it, vLLM determinism PRs (I-40), TBIK.
 - Hardware: 4 to 8 NVLink or NVSwitch GPUs. Bundle with Test B (I-18).
+- 2026-10-28 (R-53, two passes): KILL recommended. NVIDIA confirmed the Blackwell NVLS bug (nccl #2479, fix PR
+  #2504); Megatron merged a determinism policy (#8180, about 1.7% gain over Ring); TokenSpeed ships a fixed-issuer
+  self-check; PyTorch has a capability policy proposal. What is left is characterization. Write-up:
+  `dossier/REVIEW_I-34_NOVELTY_2026-10-28.md`. No probe planned.
 
 ---
 
@@ -5476,6 +5480,9 @@ short-list guard, failed backend gives INCONCLUSIVE, tie-safe compare, run order
 "Vacuous by construction" narrowed to these kernels, model and shape; R_m shows composition sensitivity, not GEMM-level;
 idle gap about 2 h 20 min; boot watchdog command changed to python3 with a log. Notes: `experiments/nvfp4_bitequal/README.md`.
 
+**R-53 Two-pass novelty check of I-34** (2026-10-28; Opus pass 1, Sonnet pass 2). KILL recommended (D-65):
+upstream fixes and policies, residue is characterization, small oracle. Write-up: `dossier/REVIEW_I-34_NOVELTY_2026-10-28.md`.
+
 ---
 
 ## 7. Prior-art ledger
@@ -6235,6 +6242,7 @@ proposed it and no acceptance is recorded.
 | D-62 | 2026-10-27 | After the incomplete E-38 run: rerun the missing parts (cell M scoring and the Marlin MoE speed A/B first, then cell D) on the kept network volume with the fixed code, cap about $10; or stop and delete the volume | User ("D-62: rerun the missing E-38 parts (cell M scoring and the Marlin MoE speed A/B first, then cell D) on the kept volume with the fixed code, cap $10.") | A1 passed for every MoE candidate, so the Marlin speed test now decides GO or KILL | Decided by the user 2026-10-27. Rerun in progress |
 | D-63 | 2026-10-27 | After the E-38 rerun (KILL) and R-44: close I-23 for Hopper block-FP8 at these configurations; keep NVFP4 on Blackwell as the only open I-23 cell; log the Marlin MoE batch 4 to 8 hint as an open lead | User ("Go ahead" on "close I-23 for Hopper (D-63) and plan the next question") | Every real backend fails A2, and no backend is 3% or more faster | Decided by the user 2026-10-27, after E-39 (INCONCLUSIVE, gain under 3%) |
 | D-64 | 2026-10-27 | After E-40, E-41 (INCONCLUSIVE, no evidence of a lead) and R-50: close I-23 for NVFP4 on B200. Scope: one dense model (Qwen3-8B-NVFP4) and the E-40 MoE screen, one B200, GSM8K, end-to-end tokens/s for 128 new tokens, batch up to 512, TP 1, no long context. cudnn is unresolved (start failures, override not tested), not killed. A cutlass gain up to about 4% at batch 256 is not excluded; cutlass is 6% slower at batch 128. The A1 gate is vacuous here (identical tokens); the bit-equal cause is a hypothesis | User ("lets do the recommended steps in order", on the list whose step 2 was "Close I-23 for NVFP4 (your decision, D-64)") | No NVFP4 backend is 3% or more faster with a resolved bound, in two runs on B200 | Decided by the user 2026-10-27; with D-63, I-23 is closed for both cells |
+| D-65 | pending | Kill I-34 (NCCL new-path numerics contract): solved or in progress upstream; the remaining part is characterization; oracle about 1.7% | User (recommendation by R-53, not a decision) | R-53 two-pass novelty check | **Open** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6617,3 +6625,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-28: E-42 predeclared and amended (A1), R-51.
 - 2026-10-28: E-42 result HYPOTHESIS HOLDS; cost incident and boot watchdog rule.
 - 2026-10-28: R-52 (E-42 post-run review); boot watchdog command fixed.
+- 2026-10-28: R-53 (I-34 novelty check, KILL recommended), D-65 opened.
