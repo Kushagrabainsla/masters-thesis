@@ -197,8 +197,8 @@ maps every file to what it contains.
   the default NVFP4 backend is fastest at batch 1 to 128; open lead at dense batch 256. 0 Pods, 0 volumes.
   R-48 done (E-40 confirmed with scope limits). E-41 (dense NVFP4 large-batch paired test) predeclared in
   `experiments/nvfp4_large_batch/`; RUN 2026-10-27 (about $10.70): INCONCLUSIVE, no evidence of a lead; cutlass at most about 4% at batch 256 and
-  6% slower at 128; cudnn fails at start 7 of 10 times. 0 Pods, 0 volumes. Next: E-41 post-run review; the user
-  decides whether to close I-23 for NVFP4 (draft D-64).
+  6% slower at 128; cudnn fails at start 7 of 10 times. 0 Pods, 0 volumes. R-50 done. D-64 decided (user): I-23 closed for
+  NVFP4. Next: E-42 bit-equality check of the three NVFP4 GEMM kernels (preregister, review, approval), then the next idea.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -378,7 +378,7 @@ maps every file to what it contains.
 
 | ID | Idea | Status | Blocker | Next step | Kill rule |
 |---|---|---|---|---|---|
-| I-23 | SafeDispatch, narrowed to Hopper and Blackwell block-scaled FP8, NVFP4 and MoE cells | MEASURE-FIRST | 1 NVIDIA GPU (Hopper, plus Blackwell for NVFP4) | E-36 Session 1 on one H100 (`dossier/GPU_RUNBOOK_2026-10-20.md`), then the full Test A (R-33 Section 7) | Oracle gain under 2% and unsafe fraction under 2%: KILL. Gain under 5% but unsafe fraction at least 10%: PIVOT to measurement thesis |
+| I-23 | SafeDispatch, narrowed to Hopper and Blackwell block-scaled FP8, NVFP4 and MoE cells | CLOSED (D-63 Hopper FP8, D-64 NVFP4 on B200; default dispatch near-optimal) | 1 NVIDIA GPU (Hopper, plus Blackwell for NVFP4) | E-36 Session 1 on one H100 (`dossier/GPU_RUNBOOK_2026-10-20.md`), then the full Test A (R-33 Section 7) | Oracle gain under 2% and unsafe fraction under 2%: KILL. Gain under 5% but unsafe fraction at least 10%: PIVOT to measurement thesis |
 | I-18 | Compute-aware collective engine choice | MEASURE-FIRST, low priority | NVLink node (2+ GPUs, 8 for NVLS) | Fix the test design first (within-cell test, per-call static table baseline), then Test B | Per-call static table within 2% of oracle: KILL |
 | I-33 | Feature-level divergence and speed ledger | HYPOTHESIS | GPU | Rides on the Test A matrix | None yet |
 | I-34 | NCCL new-path numerics contract | HYPOTHESIS | 4 to 8 NVLink GPUs | Bundle with Test B in one node rental | None yet |
@@ -820,7 +820,7 @@ history in Section 5.
 
 | ID | Idea | Status | Section |
 |---|---|---|---|
-| I-23 | SafeDispatch / KernelGuard: correctness-aware kernel and backend qualification and selection | MEASURE-FIRST, narrowed (2026-09-23) | 5.8 |
+| I-23 | SafeDispatch / KernelGuard: correctness-aware kernel and backend qualification and selection | CLOSED 2026-10-27 (D-63, D-64) | 5.8 |
 | I-24 | Generic cross-layer LLM profiler | KILL | 5.9 |
 | I-25 | Generic inference performance simulator | KILL | 5.9 |
 | I-26 | LLM agent that recommends serving configurations | KILL / PIVOT | 5.9 |
@@ -4709,6 +4709,7 @@ Result (Pod rm31hzrhgrql7x, about $10.70, 140 checksums match): all three backen
 batch 128 0.937 [0.927, 0.947], 256 1.015 [0.988, 1.043], 512 1.001 [0.985, 1.018]. The E-40 lead was noise.
 Post-run audit (README): metrics recomputed and R stable (CV under 3%); OPEN: bit-identical tokens across three
 FP4 kernels is unexplained (HYPOTHESIS: same block-scaled MMA and K order); not cited as a fact.
+R-50 (post-run review): CONFIRM_WITH_SCOPE_LIMITS. D-64 (user): I-23 closed for NVFP4.
 
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
@@ -5449,6 +5450,10 @@ V0 and V1; cell M noise 4.3% bars KILL). Dense default is fastest at batch 1 to 
 
 **R-49 Sonnet pre-run review of E-41** (2026-10-27). AMEND_THEN_RUN, no code bug: watchdog over the cost cap,
 V2 stricter than the README, weak KILL, 10 rounds adopted, test record added. Write-up: `dossier/REVIEW_E-41_PRERUN_2026-10-27.md`.
+
+**R-50 Sonnet post-run review of E-41** (2026-10-27). CONFIRM_WITH_SCOPE_LIMITS. Bounds recomputed and match;
+"no evidence of a lead" must not read as "no lead" (cutlass up to about 4% at 256 not excluded); the A1 gate is vacuous
+for these backends; cudnn unresolved. Write-up: `dossier/REVIEW_E-41_POSTRUN_2026-10-27.md`.
 
 ---
 
@@ -6208,6 +6213,7 @@ proposed it and no acceptance is recorded.
 | D-61 | 2026-10-26 | After E-36 Session 1 and R-42: preregister Test A2 for I-23 with a tolerance contract (teacher-forced logprob distance on R's tokens, GSM8K accuracy as the primary metric, kill rules frozen first), including Marlin W8A16 and the fused activation-quantization variant; keep Session 1 labelled INCONCLUSIVE. Alternative: close I-23 for Hopper block-FP8 under exact match and move to NVFP4 on Blackwell | User (chose option 1, "Test 'good enough' instead of 'identical'", with "go ahead!") | Exact match makes every alternative unsafe; R is the fastest FP8 backend; only a tolerance contract can show usable headroom | Decided by the user 2026-10-26. Test A2 planned as E-38 |
 | D-62 | 2026-10-27 | After the incomplete E-38 run: rerun the missing parts (cell M scoring and the Marlin MoE speed A/B first, then cell D) on the kept network volume with the fixed code, cap about $10; or stop and delete the volume | User ("D-62: rerun the missing E-38 parts (cell M scoring and the Marlin MoE speed A/B first, then cell D) on the kept volume with the fixed code, cap $10.") | A1 passed for every MoE candidate, so the Marlin speed test now decides GO or KILL | Decided by the user 2026-10-27. Rerun in progress |
 | D-63 | 2026-10-27 | After the E-38 rerun (KILL) and R-44: close I-23 for Hopper block-FP8 at these configurations; keep NVFP4 on Blackwell as the only open I-23 cell; log the Marlin MoE batch 4 to 8 hint as an open lead | User ("Go ahead" on "close I-23 for Hopper (D-63) and plan the next question") | Every real backend fails A2, and no backend is 3% or more faster | Decided by the user 2026-10-27, after E-39 (INCONCLUSIVE, gain under 3%) |
+| D-64 | 2026-10-27 | After E-40, E-41 (INCONCLUSIVE, no evidence of a lead) and R-50: close I-23 for NVFP4 on B200. Scope: one dense model (Qwen3-8B-NVFP4) and the E-40 MoE screen, one B200, GSM8K, end-to-end tokens/s for 128 new tokens, batch up to 512, TP 1, no long context. cudnn is unresolved (start failures, override not tested), not killed. A cutlass gain up to about 4% at batch 256 is not excluded; cutlass is 6% slower at batch 128. The A1 gate is vacuous here (identical tokens); the bit-equal cause is a hypothesis | User ("lets do the recommended steps in order", on the list whose step 2 was "Close I-23 for NVFP4 (your decision, D-64)") | No NVFP4 backend is 3% or more faster with a resolved bound, in two runs on B200 | Decided by the user 2026-10-27; with D-63, I-23 is closed for both cells |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6586,3 +6592,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: E-41 amended (A1), R-49.
 - 2026-10-27: E-41 result INCONCLUSIVE (no evidence of a lead); resume point.
 - 2026-10-27: E-41 post-run audit (metrics, R stability, telemetry, identical-token question).
+- 2026-10-27: R-50 (E-41 post-run review); D-64 decided (I-23 closed for NVFP4).
