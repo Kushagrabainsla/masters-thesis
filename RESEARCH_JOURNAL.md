@@ -198,7 +198,8 @@ maps every file to what it contains.
   R-48 done (E-40 confirmed with scope limits). E-41 (dense NVFP4 large-batch paired test) predeclared in
   `experiments/nvfp4_large_batch/`; RUN 2026-10-27 (about $10.70): INCONCLUSIVE, no evidence of a lead; cutlass at most about 4% at batch 256 and
   6% slower at 128; cudnn fails at start 7 of 10 times. 0 Pods, 0 volumes. R-50 done. D-64 decided (user): I-23 closed for
-  NVFP4. Next: E-42 bit-equality check of the three NVFP4 GEMM kernels (preregister, review, approval), then the next idea.
+  NVFP4. E-42 predeclared, R-51 done, A1 applied, tests
+  and stub run pass. Next: the user approves the E-42 spend (cap $7), then the next idea.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -4711,6 +4712,11 @@ Post-run audit (README): metrics recomputed and R stable (CV under 3%); OPEN: bi
 FP4 kernels is unexplained (HYPOTHESIS: same block-scaled MMA and K order); not cited as a fact.
 R-50 (post-run review): CONFIRM_WITH_SCOPE_LIMITS. D-64 (user): I-23 closed for NVFP4.
 
+**E-42 NVFP4 linear-path bit-equality on one B200** (predeclared 2026-10-27, amended A1 2026-10-28; explains
+E-41, does not reopen I-23). STATUS: NOT RUN. Package: `experiments/nvfp4_bitequal/`. Question: do the NVFP4 linear
+backends give bit-equal top-20 logprobs against R? Controls: R_2 (determinism), marlin (large difference), R_m
+(small change). Rule: README Section 5 and A1. Cap $7.
+
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
 `--moe-backend marlin` at least 3% faster than R for Qwen3-30B-A3B-FP8 at batch 4, 8, 16 or 32 (10 paired
@@ -5454,6 +5460,9 @@ V2 stricter than the README, weak KILL, 10 rounds adopted, test record added. Wr
 **R-50 Sonnet post-run review of E-41** (2026-10-27). CONFIRM_WITH_SCOPE_LIMITS. Bounds recomputed and match;
 "no evidence of a lead" must not read as "no lead" (cutlass up to about 4% at 256 not excluded); the A1 gate is vacuous
 for these backends; cudnn unresolved. Write-up: `dossier/REVIEW_E-41_POSTRUN_2026-10-27.md`.
+
+**R-51 Sonnet pre-run review of E-42** (2026-10-28). AMEND_THEN_RUN: alias check, small-change control,
+short-list guard, failed backend gives INCONCLUSIVE, tie-safe compare, run order, watchdog. Write-up: `dossier/REVIEW_E-42_PRERUN_2026-10-28.md`.
 
 ---
 
@@ -6593,3 +6602,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-27: E-41 result INCONCLUSIVE (no evidence of a lead); resume point.
 - 2026-10-27: E-41 post-run audit (metrics, R stability, telemetry, identical-token question).
 - 2026-10-27: R-50 (E-41 post-run review); D-64 decided (I-23 closed for NVFP4).
+- 2026-10-28: E-42 predeclared and amended (A1), R-51.
