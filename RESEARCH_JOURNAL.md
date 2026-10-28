@@ -202,7 +202,8 @@ maps every file to what it contains.
   and stub run pass. E-42 RUN 2026-10-28: HYPOTHESIS HOLDS (NVFP4 FP4 kernels bit-equal).
   Cost overrun: about $21.60 against a $7 cap (idle Pod before the session; fix in RUNPOD.md). 0 Pods, 0 volumes.
   R-52 done (CONFIRM_WITH_SCOPE_LIMITS). R-53 done; D-65 decided (user): I-34 killed.
-  Next: the user decides whether to start the I-23 negative-result write-up. Pending: rehearse the boot watchdog on an L4.
+  I-23 chapter DRAFT 1 written: `thesis/chapters/i23-safedispatch-negative-result.md`.
+  Next: the user reviews the draft. Pending: rehearse the boot watchdog on an L4.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -6627,3 +6628,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-28: R-52 (E-42 post-run review); boot watchdog command fixed.
 - 2026-10-28: R-53 (I-34 novelty check, KILL recommended), D-65 opened.
 - 2026-10-28: D-65 decided (I-34 killed).
+- 2026-10-28: I-23 negative-result chapter, draft 1 (`thesis/chapters/`).
