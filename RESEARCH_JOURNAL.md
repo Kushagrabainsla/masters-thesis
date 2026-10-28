@@ -191,7 +191,9 @@ maps every file to what it contains.
   slime (fully async mode), OpenRLHF (partial rollout) and PipelineRL keep state across a weight update
   without per-token version records or a check. Scope limits: vLLM and SGLang already emit per-token version
   spans (vLLM RFC #54443); the documented recipes train on rollout logprobs. Publication potential LOW.
-  R-55 (Sonnet): AMEND, fixes applied. D-67 open: what to do with I-165. Result:
+  R-55 (Sonnet): AMEND, fixes applied. D-67 decided (user, option b): I-165 is closed as a thesis direction;
+  the small upstream fixes stay optional career work. Next: D-13 (choose the thesis direction); D-37 still
+  applies. Result:
   `experiments/rollout_version_audit/audit.md`. Merged to main 2026-10-28 (fast-forward from branch `e43-rollout-version-audit`).
 - State: E-38 rerun (D-62) done 2026-10-27, Pod 79jekplym1wxsh, about $7.60. Frozen decision: KILL (I-23
   closed for Hopper block-FP8 at these configs). All real candidates pass A1 (accuracy) but fail A2
@@ -399,7 +401,7 @@ maps every file to what it contains.
 | I-94 | Phi-accrual detection of slow versus hung collectives (spare) | WEAK | No public collective-timing trace | None planned | None yet |
 | I-118 | Power-coupled noisy neighbor on CPU-GPU superchips (GH200, GB200) | MEASURE-FIRST, low | 1 x GH200 with root and module power telemetry (ask the provider first) | E-30 package ready (`experiments/superchip_power_coupling/`, runbook Session 2); ask the provider about root and caps | Prefill throughput change under 3% at both module limits, or best static CPU cap within 5% of an offline oracle: KILL |
 | I-116 | Per-tenant I/O QoS for KV storage tiers (mClock transfer) | WEAK | A box with one NVMe-backed KV tier and two clients | None planned | Victim fetch latency rises by under 20%: KILL |
-| I-165 | Version-exact rollout lifecycle (per-token version invariant, KV provenance) | GO by E-43 with no margin; publication potential LOW (R-55) | None for the choice; a GPU test needs the user's approval | D-67 by the user | `experiments/rollout_version_audit/README.md` Section 5 |
+| I-165 | Version-exact rollout lifecycle (per-token version invariant, KV provenance) | CLOSED as a thesis direction (D-67, user, 2026-10-28) after E-43 GO with no margin | None | Optional: upstream fixes in slime, OpenRLHF, PipelineRL | n/a |
 
 ### 1.3 Closed or deprioritized. Do not reopen without new information
 
@@ -410,7 +412,7 @@ I-81 (R-13), I-80 (R-14, E-28, R-16; an optional E-29 is listed in D-33), I-82, 
 I-110 to I-115, I-117, I-119 (R-20; I-114 has a WEAK dissent from the reviewer), I-121 (R-21),
 I-124 to I-130 (R-22), I-122 (PIVOT after R-23 and R-24), I-123 (PIVOT after R-28),
 I-131 (R-26 and R-27), I-132 (R-29), I-106 and I-60 (R-30), I-59 (E-35, R-31, R-32), I-120 (R-33),
-I-133 to I-140 (R-33), I-141, I-142, I-144 to I-148 (R-36), I-149 to I-164 (R-37 and R-38).
+I-133 to I-140 (R-33), I-141, I-142, I-144 to I-148 (R-36), I-149 to I-164 (R-37 and R-38), I-165 (D-67, as a thesis direction).
 Scanned: I-44,
 I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 
@@ -461,7 +463,7 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
     and R-38 (all 16 candidates KILL).
 20. **D-55 (after R-38).** Accept or change the recommendation: no further gap sweep of any kind; go to the
     GPU runs (D-51, D-52). Optional career work: the open SGLang lazy-heap PRs or their Rust-core version.
-21. **D-67 (after E-43 and R-55).** Choose what to do with I-165: (a) run the 1-GPU fault-injection test
+21. **D-67.** DECIDED 2026-10-28. The user chose (b): close I-165 as a thesis direction. The choice was: (a) run the 1-GPU fault-injection test
     (the R-54 GO step), (b) close I-165 as a thesis direction and keep the small upstream fixes as optional
     career work, or (c) another option. Recommendation: (b).
 
@@ -496,6 +498,7 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 
 ### 1.6 Recent changes
 
+- 2026-10-28: D-67 decided (user): I-165 closed as a thesis direction; upstream fixes optional.
 - 2026-10-28: E-43 (I-165 source audit of 7 frameworks): GO with no margin and strong scope limits. R-55
   (Sonnet): AMEND, fixes applied. Section 8.1 row 68. Section 7.26. D-66 decided, D-67 opened.
 - 2026-10-22: E-36 amendment A2 and R-39 (Sonnet pre-run review, AMEND_THEN_RUN, fixes applied). D-57.
@@ -1060,7 +1063,7 @@ history in Section 5.
 | I-162 | Work placement for Muon and other matrix optimizers | KILL (NorMuon, MatrixFSDP 2607.05895, FlexShard) | 5.26 |
 | I-163 | Critical-path list scheduling for decode megakernels (the per-step task graph repeats) | KILL (R-38: Hazy Megakernels list scheduler, Cohere about 10% on dense then dropped for MoE; R-37 had WEAK) | 5.26 |
 | I-164 | Scan-resistant eviction for agent sessions that return in cyclic order | KILL (2606.21238, Continuum) | 5.26 |
-| I-165 | Version-exact rollout lifecycle: per-token policy-version invariant for engine pause, update and resume; epoch-tagged KV (RCU-style) | GO by the E-43 premise check, no margin; scope limited by vLLM RFC #54443 and rollout-logprob recipes; publication potential LOW (R-55); D-67 open | R-54 |
+| I-165 | Version-exact rollout lifecycle: per-token policy-version invariant for engine pause, update and resume; epoch-tagged KV (RCU-style) | CLOSED as a thesis direction (D-67, user, 2026-10-28) after the E-43 premise check gave GO with no margin; scope limited by vLLM RFC #54443 and rollout-logprob recipes; publication potential LOW (R-55); upstream fixes optional | R-54 |
 | I-166 | Copy-engine versus SM AlltoAll for MoE EP inference on one node (from I-18) | WEAK, leaning KILL (R-54) | R-54 |
 | I-167 | Speculative tool execution | KILL (R-54: PASTE, AOSpec, Cordon, Atomix, Speculative Actions) | R-54 |
 | I-168 | Long-tail rollout migration in agentic RL | KILL (R-54: WAR, Heddle, VenusRL, DORA, ROLLART, ROSE) | R-54 |
@@ -6308,7 +6311,7 @@ proposed it and no acceptance is recorded.
 | D-64 | 2026-10-27 | After E-40, E-41 (INCONCLUSIVE, no evidence of a lead) and R-50: close I-23 for NVFP4 on B200. Scope: one dense model (Qwen3-8B-NVFP4) and the E-40 MoE screen, one B200, GSM8K, end-to-end tokens/s for 128 new tokens, batch up to 512, TP 1, no long context. cudnn is unresolved (start failures, override not tested), not killed. A cutlass gain up to about 4% at batch 256 is not excluded; cutlass is 6% slower at batch 128. The A1 gate is vacuous here (identical tokens); the bit-equal cause is a hypothesis | User ("lets do the recommended steps in order", on the list whose step 2 was "Close I-23 for NVFP4 (your decision, D-64)") | No NVFP4 backend is 3% or more faster with a resolved bound, in two runs on B200 | Decided by the user 2026-10-27; with D-63, I-23 is closed for both cells |
 | D-65 | 2026-10-28 | Kill I-34 (NCCL new-path numerics contract): solved or in progress upstream; the remaining part is characterization; oracle about 1.7% | User ("kill this", on the R-53 KILL recommendation) | R-53 two-pass novelty check | Decided by the user 2026-10-28 |
 | D-66 | 2026-10-28 | After R-54: run the free I-165 source audit (no GPU) as the premise check; if it gives KILL, stop literature mining (D-37) and choose a direction from a mechanism with a clear invariant | User ("Yes, run the I-165 source audit (vLLM, SGLang, verl, slime, AReaL, OpenRLHF, PipelineRL) as the premise check, with the GO/PIVOT/KILL rules in R-54.") | R-54: two weak survivors after four frontier passes | Decided by the user 2026-10-28; done as E-43 (GO) |
-| D-67 | pending | After E-43 (GO, no margin) and R-55: (a) run the 1-GPU fault-injection test that counts mixed-version and mislabelled tokens (R-54 GO step; needs a predeclared plan, a cost cap and the balance check), (b) close I-165 as a thesis direction and keep the small upstream fixes (slime reads the SGLang spans; OpenRLHF and PipelineRL record versions) as optional career work, or (c) another option. Recommendation: (b) | User (recommendation, not a decision) | The record ships upstream (#54443); recipes train on rollout logprobs; the GO rests on one exact-KV vote; publication potential LOW | **Open** |
+| D-67 | 2026-10-28 | After E-43 (GO, no margin) and R-55: (a) run the 1-GPU fault-injection test that counts mixed-version and mislabelled tokens (R-54 GO step; needs a predeclared plan, a cost cap and the balance check), (b) close I-165 as a thesis direction and keep the small upstream fixes (slime reads the SGLang spans; OpenRLHF and PipelineRL record versions) as optional career work, or (c) another option. Recommendation: (b) | User ("go ahead with b") | The record ships upstream (#54443); recipes train on rollout logprobs; the GO rests on one exact-KV vote; publication potential LOW | Decided by the user 2026-10-28: option (b). I-165 closed as a thesis direction |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6699,3 +6702,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-28: E-43 predeclared and run (I-165 source audit, GO with no margin); R-55 (Sonnet, AMEND, applied).
   Section 1 lines, Section 3 row I-165, E-43, R-55, Section 7.26, Section 8.1 row 68, D-66 decided, D-67,
   Appendix A row. Work done in a cloud session on branch `e43-rollout-version-audit`.
+- 2026-10-28: D-67 decided (user, option b): I-165 closed as a thesis direction. Section 1 lines, Section 3
+  row I-165, D-67.
