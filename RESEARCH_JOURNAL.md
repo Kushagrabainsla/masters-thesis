@@ -2,7 +2,7 @@
 
 Owner: Kushagra Bainsla, MSCS, San Jose State University
 Created: 2026-09-23
-Last updated: 2026-10-25
+Last updated: 2026-10-28
 Protocol version: 1
 
 This is the single source of truth for the whole research journey: every idea, every
@@ -184,9 +184,15 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-26 22:00 UTC, after E-36 Session 1 on the H100 and R-42.** Rewrite this section every session.
+**As of 2026-10-28, after E-43 (I-165 source audit) and R-55.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
+- Latest (2026-10-28, cloud session): E-43 ran (D-66 decided by the user). Frozen decision GO, with no margin:
+  slime (fully async mode), OpenRLHF (partial rollout) and PipelineRL keep state across a weight update
+  without per-token version records or a check. Scope limits: vLLM and SGLang already emit per-token version
+  spans (vLLM RFC #54443); the documented recipes train on rollout logprobs. Publication potential LOW.
+  R-55 (Sonnet): AMEND, fixes applied. D-67 open: what to do with I-165. Result:
+  `experiments/rollout_version_audit/audit.md`. Branch `e43-rollout-version-audit` (not merged to main).
 - State: E-38 rerun (D-62) done 2026-10-27, Pod 79jekplym1wxsh, about $7.60. Frozen decision: KILL (I-23
   closed for Hopper block-FP8 at these configs). All real candidates pass A1 (accuracy) but fail A2
   (KL 0.6 to 0.8 x BF16, bar 0.5); Marlin MoE speed not BETTER (bs 8 +5.5% UNCLEAR, bs 256 WORSE).
@@ -203,8 +209,8 @@ maps every file to what it contains.
   Cost overrun: about $21.60 against a $7 cap (idle Pod before the session; fix in RUNPOD.md). 0 Pods, 0 volumes.
   R-52 done (CONFIRM_WITH_SCOPE_LIMITS). R-53 done; D-65 decided (user): I-34 killed.
   I-23 chapter DRAFT 1 written and pushed. R-54 frontier
-  review (2026-10-28): no strong survivor; I-165 (version-exact rollout lifecycle) and I-166 are WEAK. D-66 open:
-  next step is the free I-165 source audit. Write-up: `dossier/FRONTIER_R-54_2026-10-28.md`. Pending: rehearse the boot watchdog on an L4.
+  review (2026-10-28): no strong survivor; I-165 (version-exact rollout lifecycle) and I-166 are WEAK. D-66 decided
+  (user): run the free I-165 source audit; done as E-43. Write-up: `dossier/FRONTIER_R-54_2026-10-28.md`. Pending: rehearse the boot watchdog on an L4.
 - Keys: `.env` has `RUNPOD_API_KEY` (read-only, default) and `RUNPOD_API_KEY_WRITE` (ask the user
   before each use). Rotate the write key after the experiments (it was pasted in chat).
 
@@ -393,6 +399,7 @@ maps every file to what it contains.
 | I-94 | Phi-accrual detection of slow versus hung collectives (spare) | WEAK | No public collective-timing trace | None planned | None yet |
 | I-118 | Power-coupled noisy neighbor on CPU-GPU superchips (GH200, GB200) | MEASURE-FIRST, low | 1 x GH200 with root and module power telemetry (ask the provider first) | E-30 package ready (`experiments/superchip_power_coupling/`, runbook Session 2); ask the provider about root and caps | Prefill throughput change under 3% at both module limits, or best static CPU cap within 5% of an offline oracle: KILL |
 | I-116 | Per-tenant I/O QoS for KV storage tiers (mClock transfer) | WEAK | A box with one NVMe-backed KV tier and two clients | None planned | Victim fetch latency rises by under 20%: KILL |
+| I-165 | Version-exact rollout lifecycle (per-token version invariant, KV provenance) | GO by E-43 with no margin; publication potential LOW (R-55) | None for the choice; a GPU test needs the user's approval | D-67 by the user | `experiments/rollout_version_audit/README.md` Section 5 |
 
 ### 1.3 Closed or deprioritized. Do not reopen without new information
 
@@ -454,6 +461,9 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
     and R-38 (all 16 candidates KILL).
 20. **D-55 (after R-38).** Accept or change the recommendation: no further gap sweep of any kind; go to the
     GPU runs (D-51, D-52). Optional career work: the open SGLang lazy-heap PRs or their Rust-core version.
+21. **D-67 (after E-43 and R-55).** Choose what to do with I-165: (a) run the 1-GPU fault-injection test
+    (the R-54 GO step), (b) close I-165 as a thesis direction and keep the small upstream fixes as optional
+    career work, or (c) another option. Recommendation: (b).
 
 ### 1.5 Next actions, in order
 
@@ -486,6 +496,8 @@ I-45. Weak backups: I-59, I-60. Reasons are in each dossier.
 
 ### 1.6 Recent changes
 
+- 2026-10-28: E-43 (I-165 source audit of 7 frameworks): GO with no margin and strong scope limits. R-55
+  (Sonnet): AMEND, fixes applied. Section 8.1 row 68. Section 7.26. D-66 decided, D-67 opened.
 - 2026-10-22: E-36 amendment A2 and R-39 (Sonnet pre-run review, AMEND_THEN_RUN, fixes applied). D-57.
 - 2026-10-22: D-56 (user): GPU experiments run on Runpod. Runpod plugin 1.8.0 and MCP server connected.
   New `experiments/runpod/` (hardware record script, hardware log). Runbook Section 2a (E-36 on Runpod).
@@ -1048,7 +1060,7 @@ history in Section 5.
 | I-162 | Work placement for Muon and other matrix optimizers | KILL (NorMuon, MatrixFSDP 2607.05895, FlexShard) | 5.26 |
 | I-163 | Critical-path list scheduling for decode megakernels (the per-step task graph repeats) | KILL (R-38: Hazy Megakernels list scheduler, Cohere about 10% on dense then dropped for MoE; R-37 had WEAK) | 5.26 |
 | I-164 | Scan-resistant eviction for agent sessions that return in cyclic order | KILL (2606.21238, Continuum) | 5.26 |
-| I-165 | Version-exact rollout lifecycle: per-token policy-version invariant for engine pause, update and resume; epoch-tagged KV (RCU-style) | WEAK, MEASURE-FIRST (R-54); premise check = source audit | R-54 |
+| I-165 | Version-exact rollout lifecycle: per-token policy-version invariant for engine pause, update and resume; epoch-tagged KV (RCU-style) | GO by the E-43 premise check, no margin; scope limited by vLLM RFC #54443 and rollout-logprob recipes; publication potential LOW (R-55); D-67 open | R-54 |
 | I-166 | Copy-engine versus SM AlltoAll for MoE EP inference on one node (from I-18) | WEAK, leaning KILL (R-54) | R-54 |
 | I-167 | Speculative tool execution | KILL (R-54: PASTE, AOSpec, Cordon, Atomix, Speculative Actions) | R-54 |
 | I-168 | Long-tail rollout migration in agentic RL | KILL (R-54: WAR, Heddle, VenusRL, DORA, ROLLART, ROSE) | R-54 |
@@ -4738,6 +4750,24 @@ mode. Controls pass: R_2 equal; marlin and R_m (max_num_seqs 64) differ. So E-41
 INCIDENT: the Pod was idle about 2 h 15 min before the session started (late wake-up); cost about $21.60 against a
 $7 cap. Fix: boot watchdog rule in `docs/experiments/RUNPOD.md`.
 
+**E-43 I-165 premise check: rollout version audit** (predeclared and run 2026-10-28, no GPU). STATUS: RUN, GO.
+Package: `experiments/rollout_version_audit/` (README with the frozen rules, `audit.md` with the result).
+Question: when policy weights change, do vLLM, SGLang, verl, slime, AReaL, OpenRLHF and PipelineRL keep
+in-flight requests or KV, record a version for each token, and check it? Rules (README Section 5, written
+before any source was read): KILL if 2 or more frameworks check a single-version invariant, or vLLM #48311
+defines a version field; GO if 3 or more keep state without per-token records or a check; else PIVOT or KILL.
+Result (FACT, source at pinned commits): GO with no margin. slime (`--flush-cache-interval` other than 1:
+SGLang `in_place`, stale KV, one label for each call), OpenRLHF (partial rollout: vLLM `keep`, KV recomputed,
+no version record) and PipelineRL (vLLM `keep` with `clear_cache=False`, stale KV, start version per rollout)
+count. vLLM and SGLang keep state but emit per-token spans (vLLM #49040 on 2026-07-28 and #59582 on 2026-10-11;
+SGLang #35926 on 2026-08-24). verl and AReaL abort, flush and resubmit. No framework checks a version.
+Scope limits (INTERPRETATION): vLLM RFC #54443 (2026-08-30) already specifies the spans, surveys the same
+frameworks and says the spans do not show which weights computed the KV. The documented recipes of all three
+GO frameworks train on rollout logprobs. Without OpenRLHF (the only GO vote with exact KV), the rule gives
+PIVOT. Left open: KV provenance for hybrid tokens, a label check, and the cost of exactness.
+R-55 (Sonnet): AMEND (one wrong row, two missing modes, two citations, logprob qualifiers); fixes applied.
+What it changed: I-165 premise holds, but publication potential drops to LOW. D-67.
+
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
 `--moe-backend marlin` at least 3% faster than R for Qwen3-30B-A3B-FP8 at batch 4, 8, 16 or 32 (10 paired
@@ -5496,6 +5526,12 @@ upstream fixes and policies, residue is characterization, small oracle. Write-up
 two WEAK (I-165 version-exact rollout lifecycle, I-166 CE AlltoAll). No strong survivor. D-66 (recommendation).
 Write-up: `dossier/FRONTIER_R-54_2026-10-28.md`.
 
+**R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
+slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
+and logprob qualifiers (`raw_logprobs` default, AReaL reads per-token versions in its loss, recipes use rollout
+logprobs). It found vLLM RFC #54443. The main session checked the key claims in the source before applying them.
+Write-up: `experiments/rollout_version_audit/audit.md` Section 6.
+
 ---
 
 ## 7. Prior-art ledger
@@ -5979,6 +6015,20 @@ Check levels use the 0.4 meanings with the date 2026-10-21.
 | Ada-MK, 2605.11581; AutoMegaKernel, 2606.09682 | 2026-05; 2026-06 | Offline schedule search for megakernels | Context for I-163 | search-only (via R-38) |
 | Continuum, 2511.02230 (ICLR 2026) | 2025-11 | KV TTL across tool calls from reload cost and tool-latency distribution | Closes the R-38 near miss | search-only |
 
+### 7.26 Rollout version audit (added 2026-10-28, E-43 and R-55)
+
+Check levels use the 0.4 meanings with the date 2026-10-28.
+
+| Work | Date | What it proves | Effect | Check |
+|---|---|---|---|---|
+| vLLM, SGLang, verl, slime, AReaL, OpenRLHF, PipelineRL source at the E-43 pinned commits; vLLM v0.29.0 and v0.18.1 | 2026-10-28 | Pause modes, cache handling and version records on the weight-update path (`audit.md` Sections 1 and 2) | E-43 GO | full-text (grep and read) |
+| vLLM RFC #54443, "Weight version attribution for RL rollouts and Background survey" | 2026-08-30, open | Per-token `weight_versions` spans; does not certify KV provenance; not an off-policy correction; prime-rl, SkyRL and PipelineRL keep KV by default | Main scope limit on I-165 | checked |
+| vLLM PR #49040; PR #59582 | merged 2026-07-28; 2026-10-11 | Weight-version label; token-level spans on final outputs | Version record exists in vLLM | checked (git log) |
+| SGLang PR #35926 | merged 2026-08-24 | Per-token weight-version spans in meta info | Version record exists in SGLang | checked (git log) |
+| vLLM RFC #48311 | 2026-07-11, open | Lifecycle contract; no version field; weight-update correctness goes to #48312 | E-43 KILL rule not met | checked |
+| PipelineRL PR #150 | merged 2026-07-08 into `fast-llm` | Per-token model version (not runtime-tested, per the author) | Upstream fix in progress, not on `main` | checked |
+| AReaL PR #1722 | 2026-09-17, open | Opt-in token-version age filter on loss targets | Nearest thing to a version check; not shipped | checked |
+
 ---
 
 ## 8. Errors, retractions, and do-not-cite list
@@ -6054,6 +6104,7 @@ Check levels use the 0.4 meanings with the date 2026-10-21.
 | 65 | 2026-10-21 | R-37: I-163 kept as WEAK while citing the Cohere megakernel blog | CORRECTED (R-38, verified): the same blog reports about 10% from cost-based scheduling on a dense model and why it was dropped; Hazy's public scheduler already has a critical-path priority | Read every section of a cited source that bears on the claim, not only the passage that supports it |
 | 66 | 2026-10-21 | R-37: I-154 "any order without idle time is within O(sqrt n)"; I-158 "closes the whole family" | CORRECTED (R-38): the bound holds only for random order, and the gain is 3 to 14% at n of 8 to 128; DySHARP covers dynamic multicast | State the assumptions of an asymptotic argument and check small n. An arithmetic kill covers only the variant it computes |
 | 67 | 2026-10-26 | E-36 Session 1 first draft: "no dispatch headroom ... close to the Test A KILL condition"; "86% to 95%" flipped; kernel check "different scaling or layout code" | CORRECTED (R-42): under exact match the KILL condition is trivially true for a safe set of {R}, so headroom is untested, not absent; the flip range is 87.5% to 95.3%; dense deep_gemm differs in fused activation-quantization kernels | An exact-match contract that flags every numerical change cannot measure headroom. Check what the rule can show before reading its result as evidence |
+| 68 | 2026-10-28 | R-54 chat summary: "vLLM lists the lifecycle contract as open, but it has no version field"; R-54 Section 4.1 asked for a per-token version record as an open part of I-165 | CORRECTED (E-43, R-55): vLLM has a weight-version label since #49040 (2026-07-28) and per-token spans since #59582 (2026-10-11); SGLang since #35926 (2026-08-24); RFC #54443 (2026-08-30) specifies them. The R-54 dossier statement about #48311 alone is correct | Search the engine source and its RFC list for the named field, not only the one RFC that a roadmap links |
 
 ### 8.2 Do not cite
 
@@ -6256,7 +6307,8 @@ proposed it and no acceptance is recorded.
 | D-63 | 2026-10-27 | After the E-38 rerun (KILL) and R-44: close I-23 for Hopper block-FP8 at these configurations; keep NVFP4 on Blackwell as the only open I-23 cell; log the Marlin MoE batch 4 to 8 hint as an open lead | User ("Go ahead" on "close I-23 for Hopper (D-63) and plan the next question") | Every real backend fails A2, and no backend is 3% or more faster | Decided by the user 2026-10-27, after E-39 (INCONCLUSIVE, gain under 3%) |
 | D-64 | 2026-10-27 | After E-40, E-41 (INCONCLUSIVE, no evidence of a lead) and R-50: close I-23 for NVFP4 on B200. Scope: one dense model (Qwen3-8B-NVFP4) and the E-40 MoE screen, one B200, GSM8K, end-to-end tokens/s for 128 new tokens, batch up to 512, TP 1, no long context. cudnn is unresolved (start failures, override not tested), not killed. A cutlass gain up to about 4% at batch 256 is not excluded; cutlass is 6% slower at batch 128. The A1 gate is vacuous here (identical tokens); the bit-equal cause is a hypothesis | User ("lets do the recommended steps in order", on the list whose step 2 was "Close I-23 for NVFP4 (your decision, D-64)") | No NVFP4 backend is 3% or more faster with a resolved bound, in two runs on B200 | Decided by the user 2026-10-27; with D-63, I-23 is closed for both cells |
 | D-65 | 2026-10-28 | Kill I-34 (NCCL new-path numerics contract): solved or in progress upstream; the remaining part is characterization; oracle about 1.7% | User ("kill this", on the R-53 KILL recommendation) | R-53 two-pass novelty check | Decided by the user 2026-10-28 |
-| D-66 | pending | After R-54: run the free I-165 source audit (no GPU) as the premise check; if it gives KILL, stop literature mining (D-37) and choose a direction from a mechanism with a clear invariant | User (recommendation, not a decision) | R-54: two weak survivors after four frontier passes | **Open** |
+| D-66 | 2026-10-28 | After R-54: run the free I-165 source audit (no GPU) as the premise check; if it gives KILL, stop literature mining (D-37) and choose a direction from a mechanism with a clear invariant | User ("Yes, run the I-165 source audit (vLLM, SGLang, verl, slime, AReaL, OpenRLHF, PipelineRL) as the premise check, with the GO/PIVOT/KILL rules in R-54.") | R-54: two weak survivors after four frontier passes | Decided by the user 2026-10-28; done as E-43 (GO) |
+| D-67 | pending | After E-43 (GO, no margin) and R-55: (a) run the 1-GPU fault-injection test that counts mixed-version and mislabelled tokens (R-54 GO step; needs a predeclared plan, a cost cap and the balance check), (b) close I-165 as a thesis direction and keep the small upstream fixes (slime reads the SGLang spans; OpenRLHF and PipelineRL record versions) as optional career work, or (c) another option. Recommendation: (b) | User (recommendation, not a decision) | The record ships upstream (#54443); recipes train on rollout logprobs; the GO rests on one exact-KV vote; publication potential LOW | **Open** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6342,7 +6394,8 @@ proposed it and no acceptance is recorded.
 | `dossier/REVIEW_E-36_A2_PRERUN_2026-10-22.md` | 2026-10-22 | R-39: Sonnet pre-run review of E-36 A2 (AMEND_THEN_RUN), the fix for each finding, Runpod facts, tests |
 | `docs/experiments/` | 2026-10-25 | D-58: experiment protocol (stages S0 to S9), measurement standards, Runpod operations and incidents, preregistration and run report templates |
 | `experiments/ledger/` | 2026-10-25 | D-58: append-only run ledger (`runs.jsonl`), `ledger.py`, `compare_runs.py`, tests |
-| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-25 | This file |
+| `experiments/rollout_version_audit/` | 2026-10-28 | E-43: predeclared rules (README), audit table with file and line links, frozen decision, R-55 amendments (`audit.md`) |
+| `RESEARCH_JOURNAL.md` | 2026-09-23, updated 2026-10-28 | This file |
 
 ---
 
@@ -6643,3 +6696,6 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-28: D-65 decided (I-34 killed).
 - 2026-10-28: I-23 negative-result chapter, draft 1 (`thesis/chapters/`).
 - 2026-10-28: R-54 frontier review; I-165 to I-171; D-66 opened. User: keep the Runpod write key as is.
+- 2026-10-28: E-43 predeclared and run (I-165 source audit, GO with no margin); R-55 (Sonnet, AMEND, applied).
+  Section 1 lines, Section 3 row I-165, E-43, R-55, Section 7.26, Section 8.1 row 68, D-66 decided, D-67,
+  Appendix A row. Work done in a cloud session on branch `e43-rollout-version-audit`.

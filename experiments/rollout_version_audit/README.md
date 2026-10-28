@@ -1,6 +1,8 @@
 # E-43: I-165 premise check (rollout version audit)
 
 Status: PREDECLARED 2026-10-28. No framework source was read for this audit before this file was written.
+RUN 2026-10-28: frozen decision GO, with no margin and strong scope limits. Result: `audit.md`. Review R-55
+(Sonnet): AMEND, fixes applied in `audit.md` Section 6. The rules in Section 5 did not change.
 Labels: FACT (source read at the pinned commit), INTERPRETATION, HYPOTHESIS.
 Idea: I-165 (version-exact rollout lifecycle). Origin: R-54 Section 7. Decision request: D-66 (user approved
 the audit on 2026-10-28).
