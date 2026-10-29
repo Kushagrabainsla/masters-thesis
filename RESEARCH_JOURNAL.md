@@ -189,7 +189,8 @@ maps every file to what it contains.
 **RESUME POINT (read this first).**
 - Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
   lesson that came out of the research (O-01 to O-06, U-01 to U-03, T-01 to T-06, L-01 to L-06). Keep it current.
-  E-46 (validation of O-03 before the vLLM bug report U-01) is predeclared in `experiments/fp8_fusion_validate/`.
+  E-46 (validation of O-03 before the vLLM bug report U-01) is predeclared in `experiments/fp8_fusion_validate/`;
+  amended after R-59 (A1); tests and stub runs pass. Next: the user approves the L4 rehearsal ($0.50) and E-46 ($10.50).
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -5580,6 +5581,10 @@ does not predict the in-model cost; scope limited to this setup. Write-up: `doss
 opaque op, confirmed in the v0.32.0 source). Upside for a code change at most about 6% of device time at batch 64 and 256.
 Notes: `experiments/fp8_quant_cause/README.md` (Cancellation).
 
+**R-59 Sonnet pre-run review of E-46** (2026-10-29). AMEND_THEN_RUN, no blocker: L4 rehearsal of the nightly digest,
+version records, a default-engine profile, a `vllm bench latency` reproducer, V0 for every pair, warm-up and gate
+guards, a stricter report rule, caps $10.50. Write-up: `dossier/REVIEW_E-46_PRERUN_2026-10-29.md`.
+
 **R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
 slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
 and logprob qualifiers (`raw_logprobs` default, AReaL reads per-token versions in its loss, recipes use rollout
@@ -6761,3 +6766,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: R-57 (E-44 post-run review).
 - 2026-10-29: E-45 predeclared and cancelled before run (R-58, no-op on the default engine).
 - 2026-10-29: `RESEARCH_OUTPUTS.md` created; E-46 predeclared.
+- 2026-10-29: E-46 amended (A1), R-59.

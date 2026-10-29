@@ -1,6 +1,6 @@
 # E-46: Validation of the block-FP8 fusion slowdown on H100 before a vLLM bug report (preregistration)
 
-Status: PREDECLARED 2026-10-29. NOT RUN. Idea: I-172. Follows E-44 (result), R-57 (post-run review) and R-58.
+Status: PREDECLARED 2026-10-29, AMENDED (A1 after R-59). NOT RUN. Idea: I-172. Follows E-44 (result), R-57 (post-run review) and R-58.
 User request 2026-10-29: "first validate it properly, and then create a bug report for it".
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics.
 
@@ -70,3 +70,31 @@ and R-57); the report states the measured effect and the kernel tables.
 `session_e46.sh`, `analyze_e46.py`, `test_e46.py`. Reused: `../safedispatch_testA/run_cell.py`,
 `../safedispatch_testA2/run_a2.py`, `gsm8k.py` and `analyze_a2.py`, `../nvfp4_dispatch/analyze_e40.py`,
 `../fp8_quant_fusion/analyze_e44.py`, `../runpod/pod_cmd.py`.
+
+## Amendment A1 (2026-10-29, after R-59, before any run; wins over Sections 3 to 6)
+R-59 (Sonnet pre-run review): AMEND_THEN_RUN, no blocker. Changes:
+1. Image rehearsal on an L4 first (about $0.10, cap $0.50): the pinned nightly digest, the exact generated start
+   command, `minCudaVersion` 13.0. Pass: the Pod starts, `python3 -c "import vllm"` works, pip or uv is present,
+   `VLLM_BUILD_COMMIT` is set, and the boot watchdog stops the Pod. FACT (R-59): the image is the current `nightly`
+   index, CUDA 13.0.2, vLLM commit edad8b03 (2026-10-28), about 9.7 GB compressed; its entrypoint is `vllm serve`, so
+   the start command overrides it (as in E-36 to E-44). Network volume 60 GB (models about 25 GB).
+2. Setup records `versions.txt` (with `VLLM_BUILD_COMMIT`), `collect_env.txt` and `nvidia-smi.txt`. The `datasets`
+   install falls back from `python3 -m pip` to `pip` to `uv pip --system`.
+3. Scope (who is affected by default): one profile run of the default engine (`auto`) after P1 shows whether the
+   fusion fires there on nightly.
+4. Reproducer for maintainers: after P1, 3 alternating on/off rounds of `vllm bench latency` (default multiprocess
+   engine, batch 64, 128 in and 128 out, 10 iterations); the session writes `repro.md` with the exact commands, digest
+   and commit. B200 is not tested; the report says so.
+5. V0 for every pair: the on run lists norm_quant in "Enabled custom fusions", the off run does not, and both select
+   the same linear kernel; a pair that fails is INVALID.
+6. Waste guards: warm-ups get a 1200 s timeout and one retry; a pair is skipped if a warm-up is not ok; a pair stops
+   if round 1 fails in both configs; an early V0 gate after the P1 profiles stops the session (and the Pod) if the
+   fusion does not fire with "on" or fires with "off".
+7. Rule: a bug report only if P1 is REPRODUCED. A P1 that is UNCLEAR gives NOT CONFIRMED (rerun or no report).
+   PARTLY VALIDATED needs P1 REPRODUCED. Bounds are computed for 4 or 5 good rounds (df 3 or 4).
+8. Order: P1, then the extras (default profile, bench), then P2, then P3, so a time cap cuts P3 first. Caps: no new
+   work after 120 min, session watchdog 130 min, boot CAP 8400 s (140 min). Cost cap $10.50 for the H100, plus $0.50 for
+   the L4 rehearsal. Launch with `AUTO_STOP=1`. The analysis runs on the Pod with the sibling folders copied
+   (fp8_quant_cause, fp8_quant_fusion, nvfp4_dispatch, safedispatch_testA, safedispatch_testA2, ledger, runpod).
+9. Test record (S3, S5, Mac): `test_e46.py` 4 pass; a stub session runs 50 steps with the right decision; a second
+   stub with the fusion firing in "off" stops at the V0 gate before any pair.

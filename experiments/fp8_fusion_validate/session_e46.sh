@@ -1,7 +1,8 @@
 #!/bin/sh
-# E-46 session (README Sections 3 to 6): version record, accuracy and profiles for P1, then paired rounds P1 (8B
-# deep_gemm), P2 (14B deep_gemm), P3 (8B cutlass), fusions on (X) against off (Y). Same safety as E-44. The Pod start
-# command adds the boot watchdog (experiments/runpod/pod_cmd.py).
+# E-46 session (README Sections 3 to 6 and Amendment A1): version record, accuracy and profiles for P1, an early V0
+# gate, then P1 (8B deep_gemm), the extras (default-engine profile, vllm bench latency reproducer), P2 (14B deep_gemm)
+# and P3 (8B cutlass), fusions on (X) against off (Y). Same safety as E-44. The Pod start command adds the boot
+# watchdog (experiments/runpod/pod_cmd.py).
 set -u
 CODE=${CODE:-/workspace/code}
 E46=$CODE/fp8_fusion_validate
@@ -16,8 +17,10 @@ ACC=${ACC:-""}
 OFF='{"pass_config": {"fuse_norm_quant": false, "fuse_act_quant": false}}'
 ROUNDS=${ROUNDS:-5}
 RUN_TIMEOUT=${RUN_TIMEOUT:-600}
-NEW_RUN_CAP=${NEW_RUN_CAP:-6600}        # no new work after 110 min
-POD_LIMIT=${POD_LIMIT:-7200}            # session watchdog at 120 min
+WARM_TIMEOUT=${WARM_TIMEOUT:-1200}      # A1 (R-59): cold compiles get more time
+BENCH=${BENCH:-1}
+NEW_RUN_CAP=${NEW_RUN_CAP:-7200}        # A1: no new work after 120 min
+POD_LIMIT=${POD_LIMIT:-7800}            # A1: session watchdog at 130 min
 ROUND_RESERVE=${ROUND_RESERVE:-420}
 AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-300}
 AUTO_STOP=${AUTO_STOP:-0}
@@ -70,7 +73,7 @@ nvidia-smi -q > "$ENV/nvidia-smi.txt" 2>&1
 [ -f "$CODE/runpod/hardware_record.sh" ] && sh "$CODE/runpod/hardware_record.sh" "$ENV" > /dev/null 2>&1
 TZ=UTC nvidia-smi --format=csv,nounits -lms 1000 --query-gpu=timestamp,power.draw,clocks.sm,temperature.gpu,utilization.gpu,clocks_event_reasons.active > "$ENV/telemetry.csv" 2>&1 &
 TEL=$!
-pip install --quiet datasets > "$ENV/pip.txt" 2>&1
+{ python3 -m pip install --quiet datasets || pip install --quiet datasets || uv pip install --system datasets; } > "$ENV/pip.txt" 2>&1  # A1 (R-59)
 python3 -c "
 import sys
 from huggingface_hub import snapshot_download
@@ -80,11 +83,13 @@ P="$RES/gsm8k"
 [ -f "$P/gsm8k.json" ] || python3 "$CODE/safedispatch_testA2/gsm8k.py" --tokenizer "$DENSE" --out "$P" ${GSM8K_ARGS:-} > "$ENV/gsm8k.log" 2>&1 || { log "gsm8k failed"; exit 1; }
 [ -f "$CODE/runpod/gpu_microbench.py" ] && python3 "$CODE/runpod/gpu_microbench.py" --out "$ENV/microbench_start.json" > /dev/null 2>&1
 log "setup done after $(elapsed) s"
-python3 -c "import vllm, torch; print('vllm', vllm.__version__); print('torch', torch.__version__)" > "$RES/versions.txt" 2>&1
-pip show vllm 2>/dev/null | sed -n '1,3p' >> "$RES/versions.txt"
+{ python3 -c "import vllm, torch; print('vllm', vllm.__version__); print('torch', torch.__version__)"
+  echo "VLLM_BUILD_COMMIT=${VLLM_BUILD_COMMIT:-unset}"; pip show vllm 2>/dev/null | sed -n '1,3p'; } > "$RES/versions.txt" 2>&1
+python3 -m vllm.collect_env > "$RES/collect_env.txt" 2>&1 || true
+nvidia-smi > "$RES/nvidia-smi.txt" 2>&1
 log "versions: $(tr '\n' ' ' < "$RES/versions.txt")"
 
-rc() {  # $1 out dir, $2 model, $3 backend, $4 on|off, then extra run_cell arguments
+rc() {  # $1 out dir, $2 model, $3 backend (auto = default), $4 on|off, then extra run_cell arguments
     o=$1; m=$2; b=$3; s=$4; shift 4
     if [ "$s" = off ]; then
         run "$o" "$RC" --model "$m" --prompts-dir "$P" $TP --linear-backend "$b" --compilation-config "$OFF" "$@"
@@ -92,12 +97,21 @@ rc() {  # $1 out dir, $2 model, $3 backend, $4 on|off, then extra run_cell argum
         run "$o" "$RC" --model "$m" --prompts-dir "$P" $TP --linear-backend "$b" "$@"
     fi
 }
+warm() {  # A1: warm-up with a longer timeout and one retry; returns 0 if ok
+    t=$RUN_TIMEOUT; RUN_TIMEOUT=$WARM_TIMEOUT
+    rc "$@" --mode warmup
+    done_ok "$1" || { log "retry warm-up ${1#$RES/}"; rc "$@" --mode warmup; }
+    RUN_TIMEOUT=$t
+    done_ok "$1"
+}
 acc() {  # $1 out dir, $2 mode, $3 on|off
+    t=$RUN_TIMEOUT; [ "$2" = warmup ] && RUN_TIMEOUT=$WARM_TIMEOUT
     if [ "$3" = off ]; then
         run "$1" "$A2" --mode "$2" --no-score --model "$DENSE" --prompts-dir "$P" $ACC --linear-backend deep_gemm --compilation-config "$OFF"
     else
         run "$1" "$A2" --mode "$2" --no-score --model "$DENSE" --prompts-dir "$P" $ACC --linear-backend deep_gemm
     fi
+    RUN_TIMEOUT=$t
 }
 for s in on off; do
     acc "$RES/acc/warm_$s" warmup "$s"
@@ -106,10 +120,14 @@ done
 for s in on off; do
     rc "$RES/prof/$s" "$DENSE" deep_gemm "$s" --mode throughput $PROF
 done
+# A1 (R-59): early V0 gate; if the fusion does not fire with on, or fires with off, stop here (saves the rest).
+python3 "$E46/analyze_e46.py" --res "$RES" --gate > "$RES/gate.txt" 2>&1; g=$?
+log "V0 gate: $(cat "$RES/gate.txt") (exit $g)"
+[ "$g" = 0 ] || { log "STOP: V0 gate failed"; exit 1; }
+
 pair() {  # $1 pair name, $2 model, $3 backend; X = on, Y = off
     d=$RES/paired/$1
-    rc "$d/warm_on" "$2" "$3" on --mode warmup
-    rc "$d/warm_off" "$2" "$3" off --mode warmup
+    warm "$d/warm_on" "$2" "$3" on && warm "$d/warm_off" "$2" "$3" off || { log "skip $1: warm-up not ok"; return; }
     i=0
     while [ "$i" -lt "$ROUNDS" ]; do
         i=$((i + 1))
@@ -121,11 +139,41 @@ pair() {  # $1 pair name, $2 model, $3 backend; X = on, Y = off
             rc "$d/Y_$i" "$2" "$3" off --mode throughput
             rc "$d/X_$i" "$2" "$3" on --mode throughput
         fi
+        [ "$i" = 1 ] && ! done_ok "$d/X_1" && ! done_ok "$d/Y_1" && { log "skip $1: round 1 failed both"; break; }
+    done
+}
+bench() {  # A1 (R-59): a reproducer with vLLM's own CLI and the default multiprocess engine; 3 alternating rounds
+    d=$RES/bench; mkdir -p "$d"
+    for i in 1 2 3; do
+        for s in on off; do
+            [ $((i % 2)) = 0 ] && { [ "$s" = on ] && s=off || s=on; }
+            f=$d/${s}_$i.json; [ -f "$f" ] && continue
+            capped 300 && { log "time cap: skip bench"; return; }
+            if [ "$s" = off ]; then
+                env -u VLLM_ENABLE_V1_MULTIPROCESSING timeout -k 30 900 vllm bench latency --model "$DENSE" --linear-backend deep_gemm -cc "$OFF" --batch-size 64 --input-len 128 --output-len 128 --num-iters-warmup 3 --num-iters 10 --output-json "$f" > "$d/${s}_$i.log" 2>&1
+            else
+                env -u VLLM_ENABLE_V1_MULTIPROCESSING timeout -k 30 900 vllm bench latency --model "$DENSE" --linear-backend deep_gemm --batch-size 64 --input-len 128 --output-len 128 --num-iters-warmup 3 --num-iters 10 --output-json "$f" > "$d/${s}_$i.log" 2>&1
+            fi
+            log "bench/${s}_$i: exit $? after $(elapsed) s"
+        done
     done
 }
 pair P1 "$DENSE" deep_gemm
+rc "$RES/prof/default" "$DENSE" auto on --mode throughput $PROF      # A1: who is affected by default
+[ "$BENCH" = 1 ] && bench
 pair P2 "$MOE" deep_gemm
 pair P3 "$DENSE" cutlass
+cat > "$RES/repro.md" <<REPRO
+# E-46 reproducer (written by session_e46.sh)
+Image: vllm/vllm-openai@sha256:2e735ffeef26457f8a3ff44a62ae182870b10af37adc06ecbb08baca152365c6
+$(cat "$RES/versions.txt")
+GPU: $(nvidia-smi --query-gpu=name,driver_version --format=csv,noheader 2>/dev/null)
+
+Fusions on (default pass config):
+  vllm bench latency --model $DENSE --linear-backend deep_gemm --batch-size 64 --input-len 128 --output-len 128 --num-iters-warmup 3 --num-iters 10
+Fusions off:
+  vllm bench latency --model $DENSE --linear-backend deep_gemm -cc '$OFF' --batch-size 64 --input-len 128 --output-len 128 --num-iters-warmup 3 --num-iters 10
+REPRO
 kill "$TEL" 2>/dev/null
 python3 "$E46/analyze_e46.py" --res "$RES" --out "$RES/summary.json" > "$RES/decision.txt" 2>&1 || true
 log "decision: $(cat "$RES/decision.txt")"
