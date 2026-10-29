@@ -190,7 +190,10 @@ maps every file to what it contains.
 - Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
   lesson that came out of the research (O-01 to O-06, U-01 to U-03, T-01 to T-06, L-01 to L-06). Keep it current.
   E-46 (validation of O-03 before the vLLM bug report U-01) is predeclared in `experiments/fp8_fusion_validate/`;
-  amended after R-59 (A1); tests and stub runs pass. Next: the user approves the L4 rehearsal ($0.50) and E-46 ($10.50).
+  amended after R-59 (A1); tests and stub runs pass. E-46 RUN 2026-10-29 (about $5.80 with the L4 rehearsal): VALIDATED
+  on vLLM nightly 0.33.0rc1.dev157+gedad8b03c: P1 8B deep_gemm 1.022 to 1.061, P2 14B deep_gemm 1.027 to 1.054, P3 8B
+  cutlass 1.021 to 1.035 at batch 64 and 256; accuracy pass; `vllm bench latency` on 4.6% slower; default engine not
+  affected. 0 thesis Pods, 0 volumes. Next: E-46 post-run review; bug report U-01 drafted for the user's approval.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -4807,6 +4810,11 @@ batch 1, 8, 64, 256; all lower bounds at least 1.030). Kernels: fused norm 1.12x
 at 256 or more tokens, faster at 1 to 8. D2 equals the default engine at batch 64 and 256 (default still fastest).
 INTERPRETATION: the fusions cost 3% to 5% when they fire (non-default backends); default users are not affected.
 
+**E-46 Validation of the block-FP8 fusion slowdown on H100** (predeclared and amended 2026-10-29, I-172). STATUS: RUN
+2026-10-29, VALIDATED. Package: `experiments/fp8_fusion_validate/`. vLLM nightly (0.33.0rc1.dev157+gedad8b03c): fusions off
+faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cutlass at batch 64 and 256 (2% to 3.5%);
+GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
+
 **E-45 Native FP8 group quant on the default H100 engine** (predeclared 2026-10-29, I-172). STATUS: CANCELLED BEFORE
 RUN by R-58: the default kernel quantizes inside one opaque op (`dynamic_flashinfer_deepgemm_blockscale_gemm`), so the
 `-quant_fp8` switch is a no-op there. Package: `experiments/fp8_quant_cause/`. No spend.
@@ -6767,3 +6775,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: E-45 predeclared and cancelled before run (R-58, no-op on the default engine).
 - 2026-10-29: `RESEARCH_OUTPUTS.md` created; E-46 predeclared.
 - 2026-10-29: E-46 amended (A1), R-59.
+- 2026-10-29: E-46 result VALIDATED (O-03).

@@ -1,0 +1,6 @@
+vllm 0.33.0rc1.dev157+gedad8b03c
+torch 2.14.0+cu130
+VLLM_BUILD_COMMIT=unset
+Name: vllm
+Version: 0.33.0rc1.dev157+gedad8b03c
+Summary: A high-throughput and memory-efficient inference and serving engine for LLMs

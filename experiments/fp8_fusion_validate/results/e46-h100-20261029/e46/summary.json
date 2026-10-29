@@ -1,0 +1,144 @@
+{
+ "versions": "vllm 0.33.0rc1.dev157+gedad8b03c\ntorch 2.14.0+cu130\nVLLM_BUILD_COMMIT=unset\nName: vllm\nVersion: 0.33.0rc1.dev157+gedad8b03c\nSummary: A high-throughput and memory-efficient inference and serving engine for LLMs",
+ "configs": {
+  "on": {
+   "selected": "DeepGemmFp8BlockScaledMMKernel",
+   "enabled_fusions": "norm_quant, act_quant",
+   "fused_kernels": 6,
+   "match_table": {},
+   "status": "ok"
+  },
+  "off": {
+   "selected": "DeepGemmFp8BlockScaledMMKernel",
+   "enabled_fusions": "",
+   "fused_kernels": 0,
+   "match_table": {},
+   "status": "ok"
+  },
+  "default": {
+   "selected": "FlashInferFp8DeepGEMMDynamicBlockScaledKernel",
+   "enabled_fusions": "norm_quant, act_quant",
+   "fused_kernels": 0,
+   "match_table": {},
+   "status": "ok"
+  }
+ },
+ "pairs": {
+  "P1": {
+   "rounds": 5,
+   "good": 5,
+   "failed": [],
+   "V2": true,
+   "by_batch": {
+    "1": {
+     "ratio": 1.0261,
+     "lower": 1.0207,
+     "upper": 1.0315,
+     "rounds": 5
+    },
+    "8": {
+     "ratio": 1.0218,
+     "lower": 1.0191,
+     "upper": 1.0245,
+     "rounds": 5
+    },
+    "64": {
+     "ratio": 1.0432,
+     "lower": 1.0343,
+     "upper": 1.0521,
+     "rounds": 5
+    },
+    "256": {
+     "ratio": 1.0609,
+     "lower": 1.0506,
+     "upper": 1.0712,
+     "rounds": 5
+    }
+   },
+   "V0": true,
+   "label": "REPRODUCED"
+  },
+  "P2": {
+   "rounds": 5,
+   "good": 5,
+   "failed": [],
+   "V2": true,
+   "by_batch": {
+    "1": {
+     "ratio": 1.0391,
+     "lower": 1.0358,
+     "upper": 1.0424,
+     "rounds": 5
+    },
+    "8": {
+     "ratio": 1.0272,
+     "lower": 1.0238,
+     "upper": 1.0306,
+     "rounds": 5
+    },
+    "64": {
+     "ratio": 1.0473,
+     "lower": 1.0271,
+     "upper": 1.068,
+     "rounds": 5
+    },
+    "256": {
+     "ratio": 1.0535,
+     "lower": 1.0484,
+     "upper": 1.0587,
+     "rounds": 5
+    }
+   },
+   "V0": true,
+   "label": "REPRODUCED"
+  },
+  "P3": {
+   "rounds": 5,
+   "good": 5,
+   "failed": [],
+   "V2": true,
+   "by_batch": {
+    "1": {
+     "ratio": 0.9981,
+     "lower": 0.9916,
+     "upper": 1.0047,
+     "rounds": 5
+    },
+    "8": {
+     "ratio": 1.0018,
+     "lower": 0.9967,
+     "upper": 1.007,
+     "rounds": 5
+    },
+    "64": {
+     "ratio": 1.0206,
+     "lower": 1.0175,
+     "upper": 1.0238,
+     "rounds": 5
+    },
+    "256": {
+     "ratio": 1.0354,
+     "lower": 1.031,
+     "upper": 1.04,
+     "rounds": 5
+    }
+   },
+   "V0": true,
+   "label": "REPRODUCED"
+  }
+ },
+ "accuracy": {
+  "diff": 0.0037907505686125853,
+  "interval95": [
+   -0.006065200909780136,
+   0.013646702047005308
+  ],
+  "pass": true,
+  "same_tokens": 91,
+  "n": 1319,
+  "status": "ok"
+ },
+ "V0": true,
+ "V3": true,
+ "decision": "VALIDATED (P1 REPRODUCED, P2 REPRODUCED, P3 REPRODUCED; accuracy pass)"
+}

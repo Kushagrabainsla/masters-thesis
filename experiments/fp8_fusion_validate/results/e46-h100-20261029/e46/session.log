@@ -1,0 +1,55 @@
+05:28:24 setup done after 138 s
+05:28:34 versions: vllm 0.33.0rc1.dev157+gedad8b03c torch 2.14.0+cu130 VLLM_BUILD_COMMIT=unset Name: vllm Version: 0.33.0rc1.dev157+gedad8b03c Summary: A high-throughput and memory-efficient inference and serving engine for LLMs 
+05:32:35 acc/warm_on: exit 0 after 389 s
+05:33:49 acc/on: exit 0 after 463 s
+05:35:10 acc/warm_off: exit 0 after 544 s
+05:36:22 acc/off: exit 0 after 616 s
+05:37:34 prof/on: exit 0 after 688 s
+05:38:46 prof/off: exit 0 after 760 s
+05:38:56 V0 gate: V0 ok (exit 0)
+05:39:38 paired/P1/warm_on: exit 0 after 812 s
+05:40:30 paired/P1/warm_off: exit 0 after 864 s
+05:41:41 paired/P1/X_1: exit 0 after 935 s
+05:42:50 paired/P1/Y_1: exit 0 after 1004 s
+05:43:59 paired/P1/Y_2: exit 0 after 1073 s
+05:45:09 paired/P1/X_2: exit 0 after 1143 s
+05:46:19 paired/P1/X_3: exit 0 after 1213 s
+05:47:29 paired/P1/Y_3: exit 0 after 1283 s
+05:48:39 paired/P1/Y_4: exit 0 after 1353 s
+05:49:50 paired/P1/X_4: exit 0 after 1424 s
+05:51:00 paired/P1/X_5: exit 0 after 1494 s
+05:52:11 paired/P1/Y_5: exit 0 after 1565 s
+05:53:55 prof/default: exit 0 after 1669 s
+05:55:33 bench/on_1: exit 0 after 1767 s
+05:57:07 bench/off_1: exit 0 after 1861 s
+05:58:11 bench/off_2: exit 0 after 1925 s
+05:59:15 bench/on_2: exit 0 after 1989 s
+06:00:20 bench/on_3: exit 0 after 2053 s
+06:01:22 bench/off_3: exit 0 after 2116 s
+06:05:25 paired/P2/warm_on: exit 0 after 2359 s
+06:06:57 paired/P2/warm_off: exit 0 after 2451 s
+06:08:25 paired/P2/X_1: exit 0 after 2539 s
+06:09:50 paired/P2/Y_1: exit 0 after 2624 s
+06:11:13 paired/P2/Y_2: exit 0 after 2707 s
+06:12:40 paired/P2/X_2: exit 0 after 2794 s
+06:14:04 paired/P2/X_3: exit 0 after 2878 s
+06:15:27 paired/P2/Y_3: exit 0 after 2961 s
+06:16:50 paired/P2/Y_4: exit 0 after 3044 s
+06:18:14 paired/P2/X_4: exit 0 after 3128 s
+06:19:38 paired/P2/X_5: exit 0 after 3212 s
+06:21:03 paired/P2/Y_5: exit 0 after 3297 s
+06:22:36 paired/P3/warm_on: exit 0 after 3390 s
+06:23:53 paired/P3/warm_off: exit 0 after 3467 s
+06:25:07 paired/P3/X_1: exit 0 after 3541 s
+06:26:19 paired/P3/Y_1: exit 0 after 3613 s
+06:27:32 paired/P3/Y_2: exit 0 after 3686 s
+06:28:48 paired/P3/X_2: exit 0 after 3762 s
+06:30:02 paired/P3/X_3: exit 0 after 3836 s
+06:31:14 paired/P3/Y_3: exit 0 after 3908 s
+06:32:30 paired/P3/Y_4: exit 0 after 3984 s
+06:33:43 paired/P3/X_4: exit 0 after 4057 s
+06:34:56 paired/P3/X_5: exit 0 after 4130 s
+06:36:09 paired/P3/Y_5: exit 0 after 4203 s
+06:36:20 decision: VALIDATED (P1 REPRODUCED, P2 REPRODUCED, P3 REPRODUCED; accuracy pass)
+06:36:20 done after 4214 s
+06:36:20 AUTO_STOP in 300 s; copy the results now

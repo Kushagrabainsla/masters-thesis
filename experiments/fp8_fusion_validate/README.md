@@ -1,6 +1,6 @@
 # E-46: Validation of the block-FP8 fusion slowdown on H100 before a vLLM bug report (preregistration)
 
-Status: PREDECLARED 2026-10-29, AMENDED (A1 after R-59). NOT RUN. Idea: I-172. Follows E-44 (result), R-57 (post-run review) and R-58.
+Status: PREDECLARED 2026-10-29, AMENDED (A1 after R-59). RUN 2026-10-29: VALIDATED. Idea: I-172. Follows E-44 (result), R-57 (post-run review) and R-58.
 User request 2026-10-29: "first validate it properly, and then create a bug report for it".
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics.
 
@@ -98,3 +98,22 @@ R-59 (Sonnet pre-run review): AMEND_THEN_RUN, no blocker. Changes:
    (fp8_quant_cause, fp8_quant_fusion, nvfp4_dispatch, safedispatch_testA, safedispatch_testA2, ledger, runpod).
 9. Test record (S3, S5, Mac): `test_e46.py` 4 pass; a stub session runs 50 steps with the right decision; a second
    stub with the fusion firing in "off" stops at the V0 gate before any pair.
+
+## Result
+Result (2026-10-29, Pod rowtn7ir0qu7t7, 1 x H100 80GB HBM3, US-NE-1, nightly digest = vLLM 0.33.0rc1.dev157+gedad8b03c,
+torch 2.14.0+cu130; 05:14 to 06:39 UTC, about $5.70; L4 image rehearsal dumpjkspwsufcv PASS, about $0.10; 145 checksums
+match): frozen decision VALIDATED (P1, P2, P3 REPRODUCED; accuracy pass). V0 (profiles and every pair) and V3 pass;
+5 of 5 rounds in every pair.
+FACT, fusions off ÷ on (one-sided bounds, alpha 0.05/3, df 4):
+- P1 Qwen3-8B-FP8, deep_gemm: batch 1 1.026, 8 1.022 [1.019, 1.025], 64 1.043 [1.034, 1.052], 256 1.061 [1.051, 1.071].
+- P2 Qwen3-14B-FP8, deep_gemm: 1.039, 8 1.027 [1.024, 1.031], 64 1.047 [1.027, 1.068], 256 1.054 [1.048, 1.059].
+- P3 Qwen3-8B-FP8, cutlass: 0.998, 8 1.002 [0.997, 1.007], 64 1.021 [1.018, 1.024], 256 1.035 [1.031, 1.040].
+FACT, accuracy (GSM8K, 1,319, deep_gemm): off minus on +0.38 pp [-0.61, +1.36]; 91 of 1,319 token lists identical.
+FACT, `vllm bench latency` (multiprocess engine, batch 64, 128 in, 128 out, 3 alternating rounds): median latency on ÷ off
+= 1.046 (on 0.908 to 0.942 s, off 0.895 to 0.901 s).
+FACT, default engine (nightly, `auto`): FlashInferFp8DeepGEMMDynamicBlockScaledKernel; "Enabled custom fusions:
+norm_quant, act_quant", but no fused kernel runs.
+INTERPRETATION: the E-44 finding holds on current vLLM main code, on a second model and on a second backend: when the
+block-FP8 norm+quant and SiLU+quant fusions fire on H100, decode is 2% to 6% slower at batch 8 to 256 (cutlass: only at
+batch 64 and 256), without an accuracy benefit. Default-engine users are not affected. Not tested: B200, MoE models,
+TP above 1. The cause inside the fused kernels is not proven (E-44 and R-57 kernel tables).

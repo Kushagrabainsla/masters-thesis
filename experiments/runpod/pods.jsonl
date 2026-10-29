@@ -46,3 +46,9 @@
 {"at": "2026-10-29T01:18:04Z", "event": "created", "experiment": "E-44", "id": "ef3ar012ypzx62", "kind": "pod", "name": "msthesis-e-44-session-20261029", "note": "H100 SXM, US-NE-1, 3.99/h, volume ggonjtmtvc, boot watchdog 4800 s, created 2026-10-29T01:16:13Z"}
 {"at": "2026-10-29T01:47:46Z", "event": "ended", "id": "ef3ar012ypzx62", "note": "terminated after copy (74 checksums match)"}
 {"at": "2026-10-29T01:47:47Z", "event": "ended", "id": "ggonjtmtvc", "note": "deleted"}
+{"at": "2026-10-29T05:03:20Z", "event": "created", "experiment": "E-46", "id": "dumpjkspwsufcv", "kind": "pod", "name": "msthesis-e-46-imagerehearsal-20261029", "note": "L4, EU-RO-1, 0.59/h, nightly digest rehearsal, boot CAP 420 s, created 2026-10-29T05:02:46Z"}
+{"at": "2026-10-29T05:21:01Z", "event": "ended", "id": "dumpjkspwsufcv", "note": "image rehearsal PASS: vllm 0.33.0rc1.dev157+gedad8b03c, torch 2.14.0+cu130, pip ok, bench options ok, self-stop at 420 s; deleted"}
+{"at": "2026-10-29T05:21:01Z", "event": "created", "experiment": "E-46", "id": "6xplda6yko", "kind": "volume", "name": "msthesis-e-46-volume-20261029", "note": "60 GB STANDARD, US-NE-1"}
+{"at": "2026-10-29T05:21:01Z", "event": "created", "experiment": "E-46", "id": "rowtn7ir0qu7t7", "kind": "pod", "name": "msthesis-e-46-session-20261029", "note": "H100 SXM, US-NE-1, 3.99/h, nightly digest, volume 6xplda6yko, boot CAP 8400 s, created 2026-10-29T05:14:06Z"}
+{"at": "2026-10-29T06:39:25Z", "event": "ended", "id": "rowtn7ir0qu7t7", "note": "terminated after copy (145 checksums match)"}
+{"at": "2026-10-29T06:39:25Z", "event": "ended", "id": "6xplda6yko", "note": "deleted"}
