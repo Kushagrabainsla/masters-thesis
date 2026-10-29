@@ -200,6 +200,10 @@ maps every file to what it contains.
   The mechanism ships in PyTorch Inductor custom-op autotuning and TensorRT-LLM AllReduceRunner; vLLM is moving the
   fusions into model code (RFC #42770, #43224) and deprecated vLLM IR; on E-46 data a fixed flag gets all of the gain.
   D-69 (recommendation) is open. Next: D-13 (choose the thesis direction). No GPU spend; 0 thesis Pods, 0 volumes.
+- Latest (2026-10-29, later): D-70 decided by the user (search for a new idea now; A and B later). R-62 frontier
+  review from first principles (power, utilization, bandwidth, longevity, inference, preemption): no survivor. The
+  strongest lead, I-174 (exact symmetries to cut switching power), died in the free E-47 screen (0.5% median). D-71
+  (recommendation) is open: start A and B, or one preregistered waste audit on an unprofiled configuration. No spend.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1104,6 +1108,13 @@ history in Section 5.
 | I-171 | Systems state of FP4 pretraining | KILL for this thesis (R-54: numerics work, checkpoint compression crowded) | R-54 |
 | I-172 | Block-FP8 norm+quant and SiLU+quant fusions do not fire on the H100 DeepGEMM path in vLLM v0.32.0 (standalone quant 8.1% of device time, dense, batch 64) | OPTIMIZATION LEAD, MEASURE-FIRST (2026-10-28, from E-36 profiles) | 2026-10-28 note in Section 1 |
 | I-173 | Measured fusion selection: at compile and CUDA-graph capture time, time each vLLM fusion pass on and off per token range and keep the faster choice (from O-03 / E-46) | KILL as a thesis direction (2026-10-29, R-61, both passes; confidence in a gap low): ships in PyTorch Inductor custom-op autotuning and TensorRT-LLM AllReduceRunner; vLLM is removing the compiler-fusion host (RFC #42770, #43224); per-range oracle gain over the best fixed flag about 0% in E-46 | `dossier/NOVELTY_I-173_2026-10-29.md` |
+| I-174 | Data-aware power shaping: exact model symmetries (permutation, sign flips, power-of-two scale) reshape operand bits to cut GPU switching power (from 2409.18324) | KILL (2026-10-29, E-47 screen: 0.5% median, 2.5% best fewer lane transitions; R-62 both passes; tier b KILL by size) | `dossier/FRONTIER_R-62_2026-10-29.md` |
+| I-175 | TLB reach for 192 to 288 GB paged KV pools (OS superpage reservation transfer) | KILL (R-62 pass 2: 2 MiB pages, multi-GiB reach cover per-layer buffers; vAttention, LServe) | R-62 |
+| I-176 | Sustained-power kernel selection (autotuners time short bursts with random data) | KILL (R-62: capped ranking equals energy ranking, studied; our telemetry ceiling 0.65% to 2.4%) | R-62 |
+| I-177 | Training power-swing smoothing with useful co-located work | KILL (R-62: 2508.14318 plus five 2026 papers, GB300 smoothing; 8 GPUs cannot support a grid claim) | R-62 |
+| I-178 | Power-aware serving batching to avoid power-cap throttling | KILL (R-62: small oracle from E-44 and E-46 telemetry; DynamoLLM, POLCA, TAPAS, 2608.01250; clock control needs root) | R-62 |
+| I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
+| I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 
 ---
 
@@ -4822,6 +4833,15 @@ INTERPRETATION: the fusions cost 3% to 5% when they fire (non-default backends);
 faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cutlass at batch 64 and 256 (2% to 3.5%);
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
 
+**E-47 Bit-transition screen for exact model symmetries** (2026-10-29, I-174). STATUS: RUN 2026-10-29, SCREEN ONLY,
+KILL by the frozen rule. Package: `experiments/power_shaping_screen/` (rule in the README; the README and the result
+are in the same commit, so git does not prove that the rule came first). No GPU, no spend (Mac, about 30 s). Proxy: bit
+transitions between the codes a tensor-core lane sees on consecutive k-steps (stride 16 BF16, 32 block-FP8), Qwen3-0.6B
+layers 0, 13, 27, all 7 linear types. Result: exact moves 0.995 (BF16) and 0.998 (FP8) of the checkpoint order (median);
+best type down_proj 0.975; per-matrix optimum 0.985; amendment A1 (power-of-two column scale, added after the first
+result) 0.984; random 1.00; non-exact per-row sort 0.278 and 0.175. Toy exactness check 3.4e-13. Validity: SCREEN ONLY
+(a proxy, one small model). R-62 pass 2 reproduced the size with an independent i.i.d. model.
+
 **E-45 Native FP8 group quant on the default H100 engine** (predeclared 2026-10-29, I-172). STATUS: CANCELLED BEFORE
 RUN by R-58: the default kernel quantizes inside one opaque op (`dynamic_flashinfer_deepgemm_blockscale_gemm`), so the
 `-quant_fp8` switch is a no-op there. Package: `experiments/fp8_quant_cause/`. No spend.
@@ -5613,6 +5633,15 @@ Pass 2 corrected pass 1: #55687 is retracted by its reporter, and vLLM IR is dep
 a scoop path). The main session verified both corrections in the source. Conditional MEASURE-FIRST core (whole-step
 timing per graph size) not run, low prior. Write-up: `dossier/NOVELTY_I-173_2026-10-29.md`.
 
+**R-62 Frontier review of frontier-company resource concerns, from first principles** (2026-10-29, main-session pass 1
+with the free E-47 screen, Sonnet pass 2 with fresh searches). User request after D-70: search for a new idea from first
+principles in power, utilization, memory bandwidth, GPU longevity, faster inference and preemptible training. Ten
+candidates (I-174 to I-180, plus re-checks of megakernels, fail-slow GPUs and spot training). Verdict: no survivor.
+I-174 (exact symmetries for power) died in the free screen; I-175 and I-176 died in pass 2; the rest are crowded,
+too small in our measured regime, or not testable without fleet data. Our telemetry bounds every power-cap idea in
+this serving regime: removing the cap gains at most 0.65% (E-44) to 2.4% (E-46). Both passes: D-70 options A and B
+remain the best use of the time. Write-up: `dossier/FRONTIER_R-62_2026-10-29.md`.
+
 **R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
 slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
 and logprob qualifiers (`raw_logprobs` default, AReaL reads per-token versions in its loss, recipes use rollout
@@ -6134,6 +6163,25 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | arXiv 2602.11808; arXiv 2601.00227 | 2026 | Startup or offline selection of fused kernel variants for SGLang and vLLM | Adjacent papers | abstract (pass 2) |
 | Korch, arXiv 2406.09465 (ASPLOS 2024) | 2024 | Fusion and orchestration chosen by a linear program | Old compiler result | abstract |
 
+### 7.28 Frontier resource concerns (added 2026-10-29, R-62)
+
+Check levels use the 0.4 meanings with the date 2026-10-29.
+
+| Work | Date | What it proves | Effect | Check |
+|---|---|---|---|---|
+| Gregersen, Patel, Choukse, arXiv 2409.18324 | 2024-09 | GEMM power swings up to about 38% with input data; sorting lowers power; weight sorting through permutation invariance left as future work; synthetic only | Source of I-174 | full-text (sections read) |
+| Horace He, thonking.ai blog | 2024 | A100 at 330 W: zeros 295 vs randn 257 TFLOPS | Size of the effect at the cap | checked |
+| arXiv 2508.14318 (Microsoft, OpenAI, NVIDIA) | 2025-08 | Training power swings; secondary-workload injection; GPU smoothing (floor at 90% TDP, about 10.5% energy) | Kills I-177 | abstract and summaries |
+| arXiv 2610.36441, 2607.19638, 2609.11542, 2608.01250, 2512.08076, 2604.10769 | 2026 | Staggering, phase locking, power elasticity, inference ramps, storage, workload mix | Kills I-177 and I-178 | search summaries |
+| arXiv 2503.11901 (Story of Two GPUs) | 2025 | H100 per-GPU uncorrectable memory MTBE 3.2x lower than A100; 5% overprovisioning | Reliability context | abstract and summary |
+| arXiv 2605.30571 | 2026-05 | Batch-1 decode at 26.9% of H100 bandwidth (launch overhead) | Re-check of megakernels (I-163) | summary |
+| GUARD, arXiv 2605.17879 (MLSys 2026) | 2026 | Grey GPUs that pass health checks but run slow | Kills the fail-slow re-check | slides and summary |
+| Desai et al., DOI 10.1145/3805621.3807617 | 2026 | Preemption-rate prediction and checkpoint tuning on spot VMs | Kills the spot re-check | summary |
+| vAttention 2405.04437; LServe 2502.14866; Volta TLB 1804.06826 | 2024 to 2025 | Per-request contiguity; page-size effects; L2 TLB about 8 GiB reach | Kills I-175 | abstracts (pass 2) |
+| Kernel Tuner 2211.07260; 2411.16954; CUTLASS measurement guide; TensorRT-LLM PR 8779 | 2022 to 2025 | Energy tuning; data fill changes fixed-power results; cold-L2 autotune | Kills I-176 | checked (pass 2) |
+| arXiv 2512.02189 | 2025-12 | Blackwell microbenchmarks; decompression engine 1.00x on incompressible data | Kills I-180 | pass 2 |
+| READ 2308.15698; 2304.12691; PowerPruning 2303.13997; 2511.17123 | 2023 to 2025 | ASIC power-aware ordering, bus-invert coding, low-power weight values | Source mechanisms for I-174 | abstracts |
+
 ---
 
 ## 8. Errors, retractions, and do-not-cite list
@@ -6416,7 +6464,8 @@ proposed it and no acceptance is recorded.
 | D-67 | 2026-10-28 | After E-43 (GO, no margin) and R-55: (a) run the 1-GPU fault-injection test that counts mixed-version and mislabelled tokens (R-54 GO step; needs a predeclared plan, a cost cap and the balance check), (b) close I-165 as a thesis direction and keep the small upstream fixes (slime reads the SGLang spans; OpenRLHF and PipelineRL record versions) as optional career work, or (c) another option. Recommendation: (b) | User ("go ahead with b") | The record ships upstream (#54443); recipes train on rollout logprobs; the GO rests on one exact-KV vote; publication potential LOW | Decided by the user 2026-10-28: option (b). I-165 closed as a thesis direction |
 | D-68 | 2026-10-29 | Do not post the U-01 vLLM bug report; keep it in the thesis repo and push it | User ("do not post anything keep in our master's thesis repo, push it to remote") | E-46 VALIDATED, R-60 scope limits applied | Decided by the user 2026-10-29 |
 | D-69 | 2026-10-29 | After R-61: accept the KILL of I-173 (measured fusion selection) as a thesis direction. Do not run the conditional whole-step timing test unless the user wants to close the question formally (about $6 on one H100). Next: choose the thesis direction (D-13) | Recommendation (R-61). Not a decision | Both passes: the mechanism ships (Inductor custom-op autotuning, TensorRT-LLM AllReduceRunner), vLLM is removing the host path, E-46 per-range oracle gain about 0% | **Open, waiting on the user** |
-| D-70 | 2026-10-29 | D-13 options after R-61 (about 9 weeks before the January job): (A) write the thesis from the results we have (I-23 negative result O-01, O-02; validated fusion regression O-03; methods T-01 to T-06), about $0; (B) add a positive chapter: diagnose and fix the slow block-FP8 fused kernels (O-03) and, if time allows, the default-path quant (O-04), with upstream PRs, about $15 to $30; (C) a new frontier review, about $0 then GPU, low odds after R-10 to R-54 found no strong survivor; (D) revive an older WEAK idea (I-118 needs root, I-143 needs 2+ GPUs). Recommend A with B | Recommendation (main session). Not a decision | B fits the target-role gaps in 2.3 (CUDA kernels, profiling, roofline, FP8, vLLM internals); #43500 (norm+quant port) closed as stale, so the kernels stay in use; risk: Runpod containers may block ncu counters | **Open, waiting on the user** |
+| D-70 | 2026-10-29 | D-13 options after R-61 (about 9 weeks before the January job): (A) write the thesis from the results we have (I-23 negative result O-01, O-02; validated fusion regression O-03; methods T-01 to T-06), about $0; (B) add a positive chapter: diagnose and fix the slow block-FP8 fused kernels (O-03) and, if time allows, the default-path quant (O-04), with upstream PRs, about $15 to $30; (C) a new frontier review, about $0 then GPU, low odds after R-10 to R-54 found no strong survivor; (D) revive an older WEAK idea (I-118 needs root, I-143 needs 2+ GPUs). Recommend A with B | Recommendation (main session). Not a decision | B fits the target-role gaps in 2.3 (CUDA kernels, profiling, roofline, FP8, vLLM internals); #43500 (norm+quant port) closed as stale, so the kernels stay in use; risk: Runpod containers may block ncu counters | Decided by the user 2026-10-29: option C now; A and B kept for later, partly after the job starts ("lets keep A and B for the the last minute ... lets try to search for a new idea") |
+| D-71 | 2026-10-29 | After R-62 (no survivor in the frontier resource areas): either start D-70 options A and B now, or, if the user still wants a new lead, run one preregistered measurement-first waste audit on a configuration this project has not profiled (for example MoE on B200 with NVFP4 and long context), GO only for a gap of 5% or more of step time that no shipped mechanism covers | Recommendation (R-62, both passes). Not a decision | Fifth broad pass with no survivor; E-36 profiles are the only search method that produced findings (O-03, O-04) | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6821,3 +6870,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: D-68 decided (U-01 kept in the repo, not posted).
 - 2026-10-29: I-173 registered; R-61 novelty check (KILL); Section 7.27; D-69 opened; L-07; U-01 note on the
   manual-fusion ports.
+- 2026-10-29: D-70 decided (user); R-62 frontier review; I-174 to I-180; E-47 screen (KILL); Section 7.28; D-71
+  opened; O-07, O-08, T-07, L-08.

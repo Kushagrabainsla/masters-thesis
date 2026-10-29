@@ -1,0 +1,122 @@
+model.layers.0.self_attn.q_proj.weight {'bf16': {'orig': 5.643, 'random': 5.648, 'exact': 5.62, 'exact_own': 5.558, 'exact_scaled_own': 5.557, 'sorted': 1.575}, 'fp8': {'orig': 3.448, 'random': 3.459, 'exact': 3.44, 'exact_own': 3.415, 'exact_scaled_own': 3.413, 'sorted': 0.589}}
+model.layers.0.self_attn.k_proj.weight {'bf16': {'orig': 5.645, 'random': 5.648, 'exact': 5.615, 'exact_own': 5.522, 'exact_scaled_own': 5.521, 'sorted': 1.571}, 'fp8': {'orig': 3.476, 'random': 3.492, 'exact': 3.469, 'exact_own': 3.425, 'exact_scaled_own': 3.431, 'sorted': 0.574}}
+model.layers.0.self_attn.v_proj.weight {'bf16': {'orig': 5.684, 'random': 5.69, 'exact': 5.663, 'exact_own': 5.569, 'exact_scaled_own': 5.57, 'sorted': 1.58}, 'fp8': {'orig': 3.365, 'random': 3.376, 'exact': 3.36, 'exact_own': 3.299, 'exact_scaled_own': 3.299, 'sorted': 0.604}}
+model.layers.0.mlp.gate_proj.weight {'bf16': {'orig': 5.567, 'random': 5.569, 'exact': 5.54, 'exact_own': 5.494, 'exact_scaled_own': 5.494, 'sorted': 1.576}, 'fp8': {'orig': 3.416, 'random': 3.427, 'exact': 3.414, 'exact_own': 3.39, 'exact_scaled_own': 3.387, 'sorted': 0.587}}
+model.layers.0.mlp.up_proj.weight {'bf16': {'orig': 5.697, 'random': 5.704, 'exact': 5.669, 'exact_own': 5.621, 'exact_scaled_own': 5.623, 'sorted': 1.582}, 'fp8': {'orig': 3.38, 'random': 3.396, 'exact': 3.372, 'exact_own': 3.347, 'exact_scaled_own': 3.349, 'sorted': 0.622}}
+model.layers.0.self_attn.o_proj.weight {'bf16': {'orig': 5.732, 'random': 5.752, 'exact': 5.663, 'exact_scaled_own': 5.649, 'sorted': 1.148}, 'fp8': {'orig': 3.401, 'random': 3.456, 'exact': 3.367, 'exact_scaled_own': 3.381, 'sorted': 0.432}}
+model.layers.0.mlp.down_proj.weight {'bf16': {'orig': 5.689, 'random': 5.688, 'exact': 5.559, 'exact_scaled_own': 5.558, 'sorted': 0.871}, 'fp8': {'orig': 3.392, 'random': 3.4, 'exact': 3.319, 'exact_scaled_own': 3.323, 'sorted': 0.338}}
+model.layers.13.self_attn.q_proj.weight {'bf16': {'orig': 5.707, 'random': 5.713, 'exact': 5.671, 'exact_own': 5.604, 'exact_scaled_own': 5.603, 'sorted': 1.578}, 'fp8': {'orig': 3.501, 'random': 3.508, 'exact': 3.478, 'exact_own': 3.444, 'exact_scaled_own': 3.45, 'sorted': 0.588}}
+model.layers.13.self_attn.k_proj.weight {'bf16': {'orig': 5.746, 'random': 5.75, 'exact': 5.706, 'exact_own': 5.612, 'exact_scaled_own': 5.609, 'sorted': 1.579}, 'fp8': {'orig': 3.426, 'random': 3.46, 'exact': 3.42, 'exact_own': 3.38, 'exact_scaled_own': 3.415, 'sorted': 0.613}}
+model.layers.13.self_attn.v_proj.weight {'bf16': {'orig': 5.691, 'random': 5.711, 'exact': 5.658, 'exact_own': 5.569, 'exact_scaled_own': 5.569, 'sorted': 1.59}, 'fp8': {'orig': 3.369, 'random': 3.387, 'exact': 3.351, 'exact_own': 3.297, 'exact_scaled_own': 3.312, 'sorted': 0.584}}
+model.layers.13.mlp.gate_proj.weight {'bf16': {'orig': 5.679, 'random': 5.685, 'exact': 5.647, 'exact_own': 5.606, 'exact_scaled_own': 5.604, 'sorted': 1.582}, 'fp8': {'orig': 3.456, 'random': 3.489, 'exact': 3.464, 'exact_own': 3.449, 'exact_scaled_own': 3.448, 'sorted': 0.637}}
+model.layers.13.mlp.up_proj.weight {'bf16': {'orig': 5.706, 'random': 5.718, 'exact': 5.68, 'exact_own': 5.638, 'exact_scaled_own': 5.637, 'sorted': 1.587}, 'fp8': {'orig': 3.404, 'random': 3.423, 'exact': 3.397, 'exact_own': 3.379, 'exact_scaled_own': 3.381, 'sorted': 0.618}}
+model.layers.13.self_attn.o_proj.weight {'bf16': {'orig': 5.756, 'random': 5.763, 'exact': 5.692, 'exact_scaled_own': 5.688, 'sorted': 1.121}, 'fp8': {'orig': 3.393, 'random': 3.418, 'exact': 3.362, 'exact_scaled_own': 3.373, 'sorted': 0.421}}
+model.layers.13.mlp.down_proj.weight {'bf16': {'orig': 5.745, 'random': 5.753, 'exact': 5.602, 'exact_scaled_own': 5.605, 'sorted': 0.887}, 'fp8': {'orig': 3.42, 'random': 3.429, 'exact': 3.337, 'exact_scaled_own': 3.329, 'sorted': 0.341}}
+model.layers.27.self_attn.q_proj.weight {'bf16': {'orig': 5.652, 'random': 5.654, 'exact': 5.623, 'exact_own': 5.567, 'exact_scaled_own': 5.561, 'sorted': 1.573}, 'fp8': {'orig': 3.479, 'random': 3.482, 'exact': 3.46, 'exact_own': 3.437, 'exact_scaled_own': 3.453, 'sorted': 0.577}}
+model.layers.27.self_attn.k_proj.weight {'bf16': {'orig': 5.663, 'random': 5.664, 'exact': 5.634, 'exact_own': 5.546, 'exact_scaled_own': 5.539, 'sorted': 1.57}, 'fp8': {'orig': 3.411, 'random': 3.428, 'exact': 3.404, 'exact_own': 3.367, 'exact_scaled_own': 3.41, 'sorted': 0.596}}
+model.layers.27.self_attn.v_proj.weight {'bf16': {'orig': 5.607, 'random': 5.624, 'exact': 5.578, 'exact_own': 5.498, 'exact_scaled_own': 5.493, 'sorted': 1.589}, 'fp8': {'orig': 3.364, 'random': 3.387, 'exact': 3.359, 'exact_own': 3.316, 'exact_scaled_own': 3.314, 'sorted': 0.605}}
+model.layers.27.mlp.gate_proj.weight {'bf16': {'orig': 5.652, 'random': 5.659, 'exact': 5.62, 'exact_own': 5.576, 'exact_scaled_own': 5.575, 'sorted': 1.572}, 'fp8': {'orig': 3.458, 'random': 3.468, 'exact': 3.448, 'exact_own': 3.429, 'exact_scaled_own': 3.428, 'sorted': 0.634}}
+model.layers.27.mlp.up_proj.weight {'bf16': {'orig': 5.611, 'random': 5.62, 'exact': 5.581, 'exact_own': 5.537, 'exact_scaled_own': 5.536, 'sorted': 1.577}, 'fp8': {'orig': 3.423, 'random': 3.45, 'exact': 3.421, 'exact_own': 3.4, 'exact_scaled_own': 3.404, 'sorted': 0.615}}
+model.layers.27.self_attn.o_proj.weight {'bf16': {'orig': 5.639, 'random': 5.643, 'exact': 5.588, 'exact_scaled_own': 5.584, 'sorted': 1.111}, 'fp8': {'orig': 3.357, 'random': 3.373, 'exact': 3.331, 'exact_scaled_own': 3.337, 'sorted': 0.409}}
+model.layers.27.mlp.down_proj.weight {'bf16': {'orig': 5.692, 'random': 5.701, 'exact': 5.549, 'exact_scaled_own': 5.542, 'sorted': 0.886}, 'fp8': {'orig': 3.427, 'random': 3.439, 'exact': 3.346, 'exact_scaled_own': 3.357, 'sorted': 0.372}}
+{
+ "bf16": {
+  "down_proj": {
+   "random": 1.0013,
+   "exact": 0.9751,
+   "exact_scaled_own": 0.9756,
+   "sorted": 0.1544
+  },
+  "gate_proj": {
+   "random": 1.001,
+   "exact": 0.9944,
+   "exact_own": 0.987,
+   "exact_scaled_own": 0.9868,
+   "sorted": 0.2786
+  },
+  "k_proj": {
+   "random": 1.0004,
+   "exact": 0.9946,
+   "exact_own": 0.9781,
+   "exact_scaled_own": 0.978,
+   "sorted": 0.2772
+  },
+  "o_proj": {
+   "random": 1.0013,
+   "exact": 0.9889,
+   "exact_scaled_own": 0.9883,
+   "sorted": 0.197
+  },
+  "q_proj": {
+   "random": 1.0009,
+   "exact": 0.9949,
+   "exact_own": 0.985,
+   "exact_scaled_own": 0.9839,
+   "sorted": 0.2783
+  },
+  "up_proj": {
+   "random": 1.0015,
+   "exact": 0.9952,
+   "exact_own": 0.9867,
+   "exact_scaled_own": 0.987,
+   "sorted": 0.278
+  },
+  "v_proj": {
+   "random": 1.003,
+   "exact": 0.9949,
+   "exact_own": 0.9797,
+   "exact_scaled_own": 0.9797,
+   "sorted": 0.2795
+  }
+ },
+ "fp8": {
+  "down_proj": {
+   "random": 1.0026,
+   "exact": 0.9764,
+   "exact_scaled_own": 0.9796,
+   "sorted": 0.0998
+  },
+  "gate_proj": {
+   "random": 1.0032,
+   "exact": 0.9996,
+   "exact_own": 0.9925,
+   "exact_scaled_own": 0.9916,
+   "sorted": 0.1833
+  },
+  "k_proj": {
+   "random": 1.0051,
+   "exact": 0.9979,
+   "exact_own": 0.9865,
+   "exact_scaled_own": 0.9969,
+   "sorted": 0.1749
+  },
+  "o_proj": {
+   "random": 1.0074,
+   "exact": 0.991,
+   "exact_scaled_own": 0.9942,
+   "sorted": 0.1241
+  },
+  "q_proj": {
+   "random": 1.002,
+   "exact": 0.9947,
+   "exact_own": 0.988,
+   "exact_scaled_own": 0.9897,
+   "sorted": 0.168
+  },
+  "up_proj": {
+   "random": 1.0056,
+   "exact": 0.998,
+   "exact_own": 0.9926,
+   "exact_scaled_own": 0.9933,
+   "sorted": 0.1815
+  },
+  "v_proj": {
+   "random": 1.0052,
+   "exact": 0.9984,
+   "exact_own": 0.9805,
+   "exact_scaled_own": 0.9831,
+   "sorted": 0.1794
+  }
+ }
+}
+decision: ('KILL exact tier', {'bf16': {'median_exact': 0.9946, 'types_at_or_below_0.90': 0, 'A1_median_exact_scaled_own': 0.9839, 'A1_types_at_or_below_0.90': 0, 'median_sorted': 0.278}, 'fp8': {'median_exact': 0.9979, 'types_at_or_below_0.90': 0, 'A1_median_exact_scaled_own': 0.9916, 'A1_types_at_or_below_0.90': 0, 'median_sorted': 0.1749}}) exactness err: 3.410605131648481e-13

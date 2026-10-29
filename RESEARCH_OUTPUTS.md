@@ -19,6 +19,8 @@ confirmed it with stated scope limits), PENDING VALIDATION, DRAFT, FILED (posted
 | O-04 | On the default H100 block-FP8 engine, the activation quant for 32 or more tokens runs inside one opaque custom op (`dynamic_flashinfer_deepgemm_blockscale_gemm`), so the compiler cannot fuse it. It takes 8.1% of device time at batch 64. A code change could recover about 2% to 6%; a flag cannot. | CONFIRMED (source and profile) | Qwen3-8B-FP8; 1 x H100; vLLM v0.32.0 | E-44 D0 profile; `experiments/fp8_quant_cause/README.md` (Cancellation); R-58 |
 | O-05 | The cuDNN NVFP4 linear backend fails at start in 7 of 10 runs under CUDA graphs (`CudnnPlanBuildInCaptureError`), and runs in eager mode. | CONFIRMED (observed, cause not proven) | Qwen3-8B-NVFP4; 1 x B200; vLLM v0.32.0 | E-41 (`experiments/nvfp4_large_batch/`), E-42; R-50 |
 | O-06 | Three RL frameworks (slime fully async mode, OpenRLHF partial rollout, PipelineRL) keep requests or KV across a weight update with no per-token policy-version record and no check. vLLM and SGLang already emit per-token version spans. | CONFIRMED WITH LIMITS (source audit) | Framework source at pinned commits, 2026-10-28 | E-43 (`experiments/rollout_version_audit/audit.md`); R-55; D-67 |
+| O-07 | Exact model symmetries (permuting hidden units, heads or the residual basis, sign flips, power-of-two scales) cannot make the operands a tensor-core lane sees much more alike: 0.5% fewer bit transitions (median), 2.5% at best, against 72% to 82% for a non-exact per-row sort. So "sort the weights to save GPU power" (future work in 2409.18324) does not work with exact transforms. | NEGATIVE, CONFIRMED WITH LIMITS (proxy screen, one small model; reproduced by an independent model in review) | Qwen3-0.6B, BF16 and block-FP8 codes; no GPU power measured | E-47 (`experiments/power_shaping_screen/`); R-62 |
+| O-08 | In FP8 vLLM serving on 1 x H100 (batch 1 to 256), the GPU ran at its 700 W cap in 43% to 46% of busy seconds (median clock 1875 to 1950 MHz against 1980 MHz). Removing the cap completely would add at most 0.65% to 2.4% average throughput, so power-cap ideas have little room in this regime. | CONFIRMED (our telemetry) | Qwen3-8B-FP8; 1 x H100 SXM; NVML 1-second samples | E-44, E-46 telemetry; R-62 |
 
 ## 2. Upstream reports and contributions
 
@@ -38,6 +40,7 @@ confirmed it with stated scope limits), PENDING VALIDATION, DRAFT, FILED (posted
 | T-04 | Boot watchdog for cloud GPU Pods (the Pod stops itself at a cost cap, counted from boot), with tests and an L4 rehearsal | `experiments/runpod/pod_cmd.py`, `test_pod_cmd.py`; `docs/experiments/RUNPOD.md` Section 3 |
 | T-05 | CUDA-graph kernel microbenchmark for small fused kernels (removes launch cost from the timing) | `experiments/fp8_quant_fusion/kbench_e44.py` |
 | T-06 | Top-20 logprob bit-equality check with determinism, large-difference and small-change controls | `experiments/nvfp4_bitequal/analyze_e42.py` |
+| T-07 | Operand bit-transition screen for weight transforms (no GPU, reads safetensors without torch, exactness check included) | `experiments/power_shaping_screen/toggle_screen.py` |
 
 ## 4. Lessons (operations and method)
 
@@ -50,3 +53,4 @@ confirmed it with stated scope limits), PENDING VALIDATION, DRAFT, FILED (posted
 | L-05 | A standalone kernel benchmark can miss the in-model cost; profile in the model | E-44, R-57 |
 | L-06 | Check where a setting acts before measuring it; a config flag cannot reach inside an opaque op | E-45 cancelled by R-58 |
 | L-07 | Before a novelty search on a mechanism, check that its host code path has a future (open RFCs, deprecation banners); read whole design docs, not only the lines a search matches | I-173 / R-61 (vLLM IR deprecated; compiler fusions moving to model code) |
+| L-08 | Before a symmetry idea, compare the freedom it has (one choice per dimension) with the freedom the effect needs (one choice per element); a free CPU screen settled I-174 before any GPU spend | I-174 / E-47 / R-62 |
