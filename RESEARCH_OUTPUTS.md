@@ -24,7 +24,7 @@ confirmed it with stated scope limits), PENDING VALIDATION, DRAFT, FILED (posted
 
 | ID | What | Target | Status | Link |
 |---|---|---|---|---|
-| U-01 | Bug report: block-FP8 norm/SiLU quant fusions are slower than the unfused path on H100 (O-03, with O-04 as context) | vllm-project/vllm | DRAFT 2 (`docs/upstream/U-01_vllm_fp8_fusion_h100.md`, R-60 limits applied); the user approves before posting | (not filed) |
+| U-01 | Bug report: block-FP8 norm/SiLU quant fusions are slower than the unfused path on H100 (O-03, with O-04 as context) | vllm-project/vllm | KEPT IN REPO, NOT POSTED (user decision D-68, 2026-10-29); final text in `docs/upstream/U-01_vllm_fp8_fusion_h100.md` | (not filed) |
 | U-02 | Possible bug report: cuDNN NVFP4 plan build fails under CUDA graph capture (O-05) | vllm-project/vllm or flashinfer-ai/flashinfer | Not started | (not filed) |
 | U-03 | Optional fixes: per-token policy-version records in slime, OpenRLHF, PipelineRL (O-06) | those repositories | Optional career work (D-67) | (not started) |
 

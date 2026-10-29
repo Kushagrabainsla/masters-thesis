@@ -1,6 +1,6 @@
 # U-01 draft: vLLM bug report (NOT FILED)
 
-Status: DRAFT 2, 2026-10-29 (R-60 corrections applied). Waits for the user's approval before posting to
+Status: FINAL TEXT, KEPT IN REPO, NOT POSTED (user decision D-68, 2026-10-29; R-60 corrections applied). Target if posted later:
 github.com/vllm-project/vllm/issues. Evidence: E-44 (`experiments/fp8_quant_fusion/`), E-46
 (`experiments/fp8_fusion_validate/`), R-57, R-58. Register row: `RESEARCH_OUTPUTS.md` U-01, O-03.
 

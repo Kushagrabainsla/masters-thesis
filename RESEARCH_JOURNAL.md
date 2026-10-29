@@ -194,7 +194,7 @@ maps every file to what it contains.
   on vLLM nightly 0.33.0rc1.dev157+gedad8b03c: P1 8B deep_gemm 1.022 to 1.061, P2 14B deep_gemm 1.027 to 1.054, P3 8B
   cutlass 1.021 to 1.035 at batch 64 and 256; accuracy pass; `vllm bench latency` on 4.6% slower; default engine not
   affected. 0 thesis Pods, 0 volumes. R-60 done (CONFIRM_WITH_SCOPE_LIMITS); U-01 draft 2 has its limits.
-  Next: the user approves posting U-01 (`docs/upstream/U-01_vllm_fp8_fusion_h100.md`).
+  D-68 (user): U-01 is kept in the repo and not posted.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -6381,6 +6381,7 @@ proposed it and no acceptance is recorded.
 | D-65 | 2026-10-28 | Kill I-34 (NCCL new-path numerics contract): solved or in progress upstream; the remaining part is characterization; oracle about 1.7% | User ("kill this", on the R-53 KILL recommendation) | R-53 two-pass novelty check | Decided by the user 2026-10-28 |
 | D-66 | 2026-10-28 | After R-54: run the free I-165 source audit (no GPU) as the premise check; if it gives KILL, stop literature mining (D-37) and choose a direction from a mechanism with a clear invariant | User ("Yes, run the I-165 source audit (vLLM, SGLang, verl, slime, AReaL, OpenRLHF, PipelineRL) as the premise check, with the GO/PIVOT/KILL rules in R-54.") | R-54: two weak survivors after four frontier passes | Decided by the user 2026-10-28; done as E-43 (GO) |
 | D-67 | 2026-10-28 | After E-43 (GO, no margin) and R-55: (a) run the 1-GPU fault-injection test that counts mixed-version and mislabelled tokens (R-54 GO step; needs a predeclared plan, a cost cap and the balance check), (b) close I-165 as a thesis direction and keep the small upstream fixes (slime reads the SGLang spans; OpenRLHF and PipelineRL record versions) as optional career work, or (c) another option. Recommendation: (b) | User ("go ahead with b") | The record ships upstream (#54443); recipes train on rollout logprobs; the GO rests on one exact-KV vote; publication potential LOW | Decided by the user 2026-10-28: option (b). I-165 closed as a thesis direction |
+| D-68 | 2026-10-29 | Do not post the U-01 vLLM bug report; keep it in the thesis repo and push it | User ("do not post anything keep in our master's thesis repo, push it to remote") | E-46 VALIDATED, R-60 scope limits applied | Decided by the user 2026-10-29 |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6782,3 +6783,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: E-46 amended (A1), R-59.
 - 2026-10-29: E-46 result VALIDATED (O-03).
 - 2026-10-29: R-60 (E-46 post-run review); U-01 draft 2.
+- 2026-10-29: D-68 decided (U-01 kept in the repo, not posted).
