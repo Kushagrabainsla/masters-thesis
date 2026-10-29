@@ -16,6 +16,7 @@ For the full current state, read Section 1 of `RESEARCH_JOURNAL.md`.
 
 | If you want to see | Read |
 |---|---|
+| What came out of the research (findings, upstream reports, tools, lessons) | `RESEARCH_OUTPUTS.md` |
 | The current state and next steps | `RESEARCH_JOURNAL.md`, Section 1 |
 | The list of all ideas and their status | `RESEARCH_JOURNAL.md`, Section 3 (idea registry) |
 | One idea in detail | `RESEARCH_JOURNAL.md`, Section 5. Search by ID, for example `I-23` |

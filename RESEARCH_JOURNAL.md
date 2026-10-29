@@ -187,6 +187,9 @@ maps every file to what it contains.
 **As of 2026-10-28, after E-43 (I-165 source audit) and R-55.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
+- Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
+  lesson that came out of the research (O-01 to O-06, U-01 to U-03, T-01 to T-06, L-01 to L-06). Keep it current.
+  E-46 (validation of O-03 before the vLLM bug report U-01) is predeclared in `experiments/fp8_fusion_validate/`.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -6757,3 +6760,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: E-44 result INCONCLUSIVE (fusions off 3% to 5% faster on deep_gemm); boot watchdog rehearsal PASS.
 - 2026-10-29: R-57 (E-44 post-run review).
 - 2026-10-29: E-45 predeclared and cancelled before run (R-58, no-op on the default engine).
+- 2026-10-29: `RESEARCH_OUTPUTS.md` created; E-46 predeclared.
