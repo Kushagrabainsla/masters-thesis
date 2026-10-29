@@ -85,7 +85,10 @@ cutlass, or lack FlashInfer, may be affected.
 
 **Related:** #40552 (B200 UE8M0 norm+quant fusion skipped), #62386 (TMA-aligned scales in
 `silu_and_mul_per_block_quant`), #45364 / #43224 (manual fusion port; the 1x128 block path is deferred),
-#25094 (native group quant against the CUDA kernel). In addition (separate topic), on the default engine the activation
+#25094 (native group quant against the CUDA kernel). `docs/design/fusions.md` says that on NVIDIA the Inductor fused
+kernel is faster than the custom CUDA kernel, so these fusions are on only when the custom op is in use; for block-FP8
+the `quant_fp8` custom op is forced on, so this corner is reached. The manual-fusion ports (#43500, #43501, under
+#43224) should not carry over these kernels as they are. In addition (separate topic), on the default engine the activation
 quant for M >= 32 runs inside the opaque `dynamic_flashinfer_deepgemm_blockscale_gemm` op, about 8% of device time at
 batch 64 for Qwen3-8B-FP8, so no fusion can reach it.
 

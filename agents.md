@@ -6,6 +6,8 @@ Context file for AI agents working in this repo.
 - `RESEARCH_JOURNAL.md` at the repo root is the single source of truth for all thesis research: every idea, experiment, review, kill, the current state and the next steps. Read its Sections 0 and 1 before doing any research work. Search it by ID (`I-23`, `E-17`, `R-05`) instead of loading the whole file.
 - After any research work, update it following Section 0.6 of the journal: new ideas get a registry row and dossier, experiments get kill criteria written before they run, reviews get an R-nn entry, and Section 1 is rewritten at the end of the session.
 - Never delete history in the journal. Retractions go in its Section 8. An AI recommendation is not a decision: log who decided in its Section 10.
+- `RESEARCH_OUTPUTS.md` at the repo root indexes what came out of the research (findings, upstream reports and
+  contributions, tools, lessons). When an output changes status, update its row there and in the journal.
 - Older files (`dossier/`, the handoff .docx files) are historical snapshots. When they disagree with the journal, the journal wins.
 - `archive/` holds superseded files. Never delete research files: move obsolete ones to `archive/` and add a row to `archive/README.md`. Delete only true junk (`__pycache__`, `.DS_Store`).
 

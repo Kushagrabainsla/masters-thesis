@@ -2,7 +2,7 @@
 
 Owner: Kushagra Bainsla, MSCS, San Jose State University
 Created: 2026-09-23
-Last updated: 2026-10-28
+Last updated: 2026-10-29
 Protocol version: 1
 
 This is the single source of truth for the whole research journey: every idea, every
@@ -195,6 +195,11 @@ maps every file to what it contains.
   cutlass 1.021 to 1.035 at batch 64 and 256; accuracy pass; `vllm bench latency` on 4.6% slower; default engine not
   affected. 0 thesis Pods, 0 volumes. R-60 done (CONFIRM_WITH_SCOPE_LIMITS); U-01 draft 2 has its limits.
   D-68 (user): U-01 is kept in the repo and not posted.
+- Latest (2026-10-29): user asked for a novelty check of the next idea from O-03. I-173 (measured fusion selection:
+  time each vLLM fusion on and off per token range at startup) is KILL as a thesis direction (R-61, both passes).
+  The mechanism ships in PyTorch Inductor custom-op autotuning and TensorRT-LLM AllReduceRunner; vLLM is moving the
+  fusions into model code (RFC #42770, #43224) and deprecated vLLM IR; on E-46 data a fixed flag gets all of the gain.
+  D-69 (recommendation) is open. Next: D-13 (choose the thesis direction). No GPU spend; 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1098,6 +1103,7 @@ history in Section 5.
 | I-170 | Live forking of computer-use environments | KILL (R-54: TClone, AgentENV, forkd) | R-54 |
 | I-171 | Systems state of FP4 pretraining | KILL for this thesis (R-54: numerics work, checkpoint compression crowded) | R-54 |
 | I-172 | Block-FP8 norm+quant and SiLU+quant fusions do not fire on the H100 DeepGEMM path in vLLM v0.32.0 (standalone quant 8.1% of device time, dense, batch 64) | OPTIMIZATION LEAD, MEASURE-FIRST (2026-10-28, from E-36 profiles) | 2026-10-28 note in Section 1 |
+| I-173 | Measured fusion selection: at compile and CUDA-graph capture time, time each vLLM fusion pass on and off per token range and keep the faster choice (from O-03 / E-46) | KILL as a thesis direction (2026-10-29, R-61, both passes; confidence in a gap low): ships in PyTorch Inductor custom-op autotuning and TensorRT-LLM AllReduceRunner; vLLM is removing the compiler-fusion host (RFC #42770, #43224); per-range oracle gain over the best fixed flag about 0% in E-46 | `dossier/NOVELTY_I-173_2026-10-29.md` |
 
 ---
 
@@ -5598,6 +5604,15 @@ guards, a stricter report rule, caps $10.50. Write-up: `dossier/REVIEW_E-46_PRER
 kernels profiled only for P1; bench 3 rounds; default-path claim limited to Qwen3-8B with FlashInfer; `vllm serve` not
 tested. Notes: `experiments/fp8_fusion_validate/README.md` (R-60).
 
+**R-61 Novelty and adversarial check of I-173 (measured fusion selection)** (2026-10-29, main-session pass 1 and a
+Sonnet pass 2 with fresh searches and source clones). KILL as a thesis direction, confidence in a public gap low.
+PyTorch Inductor `register_custom_op_autotuning` (since 2025-10-31) times a custom op against its decompositions per
+token range; TensorRT-LLM `AllReduceRunner` picks fused or unfused allreduce epilogues per token bucket; vLLM RFC
+#42770 and #43224 move the compiler fusions into model code; E-46 per-range oracle gain over "off" is about 0%.
+Pass 2 corrected pass 1: #55687 is retracted by its reporter, and vLLM IR is deprecated (so its autotuning plan is not
+a scoop path). The main session verified both corrections in the source. Conditional MEASURE-FIRST core (whole-step
+timing per graph size) not run, low prior. Write-up: `dossier/NOVELTY_I-173_2026-10-29.md`.
+
 **R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
 slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
 and logprob qualifiers (`raw_logprobs` default, AReaL reads per-token versions in its loss, recipes use rollout
@@ -6101,6 +6116,24 @@ Check levels use the 0.4 meanings with the date 2026-10-28.
 | PipelineRL PR #150 | merged 2026-07-08 into `fast-llm` | Per-token model version (not runtime-tested, per the author) | Upstream fix in progress, not on `main` | checked |
 | AReaL PR #1722 | 2026-09-17, open | Opt-in token-version age filter on loss targets | Nearest thing to a version check; not shipped | checked |
 
+### 7.27 Measured fusion selection (added 2026-10-29, R-61)
+
+Check levels use the 0.4 meanings with the date 2026-10-29.
+
+| Work | Date | What it proves | Effect | Check |
+|---|---|---|---|---|
+| PyTorch Inductor `torch/_inductor/kernel/custom_op.py` (`register_custom_op_autotuning`, PR #164212) | merged 2025-10-31 | Per-range timing of a custom op against its decompositions, winner inlined; single-output ops only | Mechanism ships (I-173 KILL) | full-text (source) |
+| Inductor `benchmark_fusion`, `benchmark_combo_kernel` | main, 2026-10-29 | Fused against unfused Triton kernels timed in the scheduler; default off | Adjacent mechanism | full-text (source) |
+| vLLM main 482e473: `pass_manager.py`, `config/compilation.py`, `config/vllm.py` | 2026-10-29 | Per-range pass gating with hand-set thresholds; `enable_norm_fusion` has no speed check; "TODO(luka) better pass enabling system" | Problem real, host exists | full-text (source) |
+| vLLM `docs/design/vllm_ir.md`; PR #63371 | 2026-10-23 | vLLM IR deprecated; `ir_op_priority` removed in v0.34.0 | No IR autotuning path | checked |
+| vLLM `docs/design/fusions.md` lines 212, 240 | main | Inductor's fused kernel is faster than the custom CUDA kernel on NVIDIA; fusion on only with the custom op | Explains O-03 corner | checked |
+| vLLM RFC #42770; RFC #43224 (#43500, #43501) | 2026-05, open | Move compiler fusions into model code; later deprecate the torch.compile integration | Host path shrinking | checked |
+| vLLM #34391 and PR #37376 | 2026-02; fix merged 2026-04-13 | qknorm+rope fusion slowdown on H100 fixed in the kernel | Regressions fixed one by one | checked |
+| vLLM #55687 | 2026-09-07 | Retracted by its reporter (measurement artifact) | Not evidence | checked |
+| TensorRT-LLM `AllReduceRunner` (`torch_custom_ops.py`), PR #8779 | main; 2025-11-25 | Fused against unfused allreduce epilogue choice per token bucket, ranks merged | Closest shipping system | checked (pass 2 clone) |
+| arXiv 2602.11808; arXiv 2601.00227 | 2026 | Startup or offline selection of fused kernel variants for SGLang and vLLM | Adjacent papers | abstract (pass 2) |
+| Korch, arXiv 2406.09465 (ASPLOS 2024) | 2024 | Fusion and orchestration chosen by a linear program | Old compiler result | abstract |
+
 ---
 
 ## 8. Errors, retractions, and do-not-cite list
@@ -6382,6 +6415,7 @@ proposed it and no acceptance is recorded.
 | D-66 | 2026-10-28 | After R-54: run the free I-165 source audit (no GPU) as the premise check; if it gives KILL, stop literature mining (D-37) and choose a direction from a mechanism with a clear invariant | User ("Yes, run the I-165 source audit (vLLM, SGLang, verl, slime, AReaL, OpenRLHF, PipelineRL) as the premise check, with the GO/PIVOT/KILL rules in R-54.") | R-54: two weak survivors after four frontier passes | Decided by the user 2026-10-28; done as E-43 (GO) |
 | D-67 | 2026-10-28 | After E-43 (GO, no margin) and R-55: (a) run the 1-GPU fault-injection test that counts mixed-version and mislabelled tokens (R-54 GO step; needs a predeclared plan, a cost cap and the balance check), (b) close I-165 as a thesis direction and keep the small upstream fixes (slime reads the SGLang spans; OpenRLHF and PipelineRL record versions) as optional career work, or (c) another option. Recommendation: (b) | User ("go ahead with b") | The record ships upstream (#54443); recipes train on rollout logprobs; the GO rests on one exact-KV vote; publication potential LOW | Decided by the user 2026-10-28: option (b). I-165 closed as a thesis direction |
 | D-68 | 2026-10-29 | Do not post the U-01 vLLM bug report; keep it in the thesis repo and push it | User ("do not post anything keep in our master's thesis repo, push it to remote") | E-46 VALIDATED, R-60 scope limits applied | Decided by the user 2026-10-29 |
+| D-69 | 2026-10-29 | After R-61: accept the KILL of I-173 (measured fusion selection) as a thesis direction. Do not run the conditional whole-step timing test unless the user wants to close the question formally (about $6 on one H100). Next: choose the thesis direction (D-13) | Recommendation (R-61). Not a decision | Both passes: the mechanism ships (Inductor custom-op autotuning, TensorRT-LLM AllReduceRunner), vLLM is removing the host path, E-46 per-range oracle gain about 0% | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6784,3 +6818,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: E-46 result VALIDATED (O-03).
 - 2026-10-29: R-60 (E-46 post-run review); U-01 draft 2.
 - 2026-10-29: D-68 decided (U-01 kept in the repo, not posted).
+- 2026-10-29: I-173 registered; R-61 novelty check (KILL); Section 7.27; D-69 opened; L-07; U-01 note on the
+  manual-fusion ports.

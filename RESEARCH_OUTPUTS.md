@@ -49,3 +49,4 @@ confirmed it with stated scope limits), PENDING VALIDATION, DRAFT, FILED (posted
 | L-04 | An idle GPU before the session starts is the largest cost risk; use a boot watchdog and do create-to-start in one step | E-42 incident (about $16 idle) |
 | L-05 | A standalone kernel benchmark can miss the in-model cost; profile in the model | E-44, R-57 |
 | L-06 | Check where a setting acts before measuring it; a config flag cannot reach inside an opaque op | E-45 cancelled by R-58 |
+| L-07 | Before a novelty search on a mechanism, check that its host code path has a future (open RFCs, deprecation banners); read whole design docs, not only the lines a search matches | I-173 / R-61 (vLLM IR deprecated; compiler fusions moving to model code) |
