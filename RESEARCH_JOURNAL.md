@@ -187,6 +187,15 @@ maps every file to what it contains.
 **As of 2026-10-28, after E-43 (I-165 source audit) and R-55.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
+- Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
+  (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
+  FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
+  profile shows Inductor norm and SiLU kernels plus a standalone `per_token_group_quant_8bit` kernel: 0.3% of device
+  time at batch 1, 0.7% at 8, 8.1% at 64 (MoE cell: 3.6% to 5.2%). Upstream (FACT): PR 40552 skipped the B200 UE8M0
+  fusion test as "nontrivial"; PR 62386 (open) fixes TMA-aligned scales in silu_and_mul_per_block_quant on sm90;
+  PR 45364 defers the 1x128 block path of the manual-fusion port (RFC 43224); issue 43500 closed as stale. Next:
+  a short H100 probe on vLLM v0.32.0 and main (pattern match counts, standalone quant share, decode tok/s with
+  the fusion on and off), after a preregistration, a review, the boot-watchdog rehearsal and the user's approval.
 - Latest (2026-10-28, cloud session): E-43 ran (D-66 decided by the user). Frozen decision GO, with no margin:
   slime (fully async mode), OpenRLHF (partial rollout) and PipelineRL keep state across a weight update
   without per-token version records or a check. Scope limits: vLLM and SGLang already emit per-token version
@@ -1070,6 +1079,7 @@ history in Section 5.
 | I-169 | Session state after the stateless MCP spec | KILL (R-54: spec, gateway 2607.15593; engineering) | R-54 |
 | I-170 | Live forking of computer-use environments | KILL (R-54: TClone, AgentENV, forkd) | R-54 |
 | I-171 | Systems state of FP4 pretraining | KILL for this thesis (R-54: numerics work, checkpoint compression crowded) | R-54 |
+| I-172 | Block-FP8 norm+quant and SiLU+quant fusions do not fire on the H100 DeepGEMM path in vLLM v0.32.0 (standalone quant 8.1% of device time, dense, batch 64) | OPTIMIZATION LEAD, MEASURE-FIRST (2026-10-28, from E-36 profiles) | 2026-10-28 note in Section 1 |
 
 ---
 
@@ -6704,3 +6714,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   Appendix A row. Work done in a cloud session on branch `e43-rollout-version-audit`.
 - 2026-10-28: D-67 decided (user, option b): I-165 closed as a thesis direction. Section 1 lines, Section 3
   row I-165, D-67.
+- 2026-10-28: I-172 optimization lead (block-FP8 quant fusion not firing on the H100 DeepGEMM path).
