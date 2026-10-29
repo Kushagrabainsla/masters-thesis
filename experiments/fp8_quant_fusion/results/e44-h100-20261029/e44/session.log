@@ -1,0 +1,23 @@
+01:19:26 setup done after 68 s
+01:19:38 kbench: exit 0 after 80 s
+01:24:22 warm/D0: exit 0 after 364 s
+01:25:59 prof/D0: exit 0 after 461 s
+01:27:19 warm/D1: exit 0 after 541 s
+01:28:57 prof/D1: exit 0 after 639 s
+01:30:20 warm/D2: exit 0 after 722 s
+01:31:32 prof/D2: exit 0 after 794 s
+01:32:42 paired/D1_1: exit 0 after 864 s
+01:33:50 paired/D2_1: exit 0 after 932 s
+01:34:59 paired/D2_2: exit 0 after 1001 s
+01:36:08 paired/D1_2: exit 0 after 1070 s
+01:37:18 paired/D1_3: exit 0 after 1140 s
+01:38:27 paired/D2_3: exit 0 after 1209 s
+01:39:35 paired/D2_4: exit 0 after 1277 s
+01:40:45 paired/D1_4: exit 0 after 1347 s
+01:41:54 paired/D1_5: exit 0 after 1416 s
+01:43:02 paired/D2_5: exit 0 after 1484 s
+01:44:10 paired/D2_6: exit 0 after 1552 s
+01:45:20 paired/D1_6: exit 0 after 1622 s
+01:45:31 decision: INCONCLUSIVE (microbenchmark condition not met)
+01:45:31 done after 1633 s
+01:45:31 AUTO_STOP in 600 s; copy the results now

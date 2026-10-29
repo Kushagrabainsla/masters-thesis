@@ -1,6 +1,6 @@
 # E-44: Are vLLM's fused block-FP8 norm and SiLU quant kernels slower than the unfused path on H100? (preregistration)
 
-Status: PREDECLARED 2026-10-28. NOT RUN. Idea: I-172 (optimization lead). User request 2026-10-28: "Prepare the probe".
+Status: PREDECLARED 2026-10-28, AMENDED (A1 after R-56). RUN 2026-10-29: INCONCLUSIVE (microbenchmark condition not met). Idea: I-172 (optimization lead). User request 2026-10-28: "Prepare the probe".
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics.
 
 ## 1. Question
@@ -109,3 +109,29 @@ R-56 (Sonnet pre-run review): AMEND_THEN_RUN. Changes:
    under-use the GPU at small batch. Kernel-only prediction: the fused norm kernel is at least 1.3x slower than the
    fastest unfused path at 8 to 64 tokens and near parity at 512. Follow-ups if GO: an ncu comparison, a second dense
    model and the MoE cell, an accuracy check, then a launch-configuration change to the fused kernels.
+
+## Result
+Result (2026-10-29, Pod ef3ar012ypzx62, 1 x H100 80GB HBM3 sm_90, US-NE-1, 01:16 to 01:47 UTC, about $2.10; L4
+rehearsal Pod br4wbkwu56hmh0 about $0.10; 74 checksums match): frozen decision INCONCLUSIVE (microbenchmark condition
+not met). V0, V2 (6 of 6 rounds) and V3 pass. Boot-watchdog rehearsal PASS (self-stop about 182 s after container
+start, CAP 180 s).
+FACT, end to end (D2 fusions off ÷ D1 fusions on, deep_gemm, one-sided bounds at alpha 0.05/3): batch 1 1.041
+[1.038, 1.043], 8 1.034 [1.030, 1.037], 64 1.047 [1.037, 1.057], 256 1.054 [1.046, 1.062]. The end-to-end GO part
+passes at every deciding size.
+FACT, kernels (CUDA-graph timing, fused ÷ fastest unfused): norm 1.22, 1.14, 1.12, 1.15, 1.24 at 1, 8, 64, 256, 512
+tokens (never at least 1.3); SiLU 0.50, 0.57, 1.07, 1.49, 1.49 (at least 1.3 only at 256 and 512). So the condition
+"at least 1.3x at 3 of 5 sizes" fails. Launch floor 1.08 us per graph node. Fused and unfused FP8 bytes agree on
+96.1% to 96.9% of elements (scales within about 1%).
+FACT, device time (profiles, norm + SiLU + quant): batch 64 D1 48.3 ms, D2 36.3 ms, D0 36.4 ms; batch 256 150.4,
+101.4, 101.5 ms. Match table: D0 activation_quant_fusion_pass 0 (no fusion on the default path); D1 2.
+FACT, against the default engine (single profile processes): D2 ÷ D0 = 0.926, 0.981, 1.000, 0.999 at batch 1, 8,
+64, 256. The default engine stays the fastest.
+INTERPRETATION: on H100, vLLM's block-FP8 norm+quant and SiLU+quant fusions make Qwen3-8B-FP8 decode 3% to 5%
+slower when they fire (deep_gemm backend), at every batch size. Users of the default engine are not affected,
+because the fusion does not match there. The kernel benchmark explains the large-batch part (fused SiLU 1.49x
+slower at 256 or more tokens, fused norm 1.12x to 1.24x); it does not fully explain the 4% loss at batch 1, where
+the fused SiLU kernel is faster. HYPOTHESIS: the fusion pass also changes other parts of the compiled graph (for
+example scale layout copies or lost Inductor fusions). Not tested.
+Contribution path (INTERPRETATION): a vLLM issue with this paired data, then either a rule that turns the
+block-quant fusions off on sm90 for the affected backends, or a faster fused SiLU kernel at large token counts
+(after an ncu check of the launch configuration). cutlass, triton and the MoE cell are not measured end to end.

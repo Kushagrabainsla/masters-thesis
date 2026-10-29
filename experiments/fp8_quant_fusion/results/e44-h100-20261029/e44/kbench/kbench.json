@@ -1,0 +1,195 @@
+{
+ "gpu": "NVIDIA H100 80GB HBM3",
+ "torch": "2.13.0+cu130",
+ "shapes": [
+  4096,
+  12288,
+  128
+ ],
+ "calls_per_graph": 48,
+ "buffer_sets": 4,
+ "use_ue8m0": true,
+ "by_tokens": {
+  "1": {
+   "norm": {
+    "unfused_cuda": {
+     "us": 4.816
+    },
+    "unfused_inductor": {
+     "us": 4.375
+    },
+    "fused": {
+     "us": 5.323
+    },
+    "fused_over_unfused": 1.2167
+   },
+   "act": {
+    "unfused_cuda": {
+     "us": 5.957
+    },
+    "unfused_inductor": {
+     "us": 3.859
+    },
+    "fused": {
+     "us": 1.929
+    },
+    "fused_over_unfused": 0.4999
+   },
+   "equality": {
+    "norm": {
+     "fp8_bytes_equal": 0.965576,
+     "scale_max_rel_diff": 0.006666641216725111
+    },
+    "act": {
+     "fp8_bytes_equal": 0.965007,
+     "scale_max_rel_diff": 0.005493666976690292
+    }
+   }
+  },
+  "8": {
+   "norm": {
+    "unfused_cuda": {
+     "us": 4.938
+    },
+    "unfused_inductor": {
+     "us": 4.831
+    },
+    "fused": {
+     "us": 5.516
+    },
+    "fused_over_unfused": 1.1418
+   },
+   "act": {
+    "unfused_cuda": {
+     "us": 6.136
+    },
+    "unfused_inductor": {
+     "us": 3.917
+    },
+    "fused": {
+     "us": 2.243
+    },
+    "fused_over_unfused": 0.5726
+   },
+   "equality": {
+    "norm": {
+     "fp8_bytes_equal": 0.961365,
+     "scale_max_rel_diff": 0.01098904199898243
+    },
+    "act": {
+     "fp8_bytes_equal": 0.968211,
+     "scale_max_rel_diff": 0.00654952134937048
+    }
+   }
+  },
+  "64": {
+   "norm": {
+    "unfused_cuda": {
+     "us": 5.086
+    },
+    "unfused_inductor": {
+     "us": 4.979
+    },
+    "fused": {
+     "us": 5.579
+    },
+    "fused_over_unfused": 1.1205
+   },
+   "act": {
+    "unfused_cuda": {
+     "us": 6.885
+    },
+    "unfused_inductor": {
+     "us": 5.462
+    },
+    "fused": {
+     "us": 5.834
+    },
+    "fused_over_unfused": 1.0681
+   },
+   "equality": {
+    "norm": {
+     "fp8_bytes_equal": 0.963749,
+     "scale_max_rel_diff": 0.0103626549243927
+    },
+    "act": {
+     "fp8_bytes_equal": 0.968731,
+     "scale_max_rel_diff": 0.007040317170321941
+    }
+   }
+  },
+  "256": {
+   "norm": {
+    "unfused_cuda": {
+     "us": 6.545
+    },
+    "unfused_inductor": {
+     "us": 6.356
+    },
+    "fused": {
+     "us": 7.324
+    },
+    "fused_over_unfused": 1.1523
+   },
+   "act": {
+    "unfused_cuda": {
+     "us": 14.642
+    },
+    "unfused_inductor": {
+     "us": 13.469
+    },
+    "fused": {
+     "us": 20.031
+    },
+    "fused_over_unfused": 1.4872
+   },
+   "equality": {
+    "norm": {
+     "fp8_bytes_equal": 0.96322,
+     "scale_max_rel_diff": 0.01058204099535942
+    },
+    "act": {
+     "fp8_bytes_equal": 0.968627,
+     "scale_max_rel_diff": 0.007252992130815983
+    }
+   }
+  },
+  "512": {
+   "norm": {
+    "unfused_cuda": {
+     "us": 9.718
+    },
+    "unfused_inductor": {
+     "us": 10.173
+    },
+    "fused": {
+     "us": 12.098
+    },
+    "fused_over_unfused": 1.2449
+   },
+   "act": {
+    "unfused_cuda": {
+     "us": 25.622
+    },
+    "unfused_inductor": {
+     "us": 25.936
+    },
+    "fused": {
+     "us": 38.121
+    },
+    "fused_over_unfused": 1.4878
+   },
+   "equality": {
+    "norm": {
+     "fp8_bytes_equal": 0.96283,
+     "scale_max_rel_diff": 0.010752647183835506
+    },
+    "act": {
+     "fp8_bytes_equal": 0.968662,
+     "scale_max_rel_diff": 0.007040317170321941
+    }
+   }
+  }
+ },
+ "launch_floor_us": 1.081
+}

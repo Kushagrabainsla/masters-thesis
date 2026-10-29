@@ -1,0 +1,71 @@
+{
+ "configs": {
+  "D0": {
+   "selected": "FlashInferFp8DeepGEMMDynamicBlockScaledKernel",
+   "enabled_fusions": "norm_quant, act_quant",
+   "fused_kernels": 0,
+   "match_table": {
+    "activation_quant_fusion_pass": 0
+   },
+   "status": "ok"
+  },
+  "D1": {
+   "selected": "DeepGemmFp8BlockScaledMMKernel",
+   "enabled_fusions": "norm_quant, act_quant",
+   "fused_kernels": 9,
+   "match_table": {
+    "activation_quant_fusion_pass": 2
+   },
+   "status": "ok"
+  },
+  "D2": {
+   "selected": "DeepGemmFp8BlockScaledMMKernel",
+   "enabled_fusions": "",
+   "fused_kernels": 0,
+   "match_table": {},
+   "status": "ok"
+  }
+ },
+ "paired": {
+  "rounds": 6,
+  "good": 6,
+  "failed": [],
+  "V2": true,
+  "by_batch": {
+   "1": {
+    "ratio": 1.0407,
+    "lower": 1.0379,
+    "upper": 1.0434,
+    "rounds": 6
+   },
+   "8": {
+    "ratio": 1.0335,
+    "lower": 1.0299,
+    "upper": 1.0371,
+    "rounds": 6
+   },
+   "64": {
+    "ratio": 1.047,
+    "lower": 1.0373,
+    "upper": 1.0568,
+    "rounds": 6
+   },
+   "256": {
+    "ratio": 1.0539,
+    "lower": 1.0463,
+    "upper": 1.0616,
+    "rounds": 6
+   }
+  }
+ },
+ "kbench": {
+  "present": true,
+  "slow_counts": {
+   "act": 2
+  },
+  "condition": false
+ },
+ "V0": true,
+ "V3": true,
+ "decision": "INCONCLUSIVE (microbenchmark condition not met)"
+}

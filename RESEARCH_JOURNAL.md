@@ -198,6 +198,9 @@ maps every file to what it contains.
   the fusion on and off), after a preregistration, a review, the boot-watchdog rehearsal and the user's approval.
   E-44 predeclared and amended (R-56); tests and stub run pass. Next: the user approves the L4 rehearsal ($0.50) and
   the H100 run ($6). Correction (R-56): the fused path is about 1.3x slower at batch 8, not 2.5x.
+  E-44 RUN 2026-10-29 (about $2.20 with the L4 rehearsal): INCONCLUSIVE by the frozen rule; fusions off are 3% to 5%
+  faster end to end on the deep_gemm backend; the default engine is not affected. Boot watchdog rehearsal PASS.
+  0 thesis Pods, 0 volumes. Next: E-44 post-run review; then the user decides on a vLLM issue (outward-facing).
 - Latest (2026-10-28, cloud session): E-43 ran (D-66 decided by the user). Frozen decision GO, with no margin:
   slime (fully async mode), OpenRLHF (partial rollout) and PipelineRL keep state across a weight update
   without per-token version records or a check. Scope limits: vLLM and SGLang already emit per-token version
@@ -4789,6 +4792,11 @@ is Qwen3-8B-FP8 decode faster with the norm+quant and SiLU+quant fusions off (D2
 one-sided t at alpha 0.05/3 over batch 8, 64, 256; plus a CUDA-graph kernel benchmark. GO: lower bound at least 1.02
 and a fused kernel at least 1.3x slower than the fastest unfused path at 3 of 5 sizes. KILL: every upper bound below
 1.01. Expected: a gain only at batch 64 (about 4.6% of device time). Cap $6 (H100) plus $0.50 (L4 watchdog rehearsal).
+Result (2026-10-29, Pod ef3ar012ypzx62, about $2.10; L4 rehearsal PASS, about $0.10): frozen decision INCONCLUSIVE
+(microbenchmark condition not met). FACT: fusions off are faster end to end at every size (1.041, 1.034, 1.047, 1.054 at
+batch 1, 8, 64, 256; all lower bounds at least 1.030). Kernels: fused norm 1.12x to 1.24x slower; fused SiLU 1.49x slower
+at 256 or more tokens, faster at 1 to 8. D2 equals the default engine at batch 64 and 256 (default still fastest).
+INTERPRETATION: the fusions cost 3% to 5% when they fire (non-default backends); default users are not affected.
 
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
@@ -6729,3 +6737,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   row I-165, D-67.
 - 2026-10-28: I-172 optimization lead (block-FP8 quant fusion not firing on the H100 DeepGEMM path).
 - 2026-10-28: E-44 predeclared and amended (A1), R-56; boot-watchdog generator `experiments/runpod/pod_cmd.py`.
+- 2026-10-29: E-44 result INCONCLUSIVE (fusions off 3% to 5% faster on deep_gemm); boot watchdog rehearsal PASS.
