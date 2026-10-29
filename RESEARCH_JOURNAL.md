@@ -193,7 +193,8 @@ maps every file to what it contains.
   amended after R-59 (A1); tests and stub runs pass. E-46 RUN 2026-10-29 (about $5.80 with the L4 rehearsal): VALIDATED
   on vLLM nightly 0.33.0rc1.dev157+gedad8b03c: P1 8B deep_gemm 1.022 to 1.061, P2 14B deep_gemm 1.027 to 1.054, P3 8B
   cutlass 1.021 to 1.035 at batch 64 and 256; accuracy pass; `vllm bench latency` on 4.6% slower; default engine not
-  affected. 0 thesis Pods, 0 volumes. Next: E-46 post-run review; bug report U-01 drafted for the user's approval.
+  affected. 0 thesis Pods, 0 volumes. R-60 done (CONFIRM_WITH_SCOPE_LIMITS); U-01 draft 2 has its limits.
+  Next: the user approves posting U-01 (`docs/upstream/U-01_vllm_fp8_fusion_h100.md`).
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -5593,6 +5594,10 @@ Notes: `experiments/fp8_quant_cause/README.md` (Cancellation).
 version records, a default-engine profile, a `vllm bench latency` reproducer, V0 for every pair, warm-up and gate
 guards, a stricter report rule, caps $10.50. Write-up: `dossier/REVIEW_E-46_PRERUN_2026-10-29.md`.
 
+**R-60 Sonnet post-run review of E-46** (2026-10-29). CONFIRM_WITH_SCOPE_LIMITS: numbers and labels recomputed; fused
+kernels profiled only for P1; bench 3 rounds; default-path claim limited to Qwen3-8B with FlashInfer; `vllm serve` not
+tested. Notes: `experiments/fp8_fusion_validate/README.md` (R-60).
+
 **R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
 slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
 and logprob qualifiers (`raw_logprobs` default, AReaL reads per-token versions in its loss, recipes use rollout
@@ -6776,3 +6781,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: `RESEARCH_OUTPUTS.md` created; E-46 predeclared.
 - 2026-10-29: E-46 amended (A1), R-59.
 - 2026-10-29: E-46 result VALIDATED (O-03).
+- 2026-10-29: R-60 (E-46 post-run review); U-01 draft 2.

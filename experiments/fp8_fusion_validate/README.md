@@ -117,3 +117,10 @@ INTERPRETATION: the E-44 finding holds on current vLLM main code, on a second mo
 block-FP8 norm+quant and SiLU+quant fusions fire on H100, decode is 2% to 6% slower at batch 8 to 256 (cutlass: only at
 batch 64 and 256), without an accuracy benefit. Default-engine users are not affected. Not tested: B200, MoE models,
 TP above 1. The cause inside the fused kernels is not proven (E-44 and R-57 kernel tables).
+
+## Post-run review R-60 (2026-10-29): CONFIRM_WITH_SCOPE_LIMITS
+Bounds and labels recomputed; no rule applied after the fact; in every pair only `compilation_config` differs. Limits:
+fused kernels are proven by profile only for P1 (P2 and P3 rely on the "Enabled custom fusions" log line; the E-36
+v0.32.0 cutlass profile showed the fused kernels); the bench has 3 rounds (1.050, 1.041, 1.015), no interval; accuracy
+93.10% on, 93.48% off; no on-against-on repeat; "default users are not affected" holds for Qwen3-8B-FP8 on H100 with
+FlashInfer (the 14B default path was not profiled); `vllm serve` not tested.

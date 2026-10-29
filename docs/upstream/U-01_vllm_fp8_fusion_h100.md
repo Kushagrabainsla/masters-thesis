@@ -1,6 +1,6 @@
 # U-01 draft: vLLM bug report (NOT FILED)
 
-Status: DRAFT 1, 2026-10-29. Waits for the E-46 post-run review and for the user's approval before posting to
+Status: DRAFT 2, 2026-10-29 (R-60 corrections applied). Waits for the user's approval before posting to
 github.com/vllm-project/vllm/issues. Evidence: E-44 (`experiments/fp8_quant_fusion/`), E-46
 (`experiments/fp8_fusion_validate/`), R-57, R-58. Register row: `RESEARCH_OUTPUTS.md` U-01, O-03.
 
@@ -21,9 +21,11 @@ H100 is slower than with the two passes turned off. The fused CUDA kernels (`rms
 `silu_and_mul_per_block_quant`) cost more per call than the Inductor-generated Triton kernels plus
 `per_token_group_quant` that they replace.
 
-The fusions fire with `--linear-backend deep_gemm` and `--linear-backend cutlass` (and `triton`). With the default
-backend on H100 (`FlashInferFp8DeepGEMMDynamicBlockScaledKernel`), the log says
-`Enabled custom fusions: norm_quant, act_quant`, but no fused kernel runs, so the default path is not affected.
+The fusions fire with `--linear-backend deep_gemm` (fused kernels seen in the profile on nightly) and
+`--linear-backend cutlass` (fused kernels seen in a v0.32.0 profile; on nightly only the log line was checked), and also
+`triton` on v0.32.0. With the default backend on H100 (`FlashInferFp8DeepGEMMDynamicBlockScaledKernel`, Qwen3-8B-FP8),
+the log says `Enabled custom fusions: norm_quant, act_quant`, but no fused kernel runs, and its device time is close to
+the fusions-off run, so the default path was not affected in this setup.
 
 **Reproducer** (vLLM's own benchmark, default multiprocess engine):
 
@@ -34,8 +36,9 @@ vllm bench latency --model Qwen/Qwen3-8B-FP8 --linear-backend deep_gemm --batch-
 vllm bench latency --model Qwen/Qwen3-8B-FP8 --linear-backend deep_gemm -cc '{"pass_config": {"fuse_norm_quant": false, "fuse_act_quant": false}}' --batch-size 64 --input-len 128 --output-len 128 --num-iters-warmup 3 --num-iters 10
 ```
 
-Result (3 alternating rounds each): average latency on 0.908 / 0.938 / 0.942 s, off 0.895 / 0.897 / 0.901 s.
-The median with the fusions on is 4.6% higher.
+Result (3 alternating rounds, order on, off, off, on, on, off; multiprocess engine): average latency on 0.908 / 0.938 /
+0.942 s, off 0.895 / 0.897 / 0.901 s. The median with the fusions on is 4.6% higher; per-round on/off ratios are 1.050,
+1.041 and 1.015 (3 rounds only, no interval).
 
 **Paired end-to-end decode throughput** (offline `LLM.generate`, 128 new tokens, 5 alternating rounds per pair,
 warm compile cache; ratio = tokens/s with fusions off ÷ on; brackets are one-sided 98.3% bounds):
@@ -63,8 +66,9 @@ In an isolated CUDA-graph microbenchmark at Qwen3-8B shapes, the fused SiLU kern
 unfused path at 256 and 512 tokens (and faster at 1 to 8 tokens), and the fused norm kernel was 1.12x to 1.24x slower
 at 1 to 512 tokens.
 
-**Accuracy:** GSM8K (1,319 problems, greedy, Qwen3-8B-FP8, deep_gemm): fusions off minus on = +0.38 pp
-(95% bootstrap interval -0.61 to +1.36). No accuracy benefit from the fusions.
+**Accuracy:** GSM8K (1,319 problems, greedy, Qwen3-8B-FP8, deep_gemm): 93.10% with the fusions on, 93.48% off; off
+minus on = +0.38 pp (95% bootstrap interval -0.61 to +1.36). No accuracy benefit from the fusions. 91 of 1,319 greedy
+outputs are token-identical, as expected when two kernels round differently.
 
 **Possible cause (not verified):** `silu_and_mul_per_block_quant_kernel` launches one 128-thread block for each
 (token, group) pair, with one element per thread and a shared-memory tree reduction; `rms_norm_per_block_quant_kernel`
@@ -73,8 +77,11 @@ launches one block per token. The Inductor kernels are vectorized. I did not run
 **Possible fixes:** do not enable `fuse_norm_quant` / `fuse_act_quant` by default on sm90 for the block-FP8 backends
 where the fused kernels are slower, or make the fused kernels faster at these shapes.
 
-**Scope and limits:** 1 x H100 only (B200 not tested); dense Qwen3 8B and 14B only (MoE not tested); TP 1;
-end-to-end numbers include prefill; batch 256 runs without CUDA graphs (above the largest capture size).
+**Scope and limits:** 1 x H100 only (B200 not tested); dense Qwen3 8B and 14B only (MoE and other models not tested);
+TP 1; explicit `--linear-backend deep_gemm` or `cutlass`; offline `LLM.generate` and `vllm bench latency` only (`vllm
+serve` not tested); end-to-end numbers include prefill; batch 256 runs without CUDA graphs (above the largest capture
+size). The default-path result is for Qwen3-8B-FP8 with FlashInfer present; other setups that select deep_gemm or
+cutlass, or lack FlashInfer, may be affected.
 
 **Related:** #40552 (B200 UE8M0 norm+quant fusion skipped), #62386 (TMA-aligned scales in
 `silu_and_mul_per_block_quant`), #45364 / #43224 (manual fusion port; the 1x128 block path is deferred),
