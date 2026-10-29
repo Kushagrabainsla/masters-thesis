@@ -46,6 +46,8 @@ def build_llm(args):
             kwargs[name] = value
     if args.enforce_eager:
         kwargs["enforce_eager"] = True
+    if getattr(args, "compilation_config", None):  # E-45: for example '{"custom_ops": ["-quant_fp8"]}'
+        kwargs["compilation_config"] = json.loads(args.compilation_config)
     started = time.time()
     return LLM(**kwargs), round(time.time() - started, 2), kwargs
 
@@ -202,6 +204,7 @@ def main() -> None:
     parser.add_argument("--linear-backend", default="auto")
     parser.add_argument("--moe-backend", default="auto")
     parser.add_argument("--enforce-eager", action="store_true")
+    parser.add_argument("--compilation-config", default=None, help="E-45: JSON passed as LLM(compilation_config=...)")
     parser.add_argument("--max-tokens", type=int, default=768)
     parser.add_argument("--max-num-seqs", type=int, default=256)
     parser.add_argument("--max-model-len", type=int, default=4096)

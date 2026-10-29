@@ -202,6 +202,10 @@ maps every file to what it contains.
   faster end to end on the deep_gemm backend; the default engine is not affected. Boot watchdog rehearsal PASS.
   0 thesis Pods, 0 volumes. R-57 done (CONFIRM_WITH_SCOPE_LIMITS). Next: the user decides between a vLLM issue now
   (outward-facing) and a short follow-up for the cause (nsys/ncu, second model, cutlass) first.
+  Cause analysis (free, from E-44 profiles and v0.32.0 source): vLLM's fused CUDA norm/SiLU+quant kernels are 2x to 3x
+  slower per call than the Inductor kernels they replace; on the default engine the M >= 32 quant runs inside an opaque
+  op (8.1% of device time at batch 64). E-45 (native quant flag) CANCELLED by R-58 as a no-op. Next: the user chooses a
+  vLLM issue with the E-44 data, or a code-change prototype for the default path (upside about 2% to 6%).
 - Latest (2026-10-28, cloud session): E-43 ran (D-66 decided by the user). Frozen decision GO, with no margin:
   slime (fully async mode), OpenRLHF (partial rollout) and PipelineRL keep state across a weight update
   without per-token version records or a check. Scope limits: vLLM and SGLang already emit per-token version
@@ -4799,6 +4803,10 @@ batch 1, 8, 64, 256; all lower bounds at least 1.030). Kernels: fused norm 1.12x
 at 256 or more tokens, faster at 1 to 8. D2 equals the default engine at batch 64 and 256 (default still fastest).
 INTERPRETATION: the fusions cost 3% to 5% when they fire (non-default backends); default users are not affected.
 
+**E-45 Native FP8 group quant on the default H100 engine** (predeclared 2026-10-29, I-172). STATUS: CANCELLED BEFORE
+RUN by R-58: the default kernel quantizes inside one opaque op (`dynamic_flashinfer_deepgemm_blockscale_gemm`), so the
+`-quant_fp8` switch is a no-op there. Package: `experiments/fp8_quant_cause/`. No spend.
+
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
 `--moe-backend marlin` at least 3% faster than R for Qwen3-30B-A3B-FP8 at batch 4, 8, 16 or 32 (10 paired
@@ -5564,6 +5572,10 @@ Write-up: `dossier/REVIEW_E-44_PRERUN_2026-10-28.md`.
 **R-57 Sonnet post-run review of E-44** (2026-10-29). CONFIRM_WITH_SCOPE_LIMITS. Bounds recomputed; the norm fusion
 did fire; in the model the fused CUDA kernels cost more than the Inductor kernels they replace; the kernel benchmark
 does not predict the in-model cost; scope limited to this setup. Write-up: `dossier/REVIEW_E-44_POSTRUN_2026-10-29.md`.
+
+**R-58 Sonnet pre-run review of E-45** (2026-10-29). DO_NOT_RUN: A1 is a no-op on the default engine (quant inside an
+opaque op, confirmed in the v0.32.0 source). Upside for a code change at most about 6% of device time at batch 64 and 256.
+Notes: `experiments/fp8_quant_cause/README.md` (Cancellation).
 
 **R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
 slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
@@ -6744,3 +6756,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-28: E-44 predeclared and amended (A1), R-56; boot-watchdog generator `experiments/runpod/pod_cmd.py`.
 - 2026-10-29: E-44 result INCONCLUSIVE (fusions off 3% to 5% faster on deep_gemm); boot watchdog rehearsal PASS.
 - 2026-10-29: R-57 (E-44 post-run review).
+- 2026-10-29: E-45 predeclared and cancelled before run (R-58, no-op on the default engine).
