@@ -196,6 +196,8 @@ maps every file to what it contains.
   PR 45364 defers the 1x128 block path of the manual-fusion port (RFC 43224); issue 43500 closed as stale. Next:
   a short H100 probe on vLLM v0.32.0 and main (pattern match counts, standalone quant share, decode tok/s with
   the fusion on and off), after a preregistration, a review, the boot-watchdog rehearsal and the user's approval.
+  E-44 predeclared and amended (R-56); tests and stub run pass. Next: the user approves the L4 rehearsal ($0.50) and
+  the H100 run ($6). Correction (R-56): the fused path is about 1.3x slower at batch 8, not 2.5x.
 - Latest (2026-10-28, cloud session): E-43 ran (D-66 decided by the user). Frozen decision GO, with no margin:
   slime (fully async mode), OpenRLHF (partial rollout) and PipelineRL keep state across a weight update
   without per-token version records or a check. Scope limits: vLLM and SGLang already emit per-token version
@@ -4781,6 +4783,13 @@ PIVOT. Left open: KV provenance for hybrid tokens, a label check, and the cost o
 R-55 (Sonnet): AMEND (one wrong row, two missing modes, two citations, logprob qualifiers); fixes applied.
 What it changed: I-165 premise holds, but publication potential drops to LOW. D-67.
 
+**E-44 Block-FP8 fused quant kernels against the unfused path on H100** (predeclared 2026-10-28, amended A1 after R-56,
+I-172). STATUS: NOT RUN. Package: `experiments/fp8_quant_fusion/`. Question: with the same GEMM backend (deep_gemm),
+is Qwen3-8B-FP8 decode faster with the norm+quant and SiLU+quant fusions off (D2) than on (D1)? 6 paired rounds,
+one-sided t at alpha 0.05/3 over batch 8, 64, 256; plus a CUDA-graph kernel benchmark. GO: lower bound at least 1.02
+and a fused kernel at least 1.3x slower than the fastest unfused path at 3 of 5 sizes. KILL: every upper bound below
+1.01. Expected: a gain only at batch 64 (about 4.6% of device time). Cap $6 (H100) plus $0.50 (L4 watchdog rehearsal).
+
 **E-39 Marlin W8A16 MoE small-batch speed on H100** (predeclared 2026-10-27, I-23). STATUS: RUN 2026-10-27,
 INCONCLUSIVE. Package: `experiments/marlin_moe_speed/`. Question: is
 `--moe-backend marlin` at least 3% faster than R for Qwen3-30B-A3B-FP8 at batch 4, 8, 16 or 32 (10 paired
@@ -5538,6 +5547,10 @@ upstream fixes and policies, residue is characterization, small oracle. Write-up
 **R-54 Frontier review** (2026-10-28; Opus pass 1, Sonnet pass 2). Seven new candidates (I-165 to I-171): five KILL,
 two WEAK (I-165 version-exact rollout lifecycle, I-166 CE AlltoAll). No strong survivor. D-66 (recommendation).
 Write-up: `dossier/FRONTIER_R-54_2026-10-28.md`.
+
+**R-56 Sonnet pre-run review of E-44** (2026-10-28). AMEND_THEN_RUN: batch-8 motivation corrected (TRT-LLM quant
+kernel left out), CUDA-graph kernel timing, compile-cache bypass for the match table, base64 boot watchdog, caps.
+Write-up: `dossier/REVIEW_E-44_PRERUN_2026-10-28.md`.
 
 **R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
 slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
@@ -6715,3 +6728,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-28: D-67 decided (user, option b): I-165 closed as a thesis direction. Section 1 lines, Section 3
   row I-165, D-67.
 - 2026-10-28: I-172 optimization lead (block-FP8 quant fusion not firing on the H100 DeepGEMM path).
+- 2026-10-28: E-44 predeclared and amended (A1), R-56; boot-watchdog generator `experiments/runpod/pod_cmd.py`.

@@ -56,6 +56,9 @@ key is missing, stop and ask the user to add it to `.env`; do not ask for it in 
 - Ports `22/tcp`, SSH start on. A non-Runpod image needs a start command that installs and starts
   sshd (see the runbook).
 - Pin the CUDA floor (`minCudaVersion` 12.8, or 13.0 for a CUDA 13 image).
+- Boot watchdog generator (E-44 A1): `python3 experiments/runpod/pod_cmd.py --cap <seconds>` prints the create-pod
+  `cmd` list with the watchdog embedded as base64 (no nested quoting; tested in `test_pod_cmd.py`). Use it for
+  every GPU Pod. The inline command below is the older form.
 - Boot watchdog (E-42 incident): the start command must stop the Pod by itself at the cost cap, counted
   from boot, before any session starts. Put it before sshd in the start command:
   `(sleep CAP; python3 -c "import json,os,urllib.request as u;q={'query':'mutation{podStop(input:{podId:\"%s\"}){id}}'%os.environ['RUNPOD_POD_ID']};r=u.Request('https://api.runpod.io/graphql',json.dumps(q).encode(),{'Content-Type':'application/json','Authorization':'Bearer '+os.environ['RUNPOD_API_KEY']});print(u.urlopen(r,timeout=30).status)" >> /workspace/boot_watchdog.log 2>&1) &`

@@ -53,6 +53,8 @@ def build_llm(args):
             kwargs[name] = value
     if args.enforce_eager:
         kwargs["enforce_eager"] = True
+    if getattr(args, "compilation_config", None):  # E-44: for example '{"pass_config": {"fuse_norm_quant": false}}'
+        kwargs["compilation_config"] = json.loads(args.compilation_config)
     started = time.time()
     llm = LLM(**kwargs)
     return llm, round(time.time() - started, 2), kwargs
@@ -208,6 +210,7 @@ def main() -> None:
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--limit", type=int, default=0, help="use only the first N prompts (dry run)")
     parser.add_argument("--enforce-eager", action="store_true")
+    parser.add_argument("--compilation-config", default=None, help="E-44: JSON passed as LLM(compilation_config=...)")
     parser.add_argument("--profile-kernels", action="store_true", help="A2: kernel table after the measurements")
     parser.add_argument("--warmup-prompts", type=int, default=64, help="A3 (R-40): prompts in a warm-up run")
     parser.add_argument("--warmup-tokens", type=int, default=64, help="A3 (R-40): new tokens in a warm-up run")
