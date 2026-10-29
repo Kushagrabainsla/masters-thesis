@@ -1,0 +1,126 @@
+{
+ "identity": [
+  {
+   "keys": 3000,
+   "qheads": 8,
+   "rotated_dims": 128,
+   "values_per_key_standard": 1024,
+   "values_per_key_compact": 640,
+   "saving": 0.375,
+   "max_rel_err_float64": 3.054270520887419e-15,
+   "max_rel_err_bf16_standard": 0.0034726537631513594,
+   "max_rel_err_bf16_compact": 0.002841459749595465
+  },
+  {
+   "keys": 3000,
+   "qheads": 8,
+   "rotated_dims": 128,
+   "values_per_key_standard": 1024,
+   "values_per_key_compact": 640,
+   "saving": 0.375,
+   "max_rel_err_float64": 5.4445763197040104e-15,
+   "max_rel_err_bf16_standard": 0.005088522461901285,
+   "max_rel_err_bf16_compact": 0.006335007252436753
+  },
+  {
+   "keys": 3000,
+   "qheads": 8,
+   "rotated_dims": 128,
+   "values_per_key_standard": 1024,
+   "values_per_key_compact": 640,
+   "saving": 0.375,
+   "max_rel_err_float64": 7.985622624293324e-15,
+   "max_rel_err_bf16_standard": 0.007044440759523071,
+   "max_rel_err_bf16_compact": 0.004475650030885536
+  }
+ ],
+ "bytes": {
+  "gemma-4-31B-it": {
+   "kind": "dense FP8",
+   "global_kv_bytes_per_token": 81920,
+   "sliding_kv_bytes_per_token": 819200,
+   "cells": [
+    {
+     "context": 2048,
+     "batch": 4,
+     "global_kv_gb": 0.67,
+     "sliding_kv_gb": 3.36,
+     "weight_gb": 31.3,
+     "global_share_of_bytes": 0.019,
+     "saving_share_of_bytes": 0.007
+    },
+    {
+     "context": 8192,
+     "batch": 4,
+     "global_kv_gb": 2.68,
+     "sliding_kv_gb": 3.36,
+     "weight_gb": 31.3,
+     "global_share_of_bytes": 0.072,
+     "saving_share_of_bytes": 0.027
+    },
+    {
+     "context": 32768,
+     "batch": 4,
+     "global_kv_gb": 10.74,
+     "sliding_kv_gb": 3.36,
+     "weight_gb": 31.3,
+     "global_share_of_bytes": 0.237,
+     "saving_share_of_bytes": 0.089
+    },
+    {
+     "context": 65536,
+     "batch": 4,
+     "global_kv_gb": 21.47,
+     "sliding_kv_gb": 3.36,
+     "weight_gb": 31.3,
+     "global_share_of_bytes": 0.383,
+     "saving_share_of_bytes": 0.143
+    }
+   ]
+  },
+  "gemma-4-26B-A4B-it": {
+   "kind": "MoE BF16",
+   "global_kv_bytes_per_token": 20480,
+   "sliding_kv_bytes_per_token": 204800,
+   "cells": [
+    {
+     "context": 2048,
+     "batch": 8,
+     "global_kv_gb": 0.34,
+     "sliding_kv_gb": 1.68,
+     "weight_gb": 23.8,
+     "global_share_of_bytes": 0.013,
+     "saving_share_of_bytes": 0.005
+    },
+    {
+     "context": 8192,
+     "batch": 8,
+     "global_kv_gb": 1.34,
+     "sliding_kv_gb": 1.68,
+     "weight_gb": 23.8,
+     "global_share_of_bytes": 0.05,
+     "saving_share_of_bytes": 0.019
+    },
+    {
+     "context": 32768,
+     "batch": 8,
+     "global_kv_gb": 5.37,
+     "sliding_kv_gb": 1.68,
+     "weight_gb": 23.8,
+     "global_share_of_bytes": 0.174,
+     "saving_share_of_bytes": 0.065
+    },
+    {
+     "context": 65536,
+     "batch": 8,
+     "global_kv_gb": 10.74,
+     "sliding_kv_gb": 1.68,
+     "weight_gb": 23.8,
+     "global_share_of_bytes": 0.296,
+     "saving_share_of_bytes": 0.111
+    }
+   ]
+  }
+ },
+ "exact": true
+}
