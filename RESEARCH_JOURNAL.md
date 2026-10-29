@@ -206,7 +206,8 @@ maps every file to what it contains.
   (recommendation) is open: start A and B, or one preregistered waste audit on an unprofiled configuration. No spend.
 - Latest (2026-10-29, latest): D-72 (user): the main goal is a research gap or an optimization; A and B later.
   Keep every finding written down. Next: mine the existing GPU profiles (E-36, E-44, E-46) for waste at no cost.
-  E-48 (free CPU screen, from our own profiles): I-181 exact LM head with an FP8 screen, GO (K median 2, half the bytes).
+  E-48 (free CPU screen, from our own profiles): I-181 exact LM head with an FP8 screen passed, but R-63 KILL: vLLM PR
+  #60566 already builds it (gain about 1% to 3% on H100). D-73 (recommendation): one waste audit on a new model class.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1118,7 +1119,7 @@ history in Section 5.
 | I-178 | Power-aware serving batching to avoid power-cap throttling | KILL (R-62: small oracle from E-44 and E-46 telemetry; DynamoLLM, POLCA, TAPAS, 2608.01250; clock control needs root) | R-62 |
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
-| I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | MEASURE-FIRST (2026-10-29): E-48 CPU screen GO for FP8 (K median 2, p95 14; half the head bytes); FP4 fails; pass-2 review pending | `experiments/lmhead_screen/README.md` |
+| I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
 
 ---
 
@@ -4845,7 +4846,8 @@ Origin: our E-36 and E-46 profiles: the BF16 LM head of Qwen3-8B-FP8 takes 9.9% 
 device time at about 3.0 TB/s, so only fewer bytes help. Screen: Qwen3-0.6B, 1,152 greedy decode states. FP8 per-row
 screen: certified greedy needs K = 2 BF16 rows (median), 14 (p95); tail mass outside the top 256 at T = 1.0 is 1.6%
 (median); half the head bytes. NVFP4-like screen: K median 143, p95 4,135, tail 99%: fails. The bound is about 7x
-the actual error. Validity: SCREEN ONLY (small model, CPU float32, no GPU accumulation error). Next: R-63 pass 2.
+the actual error. Validity: SCREEN ONLY (small model, CPU float32, no GPU accumulation error). R-63 (Sonnet): KILL
+by prior work: vLLM PR #60566 already builds this FP8 screen; end-to-end gain about +1% to +3% on H100 at batch 1.
 
 **E-47 Bit-transition screen for exact model symmetries** (2026-10-29, I-174). STATUS: RUN 2026-10-29, SCREEN ONLY,
 KILL by the frozen rule. Package: `experiments/power_shaping_screen/` (rule in the README; the README and the result
@@ -5656,6 +5658,17 @@ too small in our measured regime, or not testable without fleet data. Our teleme
 this serving regime: removing the cap gains at most 0.65% (E-44) to 2.4% (E-46). Both passes: D-70 options A and B
 remain the best use of the time. Write-up: `dossier/FRONTIER_R-62_2026-10-29.md`.
 
+**R-63 Novelty and design check of I-181 (exact LM head with a low-precision screen)** (2026-10-29, main-session pass 1
+with the free E-48 screen, Sonnet pass 2 with fresh searches). KILL. The idea came from our own E-36 and E-46 profiles
+(the BF16 head is 9% to 10% of decode time at small batch). The main session read vLLM PR #60566 "Screened lm_head"
+(open since 2026-10-08): the same FP8 copy, rigorous per-row bound, exact BF16 rows only where the screen cannot
+decide, greedy and top-k up to 32; +8% on DGX Spark, about 0 or slightly negative on GB200 and GB300. Pass 2 also
+found verified-progress (int8 screen, SGLang), sparkpipe PR 744, knlp and CSV-Decode (2511.21702). Size: about +1%
+to +3% end to end on H100 at batch 1. Corrections: the ARCHead INT4-head figure is a relative perplexity of 1.14 to
+1.16; a pass-1 search-summary claim (an FP8 head alone changes greedy output on 70% to 93% of prompts, 2609.26621)
+was not found in the abstract and must not be cited. Lesson L-09. Notes: `experiments/lmhead_screen/README.md`.
+Process note: a bot comment on a vLLM PR addressed AI agents; the reviewer ignored it.
+
 **R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
 slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
 and logprob qualifiers (`raw_logprobs` default, AReaL reads per-token versions in its loss, recipes use rollout
@@ -6196,6 +6209,19 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | arXiv 2512.02189 | 2025-12 | Blackwell microbenchmarks; decompression engine 1.00x on incompressible data | Kills I-180 | pass 2 |
 | READ 2308.15698; 2304.12691; PowerPruning 2303.13997; 2511.17123 | 2023 to 2025 | ASIC power-aware ordering, bus-invert coding, low-power weight values | Source mechanisms for I-174 | abstracts |
 
+### 7.29 Exact LM head with a low-precision screen (added 2026-10-29, R-63)
+
+Check levels use the 0.4 meanings with the date 2026-10-29.
+
+| Work | Date | What it proves | Effect | Check |
+|---|---|---|---|---|
+| vLLM PR #60566 "Screened lm_head" | 2026-10-08, open | FP8 head copy, rigorous per-row bound, exact BF16 for undecided rows, greedy and top-k up to 32; +8% on GB10, about 0 or less on GB200 and GB300 | Kills I-181 | checked (PR body read) |
+| verified-progress ("The Work a Verifier Needs") | 2026-10 | int8 screen, FP64 rescore, fallback; SGLang, GH200; +1.3% to +4.6% at c=1, slower at c=2 to 8 | Second implementation | pass 2 |
+| sparkpipe PR 744; knlp; dgpp #69; mini-sglang #169 | 2026 | FP8 shadow plus BF16 rescore; low-rank int8 shadow; bit planes; int8 plus top-64 | More implementations | pass 2 |
+| CSV-Decode, arXiv 2511.21702 | 2025-11 | Exact top-k and epsilon-TV softmax certificates | Academic certificate prior | pass 2 |
+| FlashSampling, arXiv 2603.15854 | 2026 | Fused exact Gumbel sampling, full head read | Adjacent | search summary |
+| ARCHead, arXiv 2608.02703 | 2026-08 | Lossy head quantization with residual correction; naive INT4 head relative PPL about 1.14 to 1.16 | Lossy baseline | pass 2 |
+
 ---
 
 ## 8. Errors, retractions, and do-not-cite list
@@ -6481,6 +6507,7 @@ proposed it and no acceptance is recorded.
 | D-70 | 2026-10-29 | D-13 options after R-61 (about 9 weeks before the January job): (A) write the thesis from the results we have (I-23 negative result O-01, O-02; validated fusion regression O-03; methods T-01 to T-06), about $0; (B) add a positive chapter: diagnose and fix the slow block-FP8 fused kernels (O-03) and, if time allows, the default-path quant (O-04), with upstream PRs, about $15 to $30; (C) a new frontier review, about $0 then GPU, low odds after R-10 to R-54 found no strong survivor; (D) revive an older WEAK idea (I-118 needs root, I-143 needs 2+ GPUs). Recommend A with B | Recommendation (main session). Not a decision | B fits the target-role gaps in 2.3 (CUDA kernels, profiling, roofline, FP8, vLLM internals); #43500 (norm+quant port) closed as stale, so the kernels stay in use; risk: Runpod containers may block ncu counters | Decided by the user 2026-10-29: option C now; A and B kept for later, partly after the job starts ("lets keep A and B for the the last minute ... lets try to search for a new idea") |
 | D-71 | 2026-10-29 | After R-62 (no survivor in the frontier resource areas): either start D-70 options A and B now, or, if the user still wants a new lead, run one preregistered measurement-first waste audit on a configuration this project has not profiled (for example MoE on B200 with NVFP4 and long context), GO only for a gap of 5% or more of step time that no shipped mechanism covers | Recommendation (R-62, both passes). Not a decision | Fifth broad pass with no survivor; E-36 profiles are the only search method that produced findings (O-03, O-04) | **Open, waiting on the user** |
 | D-72 | 2026-10-29 | The main goal now is to find a research gap or an optimization, not to solidify the findings. The thesis write-up (A) and the kernel fixes (B) can come later, with AI help, from the data we already have. Keep every finding written down so that the write-up needs no new runs | User ("for now our main goals is to find a research gap or optimization, and not to solidify our findings, we can do it later as well, just make sure everything is written") | Supersedes the open part of D-71 (A and B now) | Decided by the user 2026-10-29 |
+| D-73 | 2026-10-29 | After R-63: the profile-mining method found a real optimization (I-181), but another group already has it as an open vLLM PR. Next search step: one preregistered waste audit on a model class the engines have tuned least (for example a hybrid linear-attention model such as Qwen3-Next, or MoE with sparse attention, on H100 or B200), GO only for a gap of 5% or more of step time that no shipped or open-PR mechanism covers; check open PRs in pass 1 | Recommendation (R-63). Not a decision. GPU spend needs the user's approval and a live balance check | Profile mining is the only method here that found real waste (O-03, O-04, I-181) | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6888,4 +6915,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: D-70 decided (user); R-62 frontier review; I-174 to I-180; E-47 screen (KILL); Section 7.28; D-71
   opened; O-07, O-08, T-07, L-08.
 - 2026-10-29: D-72 decided (user); E-42 and E-44 status words fixed (they said NOT RUN after the run); I-181
-  registered; E-48 screen (GO, FP8).
+  registered; E-48 screen (GO, FP8); R-63 (KILL, vLLM PR #60566); Section 7.29; D-73 opened; O-09, L-09.

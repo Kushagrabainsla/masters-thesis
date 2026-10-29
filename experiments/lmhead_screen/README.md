@@ -67,3 +67,21 @@ so an FP8 screen plus a handful of exact rows can halve the LM-head bytes with e
 head share times about one half: about 5% for Qwen3-8B-FP8 at batch 1 to 8 on H100 (head share 9% to 10%), more for
 FP4 bodies and small models with large vocabularies. Open questions for review: larger hidden sizes (4,096), the GPU
 screen's own accumulation error, top-p and logprob outputs (logprobs need the exact normaliser), and prior work.
+
+## Review R-63 (2026-10-29, Sonnet pass 2): KILL by prior work
+- FACT (main session read it): vLLM PR #60566 "[MRV2][Perf] Screened lm_head" (open since 2026-10-08, no merge) is this
+  design: an FP8 copy of the head, a rigorous per-row bound (FP8 error plus FP32 accumulation of both GEMMs, in fp64 at
+  load), exact BF16 logits only for rows the screen cannot rule out (about 15 per greedy token, about 1,200 for top-20),
+  greedy and top-k up to 32. Its numbers: +8.0% greedy decode at c=1 on DGX Spark (GB10), neutral to slightly
+  negative on GB200 and GB300; the PR says so and makes it opt-in.
+- Other prior work (pass 2, not all read by the main session): "The Work a Verifier Needs" (int8 screen, SGLang,
+  +1.3% to +4.6% at c=1, slower at c=2 to 8); sparkpipe PR 744; knlp (low-rank int8 shadow); CSV-Decode
+  (arXiv 2511.21702, exact top-k certificates, Nov 2025).
+- Size (pass 2): the head is 6% to 10% of a decode step on Qwen3-8B-FP8 (H100), so the end-to-end gain is about +1% to
+  +3% at batch 1 and about 0 at batch 64; with speculative decoding the gain shrinks.
+- Technical notes kept for later: int8 rows give a 3 to 4 times tighter bound than E4M3 at the same bytes; the bound
+  ratio grows about as sqrt(d), so the 0.6B case (d = 1,024) does not predict 8B (d = 4,096); "exact" must mean the same
+  token as the stock kernel at one batch shape (split-K and ties).
+- Correction: the INT4-head figure is a relative perplexity of about 1.14 to 1.16 (ARCHead, naive INT4), not exactly
+  +15%. A pass-1 search summary also said that an FP8 head alone changes greedy output on 70% to 93% of prompts
+  (2609.26621); pass 2 did not find this in the abstract, so do not cite it.
