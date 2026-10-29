@@ -1,0 +1,38 @@
+{
+ "model": "Qwen/Qwen3-0.6B",
+ "states": 1152,
+ "vocab": 151936,
+ "hidden": 1024,
+ "hook_matches_argmax": 1.0,
+ "summary": {
+  "fp8": {
+   "k_greedy_median": 2.0,
+   "k_greedy_p95": 14.0,
+   "k_greedy_over_cap_frac": 0.0,
+   "tail_T1_median": 0.01630547325746544,
+   "tail_T0.7_median": 0.00015591048373756578,
+   "argmax_agree": 0.9800347222222222,
+   "one_minus_tv_T1_mean": 0.9815153557186326,
+   "bound_over_actual_err_median": 7.221790552139282,
+   "byte_ratio_design1_median": 0.5019662884372368,
+   "byte_ratio_screen_only": 0.501953125
+  },
+  "fp4": {
+   "k_greedy_median": 143.0,
+   "k_greedy_p95": 4134.800000000003,
+   "k_greedy_over_cap_frac": 0.0008680555555555555,
+   "tail_T1_median": 0.989151977028281,
+   "tail_T0.7_median": 0.9736886806739484,
+   "argmax_agree": 0.9097222222222222,
+   "one_minus_tv_T1_mean": 0.9292614685061077,
+   "bound_over_actual_err_median": 7.407405853271484,
+   "byte_ratio_design1_median": 0.2821911857624263,
+   "byte_ratio_screen_only": 0.28125
+  }
+ },
+ "decision": {
+  "design1_certified": "GO",
+  "design2_speculative": "FAIL",
+  "overall": "GO"
+ }
+}

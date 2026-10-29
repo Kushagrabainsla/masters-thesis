@@ -204,6 +204,9 @@ maps every file to what it contains.
   review from first principles (power, utilization, bandwidth, longevity, inference, preemption): no survivor. The
   strongest lead, I-174 (exact symmetries to cut switching power), died in the free E-47 screen (0.5% median). D-71
   (recommendation) is open: start A and B, or one preregistered waste audit on an unprofiled configuration. No spend.
+- Latest (2026-10-29, latest): D-72 (user): the main goal is a research gap or an optimization; A and B later.
+  Keep every finding written down. Next: mine the existing GPU profiles (E-36, E-44, E-46) for waste at no cost.
+  E-48 (free CPU screen, from our own profiles): I-181 exact LM head with an FP8 screen, GO (K median 2, half the bytes).
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1115,6 +1118,7 @@ history in Section 5.
 | I-178 | Power-aware serving batching to avoid power-cap throttling | KILL (R-62: small oracle from E-44 and E-46 telemetry; DynamoLLM, POLCA, TAPAS, 2608.01250; clock control needs root) | R-62 |
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
+| I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | MEASURE-FIRST (2026-10-29): E-48 CPU screen GO for FP8 (K median 2, p95 14; half the head bytes); FP4 fails; pass-2 review pending | `experiments/lmhead_screen/README.md` |
 
 ---
 
@@ -4789,7 +4793,8 @@ FP4 kernels is unexplained (HYPOTHESIS: same block-scaled MMA and K order); not 
 R-50 (post-run review): CONFIRM_WITH_SCOPE_LIMITS. D-64 (user): I-23 closed for NVFP4.
 
 **E-42 NVFP4 linear-path bit-equality on one B200** (predeclared 2026-10-27, amended A1 2026-10-28; explains
-E-41, does not reopen I-23). STATUS: NOT RUN. Package: `experiments/nvfp4_bitequal/`. Question: do the NVFP4 linear
+E-41, does not reopen I-23). STATUS: RUN 2026-10-28, HYPOTHESIS HOLDS (status word updated 2026-10-29; it said NOT RUN
+after the run). Package: `experiments/nvfp4_bitequal/`. Question: do the NVFP4 linear
 backends give bit-equal top-20 logprobs against R? Controls: R_2 (determinism), marlin (large difference), R_m
 (small change). Rule: README Section 5 and A1. Cap $7.
 Result (2026-10-28, Pod r37oa2sniy92lq, US-NC-2): HYPOTHESIS HOLDS. cudnn, flashinfer_cutlass, cutlass and
@@ -4817,7 +4822,8 @@ R-55 (Sonnet): AMEND (one wrong row, two missing modes, two citations, logprob q
 What it changed: I-165 premise holds, but publication potential drops to LOW. D-67.
 
 **E-44 Block-FP8 fused quant kernels against the unfused path on H100** (predeclared 2026-10-28, amended A1 after R-56,
-I-172). STATUS: NOT RUN. Package: `experiments/fp8_quant_fusion/`. Question: with the same GEMM backend (deep_gemm),
+I-172). STATUS: RUN 2026-10-29, INCONCLUSIVE (status word updated 2026-10-29; it said NOT RUN after the run).
+Package: `experiments/fp8_quant_fusion/`. Question: with the same GEMM backend (deep_gemm),
 is Qwen3-8B-FP8 decode faster with the norm+quant and SiLU+quant fusions off (D2) than on (D1)? 6 paired rounds,
 one-sided t at alpha 0.05/3 over batch 8, 64, 256; plus a CUDA-graph kernel benchmark. GO: lower bound at least 1.02
 and a fused kernel at least 1.3x slower than the fastest unfused path at 3 of 5 sizes. KILL: every upper bound below
@@ -4832,6 +4838,14 @@ INTERPRETATION: the fusions cost 3% to 5% when they fire (non-default backends);
 2026-10-29, VALIDATED. Package: `experiments/fp8_fusion_validate/`. vLLM nightly (0.33.0rc1.dev157+gedad8b03c): fusions off
 faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cutlass at batch 64 and 256 (2% to 3.5%);
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
+
+**E-48 LM-head exactness screen** (2026-10-29, I-181). STATUS: RUN 2026-10-29, SCREEN ONLY, GO for design 1 (FP8)
+by the frozen rule (rule in the README; same-commit caveat as E-47). No GPU, no spend (Mac CPU, about 3 minutes).
+Origin: our E-36 and E-46 profiles: the BF16 LM head of Qwen3-8B-FP8 takes 9.9% (batch 1), 9.3% (8), 6.1% (64) of
+device time at about 3.0 TB/s, so only fewer bytes help. Screen: Qwen3-0.6B, 1,152 greedy decode states. FP8 per-row
+screen: certified greedy needs K = 2 BF16 rows (median), 14 (p95); tail mass outside the top 256 at T = 1.0 is 1.6%
+(median); half the head bytes. NVFP4-like screen: K median 143, p95 4,135, tail 99%: fails. The bound is about 7x
+the actual error. Validity: SCREEN ONLY (small model, CPU float32, no GPU accumulation error). Next: R-63 pass 2.
 
 **E-47 Bit-transition screen for exact model symmetries** (2026-10-29, I-174). STATUS: RUN 2026-10-29, SCREEN ONLY,
 KILL by the frozen rule. Package: `experiments/power_shaping_screen/` (rule in the README; the README and the result
@@ -6466,6 +6480,7 @@ proposed it and no acceptance is recorded.
 | D-69 | 2026-10-29 | After R-61: accept the KILL of I-173 (measured fusion selection) as a thesis direction. Do not run the conditional whole-step timing test unless the user wants to close the question formally (about $6 on one H100). Next: choose the thesis direction (D-13) | Recommendation (R-61). Not a decision | Both passes: the mechanism ships (Inductor custom-op autotuning, TensorRT-LLM AllReduceRunner), vLLM is removing the host path, E-46 per-range oracle gain about 0% | **Open, waiting on the user** |
 | D-70 | 2026-10-29 | D-13 options after R-61 (about 9 weeks before the January job): (A) write the thesis from the results we have (I-23 negative result O-01, O-02; validated fusion regression O-03; methods T-01 to T-06), about $0; (B) add a positive chapter: diagnose and fix the slow block-FP8 fused kernels (O-03) and, if time allows, the default-path quant (O-04), with upstream PRs, about $15 to $30; (C) a new frontier review, about $0 then GPU, low odds after R-10 to R-54 found no strong survivor; (D) revive an older WEAK idea (I-118 needs root, I-143 needs 2+ GPUs). Recommend A with B | Recommendation (main session). Not a decision | B fits the target-role gaps in 2.3 (CUDA kernels, profiling, roofline, FP8, vLLM internals); #43500 (norm+quant port) closed as stale, so the kernels stay in use; risk: Runpod containers may block ncu counters | Decided by the user 2026-10-29: option C now; A and B kept for later, partly after the job starts ("lets keep A and B for the the last minute ... lets try to search for a new idea") |
 | D-71 | 2026-10-29 | After R-62 (no survivor in the frontier resource areas): either start D-70 options A and B now, or, if the user still wants a new lead, run one preregistered measurement-first waste audit on a configuration this project has not profiled (for example MoE on B200 with NVFP4 and long context), GO only for a gap of 5% or more of step time that no shipped mechanism covers | Recommendation (R-62, both passes). Not a decision | Fifth broad pass with no survivor; E-36 profiles are the only search method that produced findings (O-03, O-04) | **Open, waiting on the user** |
+| D-72 | 2026-10-29 | The main goal now is to find a research gap or an optimization, not to solidify the findings. The thesis write-up (A) and the kernel fixes (B) can come later, with AI help, from the data we already have. Keep every finding written down so that the write-up needs no new runs | User ("for now our main goals is to find a research gap or optimization, and not to solidify our findings, we can do it later as well, just make sure everything is written") | Supersedes the open part of D-71 (A and B now) | Decided by the user 2026-10-29 |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6872,3 +6887,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   manual-fusion ports.
 - 2026-10-29: D-70 decided (user); R-62 frontier review; I-174 to I-180; E-47 screen (KILL); Section 7.28; D-71
   opened; O-07, O-08, T-07, L-08.
+- 2026-10-29: D-72 decided (user); E-42 and E-44 status words fixed (they said NOT RUN after the run); I-181
+  registered; E-48 screen (GO, FP8).
