@@ -200,7 +200,8 @@ maps every file to what it contains.
   the H100 run ($6). Correction (R-56): the fused path is about 1.3x slower at batch 8, not 2.5x.
   E-44 RUN 2026-10-29 (about $2.20 with the L4 rehearsal): INCONCLUSIVE by the frozen rule; fusions off are 3% to 5%
   faster end to end on the deep_gemm backend; the default engine is not affected. Boot watchdog rehearsal PASS.
-  0 thesis Pods, 0 volumes. Next: E-44 post-run review; then the user decides on a vLLM issue (outward-facing).
+  0 thesis Pods, 0 volumes. R-57 done (CONFIRM_WITH_SCOPE_LIMITS). Next: the user decides between a vLLM issue now
+  (outward-facing) and a short follow-up for the cause (nsys/ncu, second model, cutlass) first.
 - Latest (2026-10-28, cloud session): E-43 ran (D-66 decided by the user). Frozen decision GO, with no margin:
   slime (fully async mode), OpenRLHF (partial rollout) and PipelineRL keep state across a weight update
   without per-token version records or a check. Scope limits: vLLM and SGLang already emit per-token version
@@ -5560,6 +5561,10 @@ Write-up: `dossier/FRONTIER_R-54_2026-10-28.md`.
 kernel left out), CUDA-graph kernel timing, compile-cache bypass for the match table, base64 boot watchdog, caps.
 Write-up: `dossier/REVIEW_E-44_PRERUN_2026-10-28.md`.
 
+**R-57 Sonnet post-run review of E-44** (2026-10-29). CONFIRM_WITH_SCOPE_LIMITS. Bounds recomputed; the norm fusion
+did fire; in the model the fused CUDA kernels cost more than the Inductor kernels they replace; the kernel benchmark
+does not predict the in-model cost; scope limited to this setup. Write-up: `dossier/REVIEW_E-44_POSTRUN_2026-10-29.md`.
+
 **R-55 Sonnet review of E-43** (2026-10-28). AMEND. The GO stands; 14 of 15 first-version rows confirmed. Fixes:
 slime default row (nothing in flight), verl v1 and vLLM `wait` rows, two citations, the SGLang flush qualifier,
 and logprob qualifiers (`raw_logprobs` default, AReaL reads per-token versions in its loss, recipes use rollout
@@ -6738,3 +6743,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-28: I-172 optimization lead (block-FP8 quant fusion not firing on the H100 DeepGEMM path).
 - 2026-10-28: E-44 predeclared and amended (A1), R-56; boot-watchdog generator `experiments/runpod/pod_cmd.py`.
 - 2026-10-29: E-44 result INCONCLUSIVE (fusions off 3% to 5% faster on deep_gemm); boot watchdog rehearsal PASS.
+- 2026-10-29: R-57 (E-44 post-run review).

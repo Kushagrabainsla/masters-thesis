@@ -135,3 +135,10 @@ example scale layout copies or lost Inductor fusions). Not tested.
 Contribution path (INTERPRETATION): a vLLM issue with this paired data, then either a rule that turns the
 block-quant fusions off on sm90 for the affected backends, or a faster fused SiLU kernel at large token counts
 (after an ncu check of the launch configuration). cutlass, triton and the MoE cell are not measured end to end.
+
+## Post-run review R-57 (2026-10-29): CONFIRM_WITH_SCOPE_LIMITS
+Corrections to the Result: the norm fusion did fire (the match table omits it; logging artifact). The in-model fused
+SiLU kernel (19.7 us at batch 64) is much slower than in the kernel benchmark (5.8 us), so the benchmark does not
+predict the in-model cost; the D2 comparator is Inductor Triton kernels, not plain CUDA ops. Scope: "default users are
+not affected" holds only for Qwen3-8B-FP8, vLLM v0.32.0, H100 and the FlashInfer DeepGEMM default. Write-up:
+`dossier/REVIEW_E-44_POSTRUN_2026-10-29.md`.
