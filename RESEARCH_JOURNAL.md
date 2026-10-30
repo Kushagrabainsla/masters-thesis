@@ -213,7 +213,10 @@ maps every file to what it contains.
   layers (640 of 1,024 values per head and token, exact, 37.5% fewer global KV bytes); no engine found that stores
   it once. E-49 (decode context sweep on 1 x H100) predeclared, then amended A1 after R-64 (Sonnet,
   AMEND_THEN_RUN: 2 blockers, 7 more fixes, 7 optional items adopted); 20 tests pass. D-74 (spend: RTX 4090
-  rehearsal cap $0.60, then H100 cap $6) is open, waiting on the user. No spend; 0 thesis Pods, 0 volumes.
+  rehearsal cap $0.60, then H100 cap $6) decided by the user ("Approve both"). S5 rehearsal PASS on an RTX 4090
+  (about $0.21). The H100 run did not start: the live balance check failed after the rehearsal, because another
+  project's H200 Pod spends about $5.30/h on the shared account. Next: the user adds funds, then S6 (H100).
+  0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1578,6 +1581,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   the default prefill chunk can preempt the 31B cells at 32K and 64K. A1 applied all 9
                   required fixes and 7 optional items; 20 tests pass. No spend.
                   Source: dossier/REVIEW_E-49_PRERUN_2026-10-29.md. Ideas: I-182. Experiments: E-49.
+2026-10-30  [P10] D-74 decided by the user ("Approve both"). S5 rehearsal on an RTX 4090 (E2B, Triton):
+                  PASS, about $0.21. Exploratory: the sliding-layer attention on Triton grows 2.8 times
+                  from 2K to 32K. The H100 run (S6) did not start: the balance check failed after the
+                  rehearsal (another project's Pod on the shared account).
+                  Source: experiments/gemma4_kv_audit/README.md Section 12. Ideas: I-182. Experiments: E-49.
 ```
 
 ---
@@ -4893,7 +4901,7 @@ faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cu
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
 
 **E-49 Gemma 4 decode waste audit and the K=V cache lead** (predeclared 2026-10-29, I-182). STATUS: PREDECLARED,
-AMENDED A1 (2026-10-30, R-64, before any data), NOT RUN. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
+AMENDED A1 (2026-10-30, R-64, before any data), S5 REHEARSAL PASS (2026-10-30, RTX 4090, about $0.21), H100 NOT RUN. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
 (digest f255c4fa, commit 3966924d) on 1 x H100 SXM, what share S of decode step time would a compact K=V cache save
 at 32K and 64K context? Method: decode-only engine steps over a context sweep (2K, 8K, 32K, 64K) at fixed batch
 (31B FP8 batch 4, 26B-A4B BF16 batch 8); the slope b of T(L) is the global attention; S = 0.375 b_low L / T(L). Rule
@@ -4909,6 +4917,10 @@ most 1.15 x copy) and no copy bandwidth is INVALID; V3 residuals 5% plus the cur
 bound; status ok_slope, the second model needs 15 min, failed output kept; one exploratory 16K cell per model. S is
 an upper bound for the saving. Time 45 to 55 min, cap unchanged. Tests: 20 pass (fake-engine loop, real kernel
 names, clean-copy stub session, failed run, time cap, rerun).
+S5 (2026-10-30, Pod vbfqjtlowdrfoa, EU-RO-1, E2B on Triton, 14 min): every VERIFY item passed with no code change
+(text-only mode, scheduler checks, layer split 280 groups, AUTO_STOP, 49 checksums). The profile wall was 2.0 times
+the block median, so R1 was real. Exploratory: on Triton the sliding-layer attention grows from 0.39 to 1.09 ms
+per step between 2K and 32K (V4c false). S6 did not start: the live balance check failed after the rehearsal.
 
 **E-48 LM-head exactness screen** (2026-10-29, I-181). STATUS: RUN 2026-10-29, SCREEN ONLY, GO for design 1 (FP8)
 by the frozen rule (rule in the README; same-commit caveat as E-47). No GPU, no spend (Mac CPU, about 3 minutes).
@@ -6610,7 +6622,7 @@ proposed it and no acceptance is recorded.
 | D-71 | 2026-10-29 | After R-62 (no survivor in the frontier resource areas): either start D-70 options A and B now, or, if the user still wants a new lead, run one preregistered measurement-first waste audit on a configuration this project has not profiled (for example MoE on B200 with NVFP4 and long context), GO only for a gap of 5% or more of step time that no shipped mechanism covers | Recommendation (R-62, both passes). Not a decision | Fifth broad pass with no survivor; E-36 profiles are the only search method that produced findings (O-03, O-04) | **Open, waiting on the user** |
 | D-72 | 2026-10-29 | The main goal now is to find a research gap or an optimization, not to solidify the findings. The thesis write-up (A) and the kernel fixes (B) can come later, with AI help, from the data we already have. Keep every finding written down so that the write-up needs no new runs | User ("for now our main goals is to find a research gap or optimization, and not to solidify our findings, we can do it later as well, just make sure everything is written") | Supersedes the open part of D-71 (A and B now) | Decided by the user 2026-10-29 |
 | D-73 | 2026-10-29 | After R-63: the profile-mining method found a real optimization (I-181), but another group already has it as an open vLLM PR. Next search step: one preregistered waste audit on a model class the engines have tuned least (for example a hybrid linear-attention model such as Qwen3-Next, or MoE with sparse attention, on H100 or B200), GO only for a gap of 5% or more of step time that no shipped or open-PR mechanism covers; check open PRs in pass 1 | Recommendation (R-63). Not a decision. GPU spend needs the user's approval and a live balance check | Profile mining is the only method here that found real waste (O-03, O-04, I-181) | Planning approved by the user 2026-10-29 ("Yes, plan it"); the spend is D-74 |
-| D-74 | 2026-10-29 | Run E-49 (Gemma 4 K=V cache audit, I-182) after its pre-run review: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM Secure at $3.99/h (cap $6). Updated 2026-10-30: R-64 done, A1 applied, about 45 to 55 min on the H100 | Recommendation (main session). Not a decision. Needs the user's spend approval and a live balance check | D-73 planning was approved; pass 1 moved the target from hybrid recurrent models (crowded) to Gemma 4 | **Open, waiting on the user** |
+| D-74 | 2026-10-29 | Run E-49 (Gemma 4 K=V cache audit, I-182) after its pre-run review: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM Secure at $3.99/h (cap $6). Updated 2026-10-30: R-64 done, A1 applied, about 45 to 55 min on the H100 | Recommendation (main session). Not a decision. Needs the user's spend approval and a live balance check | D-73 planning was approved; pass 1 moved the target from hybrid recurrent models (crowded) to Gemma 4 | **Decided by the user 2026-10-30** ("Approve both": the rehearsal cap $0.60 and the H100 cap $6); live balance check ok |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7022,3 +7034,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: D-73 planning: I-182 registered (Section 5.27); E-49 predeclared; Section 7.30; D-74 opened.
 - 2026-10-30: R-64 (E-49 pre-run review, AMEND_THEN_RUN) in Section 6.2; E-49 A1 (Section 6.1, 20 tests pass);
   Section 1 header and line; Section 3 row I-182; Section 4 entry; Section 5.27; Section 7.30 rows; D-74 updated.
+- 2026-10-30: D-74 decided by the user; E-49 S5 rehearsal PASS (Section 6.1, README Section 12, ledger, hardware
+  log); S6 waits for the balance check; Section 1 line; Section 4 entry.

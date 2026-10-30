@@ -1,6 +1,7 @@
 # E-49: Gemma 4 decode waste audit and the K=V cache lead on 1 x H100 (preregistration)
 
-Status: PREDECLARED 2026-10-29. AMENDED A1 2026-10-30 (R-64 pre-run review, before any data). NOT RUN.
+Status: PREDECLARED 2026-10-29. AMENDED A1 2026-10-30 (R-64 pre-run review, before any data). S5 rehearsal PASS
+2026-10-30. S6 (H100) not started: the live balance check failed after the rehearsal (other spend on the shared account).
 Idea: I-182. Journal entry: Section 6.1 E-49. Review: R-64 (`dossier/REVIEW_E-49_PRERUN_2026-10-29.md`).
 Request: D-73 (user, 2026-10-29: "Yes, plan it"): one profiling test on a new model type.
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics unless a source is given.
@@ -205,7 +206,18 @@ second pass-2 prior-work search and a review. It is not a speed claim.
   curvature fails M2; the probe loop on a fake engine (timing, advance, scheduler check, preempted cell, abort);
   a stub session from a clean copy; a failed run, the time cap for the second model and a rerun that keeps the
   failed output.
-- S5 (to do): RTX 4090 rehearsal, 20 to 30 min, image above, `ONLY=m31`, `M31` and `M26` set to
+- S5 (2026-10-30, RTX 4090, EU-RO-1, Pod vbfqjtlowdrfoa, 14 min, about $0.21): PASS, no code change needed.
+  vLLM 0.33.0rc1.dev229+g3966924d5 started; `run.json` ok; the log has the text-only line, the KV size
+  (1,245,498 tokens) and "FA4 not available, forcing TRITON_ATTN"; `run.json` has the KV groups and 35 layer types;
+  all 10 cells ok, the scheduler check ok, every block advanced 32 tokens; the Triton attention kernels
+  (`kernel_unified_attention`, `reduce_segments`) match and the KV write (`reshape_and_cache_kernel_flash`) is
+  excluded; the layer split is ok at 2K, 32K and 64K (280 groups = 8 x 35, match 1.0); GSM8K 59%; the analysis
+  ran (INVALID as expected: V1, and V5 uses the 31B byte constants); AUTO_STOP stopped the Pod; 49 files copied
+  with matching checksums. The profile wall per step was 2.0 times the block median at 2K, so R1 was a real
+  blocker. Exploratory (E2B on Triton, not a decision): the sliding-layer attention grows from 0.39 to 1.09 ms per
+  step between 2K and 32K and stays flat to 64K (V4c false; S_prof 0.078 against S 0.087 at 32K). The global
+  attention grows 1.96 ms per 32K tokens, about the copy bandwidth for the E2B byte count (INTERPRETATION).
+- S5 plan (as run): RTX 4090 rehearsal, 20 to 30 min, image above, `ONLY=m31`, `M31` and `M26` set to
   `google/gemma-4-E2B-it` revision 3e22461f65e89153144f8adb70e3b8c2cc9845a7 (10.2 GB; no K=V layers; it tests
   the mechanics only), boot watchdog CAP 1,800 s, `AUTO_STOP=1`. VERIFY:
   - the image starts and `import vllm` works; `decode_probe.py` ends with an ok `run.json`;
