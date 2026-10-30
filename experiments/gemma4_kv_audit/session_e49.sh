@@ -1,23 +1,26 @@
 #!/bin/sh
-# E-49 session (README Sections 4 to 9): version and hardware record, telemetry, copy bandwidth, two model
-# downloads, GSM8K prompts, then decode_probe.py for m31 (Gemma 4 31B FP8) and m26 (Gemma 4 26B-A4B BF16),
-# then the frozen analysis. Same safety as E-46: session watchdog, a new-work cap, per-run timeout and
+# E-49 session (README Sections 4 to 9 and Amendment A1): version and hardware record, telemetry, copy bandwidth,
+# two model downloads, GSM8K prompts, then decode_probe.py for m31 (Gemma 4 31B FP8) and m26 (Gemma 4 26B-A4B
+# BF16), then the frozen analysis. Same safety as E-46: session watchdog, a new-work cap, per-run timeout and
 # AUTO_STOP. The Pod start command adds the boot watchdog (experiments/runpod/pod_cmd.py).
-# STUB=1 runs the same flow on a Mac with synthetic probe outputs (no GPU, no vLLM).
+# STUB=1 runs the same flow on a Mac with synthetic probe outputs (no GPU, no vLLM). STUB_FAIL="m31" makes that
+# stub probe fail. ONLY="m31" runs one model (the rehearsal).
 set -u
 CODE=${CODE:-/workspace/code}
 E49=$CODE/gemma4_kv_audit
 RES=${RES:-/workspace/results/e49}
 STUB=${STUB:-0}
+ONLY=${ONLY:-m31 m26}
 M31=${M31:-RedHatAI/gemma-4-31B-it-FP8-dynamic}
 R31=${R31:-d4ab4f579dd3516f97d8a6a4c98d0653480bad15}
 M26=${M26:-google/gemma-4-26B-A4B-it}
 R26=${R26:-4d7ae4984b7db7de8f8457170b3f1a419ee76d52}
-C31=${C31:-2048:4,8192:4,32768:4,65536:4}
-C26=${C26:-2048:8,8192:8,32768:8,65536:8}
-W=${W:-1024:1,1024:8,1024:32}
-P31=${P31:-2048:4,32768:4,1024:1,1024:8,1024:32}
-P26=${P26:-2048:8,32768:8,1024:1,1024:8,1024:32}
+C31=${C31:-2048:4,8192:4,32768:4,65536:4,65536:4:1,32768:4:1}
+C26=${C26:-2048:8,8192:8,32768:8,65536:8,65536:8:1,32768:8:1}
+W31=${W31:-1024:1,1024:8,1024:32,16384:8}
+W26=${W26:-1024:1,1024:8,1024:32,16384:16}
+P31=${P31:-2048:4,32768:4,65536:4,1024:1,1024:8,1024:32}
+P26=${P26:-2048:8,32768:8,65536:8,1024:1,1024:8,1024:32}
 PROBE_ARGS=${PROBE_ARGS:-}
 PROBE_TIMEOUT=${PROBE_TIMEOUT:-1500}
 NEW_RUN_CAP=${NEW_RUN_CAP:-3300}        # no new work after 55 min
@@ -40,7 +43,7 @@ mkdir -p "$RES"; START=$(date +%s); STAMP=$(date -u +%Y%m%dT%H%M%SZ)
 elapsed() { echo $(( $(date +%s) - START )); }
 capped() { [ $(( $(elapsed) + ${1:-0} )) -ge "$NEW_RUN_CAP" ]; }
 log() { printf '%s %s\n' "$(date -u +%H:%M:%S)" "$*" | tee -a "$RES/session.log"; }
-done_ok() { [ -f "$1/run.json" ] && grep -q '"status": "ok"' "$1/run.json"; }
+done_ok() { [ -f "$1/run.json" ] && grep -Eq '"status": "(ok|ok_slope)"' "$1/run.json"; }
 stop_pod() {
     [ "$AUTO_STOP" = 1 ] && [ -n "${RUNPOD_POD_ID:-}" ] && [ -n "${RUNPOD_API_KEY:-}" ] || return 0
     python3 -c "
@@ -79,8 +82,10 @@ from huggingface_hub import snapshot_download
 for m, r in zip(sys.argv[1::2], sys.argv[2::2]):
     print(m, r, snapshot_download(m, revision=r), flush=True)
 " "$M31" "$R31" "$M26" "$R26" > "$ENV/models.txt" 2>&1 || log "WARNING: model download failed"
+    # The GSM8K chat template comes from the pinned m31 snapshot (R-64 O8).
+    TOK=$(awk -v m="$M31" '$1 == m {print $3}' "$ENV/models.txt" | tail -1); [ -d "$TOK" ] || TOK=$M31
     P="$RES/gsm8k"
-    [ -f "$P/gsm8k.json" ] || python3 "$CODE/safedispatch_testA2/gsm8k.py" --tokenizer "$M31" --out "$P" > "$ENV/gsm8k.log" 2>&1 || { log "gsm8k failed"; exit 1; }
+    [ -f "$P/gsm8k.json" ] || python3 "$CODE/safedispatch_testA2/gsm8k.py" --tokenizer "$TOK" --out "$P" > "$ENV/gsm8k.log" 2>&1 || { log "gsm8k failed"; exit 1; }
     python3 "$CODE/runpod/gpu_microbench.py" --out "$ENV/microbench_start.json" > /dev/null 2>&1
     { python3 -c "import vllm, torch; print('vllm', vllm.__version__); print('torch', torch.__version__)"
       echo "VLLM_BUILD_COMMIT=${VLLM_BUILD_COMMIT:-unset}"; } > "$RES/versions.txt" 2>&1
@@ -88,22 +93,36 @@ for m, r in zip(sys.argv[1::2], sys.argv[2::2]):
 fi
 log "setup done after $(elapsed) s; versions: $(tr '\n' ' ' < "$RES/versions.txt")"
 
-probe() {  # $1 key, $2 model, $3 revision, $4 slope cells, $5 profile cells; skip ok runs; log every exit code
+gpu_free() {  # wait up to 180 s until the GPU has less than 2 GiB in use (R-64 R8)
+    [ "$STUB" = 1 ] && return 0
+    i=0; used=""
+    while [ $i -lt 36 ]; do
+        used=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | head -1 | tr -d ' ')
+        [ -n "$used" ] && [ "$used" -lt 2048 ] && { log "GPU free ($used MiB in use)"; return 0; }
+        sleep 5; i=$((i + 1))
+    done
+    log "WARNING: GPU still has ${used:-?} MiB in use"
+}
+probe() {  # $1 key, $2 model, $3 revision, $4 slope cells, $5 waste cells, $6 profile cells, $7 s of work needed
     out=$RES/$1
+    case " $ONLY " in *" $1 "*) ;; *) log "$1: not selected"; return;; esac
     done_ok "$out" && { log "$1: ok before, skip"; return; }
-    capped && { log "time cap: skip $1"; return; }
-    rm -rf "$out"; mkdir -p "$out"
+    capped "$7" && { log "time cap: skip $1"; return; }
+    [ -e "$out" ] && mv "$out" "$out.failed.$(date -u +%Y%m%dT%H%M%SZ)"   # keep partial raw data (R-64 R8)
+    mkdir -p "$out"
     if [ "$STUB" = 1 ]; then
-        python3 "$E49/decode_probe.py" --stub --model "$2" --out "$out" --cells "$4" --waste-cells "$W" --profile-cells "$5" $PROBE_ARGS > "$out/probe_stdout.txt" 2>&1; rc=$?
+        fail=""; case " ${STUB_FAIL:-} " in *" $1 "*) fail=--stub-fail;; esac
+        python3 "$E49/decode_probe.py" --stub $fail --model "$2" --out "$out" --cells "$4" --waste-cells "$5" \
+            --profile-cells "$6" $PROBE_ARGS > "$out/probe_stdout.txt" 2>&1; rc=$?
     else
         timeout -k 30 "$PROBE_TIMEOUT" python3 "$E49/decode_probe.py" --model "$2" --revision "$3" --out "$out" \
-            --gsm8k "$RES/gsm8k/gsm8k.json" --cells "$4" --waste-cells "$W" --profile-cells "$5" $PROBE_ARGS > "$out/log.txt" 2>&1; rc=$?
+            --gsm8k "$RES/gsm8k/gsm8k.json" --cells "$4" --waste-cells "$5" --profile-cells "$6" $PROBE_ARGS > "$out/log.txt" 2>&1; rc=$?
     fi
     log "$1: exit $rc after $(elapsed) s"
-    sleep 5
+    gpu_free
 }
-probe m31 "$M31" "$R31" "$C31" "$P31"
-probe m26 "$M26" "$R26" "$C26" "$P26"
+probe m31 "$M31" "$R31" "$C31" "$W31" "$P31" 0
+probe m26 "$M26" "$R26" "$C26" "$W26" "$P26" 900    # the second model needs 15 min before the cap
 [ "$STUB" = 1 ] || python3 "$CODE/runpod/gpu_microbench.py" --out "$ENV/microbench_end.json" > /dev/null 2>&1
 [ -n "$TEL" ] && kill "$TEL" 2>/dev/null
 python3 "$E49/analyze_e49.py" --res "$RES" --out "$RES/summary.json" > "$RES/decision.txt" 2>&1 || true

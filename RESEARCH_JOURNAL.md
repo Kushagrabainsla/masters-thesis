@@ -184,7 +184,7 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-28, after E-43 (I-165 source audit) and R-55.** Rewrite this section every session.
+**As of 2026-10-30, after R-64 (E-49 pre-run review) and E-49 amendment A1.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
 - Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
@@ -208,6 +208,12 @@ maps every file to what it contains.
   Keep every finding written down. Next: mine the existing GPU profiles (E-36, E-44, E-46) for waste at no cost.
   E-48 (free CPU screen, from our own profiles): I-181 exact LM head with an FP8 screen passed, but R-63 KILL: vLLM PR
   #60566 already builds it (gain about 1% to 3% on H100). D-73 (recommendation): one waste audit on a new model class.
+- Latest (2026-10-30): D-73 planning done (user: "Yes, plan it"). Pass 1 moved the target from hybrid
+  recurrent models (crowded: 96 open GDN PRs in vLLM) to Gemma 4. Lead I-182: a compact K=V cache for the global
+  layers (640 of 1,024 values per head and token, exact, 37.5% fewer global KV bytes); no engine found that stores
+  it once. E-49 (decode context sweep on 1 x H100) predeclared, then amended A1 after R-64 (Sonnet,
+  AMEND_THEN_RUN: 2 blockers, 7 more fixes, 7 optional items adopted); 20 tests pass. D-74 (spend: RTX 4090
+  rehearsal cap $0.60, then H100 cap $6) is open, waiting on the user. No spend; 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1120,7 +1126,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1 | `experiments/gemma4_kv_audit/README.md` |
 
 ---
 
@@ -1567,6 +1573,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   enough (the 37.5% the Gemma 4 report states). kv_layout_check.py: exact. E-49
                   predeclared, 9 tests pass. Live read: H100 SXM $3.99/h; balance check ok. No spend.
                   Source: experiments/gemma4_kv_audit/README.md. Ideas: I-182. Experiments: E-49.
+2026-10-30  [P10] R-64 (Sonnet) pre-run review of E-49: AMEND_THEN_RUN. The mechanism holds in four code
+                  bases. Blockers: the profile wall time has the profiler start (a false INVALID), and
+                  the default prefill chunk can preempt the 31B cells at 32K and 64K. A1 applied all 9
+                  required fixes and 7 optional items; 20 tests pass. No spend.
+                  Source: dossier/REVIEW_E-49_PRERUN_2026-10-29.md. Ideas: I-182. Experiments: E-49.
 ```
 
 ---
@@ -3614,11 +3625,17 @@ its kernels exist (DeepSeek, FlashMLA, FlashInfer MLA). Section 7.30.
 Exact surviving gap: no GPU serving engine found that realizes the 37.5% saving. Do not claim the saving or the layout
 as novel; the contribution is the engine mechanism (cache spec, kernel path) and its measured effect.
 Experiments: E-49 (predeclared 2026-10-29).
-Reviews: R-64 (pre-run, Sonnet).
+Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1.
 Research log: 2026-10-29: `kv_layout_check.py` shows the identity (float64 error 8e-15; BF16 cache error not above the
 standard layout). Byte model: 0.5% to 0.7% of decode bytes at 2K, 1.9% to 2.7% at 8K, 6.5% to 8.9% at 32K, 11% to
-14% at 64K (31B FP8 at batch 4, 26B-A4B BF16 at batch 8).
-Verdict history: 2026-10-29: MEASURE-FIRST (main session, before R-64).
+14% at 64K (31B FP8 at batch 4, 26B-A4B BF16 at batch 8). 2026-10-30: R-64 confirmed the mechanism (HF, vLLM,
+llama.cpp, DeepMind JAX, TRT-LLM agree: rotated dims 0..63 and 256..319, scale 1.0, no attention soft-cap). The
+layout is exact in real arithmetic, not in BF16 bits (median error 1.4% compact against 1.1% standard on heavy-
+tailed keys), so a prototype needs an accuracy gate. Competitor: FP8 or NVFP4 KV at head_dim 512 (lossy, 50% of
+all KV bytes, can stack). Prototype risk: the compact page (5,120 B per token and layer) does not match the
+sliding page (16,384 B) in the hybrid allocator.
+Verdict history: 2026-10-29: MEASURE-FIRST (main session, before R-64). 2026-10-30: MEASURE-FIRST kept (R-64:
+novelty low, the engine gap and its measured effect are the open item; likely outcome PIVOT or GO).
 Next step and kill rule: E-49 (Section 6.1). KILL if S < 2% in every deciding cell. A GO allows only a prototype plan.
 Lessons: read the model's own design report and the engine model code for savings the design promises; the hot
 kernel paths attract many engineers, but the cache layout of a new attention form can stay generic.
@@ -4876,7 +4893,7 @@ faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cu
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
 
 **E-49 Gemma 4 decode waste audit and the K=V cache lead** (predeclared 2026-10-29, I-182). STATUS: PREDECLARED,
-NOT RUN. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
+AMENDED A1 (2026-10-30, R-64, before any data), NOT RUN. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
 (digest f255c4fa, commit 3966924d) on 1 x H100 SXM, what share S of decode step time would a compact K=V cache save
 at 32K and 64K context? Method: decode-only engine steps over a context sweep (2K, 8K, 32K, 64K) at fixed batch
 (31B FP8 batch 4, 26B-A4B BF16 batch 8); the slope b of T(L) is the global attention; S = 0.375 b_low L / T(L). Rule
@@ -4885,6 +4902,13 @@ kernels explain at least 80% of the growth) and each valid model has one; KILL i
 Validity V1 to V8 (H100, decode only, linearity within 3%, growth on the GPU, GSM8K >= 50%, block spread, telemetry).
 Exploratory: the waste table (kernel classes, idle share) at 1K context, batch 1, 8, 32. Budget: H100 $3.99/h (live
 read), about 40 min, cap $6; RTX 4090 rehearsal cap $0.60 (no L4 stock with CUDA 13). Tests: 9 pass; stub session ok.
+A1 (R-64): prefill chunk 2,048 and a scheduler check per cell (no preemption); text-only mode (video 0, check V9);
+replicate 32K and 64K cells and a cell-level bound (df 4); V4a from unprofiled block medians; kernel events and a
+layer split from the launch order with the sliding-layer control V4c and S_prof; positive control V5 (bandwidth at
+most 1.15 x copy) and no copy bandwidth is INVALID; V3 residuals 5% plus the curvature gate M2; KILL on the upper
+bound; status ok_slope, the second model needs 15 min, failed output kept; one exploratory 16K cell per model. S is
+an upper bound for the saving. Time 45 to 55 min, cap unchanged. Tests: 20 pass (fake-engine loop, real kernel
+names, clean-copy stub session, failed run, time cap, rerun).
 
 **E-48 LM-head exactness screen** (2026-10-29, I-181). STATUS: RUN 2026-10-29, SCREEN ONLY, GO for design 1 (FP8)
 by the frozen rule (rule in the README; same-commit caveat as E-47). No GPU, no spend (Mac CPU, about 3 minutes).
@@ -5704,6 +5728,19 @@ too small in our measured regime, or not testable without fleet data. Our teleme
 this serving regime: removing the cap gains at most 0.65% (E-44) to 2.4% (E-46). Both passes: D-70 options A and B
 remain the best use of the time. Write-up: `dossier/FRONTIER_R-62_2026-10-29.md`.
 
+**R-64 Pre-run review of E-49 (Gemma 4 K=V cache audit, I-182)** (2026-10-29 to 30, Sonnet, a different model
+from the author; hostile review with fresh searches and source reading). AMEND_THEN_RUN. The mechanism holds in HF,
+vLLM, llama.cpp, TRT-LLM and the DeepMind JAX code; 37.5% = 1 - 640 / 1,024; the 9 tests and the layout check
+reproduce. Pass 2 found no engine or paper that stores the Gemma 4 K=V cache once (closest: GTA, arXiv 2505.21487,
+as an architecture; FP8 and NVFP4 KV at head_dim 512 are the lossy competitor). Required fixes R1 to R9: two
+blockers (the profile wall time has the profiler start, so V4a could fail on good data; the default prefill chunk
+16,384 can preempt the 31B cells at 32K and 64K), text-only mode needs video 0, the rehearsal GPU runs Triton not
+FA4, the block-level bound covered the true slope in only 74% of simulated trials, the promised sliding-layer
+control was not coded, the positive control was one-sided, partial runs were not salvaged, the upload list was
+missing. The main session applied all nine and seven of eight optional items as E-49 A1 (O7, an H100 smoke run,
+not adopted: it costs about as much as the failure it guards against). Write-up:
+`dossier/REVIEW_E-49_PRERUN_2026-10-29.md`.
+
 **R-63 Novelty and design check of I-181 (exact LM head with a low-precision screen)** (2026-10-29, main-session pass 1
 with the free E-48 screen, Sonnet pass 2 with fresh searches). KILL. The idea came from our own E-36 and E-46 profiles
 (the BF16 head is 9% to 10% of decode time at small batch). The main session read vLLM PR #60566 "Screened lm_head"
@@ -6281,6 +6318,11 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | vLLM PR #60674 | 2026-10-08, open | Fused Triton kernels for Gemma 4 QKV norm and RoPE, norms, PLE, routing | Adjacent (small kernels) | search-only (title) |
 | SGLang `gemma4_causal.py`; TensorRT-LLM `modeling_gemma4.py` | 2026-10-29 | Both store full K and V for global layers | The gap is in every engine checked | full-text (attention and KV spec parts) |
 | llama.cpp `conversion/gemma.py` | 2026-10-29 | Standard head counts; no K=V cache path found | No implementation found | checked |
+| GTA, Zadouri, Strauss, Dao, arXiv 2505.21487 | 2025-05-27 | Tied KV plus a separate RoPE half, about half the cache, trained from scratch; kernels only for MLA and GLA | Same layout family as an architecture; no Gemma 4 engine path | doc-only (R-64 read it) |
+| vLLM PR #60372, #62117 (open), #53175 (merged); FlashInfer PR #3652, #5720, #6445 | 2026-06 to 10 | FP8 or NVFP4 KV at head_dim 512 | The lossy competitor (50% of all KV bytes); can stack with the compact cache | doc-only (R-64 read them) |
+| vLLM PR #38835 (merged) | 2026-04-02 | Enables head_dim 512 on SM90 with FA4 | The E-49 baseline path | doc-only (R-64 read it) |
+| vLLM issue #49878 (open) | 2026-07-26 | Hybrid KV sizing for Gemma 4 (page and groups) | Input to the E-49 memory budget | doc-only (R-64 read it) |
+| google-deepmind/gemma `_modules.py`; litert-torch `patch.py` | 2026-10-28/29 | Separate 'k' and 'v' caches; the on-device export updates both | No implementation found | doc-only (R-64 read them) |
 
 ---
 
@@ -6568,7 +6610,7 @@ proposed it and no acceptance is recorded.
 | D-71 | 2026-10-29 | After R-62 (no survivor in the frontier resource areas): either start D-70 options A and B now, or, if the user still wants a new lead, run one preregistered measurement-first waste audit on a configuration this project has not profiled (for example MoE on B200 with NVFP4 and long context), GO only for a gap of 5% or more of step time that no shipped mechanism covers | Recommendation (R-62, both passes). Not a decision | Fifth broad pass with no survivor; E-36 profiles are the only search method that produced findings (O-03, O-04) | **Open, waiting on the user** |
 | D-72 | 2026-10-29 | The main goal now is to find a research gap or an optimization, not to solidify the findings. The thesis write-up (A) and the kernel fixes (B) can come later, with AI help, from the data we already have. Keep every finding written down so that the write-up needs no new runs | User ("for now our main goals is to find a research gap or optimization, and not to solidify our findings, we can do it later as well, just make sure everything is written") | Supersedes the open part of D-71 (A and B now) | Decided by the user 2026-10-29 |
 | D-73 | 2026-10-29 | After R-63: the profile-mining method found a real optimization (I-181), but another group already has it as an open vLLM PR. Next search step: one preregistered waste audit on a model class the engines have tuned least (for example a hybrid linear-attention model such as Qwen3-Next, or MoE with sparse attention, on H100 or B200), GO only for a gap of 5% or more of step time that no shipped or open-PR mechanism covers; check open PRs in pass 1 | Recommendation (R-63). Not a decision. GPU spend needs the user's approval and a live balance check | Profile mining is the only method here that found real waste (O-03, O-04, I-181) | Planning approved by the user 2026-10-29 ("Yes, plan it"); the spend is D-74 |
-| D-74 | 2026-10-29 | Run E-49 (Gemma 4 K=V cache audit, I-182) after its pre-run review: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM Secure at $3.99/h (cap $6) | Recommendation (main session). Not a decision. Needs the user's spend approval and a live balance check | D-73 planning was approved; pass 1 moved the target from hybrid recurrent models (crowded) to Gemma 4 | **Open, waiting on the user** |
+| D-74 | 2026-10-29 | Run E-49 (Gemma 4 K=V cache audit, I-182) after its pre-run review: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM Secure at $3.99/h (cap $6). Updated 2026-10-30: R-64 done, A1 applied, about 45 to 55 min on the H100 | Recommendation (main session). Not a decision. Needs the user's spend approval and a live balance check | D-73 planning was approved; pass 1 moved the target from hybrid recurrent models (crowded) to Gemma 4 | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -6978,3 +7020,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-29: D-72 decided (user); E-42 and E-44 status words fixed (they said NOT RUN after the run); I-181
   registered; E-48 screen (GO, FP8); R-63 (KILL, vLLM PR #60566); Section 7.29; D-73 opened; O-09, L-09.
 - 2026-10-29: D-73 planning: I-182 registered (Section 5.27); E-49 predeclared; Section 7.30; D-74 opened.
+- 2026-10-30: R-64 (E-49 pre-run review, AMEND_THEN_RUN) in Section 6.2; E-49 A1 (Section 6.1, 20 tests pass);
+  Section 1 header and line; Section 3 row I-182; Section 4 entry; Section 5.27; Section 7.30 rows; D-74 updated.
