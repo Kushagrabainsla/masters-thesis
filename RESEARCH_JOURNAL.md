@@ -184,7 +184,7 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-30, after R-64 (E-49 pre-run review) and E-49 amendment A1.** Rewrite this section every session.
+**As of 2026-10-30, after the E-49 H100 run (frozen decision PIVOT); R-65 post-run review pending.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
 - Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
@@ -215,7 +215,11 @@ maps every file to what it contains.
   AMEND_THEN_RUN: 2 blockers, 7 more fixes, 7 optional items adopted); 20 tests pass. D-74 (spend: RTX 4090
   rehearsal cap $0.60, then H100 cap $6) decided by the user ("Approve both"). S5 rehearsal PASS on an RTX 4090
   (about $0.21). The H100 run did not start: the live balance check failed after the rehearsal, because another
-  project's H200 Pod spends about $5.30/h on the shared account. Next: the user adds funds, then S6 (H100).
+  project's H200 Pod spends about $5.30/h on the shared account. D-75 (user): a one-time $30 floor. E-49 RUN on 1 x H100 (about $2.20):
+  frozen decision PIVOT (one model or one cell only). 31B FP8: S_low 6.5% at 32K and 11.1% at 64K, every control
+  passes (global attention at 1.03 x copy bandwidth, sliding flat on FA4). 26B-A4B: S 6.1% at 32K (bound 4.6%);
+  its 64K cells were lost because 5 of 8 requests ended after about 10 tokens (cause not proven). D-76
+  (recommendation, open): after R-65, a prototype plan for the dense model and a small m26 64K follow-up.
   0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
@@ -1129,7 +1133,8 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1 | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B S_low 6.5% at 32K, 11.1% at 64K, all controls pass; 26B 64K cells lost, 32K bound 4.6%) | `experiments/gemma4_kv_audit/README.md` |
+| I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
 
@@ -1586,6 +1591,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   from 2K to 32K. The H100 run (S6) did not start: the balance check failed after the
                   rehearsal (another project's Pod on the shared account).
                   Source: experiments/gemma4_kv_audit/README.md Section 12. Ideas: I-182. Experiments: E-49.
+2026-10-30  [P10] D-75 (user): one-time $30 balance floor. E-49 RUN on 1 x H100: PIVOT (one model or one
+                  cell only). 31B FP8: the duplicated K=V cache costs at least 6.5% (32K) to 11.1% (64K)
+                  of decode time as an upper-bound saving, all controls pass. 26B: 64K cells lost to early
+                  request ends. I-183 registered (Triton sliding attention, from the rehearsal). D-76 opened.
+                  Source: experiments/gemma4_kv_audit/README.md Section 13. Ideas: I-182, I-183. Experiments: E-49.
 ```
 
 ---
@@ -3644,9 +3654,26 @@ all KV bytes, can stack). Prototype risk: the compact page (5,120 B per token an
 sliding page (16,384 B) in the hybrid allocator.
 Verdict history: 2026-10-29: MEASURE-FIRST (main session, before R-64). 2026-10-30: MEASURE-FIRST kept (R-64:
 novelty low, the engine gap and its measured effect are the open item; likely outcome PIVOT or GO).
+2026-10-30: E-49 PIVOT by the frozen rule (one model or one cell only). The 31B result is clean: the compact
+cache could save at most 6.5% (32K) to 11.1% (64K) of decode step time at batch 4 (lower bounds; S is an upper
+bound for the real saving). Status stays MEASURE-FIRST until R-65 and D-76.
 Next step and kill rule: E-49 (Section 6.1). KILL if S < 2% in every deciding cell. A GO allows only a prototype plan.
 Lessons: read the model's own design report and the engine model code for savings the design promises; the hot
 kernel paths attract many engineers, but the cache layout of a new attention form can stay generic.
+
+### 5.28 I-183 Triton sliding-window decode attention at long context
+Status: MEASURE-FIRST   Confidence in gap: low (one exploratory measurement, cause not checked)   Aliases: none
+Origin: 2026-10-30, the E-49 S5 rehearsal (RTX 4090, Gemma 4 E2B, TRITON_ATTN because FA4 needs SM90 or newer).
+Problem (FACT, layer split from launch order): the sliding-layer attention takes 0.39 ms per step at 2K context and
+1.09 ms at 32K and 64K (batch 4, window 512, 1 KV head). The sliding layers read the same window at every context,
+so the bytes do not grow. On the H100 with FA4 the sliding attention stayed flat (E-49 V4c, -2% to -3.5%).
+HYPOTHESIS: the Triton split-KV kernel sizes its segments from the full sequence length, so at long context the
+window falls into one segment and the kernel loses parallelism.
+Why it may matter: A100, L4 and RTX GPUs run Gemma 4 on TRITON_ATTN in vLLM (FA4 not available).
+Next step: read the Triton unified attention launch code; measure one dense Gemma 4 model on an L4 or A100 only
+if the code confirms the cause and no open PR covers it (L-09). Kill: an open PR fixes it, or the effect is below
+2% of step time at batch 8 or more.
+Experiments: E-49 rehearsal (exploratory). Reviews: none yet.
 
 ---
 
@@ -4901,7 +4928,7 @@ faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cu
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
 
 **E-49 Gemma 4 decode waste audit and the K=V cache lead** (predeclared 2026-10-29, I-182). STATUS: PREDECLARED,
-AMENDED A1 (2026-10-30, R-64, before any data), S5 REHEARSAL PASS (2026-10-30, RTX 4090, about $0.21), H100 NOT RUN. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
+AMENDED A1 (2026-10-30, R-64, before any data), S5 REHEARSAL PASS (2026-10-30, RTX 4090, about $0.21), RUN 2026-10-30 (H100, about $2.20): PIVOT. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
 (digest f255c4fa, commit 3966924d) on 1 x H100 SXM, what share S of decode step time would a compact K=V cache save
 at 32K and 64K context? Method: decode-only engine steps over a context sweep (2K, 8K, 32K, 64K) at fixed batch
 (31B FP8 batch 4, 26B-A4B BF16 batch 8); the slope b of T(L) is the global attention; S = 0.375 b_low L / T(L). Rule
@@ -4920,7 +4947,16 @@ names, clean-copy stub session, failed run, time cap, rerun).
 S5 (2026-10-30, Pod vbfqjtlowdrfoa, EU-RO-1, E2B on Triton, 14 min): every VERIFY item passed with no code change
 (text-only mode, scheduler checks, layer split 280 groups, AUTO_STOP, 49 checksums). The profile wall was 2.0 times
 the block median, so R1 was real. Exploratory: on Triton the sliding-layer attention grows from 0.39 to 1.09 ms
-per step between 2K and 32K (V4c false). S6 did not start: the live balance check failed after the rehearsal.
+per step between 2K and 32K (V4c false). S6 did not start at first: the live balance check failed after the
+rehearsal; D-75 (user) set a one-time $30 floor.
+S6 (2026-10-30, Pod isqx3210lt056m, US-NE-1, session 20:01 to 20:22 UTC): both models exit 0. Frozen decision PIVOT
+(one model or one cell only). m31: S 6.65% at 32K (S_low 6.53%) and 11.33% at 64K (S_low 11.14%), S_prof 6.9% and
+11.4%; every check and gate passes (global attention 1.03 x copy bandwidth; attention 98.6% of the growth; sliding
+-2% to -3.5%; linear within 0.31%). m26: S 6.09% at 32K (S_low 4.56%, 4 cells, df 2); both 64K cells left out
+because 5 of 8 requests ended after about 10 tokens (the guard labelled them "preempted"; the label is wrong;
+HYPOTHESIS: an end token of the generation config). Exploratory: GPU idle per step below 1% (m31) and 4% to 7%
+(m26). The monitor lost SSH before AUTO_STOP; a 3 min restart copied the results (65 files, checksums match).
+README Section 13. R-65 (post-run review) pending.
 
 **E-48 LM-head exactness screen** (2026-10-29, I-181). STATUS: RUN 2026-10-29, SCREEN ONLY, GO for design 1 (FP8)
 by the frozen rule (rule in the README; same-commit caveat as E-47). No GPU, no spend (Mac CPU, about 3 minutes).
@@ -6623,6 +6659,8 @@ proposed it and no acceptance is recorded.
 | D-72 | 2026-10-29 | The main goal now is to find a research gap or an optimization, not to solidify the findings. The thesis write-up (A) and the kernel fixes (B) can come later, with AI help, from the data we already have. Keep every finding written down so that the write-up needs no new runs | User ("for now our main goals is to find a research gap or optimization, and not to solidify our findings, we can do it later as well, just make sure everything is written") | Supersedes the open part of D-71 (A and B now) | Decided by the user 2026-10-29 |
 | D-73 | 2026-10-29 | After R-63: the profile-mining method found a real optimization (I-181), but another group already has it as an open vLLM PR. Next search step: one preregistered waste audit on a model class the engines have tuned least (for example a hybrid linear-attention model such as Qwen3-Next, or MoE with sparse attention, on H100 or B200), GO only for a gap of 5% or more of step time that no shipped or open-PR mechanism covers; check open PRs in pass 1 | Recommendation (R-63). Not a decision. GPU spend needs the user's approval and a live balance check | Profile mining is the only method here that found real waste (O-03, O-04, I-181) | Planning approved by the user 2026-10-29 ("Yes, plan it"); the spend is D-74 |
 | D-74 | 2026-10-29 | Run E-49 (Gemma 4 K=V cache audit, I-182) after its pre-run review: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM Secure at $3.99/h (cap $6). Updated 2026-10-30: R-64 done, A1 applied, about 45 to 55 min on the H100 | Recommendation (main session). Not a decision. Needs the user's spend approval and a live balance check | D-73 planning was approved; pass 1 moved the target from hybrid recurrent models (crowded) to Gemma 4 | **Decided by the user 2026-10-30** ("Approve both": the rehearsal cap $0.60 and the H100 cap $6); live balance check ok |
+| D-75 | 2026-10-30 | One-time balance floor of $30 (not $35) for the E-49 H100 run only: the booking check and the mid-run stop rule (stop if the balance falls below $30 plus the remaining cost cap) | **Decided by the user 2026-10-30** ("Run, $30 floor") | After the rehearsal the $35 floor check failed by about $1.40, because another project's H200 Pod spends about $5.30/h on the shared account | Applies to this run only; the $35 floor stays for every other run |
+| D-76 | 2026-10-30 | After E-49 (PIVOT): first wait for R-65. Then (a) a prototype plan for the compact K=V cache in vLLM for the dense 31B model (own preregistration, an accuracy gate, the page-size plan, a comparison with FP8 KV and the stacked case), and (b) a small follow-up for m26 at 64K with `min_tokens` = `max_tokens` (about $1.50). Or stop I-182 | Recommendation (main session). Not a decision | The 31B ceiling is 6.5% to 11.1% of decode time with every control passing; the m26 gap is an instrumentation loss, not a negative result | **Open, waiting on R-65 and the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7036,3 +7074,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   Section 1 header and line; Section 3 row I-182; Section 4 entry; Section 5.27; Section 7.30 rows; D-74 updated.
 - 2026-10-30: D-74 decided by the user; E-49 S5 rehearsal PASS (Section 6.1, README Section 12, ledger, hardware
   log); S6 waits for the balance check; Section 1 line; Section 4 entry.
+- 2026-10-30: D-75 decided by the user; E-49 RUN (PIVOT) in Section 6.1 and README Section 13; ledger and hardware
+  log rows; I-183 registered (Section 3 row, Section 5.28); Section 5.27 verdict; D-76 opened; Section 1; Section 4.

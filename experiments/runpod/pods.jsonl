@@ -54,3 +54,5 @@
 {"at": "2026-10-29T06:39:25Z", "event": "ended", "id": "6xplda6yko", "note": "deleted"}
 {"at": "2026-10-30T19:08:20Z", "event": "created", "experiment": "E-49", "id": "vbfqjtlowdrfoa", "kind": "pod", "name": "msthesis-e-49-rehearsal-20261030", "note": "RTX 4090, EU-RO-1, 0.89/h, image f255c4fa, persistent 40 GB, boot CAP 1800 s, created 2026-10-30T19:08:00Z, S5 rehearsal (E2B)"}
 {"at": "2026-10-30T19:23:36Z", "event": "ended", "id": "vbfqjtlowdrfoa", "note": "S5 rehearsal PASS (E2B, Triton): every VERIFY item ok; AUTO_STOP stopped it at 19:22:14Z; results copied, 49 files, checksums match; deleted"}
+{"at": "2026-10-30T19:56:43Z", "event": "created", "experiment": "E-49", "id": "isqx3210lt056m", "kind": "pod", "name": "msthesis-e-49-session-20261030", "note": "H100 SXM, US-NE-1, 3.99/h, image f255c4fa, persistent 120 GB, boot CAP 4200 s, created 2026-10-30T19:56:22Z, S6 session (D-74, floor 30 by D-75)"}
+{"at": "2026-10-30T20:58:30Z", "event": "ended", "id": "isqx3210lt056m", "note": "S6 session done (both models exit 0, decision PIVOT); AUTO_STOP 20:26:51Z; restarted 20:40:33Z only to copy results (65 files, checksums match); deleted"}
