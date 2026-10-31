@@ -1,9 +1,10 @@
 # E-50: Gemma 4 K=V headroom on top of an FP8 KV cache, near the KV pool limit, on 1 x H100 (preregistration)
 
 Status: PREDECLARED 2026-10-30. AMENDED A1 2026-10-30 (R-67 pre-run review, before any data). S5 rehearsal PASS
-2026-10-31. RUN 2026-10-31 (H100, Section 13): frozen decision GO. R-68 (post-run review) pending.
-Idea: I-182. Journal entry: Section 6.1 E-50. Follows E-49 and its post-run review R-65. Review: R-67
-(`dossier/REVIEW_E-50_PRERUN_2026-10-30.md`).
+2026-10-31. RUN 2026-10-31 (H100, Section 13): frozen decision GO. R-68 post-run review 2026-10-31:
+CONFIRM_WITH_SCOPE_LIMITS; its wording corrections C1 to C7 are in Section 13.
+Idea: I-182. Journal entry: Section 6.1 E-50. Follows E-49 and its post-run review R-65. Reviews: R-67
+(`dossier/REVIEW_E-50_PRERUN_2026-10-30.md`), R-68 (`dossier/REVIEW_E-50_POSTRUN_2026-10-31.md`).
 Request: D-76 (user, 2026-10-30, "Plan next test": fix the test code, then plan one H100 session of about $3 that
 reruns the 26B model and measures the 31B model at larger batches and with an 8-bit KV cache).
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics unless a source is given.
@@ -265,12 +266,17 @@ Outcomes:
   - Exploratory (E2B on Triton, not a decision): the sliding attention grows with L (V4c false), as in I-183. Engine
     start 91 s; prefill about 14,800 tokens per second at 64K and B = 35.
 
-## 13. Result (S6 to S8, 2026-10-31 UTC; the post-run review R-68 is pending)
+## 13. Result (S6 to S9, 2026-10-31 UTC; post-run review R-68)
 - Run (FACT): Pod ek0w5tktqk4kvp, 1 x H100 80GB HBM3 (GPU 69045460), US-NE-1. Created 06:14 UTC; the image pull took
   11 min; session 06:26 to 06:57; all three arms exit 0; 81 files copied with matching checksums; the Pod was
-  deleted at 06:57. Cost about $2.90 (time x price) plus about $0.23 for the rehearsal, inside the D-82 limit of $10.
-- Frozen decision (FACT, `analyze_e50.py`; the Mac rerun gives the same `summary.json`): GO (32K: S 0.121, low
-  0.120, up 0.122 at B = 19; 64K: S 0.150, low 0.149, up 0.151 at B = 11).
+  deleted at 06:57. Cost $2.92 (billing) plus $0.24 for the rehearsal (billing), $3.16 in total, inside the D-82
+  limit of $10.
+- Frozen decision (FACT, `analyze_e50.py`; the Mac rerun and the R-68 refit give the same values): GO (32K: S
+  0.121, low 0.120, up 0.122 at B = 19; 64K: S 0.150, low 0.149, up 0.151 at B = 11).
+- What S means (R-68 C1): S assumes that time follows bytes. In this run, half the bytes (BF16 to FP8) cut the time
+  per context token by only 24.5% (elasticity 0.49); the FA PR 199 kernel table on an H200 shows the same pattern.
+  To keep S at 5%, a compact kernel must realize 41% (32K) or 33% (64K) of the byte saving. At the measured
+  elasticity, S would be about 5.9% and 7.4%. So the result is a ceiling above the bar, not a forecast of 12% to 15%.
 - m31f8 (deciding: 31B FP8, FP8 KV), every check passes (V1 to V9, V11). The per-layer FA3/FA4 path ran (both
   version lines, no Triton kernel). Idle pool 8,017 blocks; B_max 23.3 (32K) and 13.3 (64K); pool shares 0.82 and
   0.83. GSM8K 90.6% with uncalibrated FP8 KV, so no accuracy caveat.
@@ -282,25 +288,48 @@ Outcomes:
 - FP8 against BF16 at B = 4 in the same Pod (secondary; two stock paths, A1): the FP8 path is 5.8% slower at 2K,
   5.2% at 8K and 1.5% at 32K, and 2.6% faster at 64K. Its global attention reads 2,089 GB/s in FP8 bytes against
   3,157 GB/s for BF16, so the time per context token falls by about a quarter, not by half. Its fixed part c is
-  1.08 ms larger (INTERPRETATION: the FA3/FA4 mix and the dequant kernel).
+  1.08 ms larger. Kernel diff at 2K and B = 4 (R-68 C5): sliding FA3 with its prepare kernels +0.50 ms, global FA4
+  with 32 splits +0.22, the FP8 KV write +0.15, other kernels +0.22.
+- Per-step comparison at a larger batch (R-68 C2): the lines cross near 42K tokens at B = 4. At B = 11 (FP8) against
+  B = 10 (BF16), the FP8 step is 11% slower at 2K, 6% slower at 8K and 5% faster at 32K (28.05 against 29.55 ms); the
+  crossing is near 19K tokens.
 - Capacity (secondary, INTERPRETATION): the FP8 pool holds 1.96 times the requests of the BF16 pool at 32K. At the
   measured pair batches, the FP8 path decodes 516 tokens per second against 338 for BF16 at 32K (+52%) and 313
-  against 184 at 64K (+70%; the BF16 batch is at a pool share of 0.74). So FP8 KV wins on capacity, not step time.
+  against 184 at 64K: +70% as measured, with the BF16 batch at a pool share of 0.74, and about +60% at equal pool
+  share (R-68 C3 estimate). Exploratory (R-67 O3, R-68): a compact global cache would raise the requests that fit the
+  same pool by 1.39 times (32K) and 1.47 times (64K).
 - m31bf (secondary): the B = 4 cells reproduce E-49 within 2.3% (c 16.19 against 15.82 ms; b 1.038e-4 against
   1.044e-4 ms per token; copy 3,045 GB/s in both). The exact-cache ceiling near the BF16 pool limit is S 13.7%
   (32K, B = 10, share 0.84) and 14.5% (64K, B = 5, share 0.74). The slope per sequence there is 1.27 and 1.23 times
-  the B = 4 value (2,489 to 2,560 GB/s against 3,157), so the R-65 linear batch model is low for BF16 (R-67 O4).
+  the B = 4 value (2,489 to 2,560 GB/s against 3,157). The cause is the SM coverage of the BF16 kernel (R-68 C6): its
+  grid has 128 CTAs at B = 4, but only about 80 do work at B = 5 and B = 10 (the other graph slots are padding). The
+  FP8 slope per sequence is flat (0.98 and 1.00). So the R-65 batch model is a B = 4 calibration.
 - m26 (secondary; the E-49 cells with the fixed token budget): all 6 cells "ok", no request left early. S 6.08% at
-  32K (low 5.72%) and 10.46% at 64K (low 9.84%), df 4; R-65 predicted 10.5% at 64K (H2). Both cells pass the E-49
-  cell test (M1, M2, V4b and V4c true). The E-49 frozen decision stays PIVOT; this is new data, not a change of E-49.
+  32K (low 5.72%) and 10.46% at 64K (low 9.84%), df 4; R-65 predicted 12.6 ms and 10.5% at 64K, and the run gives
+  12.57 ms and 10.46% (H2). Both cells pass the E-49 cell test (M1, M2, V4b and V4c true). R-68 C7: V4b passes by 0.8
+  points; m26 ran at 50% of its 64K pool limit; the E-49 rule applied post hoc to the E-50 BF16 data gives GO (4 of 4
+  cells). The E-49 frozen decision stays PIVOT; this is new data, not a change of E-49.
 - Hypotheses: H1 holds (S_low 12.0% and 14.9%). H2 holds (10.46%). H3 holds (13.7% and 14.5%).
 - Operations (FACT): the image pull ran before the container start, so the boot watchdog started 11 min late; the
   Pod time was 44 min, under the $4.50 cap. Two faults of the monitor script (it matched "setup done after", and
   it counted the missing log during the setup as an ssh failure) ended the monitor early twice. The session was
   not affected. Engine start: m31f8 122 s, m26 312 s, m31bf 165 s.
-- Scope (A1, R-67 O7): the GO is for the FP8 dequant kernel at 3966924d5. A faster FP8 kernel (vLLM PR #60372, FP8
-  MMA) makes the global attention a smaller share, so S falls. S is a ceiling; no compact kernel exists. A GO
+- Scope (A1, R-67 O7; R-68 C4): the GO is for the capped FP8 dequant path at 3966924d5. vLLM PR #60372 (open) mainly
+  removes the 32-split cap; its FP8 MMA kernel (FA PR 199, merged 2026-10-29) adds 0% to 1% end to end in a
+  reviewer's test. R-68: if the stock FP8 kernel reached 2,500 to 3,157 GB/s, the ceiling would be 9.2% to 10.9%
+  (32K) and 11.5% to 13.5% (64K), so the GO is robust on that axis. S is a ceiling; no compact kernel exists. A GO
   allows only a prototype plan (Section 7).
+- R-68 (post-run review, Sonnet, 2026-10-31): CONFIRM_WITH_SCOPE_LIMITS. The GO reproduces; no number is wrong; the
+  code and the rule are unchanged since 5eb82c2; all validity checks pass (480 attention groups per profile, 50 FA3
+  and 10 FA4 launches per step, no Triton kernel, 0 hard-throttle samples). Further scope limits: text-only mode is
+  required for this FP8 path; one Pod, one engine start per arm; GSM8K with n = 32 cannot show a small accuracy loss,
+  and a community llama.cpp test reports a large KL for q8_0 KV on Gemma 4, so "FP8 KV is near lossless" is not
+  settled.
+- R-68 recommendation for the next test (D-83): a kernel microbenchmark with no engine (1 x H100, about 30 min,
+  about $2 to $3). Compare the stock FP8 dequant kernel, the stock FP8 MMA kernel and a compact FP8 kernel at B 19 /
+  32K and B 11 / 64K. Metric sigma = 1 - t_compact / t_stock on the time that grows with the context. Stop if sigma
+  is below 0.155 (32K) and 0.125 (64K), because S is then below 5%; continue to an accuracy gate only if sigma is at
+  least 0.25. Keep QK at 512 dims; rerun the baseline after PR #60372 merges.
 
 ## Amendments
 - A1 (2026-10-30, before any data; from R-67, verdict AMEND_THEN_RUN). Each item has a test (Section 12).
