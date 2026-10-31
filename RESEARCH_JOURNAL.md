@@ -184,8 +184,8 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-30, after the E-49 H100 run (frozen decision PIVOT) and its R-65 post-run review
-(CONFIRM_WITH_SCOPE_LIMITS).** Rewrite this section every session.
+**As of 2026-10-30, after the E-49 H100 run (frozen decision PIVOT), its R-65 post-run review
+(CONFIRM_WITH_SCOPE_LIMITS) and the E-50 predeclaration.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
 - Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
@@ -224,9 +224,10 @@ maps every file to what it contains.
   `max_tokens` (236) was too small: with chunked prefill, early requests decode while later ones prefill, so one
   request ended in each block. The earlier end-token HYPOTHESIS is retracted (Section 8.1 row 69). R-65 also
   estimates (not measured) that the compact cache adds only about 3.8% to 7.0% on top of an FP8 KV cache at
-  batch 4. D-76 (recommendation, open, updated after R-65): patch the probe (free), then one H100 session (about
-  $3) that reruns m26 and measures m31 at larger batches and with FP8 KV. The stacked ceiling decides on a
-  prototype. 0 thesis Pods, 0 volumes.
+  batch 4. D-76 (decided by the user, "Plan next test"): the probe patch is done (R-65 C3; 14 new tests). E-50
+  is predeclared (`experiments/gemma4_kv_headroom/`): the FP8 KV stack near the pool limit decides; the 26B rerun
+  and a BF16 arm are secondary. Next: the R-67 design review, then D-81 (spend: an RTX 4090 rehearsal, cap $0.60;
+  1 x H100, cap $4.50). 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1139,7 +1140,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit) | `experiments/gemma4_kv_audit/README.md` |
 | I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
@@ -1608,6 +1609,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   FP8 KV the compact cache adds about 3.8% to 7.0% at batch 4. Billing: H100 $2.09,
                   rehearsal $0.21. D-76 updated.
                   Source: dossier/REVIEW_E-49_POSTRUN_2026-10-30.md. Ideas: I-182. Experiments: E-49.
+2026-10-30  [P10] D-76 decided by the user ("Plan next test"). The probe patch is done (R-65 C3). E-50
+                  predeclared: the compact K=V headroom on top of an FP8 KV cache near the KV pool limit
+                  (31B), plus the 26B rerun and a BF16 arm. FACT (vLLM source): FP8 KV on SM90 runs FA3
+                  on the sliding layers and FA4 FP8-dequant on the global layers. 14 tests pass. No spend.
+                  Source: experiments/gemma4_kv_headroom/README.md. Ideas: I-182. Experiments: E-50.
 ```
 
 ---
@@ -3654,7 +3660,7 @@ only the duplicated V projection weights (+0% to 1.7%). The MLA cache shape (one
 its kernels exist (DeepSeek, FlashMLA, FlashInfer MLA). Section 7.30.
 Exact surviving gap: no GPU serving engine found that realizes the 37.5% saving. Do not claim the saving or the layout
 as novel; the contribution is the engine mechanism (cache spec, kernel path) and its measured effect.
-Experiments: E-49 (predeclared 2026-10-29).
+Experiments: E-49 (RUN 2026-10-30, PIVOT); E-50 (predeclared 2026-10-30: the FP8 KV stack near the pool limit).
 Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1. R-65
 (post-run, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS.
 Research log: 2026-10-29: `kv_layout_check.py` shows the identity (float64 error 8e-15; BF16 cache error not above the
@@ -4947,6 +4953,21 @@ INTERPRETATION: the fusions cost 3% to 5% when they fire (non-default backends);
 2026-10-29, VALIDATED. Package: `experiments/fp8_fusion_validate/`. vLLM nightly (0.33.0rc1.dev157+gedad8b03c): fusions off
 faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cutlass at batch 64 and 256 (2% to 3.5%);
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
+
+**E-50 Gemma 4 K=V headroom on top of an FP8 KV cache, near the KV pool limit** (predeclared 2026-10-30, I-182,
+D-76). STATUS: PREDECLARED, NOT RUN. Package: `experiments/gemma4_kv_headroom/` (README is the preregistration).
+Question: with an FP8 KV cache on 1 x H100 (vLLM nightly, the E-49 image), does the duplicated K=V cache of the 31B
+global layers still cost at least 5% of decode step time at 32K or 64K, at 85% of the KV pool? Method: the E-49
+probe with the R-65 C3 fixes (a token budget from the prefill schedule, a budget guard, finish reasons per request)
+and pair cells whose batch comes from the measured pool. For each group (32K, 64K), a cell-level line T = c + b L
+gives S = 0.375 b_low X / T(X). Rule (heuristic): GO if a group has S_low >= 5% with M1, M2, V4b and V4c; KILL if
+S_up < 3% in both groups; INCONCLUSIVE if the FP8 arm or a group is lost; else PIVOT. Secondary: the 26B-A4B rerun
+(the E-49 cells with the fixed budget) and a BF16 arm (the same-Pod FP8 saving and the exact-cache ceiling near the
+BF16 pool limit). FACT (vLLM source at 3966924d5): an FP8 KV cache on SM90 runs FA3 on the sliding layers and the
+FA4 FP8-KV-dequant kernel on the global layers. Budget: about 48 min, cap $4.50 (H100) and $0.60 (RTX 4090
+rehearsal). Tests: 14 pass; `test_e49.py` 20 pass; the E-49 decision reproduces with the patched code. ID note:
+R-66 and D-80 name a proposed "E-50" for I-186 (not predeclared); a later I-186 test takes the next free ID. Next:
+the R-67 design review, then D-81 (spend).
 
 **E-49 Gemma 4 decode waste audit and the K=V cache lead** (predeclared 2026-10-29, I-182). STATUS: PREDECLARED,
 AMENDED A1 (2026-10-30, R-64, before any data), S5 REHEARSAL PASS (2026-10-30, RTX 4090, $0.21 billed), RUN 2026-10-30 (H100, $2.09 billed): PIVOT; S9 R-65 CONFIRM_WITH_SCOPE_LIMITS. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
@@ -6421,6 +6442,7 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | Grouped Value Attention, Tripathi, Kumar, Khan, arXiv 2609.13285 | 2026-09-15 | Caches grouped values and rebuilds content keys with a learned map absorbed into the query, plus a small decoupled RoPE key; about 45% to 47% fewer cache scalars than GQA; trained from scratch at 350M; kernels in test | Same family as an architecture, not the Gemma 4 engine mechanism; R-64 missed it | checked 2026-10-30 (abstract; main session); R-65 read the HF page |
 | vLLM main `gemma4.py` L440, L555; `kv_cache_interface.py` L560, L590 (commit 59d58fd26) | 2026-10-30 | K weights still load into both K and V slots; `AttentionSpec` has a `head_size_v` field | The engine gap is still open; a prototype hook exists | doc-only (R-65 read them) |
 | llama.cpp PR #31406, #31356; TensorRT-LLM PR #21339, #18537; vLLM PR #61267, #62034, #64247, #64774 | 2026-10 | Cross-layer KV sharing for E2B and E4B; config and weight mapping; LoRA, QK-norm and RoPE fusion, spec decoders | Not the same mechanism | search-only (R-65, titles) |
+| vLLM `models/config.py` (`Gemma4Config`), `fa_utils.py`, `flash_attn.py` (commit 3966924d5) | 2026-10-29 | With an FP8 KV cache on SM90: per-layer FA3/FA4 selection, FA3 on the sliding layers (head_dim 256), the FA4 "SM90 FP8-KV-dequant kernel" on the global layers (BF16 Q, FP8 K and V, 64-token page) | The FP8 competitor runs in the E-49 image; E-50 measures it | full-text (main session, 2026-10-30) |
 
 ---
 
@@ -6712,7 +6734,8 @@ proposed it and no acceptance is recorded.
 | D-73 | 2026-10-29 | After R-63: the profile-mining method found a real optimization (I-181), but another group already has it as an open vLLM PR. Next search step: one preregistered waste audit on a model class the engines have tuned least (for example a hybrid linear-attention model such as Qwen3-Next, or MoE with sparse attention, on H100 or B200), GO only for a gap of 5% or more of step time that no shipped or open-PR mechanism covers; check open PRs in pass 1 | Recommendation (R-63). Not a decision. GPU spend needs the user's approval and a live balance check | Profile mining is the only method here that found real waste (O-03, O-04, I-181) | Planning approved by the user 2026-10-29 ("Yes, plan it"); the spend is D-74 |
 | D-74 | 2026-10-29 | Run E-49 (Gemma 4 K=V cache audit, I-182) after its pre-run review: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM Secure at $3.99/h (cap $6). Updated 2026-10-30: R-64 done, A1 applied, about 45 to 55 min on the H100 | Recommendation (main session). Not a decision. Needs the user's spend approval and a live balance check | D-73 planning was approved; pass 1 moved the target from hybrid recurrent models (crowded) to Gemma 4 | **Decided by the user 2026-10-30** ("Approve both": the rehearsal cap $0.60 and the H100 cap $6); live balance check ok |
 | D-75 | 2026-10-30 | One-time balance floor of $30 (not $35) for the E-49 H100 run only: the booking check and the mid-run stop rule (stop if the balance falls below $30 plus the remaining cost cap) | **Decided by the user 2026-10-30** ("Run, $30 floor") | After the rehearsal the $35 floor check failed by about $1.40, because another project's H200 Pod spends about $5.30/h on the shared account | Applies to this run only; the $35 floor stays for every other run |
-| D-76 | 2026-10-30 | After E-49 (PIVOT) and R-65 (CONFIRM_WITH_SCOPE_LIMITS). Recommended order: (1) free: patch the probe (R-65 C3: a budget from the prefill schedule, a budget guard, finish-reason logs, M2 "unknown" without a 64K cell, a fake-engine test with the 2,048-token budget); (2) one H100 session, about $3, with its own preregistration and the next free E-nn: rerun m26 with the fixed budget, and measure m31 at larger batches (8 at 32K, 5 at 64K) and with an FP8 KV cache at batch 4; (3) a prototype only if the stacked ceiling on FP8 KV stays at or above 5% at the pool-limit batch (kernel microbenchmark first, GPU about $4 to $8; engineering effort not costed). Alternatives: a rerun of m26 only (about $1.5 to $2.0), or stop I-182 ($0). The earlier option (b) with `min_tokens` = `max_tokens` is withdrawn (R-65 C2) | Recommendation (main session, after R-65). Not a decision | The 31B ceiling is 6.65% (32K) to 11.33% (64K) at batch 4 with every control passing. FP8 KV is the strongest baseline and may take most of the gain (R-65 estimate: 3.8% to 7.0% left on top). Measuring it costs less than a kernel | **Open, waiting on the user** |
+| D-76 | 2026-10-30 | After E-49 (PIVOT) and R-65 (CONFIRM_WITH_SCOPE_LIMITS). Recommended order: (1) free: patch the probe (R-65 C3: a budget from the prefill schedule, a budget guard, finish-reason logs, M2 "unknown" without a 64K cell, a fake-engine test with the 2,048-token budget); (2) one H100 session, about $3, with its own preregistration and the next free E-nn: rerun m26 with the fixed budget, and measure m31 at larger batches (8 at 32K, 5 at 64K) and with an FP8 KV cache at batch 4; (3) a prototype only if the stacked ceiling on FP8 KV stays at or above 5% at the pool-limit batch (kernel microbenchmark first, GPU about $4 to $8; engineering effort not costed). Alternatives: a rerun of m26 only (about $1.5 to $2.0), or stop I-182 ($0). The earlier option (b) with `min_tokens` = `max_tokens` is withdrawn (R-65 C2) | Recommendation (main session, after R-65). Not a decision | The 31B ceiling is 6.65% (32K) to 11.33% (64K) at batch 4 with every control passing. FP8 KV is the strongest baseline and may take most of the gain (R-65 estimate: 3.8% to 7.0% left on top). Measuring it costs less than a kernel | **Decided by the user (2026-10-30, "Plan next test")**: steps (1) and (2); the spend waits for D-81 |
+| D-81 | 2026-10-30 | Spend for E-50: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 48 min (cap $4.50; expected about $3.20) | Recommendation (main session), after R-67. Not a decision | The FP8 stack near the pool limit decides on a prototype (R-65); the same session closes the E-49 26B gap | **Open, waiting on R-67 and the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7132,3 +7155,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   8.1 row 69 and a Section 8.2 line (the end-token HYPOTHESIS is retracted); Section 5.27 lines; Section 3 row I-182;
   Section 7.30 rows; D-76 updated; Section 1 header and line; Section 4 entry; README Section 13; RESEARCH_OUTPUTS
   O-10 and L-11; hardware log costs from billing.
+- 2026-10-30: D-76 decided by the user; E-50 predeclared (Section 6.1, Section 5.27, Section 3 row I-182, a Section
+  7.30 row, Section 1, Section 4 entry, D-81 opened); `decode_probe.py` patched (R-65 C3); RESEARCH_OUTPUTS T-08.

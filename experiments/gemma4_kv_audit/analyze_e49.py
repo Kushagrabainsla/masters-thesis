@@ -193,7 +193,7 @@ def model_summary(res: Path, key: str, bw: float | None) -> dict:
         return {"status": run.get("status", "missing"), "valid": False, "why": ["run not ok"]}
     B = spec["batch"]
     slope = [c for c in cells if c["batch"] == B and c["context"] in SLOPE_CONTEXTS and c.get("status", "ok") == "ok"
-             and c["step_ms"]]
+             and c["step_ms"] and c.get("kind") != "pair"]   # E-50 pair cells can have batch B by chance
     preempted = [key_of(c) for c in cells if c.get("status") == "preempted"]
     cell_med = [(c["context"], statistics.median(c["step_ms"])) for c in slope]
     ctxs = sorted({L for L, _ in cell_med})

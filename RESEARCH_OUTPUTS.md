@@ -43,7 +43,7 @@ confirmed it with stated scope limits), PENDING VALIDATION, DRAFT, FILED (posted
 | T-05 | CUDA-graph kernel microbenchmark for small fused kernels (removes launch cost from the timing) | `experiments/fp8_quant_fusion/kbench_e44.py` |
 | T-06 | Top-20 logprob bit-equality check with determinism, large-difference and small-change controls | `experiments/nvfp4_bitequal/analyze_e42.py` |
 | T-07 | Operand bit-transition screen for weight transforms (no GPU, reads safetensors without torch, exactness check included) | `experiments/power_shaping_screen/toggle_screen.py` |
-| T-08 | Decode attention split by layer type from the kernel launch order (no NVTX), with a step-alignment check; a scheduler check that marks a cell when a request waits or the batch shrinks; a cell-level slope bound with replicate cells | `experiments/gemma4_kv_audit/analyze_e49.py` (`layer_split`), `decode_probe.py` (`scheduler_check`) |
+| T-08 | Decode attention split by layer type from the kernel launch order (no NVTX), with a step-alignment check; a scheduler check that marks a cell when a request waits or the batch shrinks; a cell-level slope bound with replicate cells. For E-50 (R-65 C3): a token budget from the prefill schedule, a guard before the timing, finish reasons per request, a batch from the measured KV pool, and a count split for mixed FA3/FA4 kernels | `experiments/gemma4_kv_audit/analyze_e49.py` (`layer_split`), `decode_probe.py` (`scheduler_check`, `token_budget`, `auto_batch`); `experiments/gemma4_kv_headroom/analyze_e50.py` (`split_of`) |
 
 ## 4. Lessons (operations and method)
 

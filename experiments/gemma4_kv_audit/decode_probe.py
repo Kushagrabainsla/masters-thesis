@@ -10,8 +10,15 @@ start order over `--profile-steps` decode steps. The requests are then aborted, 
 Outputs in --out: run.json (status, engine, KV and layer record), cells.json (per cell: step times, token
 advance check, scheduler check, prefill time), kernels.json (tables per profiled cell), events_<cell>.json
 (kernel events per profiled cell; the raw trace is kept gzipped), gsm8k.jsonl (sanity check).
-run.json status: "started", "ok_slope" (the slope cells are done), "ok" (all cells are done) or "error".
+run.json status: "started", "ok_slope" (the slope cells are done), "ok_pairs" (the pair cells are done too), "ok"
+(all cells are done) or "error".
 --stub writes synthetic files with the same layout (no vLLM, no GPU), for the Mac tests.
+
+E-50 additions (R-65 C3): each cell sets `max_tokens` from the prefill schedule (`token_budget`) and checks before
+the timing that every request has the tokens for the planned steps (status "budget"); every request that leaves
+early is recorded with its finish reason (status "finished_early"). Pair cells (`--pair-cells`, batch "aL") take
+their batch from the KV pool: the share `--auto-frac` of the requests of context L that fit the idle pool, with the
+blocks per request measured at an earlier cell of context L. `--kv-cache-dtype` selects the KV cache type.
 """
 
 from __future__ import annotations
@@ -23,6 +30,7 @@ os.environ.setdefault("VLLM_ENABLE_V1_MULTIPROCESSING", "0")
 import argparse
 import gzip
 import json
+import math
 import random
 import shutil
 import sys
@@ -33,19 +41,21 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "safedispatch_testA2"))
 PROFILE_MIN_SHARE = 0.002
 WARM_STEPS = 4
+BUDGET_MARGIN = 32
 
 
 def now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
-def cell_list(text: str) -> list[tuple[int, int, int]]:
-    """'2048:4,65536:4:1' -> [(2048, 4, 0), (65536, 4, 1)]; the third field is the replicate."""
-    out = []
+def cell_list(text: str) -> list[tuple[int, int | str, int]]:
+    """'2048:4,65536:4:1,2048:a32768' -> [(2048, 4, 0), (65536, 4, 1), (2048, 'a32768', 0)]; the third field is the
+    replicate. A batch 'aL' is set at run time from the KV pool (`auto_batch`)."""
+    out: list[tuple[int, int | str, int]] = []
     for c in text.split(","):
         if c:
-            f = [int(x) for x in c.split(":")]
-            out.append((f[0], f[1], f[2] if len(f) > 2 else 0))
+            f = c.split(":")
+            out.append((int(f[0]), f[1] if f[1].startswith("a") else int(f[1]), int(f[2]) if len(f) > 2 else 0))
     return out
 
 
@@ -118,8 +128,9 @@ def kernel_events(prof, path: Path) -> dict:
     return {"names": list(names), "events": rows}
 
 
-def scheduler_check(engine, batch: int) -> dict:
-    """The cell's requests are all running, none is waiting and none was preempted (R-64 R2)."""
+def scheduler_check(engine, batch: int, ids: list[str] | None = None) -> dict:
+    """The cell's requests are all running, none is waiting and none was preempted (R-64 R2). With ids, the
+    preemption count of each request is kept too, so a request that leaves later still has one (R-65 C3)."""
     try:
         sched = engine.engine_core.engine_core.scheduler
         running = list(sched.running)
@@ -131,23 +142,59 @@ def scheduler_check(engine, batch: int) -> dict:
         rec["free_blocks"] = sched.kv_cache_manager.block_pool.get_num_free_blocks()
     except Exception:
         pass
+    if ids:
+        try:
+            reqs = sched.requests
+            rec["request_preemptions"] = {i: int(reqs[i].num_preemptions) for i in ids if i in reqs}
+        except Exception:
+            pass
     rec["known"] = True
     rec["ok"] = rec["running"] == batch and rec["waiting"] == 0 and rec["preemptions"] == 0
     return rec
 
 
-def run_cell(engine, stream, ctx: int, batch: int, rep: int, args, profile: bool, out: Path) -> tuple[dict, dict | None]:
+def token_budget(ctx: int, batch: int, args) -> int:
+    """`max_tokens` of one cell (R-65 C3). Decode tokens go first in the token budget of each step, so request 0
+    decodes while the other B - 1 requests prefill, for at most ceil(L / (chunk - B)) steps each. Then come the warm
+    steps, the most blocks, the profile steps and a margin."""
+    chunk = getattr(args, "max_num_batched_tokens", 2048)
+    prefill = (batch - 1) * math.ceil(ctx / max(1, chunk - batch))
+    return prefill + WARM_STEPS + args.steps * args.max_blocks + args.profile_steps + BUDGET_MARGIN
+
+
+def auto_batch(spec: str, sizes: dict[int, float], free_idle: int | None, args) -> int | None:
+    """Batch 'aL': the share --auto-frac of the requests of context L that fit the idle KV pool. The blocks per
+    request come from the first earlier cell of context L (free blocks before and after its prefill)."""
+    per_req = sizes.get(int(spec[1:]))
+    if not per_req or not free_idle:
+        return None
+    return max(1, min(args.max_num_seqs, int(args.auto_frac * free_idle / per_req)))
+
+
+def run_cell(engine, stream, ctx: int, batch: int, rep: int, args, profile: bool, out: Path,
+             spec: str | None = None) -> tuple[dict, dict | None]:
     from vllm import SamplingParams
 
-    new_tokens = WARM_STEPS + args.steps * args.max_blocks + args.profile_steps + 64
-    params = SamplingParams(temperature=0.0, max_tokens=new_tokens, ignore_eos=True, detokenize=False, seed=0)
+    budget = token_budget(ctx, batch, args)
+    cell = {"context": ctx, "batch": batch, "rep": rep, "max_tokens": budget, "steps_per_block": args.steps,
+            "step_ms": [], "advance_min_max": []}
+    max_len = getattr(args, "max_model_len", None)
+    if max_len and ctx + budget > max_len:   # the requests cannot hold the planned steps: not run
+        cell.update(status="budget", prefill_s=0.0, sched={})
+        return cell, None
+    params = SamplingParams(temperature=0.0, max_tokens=budget, ignore_eos=True, detokenize=False, seed=0)
     ids = [f"c{ctx}b{batch}r{rep}i{i}" for i in range(batch)]
     lens = dict.fromkeys(ids, 0)
+    finished: dict[str, dict] = {}
 
     def step() -> None:
         for out_ in engine.step():
             if out_.request_id in lens:
-                lens[out_.request_id] = len(out_.outputs[0].token_ids)
+                o = out_.outputs[0]
+                lens[out_.request_id] = len(o.token_ids)
+                if getattr(out_, "finished", False):   # why the request left: length cap, stop or abort (R-65 C3)
+                    finished[out_.request_id] = {"reason": getattr(o, "finish_reason", None),
+                                                 "tokens": len(o.token_ids), "stop": getattr(o, "stop_reason", None)}
 
     t0 = time.perf_counter()
     for rid, toks in zip(ids, prompts_for(stream, ctx, batch, ctx * 1000 + batch + 7919 * rep)):
@@ -159,11 +206,17 @@ def run_cell(engine, stream, ctx: int, batch: int, rep: int, args, profile: bool
         if guard > 100_000:
             raise RuntimeError("prefill did not finish")
     sync()
-    cell = {"context": ctx, "batch": batch, "rep": rep, "prefill_s": round(time.perf_counter() - t0, 3),
-            "steps_per_block": args.steps, "sched": scheduler_check(engine, batch), "step_ms": [], "advance_min_max": []}
+    cell.update(prefill_s=round(time.perf_counter() - t0, 3), sched=scheduler_check(engine, batch, ids),
+                tokens_at_start=max(lens.values()))
+    cell["budget_left"] = budget - cell["tokens_at_start"]
+    need = WARM_STEPS + args.steps * args.max_blocks + (args.profile_steps if profile else 0)
     table = None
-    if cell["sched"].get("ok") is False:   # preempted or queued: no timing, no profile
+    if finished:                           # a request left during the prefill of the others: no timing
+        cell["status"] = "finished_early"
+    elif cell["sched"].get("ok") is False:   # preempted or queued: no timing, no profile
         cell["status"] = "preempted"
+    elif cell["budget_left"] < need:       # a request would reach its length cap inside the timed steps (R-65)
+        cell["status"] = "budget"
     else:
         for _ in range(WARM_STEPS):
             step()
@@ -180,8 +233,10 @@ def run_cell(engine, stream, ctx: int, batch: int, rep: int, args, profile: bool
             advance.append([min(adv), max(adv)])
             if len(blocks) >= args.min_blocks and max(blocks) <= min(blocks) * (1 + args.block_spread):
                 break
-        cell["sched_after"] = scheduler_check(engine, batch)
-        cell["status"] = "preempted" if cell["sched_after"].get("ok") is False else "ok"
+        cell["sched_after"] = scheduler_check(engine, batch, ids)
+        # A request that left is not a preemption (R-65: the E-49 m26 64K cells hit the length cap).
+        cell["status"] = "finished_early" if finished else \
+            "preempted" if cell["sched_after"].get("ok") is False else "ok"
     if profile and cell["status"] == "ok":
         from torch.profiler import ProfilerActivity, profile as torch_profile
 
@@ -192,11 +247,14 @@ def run_cell(engine, stream, ctx: int, batch: int, rep: int, args, profile: bool
                 step()
             sync()
         wall_ms = (time.perf_counter() - t) * 1000   # has the profiler start and stop: reported only (R-64 R1)
-        name = "events_" + cell_key(ctx, batch, rep).replace(":", "_") + ".json"
+        name = "events_" + (spec or cell_key(ctx, batch, rep)).replace(":", "_") + ".json"
         ev = kernel_events(prof, out / name)
         (out / name).write_text(json.dumps(ev))
         table = kernel_table(prof) | {"steps": args.profile_steps, "wall_ms": round(wall_ms, 2), "events": name,
                                       "events_n": len(ev["events"])}
+        if finished:   # a request left inside the profile: the table is not of batch B, so the analysis skips it
+            table["lost"] = True
+    cell["finished"] = finished
     engine.abort_request(ids)
     for _ in range(3):  # let the engine release the aborted requests
         engine.step()
@@ -242,16 +300,19 @@ def kv_record(llm) -> dict:
 
 
 def model_record(llm) -> dict:
-    """Layer types (the analysis splits the profiles by layer) and the multimodal state (R-64 R3, R6)."""
+    """Layer types (the analysis splits the profiles by layer), the multimodal state (R-64 R3, R6) and the CUDA
+    graph batch sizes (a batch between two sizes runs padded to the next size)."""
     try:
-        mc = llm.llm_engine.vllm_config.model_config
+        vc = llm.llm_engine.vllm_config
+        mc = vc.model_config
     except Exception as exc:  # reported only
         return {"error": f"{type(exc).__name__}: {exc}"[:300]}
     rec = {}
     for name, get in (("layer_types", lambda: list(mc.hf_text_config.layer_types)),
                       ("is_multimodal_model", lambda: bool(mc.is_multimodal_model)),
                       ("is_mm_prefix_lm", lambda: bool(mc.is_mm_prefix_lm)),
-                      ("mm_limits", lambda: str(mc.multimodal_config.limit_per_prompt))):
+                      ("mm_limits", lambda: str(mc.multimodal_config.limit_per_prompt)),
+                      ("cudagraph_sizes", lambda: list(vc.compilation_config.cudagraph_capture_sizes))):
         try:
             rec[name] = get()
         except Exception as exc:  # reported only
@@ -309,23 +370,42 @@ def table_from_events(ev: dict) -> dict:
 def stub(args, out: Path) -> None:
     """Synthetic outputs: step time T = c + b * L per cell, with block noise and an optional cell effect.
 
-    b is the time to read the global K and V of one context token for the whole batch at --stub-bw-gbps.
+    b is the time to read the global K and V of one context token for the whole batch at --stub-bw-gbps (half the
+    bytes with an FP8 KV cache). The idle KV pool has --stub-pool-blocks blocks (twice as many with FP8), and a
+    request of context L holds 0.0365 L + 30 blocks (about the E-49 31B record), so pair cells get a batch as on the
+    GPU.
     """
     rng = random.Random(args.stub_seed)
+    fp8 = args.kv_cache_dtype.startswith("fp8")
     global_bytes, n_layers = (20480, 30) if "26B" in args.model else (81920, 60)
+    global_bytes //= 2 if fp8 else 1
     types = (["sliding_attention"] * 5 + ["full_attention"]) * (n_layers // 6)
-    slope = cell_list(args.cells)
-    todo = slope if args.stub_stop_after_slope else slope + cell_list(args.waste_cells)
+    todo = [(c, "slope") for c in cell_list(args.cells)]
+    if not args.stub_stop_after_slope:
+        todo += [(c, "pair") for c in cell_list(args.pair_cells)] + [(c, "waste") for c in cell_list(args.waste_cells)]
     profiled = {cell_key(*c) for c in cell_list(args.profile_cells)}
     preempt = {cell_key(*c) for c in cell_list(args.stub_preempt)}
+    free_idle = args.stub_pool_blocks * (2 if fp8 else 1)
+    sizes: dict[int, float] = {}
     cells, tables, first = [], {}, True
-    for ctx, batch, rep in todo:
+    for (ctx, batch, rep), kind in todo:
         key = cell_key(ctx, batch, rep)
+        spec = None
+        if isinstance(batch, str):
+            spec, batch = key, auto_batch(batch, sizes, free_idle, args)
+        cell = {"context": ctx, "batch": batch, "rep": rep, "steps_per_block": args.steps, "kind": kind}
+        if spec:
+            cell.update(spec=spec, auto_for=int(spec.split(":")[1][1:]))
+        if batch is None:
+            cells.append(cell | {"status": "no_size", "step_ms": [], "advance_min_max": []})
+            continue
+        if ctx not in sizes:   # the first cell of a context measures the blocks per request, as on the GPU
+            sizes[ctx] = 0.0365 * ctx + 30
+            cell["blocks_per_request"] = round(sizes[ctx], 1)
         b = global_bytes * batch / (args.stub_bw_gbps * 1e9) * 1000.0      # ms per context token
         c = args.stub_c_ms * (batch / 4) ** 0.3
         base = (c + b * ctx + args.stub_curve * c * (ctx / 65536) ** 2) * (1 + rng.gauss(0, args.stub_cell_sd))
-        cell = {"context": ctx, "batch": batch, "rep": rep, "prefill_s": round(ctx * batch / 2e4, 3),
-                "steps_per_block": args.steps, "kind": "slope" if (ctx, batch, rep) in slope else "waste"}
+        cell.update(prefill_s=round(ctx * batch / 2e4, 3), max_tokens=token_budget(ctx, batch, args), finished={})
         if key in preempt:
             cells.append(cell | {"status": "preempted", "sched": {"known": True, "ok": False, "running": batch - 1,
                                                                    "waiting": 1, "preemptions": 1},
@@ -351,14 +431,21 @@ def stub(args, out: Path) -> None:
     with open(out / "gsm8k.jsonl", "w") as sink:
         for i in range(32):
             sink.write(json.dumps({"id": f"g{i}", "correct": i < round(acc * 32)}) + "\n")
+    dims = "{'sliding_attention': 256, 'full_attention': 512}"
     log = ["INFO Using FLASH_ATTN backend", "INFO GPU KV cache size: 400,000 tokens",
-           "INFO Maximum concurrency for 66,048 tokens per request: 6.06x"]
+           "INFO Maximum concurrency for 66,048 tokens per request: 6.06x",
+           f"INFO Initializing a V1 LLM engine with config: model='{args.model}', kv_cache_dtype={args.kv_cache_dtype}, seed=0",
+           f"INFO Gemma4 model has heterogeneous head dimensions {dims}. " +
+           ("Using per-layer FA3/FA4 selection for FP8 KV cache on SM90." if fp8 else
+            "Using FA4 for all layers to avoid mixed FA3/FA4 penalty.")]
     if not args.stub_multimodal:
         log.append("INFO All limits of multimodal modalities supported by the model are set to 0, running in text-only mode.")
     (out / "log.txt").write_text("\n".join(log) + "\n")
     status = "error" if args.stub_fail else "ok_slope" if args.stub_stop_after_slope else "ok"
     (out / "run.json").write_text(json.dumps({"status": status, "stub": True, "args": {k: str(v) for k, v in vars(args).items()},
-                                              "gsm8k": {"n": 32, "accuracy": acc}, "kv": {"num_gpu_blocks": 25000, "block_size": 16},
+                                              "gsm8k": {"n": 32, "accuracy": acc}, "free_blocks_idle": free_idle,
+                                              "kv": {"num_gpu_blocks": free_idle + 1, "block_size": 16,
+                                                     "cache_dtype": args.kv_cache_dtype},
                                               "model": {"layer_types": types, "is_multimodal_model": True},
                                               "gpu": {"name": "STUB H100 80GB HBM3"}}, indent=1))
     if args.stub_fail:
@@ -373,8 +460,12 @@ def main() -> None:
     ap.add_argument("--gsm8k", type=Path, help="gsm8k.json from ../safedispatch_testA2/gsm8k.py")
     ap.add_argument("--cells", default="2048:4,8192:4,32768:4,65536:4,65536:4:1,32768:4:1",
                     help="slope cells L:B[:replicate], one batch")
+    ap.add_argument("--pair-cells", default="", help="E-50: cells L:aL2[:replicate] with the batch set from the KV "
+                    "pool for context L2, run after the slope cells")
     ap.add_argument("--waste-cells", default="1024:1,1024:8,1024:32,16384:8", help="exploratory cells, run last")
     ap.add_argument("--profile-cells", default="2048:4,32768:4,65536:4,1024:1,1024:8,1024:32")
+    ap.add_argument("--auto-frac", type=float, default=0.85, help="share of the idle KV pool that an 'aL' batch fills")
+    ap.add_argument("--kv-cache-dtype", default="auto", help="auto (the model dtype) or fp8")
     ap.add_argument("--steps", type=int, default=32)
     ap.add_argument("--min-blocks", type=int, default=3)
     ap.add_argument("--max-blocks", type=int, default=5)
@@ -395,6 +486,7 @@ def main() -> None:
     ap.add_argument("--stub-sliding-growth", type=float, default=0.0, help="sliding attention growth at 64K")
     ap.add_argument("--stub-profile-wall-ms", type=float, default=0.0, help="profiler start and stop cost")
     ap.add_argument("--stub-preempt", default="", help="cells L:B[:r] that the scheduler preempts")
+    ap.add_argument("--stub-pool-blocks", type=int, default=16095, help="idle KV pool blocks with the BF16 cache")
     ap.add_argument("--stub-accuracy", type=float, default=0.9)
     ap.add_argument("--stub-bad-advance", action="store_true")
     ap.add_argument("--stub-bad-attribution", action="store_true")
@@ -423,31 +515,53 @@ def main() -> None:
         llm = LLM(model=args.model, revision=args.revision, seed=0, max_num_seqs=args.max_num_seqs,
                   max_model_len=args.max_model_len, max_num_batched_tokens=args.max_num_batched_tokens,
                   gpu_memory_utilization=args.gpu_memory_utilization, enable_prefix_caching=False,
+                  kv_cache_dtype=args.kv_cache_dtype,
                   limit_mm_per_prompt={"image": 0, "audio": 0, "video": 0})   # all 0: text-only mode (R-64 R3)
         record.update(init_seconds=round(time.time() - t, 1), kv=kv_record(llm), model=model_record(llm))
         record["gsm8k"] = gsm8k_check(llm, gsm8k, args.gsm8k_n, out)
         (out / "run.json").write_text(json.dumps(record, indent=1))
         engine = llm.llm_engine
-        slope, waste = cell_list(args.cells), cell_list(args.waste_cells)
-        stream = token_stream(llm.get_tokenizer(), gsm8k, max(c[0] for c in slope + waste) + 8)
+        slope, pairs, waste = cell_list(args.cells), cell_list(args.pair_cells), cell_list(args.waste_cells)
+        plan = [(c, "slope") for c in slope] + [(c, "pair") for c in pairs] + [(c, "waste") for c in waste]
+        stream = token_stream(llm.get_tokenizer(), gsm8k, max(c[0] for c, _ in plan) + 8)
         profiled = {cell_key(*c) for c in cell_list(args.profile_cells)}
+        free_idle = scheduler_check(engine, 0).get("free_blocks")
+        record["free_blocks_idle"] = free_idle
+        sizes: dict[int, float] = {}   # blocks per request by context, from the first cell of each context
         cells, tables = [], {}
-        for i, (ctx, batch, rep) in enumerate(slope + waste):
+        for i, ((ctx, batch, rep), kind) in enumerate(plan):
             key = cell_key(ctx, batch, rep)
-            cell, table = run_cell(engine, stream, ctx, batch, rep, args, key in profiled, out)
-            cell["kind"] = "slope" if i < len(slope) else "waste"
+            spec = None
+            if isinstance(batch, str):
+                spec, batch = key, auto_batch(batch, sizes, free_idle, args)
+            if batch is None:   # no earlier cell of that context: the pair cell cannot be sized
+                cell, table = {"context": ctx, "batch": None, "rep": rep, "status": "no_size", "step_ms": [],
+                               "advance_min_max": []}, None
+            else:
+                cell, table = run_cell(engine, stream, ctx, batch, rep, args, key in profiled, out, spec)
+            cell["kind"] = kind
+            if spec:
+                cell.update(spec=spec, auto_for=int(spec.split(":")[1][1:]))
+            free = (cell.get("sched") or {}).get("free_blocks")
+            if free_idle and free is not None and cell["sched"].get("ok") and ctx not in sizes:
+                sizes[ctx] = (free_idle - free) / batch
+                cell["blocks_per_request"] = round(sizes[ctx], 1)
             cells.append(cell)
             if table:
                 tables[key] = table
             (out / "cells.json").write_text(json.dumps(cells, indent=1))
             (out / "kernels.json").write_text(json.dumps(tables, indent=1))
             print(json.dumps({k: cell[k] for k in ("context", "batch", "rep", "status", "step_ms")}), flush=True)
-            if i == len(slope) - 1:   # the rule needs only the slope cells (R-64 R8)
+            if i == len(slope) - 1:   # the E-49 rule needs only the slope cells (R-64 R8)
                 record.update(status="ok_slope", slope_done_at=now())
+                (out / "run.json").write_text(json.dumps(record, indent=1))
+            if pairs and i == len(slope) + len(pairs) - 1:   # the E-50 rule needs the pair cells too
+                record.update(status="ok_pairs", pairs_done_at=now())
                 (out / "run.json").write_text(json.dumps(record, indent=1))
         record.update(status="ok", finished_at=now())
     except Exception as exc:  # recorded, then re-raised so the caller sees a non-zero exit
-        record.update(status="ok_slope" if record["status"] == "ok_slope" else "error", error=f"{type(exc).__name__}: {exc}"[:2000])
+        kept = record["status"] if record["status"] in ("ok_slope", "ok_pairs") else "error"
+        record.update(status=kept, error=f"{type(exc).__name__}: {exc}"[:2000])
         (out / "run.json").write_text(json.dumps(record, indent=1))
         raise
     (out / "run.json").write_text(json.dumps(record, indent=1))
