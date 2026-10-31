@@ -2,7 +2,7 @@
 
 Owner: Kushagra Bainsla, MSCS, San Jose State University
 Created: 2026-09-23
-Last updated: 2026-10-29
+Last updated: 2026-10-30
 Protocol version: 1
 
 This is the single source of truth for the whole research journey: every idea, every
@@ -184,7 +184,8 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-10-30, after the E-49 H100 run (frozen decision PIVOT); R-65 post-run review pending.** Rewrite this section every session.
+**As of 2026-10-30, after the E-49 H100 run (frozen decision PIVOT) and its R-65 post-run review
+(CONFIRM_WITH_SCOPE_LIMITS).** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
 - Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
@@ -215,12 +216,17 @@ maps every file to what it contains.
   AMEND_THEN_RUN: 2 blockers, 7 more fixes, 7 optional items adopted); 20 tests pass. D-74 (spend: RTX 4090
   rehearsal cap $0.60, then H100 cap $6) decided by the user ("Approve both"). S5 rehearsal PASS on an RTX 4090
   (about $0.21). The H100 run did not start: the live balance check failed after the rehearsal, because another
-  project's H200 Pod spends about $5.30/h on the shared account. D-75 (user): a one-time $30 floor. E-49 RUN on 1 x H100 (about $2.20):
-  frozen decision PIVOT (one model or one cell only). 31B FP8: S_low 6.5% at 32K and 11.1% at 64K, every control
-  passes (global attention at 1.03 x copy bandwidth, sliding flat on FA4). 26B-A4B: S 6.1% at 32K (bound 4.6%);
-  its 64K cells were lost because 5 of 8 requests ended after about 10 tokens (cause not proven). D-76
-  (recommendation, open): after R-65, a prototype plan for the dense model and a small m26 64K follow-up.
-  0 thesis Pods, 0 volumes.
+  project's H200 Pod spends about $5.30/h on the shared account. D-75 (user): a one-time $30 floor. E-49 RUN on
+  1 x H100 ($2.09 billed; $2.30 with the rehearsal): frozen decision PIVOT (one model or one cell only). 31B FP8:
+  ceiling S 6.65% at 32K and 11.33% at 64K (bounds 6.53% to 6.76% and 11.14% to 11.53%), every control passes
+  (global attention at 1.03 x copy bandwidth, sliding flat on FA4). 26B-A4B: S 6.1% at 32K (bound 4.6%); its 64K
+  cells were lost to a probe fault. R-65 (Sonnet post-run review): CONFIRM_WITH_SCOPE_LIMITS. The probe's
+  `max_tokens` (236) was too small: with chunked prefill, early requests decode while later ones prefill, so one
+  request ended in each block. The earlier end-token HYPOTHESIS is retracted (Section 8.1 row 69). R-65 also
+  estimates (not measured) that the compact cache adds only about 3.8% to 7.0% on top of an FP8 KV cache at
+  batch 4. D-76 (recommendation, open, updated after R-65): patch the probe (free), then one H100 session (about
+  $3) that reruns m26 and measures m31 at larger batches and with FP8 KV. The stacked ceiling decides on a
+  prototype. 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1133,7 +1139,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B S_low 6.5% at 32K, 11.1% at 64K, all controls pass; 26B 64K cells lost, 32K bound 4.6%) | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number | `experiments/gemma4_kv_audit/README.md` |
 | I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
@@ -1596,6 +1602,12 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   of decode time as an upper-bound saving, all controls pass. 26B: 64K cells lost to early
                   request ends. I-183 registered (Triton sliding attention, from the rehearsal). D-76 opened.
                   Source: experiments/gemma4_kv_audit/README.md Section 13. Ideas: I-182, I-183. Experiments: E-49.
+2026-10-30  [P10] R-65 (Sonnet) post-run review of E-49: CONFIRM_WITH_SCOPE_LIMITS. The decision and every
+                  31B number reproduce. The 26B 64K loss came from the probe token budget (236), not from
+                  end tokens: the earlier HYPOTHESIS is retracted (Section 8.1 row 69). Estimate: on top of
+                  FP8 KV the compact cache adds about 3.8% to 7.0% at batch 4. Billing: H100 $2.09,
+                  rehearsal $0.21. D-76 updated.
+                  Source: dossier/REVIEW_E-49_POSTRUN_2026-10-30.md. Ideas: I-182. Experiments: E-49.
 ```
 
 ---
@@ -3643,7 +3655,8 @@ its kernels exist (DeepSeek, FlashMLA, FlashInfer MLA). Section 7.30.
 Exact surviving gap: no GPU serving engine found that realizes the 37.5% saving. Do not claim the saving or the layout
 as novel; the contribution is the engine mechanism (cache spec, kernel path) and its measured effect.
 Experiments: E-49 (predeclared 2026-10-29).
-Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1.
+Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1. R-65
+(post-run, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS.
 Research log: 2026-10-29: `kv_layout_check.py` shows the identity (float64 error 8e-15; BF16 cache error not above the
 standard layout). Byte model: 0.5% to 0.7% of decode bytes at 2K, 1.9% to 2.7% at 8K, 6.5% to 8.9% at 32K, 11% to
 14% at 64K (31B FP8 at batch 4, 26B-A4B BF16 at batch 8). 2026-10-30: R-64 confirmed the mechanism (HF, vLLM,
@@ -3651,13 +3664,21 @@ llama.cpp, DeepMind JAX, TRT-LLM agree: rotated dims 0..63 and 256..319, scale 1
 layout is exact in real arithmetic, not in BF16 bits (median error 1.4% compact against 1.1% standard on heavy-
 tailed keys), so a prototype needs an accuracy gate. Competitor: FP8 or NVFP4 KV at head_dim 512 (lossy, 50% of
 all KV bytes, can stack). Prototype risk: the compact page (5,120 B per token and layer) does not match the
-sliding page (16,384 B) in the hybrid allocator.
+sliding page (16,384 B) in the hybrid allocator. 2026-10-30 (R-65): both models read the global KV at 3.0 to 3.1
+TB/s, so the byte model holds. vLLM `AttentionSpec` has a `head_size_v` field that a prototype can use.
 Verdict history: 2026-10-29: MEASURE-FIRST (main session, before R-64). 2026-10-30: MEASURE-FIRST kept (R-64:
 novelty low, the engine gap and its measured effect are the open item; likely outcome PIVOT or GO).
 2026-10-30: E-49 PIVOT by the frozen rule (one model or one cell only). The 31B result is clean: the compact
 cache could save at most 6.5% (32K) to 11.1% (64K) of decode step time at batch 4 (lower bounds; S is an upper
 bound for the real saving). Status stays MEASURE-FIRST until R-65 and D-76.
+2026-10-30: R-65 (Sonnet post-run review): CONFIRM_WITH_SCOPE_LIMITS. Wording fix (R-65 C4): the ceiling at batch 4
+is S = 6.65% at 32K and 11.33% at 64K; 6.53% and 11.14% are its one-sided 95% lower bounds, not "at most" values.
+The m26 64K loss is a probe fault (token budget), so m26 is incomplete, not negative. INTERPRETATION (R-65): S
+grows with batch (about 10% to 14% at the KV pool limit). On top of an ideal FP8 KV cache, the compact cache adds
+only about 3.8% (32K) and 7.0% (64K) at batch 4. Status stays MEASURE-FIRST until D-76.
 Next step and kill rule: E-49 (Section 6.1). KILL if S < 2% in every deciding cell. A GO allows only a prototype plan.
+After E-49: D-76 (Section 10). The stacked ceiling on FP8 KV decides: a prototype only if it stays at or above 5% at
+the pool-limit batch (R-65).
 Lessons: read the model's own design report and the engine model code for savings the design promises; the hot
 kernel paths attract many engineers, but the cache layout of a new attention form can stay generic.
 
@@ -4928,7 +4949,7 @@ faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cu
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
 
 **E-49 Gemma 4 decode waste audit and the K=V cache lead** (predeclared 2026-10-29, I-182). STATUS: PREDECLARED,
-AMENDED A1 (2026-10-30, R-64, before any data), S5 REHEARSAL PASS (2026-10-30, RTX 4090, about $0.21), RUN 2026-10-30 (H100, about $2.20): PIVOT. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
+AMENDED A1 (2026-10-30, R-64, before any data), S5 REHEARSAL PASS (2026-10-30, RTX 4090, $0.21 billed), RUN 2026-10-30 (H100, $2.09 billed): PIVOT; S9 R-65 CONFIRM_WITH_SCOPE_LIMITS. Package: `experiments/gemma4_kv_audit/` (README is the preregistration). Question: in vLLM nightly
 (digest f255c4fa, commit 3966924d) on 1 x H100 SXM, what share S of decode step time would a compact K=V cache save
 at 32K and 64K context? Method: decode-only engine steps over a context sweep (2K, 8K, 32K, 64K) at fixed batch
 (31B FP8 batch 4, 26B-A4B BF16 batch 8); the slope b of T(L) is the global attention; S = 0.375 b_low L / T(L). Rule
@@ -4954,9 +4975,15 @@ S6 (2026-10-30, Pod isqx3210lt056m, US-NE-1, session 20:01 to 20:22 UTC): both m
 11.4%; every check and gate passes (global attention 1.03 x copy bandwidth; attention 98.6% of the growth; sliding
 -2% to -3.5%; linear within 0.31%). m26: S 6.09% at 32K (S_low 4.56%, 4 cells, df 2); both 64K cells left out
 because 5 of 8 requests ended after about 10 tokens (the guard labelled them "preempted"; the label is wrong;
-HYPOTHESIS: an end token of the generation config). Exploratory: GPU idle per step below 1% (m31) and 4% to 7%
-(m26). The monitor lost SSH before AUTO_STOP; a 3 min restart copied the results (65 files, checksums match).
-README Section 13. R-65 (post-run review) pending.
+HYPOTHESIS: an end token of the generation config; this sentence is corrected in S9). Exploratory: GPU idle per
+step below 1% (m31) and 4% to 7% (m26). The monitor lost SSH before AUTO_STOP; a 3 min restart copied the results
+(65 files, checksums match). README Section 13.
+S9 (2026-10-30, R-65, Sonnet): CONFIRM_WITH_SCOPE_LIMITS. The decision and every m31 number reproduce from the raw
+files. Correction (Section 8.1 row 69): the m26 64K requests ended at the length cap, not at an end token. The probe
+set `max_tokens` = 236. With chunked prefill, request 0 decoded 226 tokens while the other 7 requests prefilled, so
+one request ended in each block. A replay of `run_cell` with this budget gives the exact record. Before any rerun
+(R-65 C3, not done): set `max_tokens` from the prefill schedule, add a budget guard and finish-reason logs, and make
+M2 "unknown" without a 64K cell. Billing: H100 $2.09, rehearsal $0.21.
 
 **E-48 LM-head exactness screen** (2026-10-29, I-181). STATUS: RUN 2026-10-29, SCREEN ONLY, GO for design 1 (FP8)
 by the frozen rule (rule in the README; same-commit caveat as E-47). No GPU, no spend (Mac CPU, about 3 minutes).
@@ -5776,6 +5803,24 @@ too small in our measured regime, or not testable without fleet data. Our teleme
 this serving regime: removing the cap gains at most 0.65% (E-44) to 2.4% (E-46). Both passes: D-70 options A and B
 remain the best use of the time. Write-up: `dossier/FRONTIER_R-62_2026-10-29.md`.
 
+**R-65 Post-run review of E-49 (Gemma 4 K=V cache audit, I-182)** (2026-10-30, Sonnet, a different model from the
+author; recomputation from the raw files, vLLM source reading, a replay of the probe, prior-work pass 2).
+CONFIRM_WITH_SCOPE_LIMITS. The frozen decision PIVOT and every m31 number reproduce (exact t quantiles; code and rule
+text unchanged since 8edb552; 65 checksums match). The layer split gives 480 and 240 groups in all 11 profiles, and
+the hdim-512 FA4 kernel occurs only at global positions. The m26 64K cause in the record was wrong: with `ignore_eos`
+true, vLLM does not add the generation-config end tokens to `stop_token_ids`, so only the length cap can end a
+request. The cause is the probe budget (`max_tokens` 236): with chunked prefill, request 0 decoded 226 tokens while
+the other 7 requests prefilled. A replay of `run_cell` with this budget model gives the exact record, and `min_tokens`
+= `max_tokens` would fail the same way. Corrections: C1 record (done), C2 the D-76 plan (done), C3 a budget guard,
+finish-reason logs and M2 "unknown" without a 64K cell (code, before any rerun; not done), C4 the ceiling wording
+(done). INTERPRETATION: S grows with batch (about 10% to 14% at the KV pool limit). On top of an ideal FP8 KV cache,
+the compact cache adds only about 3.8% (32K) and 7.0% (64K) at batch 4. Pass 2 (2026-10-30): no engine, PR or paper
+stores the Gemma 4 K=V cache once. New competitor paths: SGLang PR #46965 and FlashInfer PR #8057. Adjacent: arXiv
+2609.13285 (Grouped Value Attention). The main session checked the vLLM source lines, ran the replay again and
+checked the titles and dates of the three new items. The review names its batch and FP8 add-on "E-50"; R-66 also
+names a proposed "E-50" (I-186). Neither is predeclared, so the next predeclared experiment takes the next free ID.
+Write-up: `dossier/REVIEW_E-49_POSTRUN_2026-10-30.md`.
+
 **R-64 Pre-run review of E-49 (Gemma 4 K=V cache audit, I-182)** (2026-10-29 to 30, Sonnet, a different model
 from the author; hostile review with fresh searches and source reading). AMEND_THEN_RUN. The mechanism holds in HF,
 vLLM, llama.cpp, TRT-LLM and the DeepMind JAX code; 37.5% = 1 - 640 / 1,024; the 9 tests and the layout check
@@ -6371,6 +6416,11 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | vLLM PR #38835 (merged) | 2026-04-02 | Enables head_dim 512 on SM90 with FA4 | The E-49 baseline path | doc-only (R-64 read it) |
 | vLLM issue #49878 (open) | 2026-07-26 | Hybrid KV sizing for Gemma 4 (page and groups) | Input to the E-49 memory budget | doc-only (R-64 read it) |
 | google-deepmind/gemma `_modules.py`; litert-torch `patch.py` | 2026-10-28/29 | Separate 'k' and 'v' caches; the on-device export updates both | No implementation found | doc-only (R-64 read them) |
+| SGLang PR #46965 | 2026-10-28, open | FA4 SM90 FP8 e4m3 KV cache for head_dim 512 (Gemma 4); no speed data yet | The lossy competitor gains an engine path on H100 | checked 2026-10-30 (title, state, date; main session); body doc-only (R-65 read it) |
+| FlashInfer PR #8057 | 2026-10-30, open | A validate-once launcher for the NVFP4 KV materializer | Competitor path (lossy) | checked 2026-10-30 (title, state, date; main session) |
+| Grouped Value Attention, Tripathi, Kumar, Khan, arXiv 2609.13285 | 2026-09-15 | Caches grouped values and rebuilds content keys with a learned map absorbed into the query, plus a small decoupled RoPE key; about 45% to 47% fewer cache scalars than GQA; trained from scratch at 350M; kernels in test | Same family as an architecture, not the Gemma 4 engine mechanism; R-64 missed it | checked 2026-10-30 (abstract; main session); R-65 read the HF page |
+| vLLM main `gemma4.py` L440, L555; `kv_cache_interface.py` L560, L590 (commit 59d58fd26) | 2026-10-30 | K weights still load into both K and V slots; `AttentionSpec` has a `head_size_v` field | The engine gap is still open; a prototype hook exists | doc-only (R-65 read them) |
+| llama.cpp PR #31406, #31356; TensorRT-LLM PR #21339, #18537; vLLM PR #61267, #62034, #64247, #64774 | 2026-10 | Cross-layer KV sharing for E2B and E4B; config and weight mapping; LoRA, QK-norm and RoPE fusion, spec decoders | Not the same mechanism | search-only (R-65, titles) |
 
 ---
 
@@ -6448,6 +6498,7 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | 66 | 2026-10-21 | R-37: I-154 "any order without idle time is within O(sqrt n)"; I-158 "closes the whole family" | CORRECTED (R-38): the bound holds only for random order, and the gain is 3 to 14% at n of 8 to 128; DySHARP covers dynamic multicast | State the assumptions of an asymptotic argument and check small n. An arithmetic kill covers only the variant it computes |
 | 67 | 2026-10-26 | E-36 Session 1 first draft: "no dispatch headroom ... close to the Test A KILL condition"; "86% to 95%" flipped; kernel check "different scaling or layout code" | CORRECTED (R-42): under exact match the KILL condition is trivially true for a safe set of {R}, so headroom is untested, not absent; the flip range is 87.5% to 95.3%; dense deep_gemm differs in fused activation-quantization kernels | An exact-match contract that flags every numerical change cannot measure headroom. Check what the rule can show before reading its result as evidence |
 | 68 | 2026-10-28 | R-54 chat summary: "vLLM lists the lifecycle contract as open, but it has no version field"; R-54 Section 4.1 asked for a per-token version record as an open part of I-165 | CORRECTED (E-43, R-55): vLLM has a weight-version label since #49040 (2026-07-28) and per-token spans since #59582 (2026-10-11); SGLang since #35926 (2026-08-24); RFC #54443 (2026-08-30) specifies them. The R-54 dossier statement about #48311 alone is correct | Search the engine source and its RFC list for the named field, not only the one RFC that a roadmap links |
+| 69 | 2026-10-30 | E-49 record (README Section 13, the E-49 entry, Section 1, Section 4, L-11): the m26 64K requests "stopped at an end token of the generation config" (HYPOTHESIS), the fix "`min_tokens` = `max_tokens`", and "5 of 8 requests ended after about 10 tokens" | CORRECTED (R-65): with `ignore_eos` true, vLLM 3966924d5 does not add those ids to `stop_token_ids`. The requests hit the length cap of the probe budget (`max_tokens` 236), because early requests decode during the staggered chunked prefill. Only request 0 ended near the 10th timed step, then one request per block. `min_tokens` cannot stop a length cap | Read the engine's stop logic in the source before naming a stop cause; log finish reasons; set `max_tokens` from the prefill schedule |
 
 ### 8.2 Do not cite
 
@@ -6463,6 +6514,7 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 - The 9.5% oracle as a general figure.
 - "Magnitude" claims for I-18. Only the structural gap is established.
 - The earlier docs' claim that the collective survey names I-18 as an open problem.
+- The E-49 end-token HYPOTHESIS for the m26 64K loss, and `min_tokens` = `max_tokens` as its fix (row 69).
 
 ---
 
@@ -6660,7 +6712,7 @@ proposed it and no acceptance is recorded.
 | D-73 | 2026-10-29 | After R-63: the profile-mining method found a real optimization (I-181), but another group already has it as an open vLLM PR. Next search step: one preregistered waste audit on a model class the engines have tuned least (for example a hybrid linear-attention model such as Qwen3-Next, or MoE with sparse attention, on H100 or B200), GO only for a gap of 5% or more of step time that no shipped or open-PR mechanism covers; check open PRs in pass 1 | Recommendation (R-63). Not a decision. GPU spend needs the user's approval and a live balance check | Profile mining is the only method here that found real waste (O-03, O-04, I-181) | Planning approved by the user 2026-10-29 ("Yes, plan it"); the spend is D-74 |
 | D-74 | 2026-10-29 | Run E-49 (Gemma 4 K=V cache audit, I-182) after its pre-run review: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM Secure at $3.99/h (cap $6). Updated 2026-10-30: R-64 done, A1 applied, about 45 to 55 min on the H100 | Recommendation (main session). Not a decision. Needs the user's spend approval and a live balance check | D-73 planning was approved; pass 1 moved the target from hybrid recurrent models (crowded) to Gemma 4 | **Decided by the user 2026-10-30** ("Approve both": the rehearsal cap $0.60 and the H100 cap $6); live balance check ok |
 | D-75 | 2026-10-30 | One-time balance floor of $30 (not $35) for the E-49 H100 run only: the booking check and the mid-run stop rule (stop if the balance falls below $30 plus the remaining cost cap) | **Decided by the user 2026-10-30** ("Run, $30 floor") | After the rehearsal the $35 floor check failed by about $1.40, because another project's H200 Pod spends about $5.30/h on the shared account | Applies to this run only; the $35 floor stays for every other run |
-| D-76 | 2026-10-30 | After E-49 (PIVOT): first wait for R-65. Then (a) a prototype plan for the compact K=V cache in vLLM for the dense 31B model (own preregistration, an accuracy gate, the page-size plan, a comparison with FP8 KV and the stacked case), and (b) a small follow-up for m26 at 64K with `min_tokens` = `max_tokens` (about $1.50). Or stop I-182 | Recommendation (main session). Not a decision | The 31B ceiling is 6.5% to 11.1% of decode time with every control passing; the m26 gap is an instrumentation loss, not a negative result | **Open, waiting on R-65 and the user** |
+| D-76 | 2026-10-30 | After E-49 (PIVOT) and R-65 (CONFIRM_WITH_SCOPE_LIMITS). Recommended order: (1) free: patch the probe (R-65 C3: a budget from the prefill schedule, a budget guard, finish-reason logs, M2 "unknown" without a 64K cell, a fake-engine test with the 2,048-token budget); (2) one H100 session, about $3, with its own preregistration and the next free E-nn: rerun m26 with the fixed budget, and measure m31 at larger batches (8 at 32K, 5 at 64K) and with an FP8 KV cache at batch 4; (3) a prototype only if the stacked ceiling on FP8 KV stays at or above 5% at the pool-limit batch (kernel microbenchmark first, GPU about $4 to $8; engineering effort not costed). Alternatives: a rerun of m26 only (about $1.5 to $2.0), or stop I-182 ($0). The earlier option (b) with `min_tokens` = `max_tokens` is withdrawn (R-65 C2) | Recommendation (main session, after R-65). Not a decision | The 31B ceiling is 6.65% (32K) to 11.33% (64K) at batch 4 with every control passing. FP8 KV is the strongest baseline and may take most of the gain (R-65 estimate: 3.8% to 7.0% left on top). Measuring it costs less than a kernel | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7076,3 +7128,7 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   log); S6 waits for the balance check; Section 1 line; Section 4 entry.
 - 2026-10-30: D-75 decided by the user; E-49 RUN (PIVOT) in Section 6.1 and README Section 13; ledger and hardware
   log rows; I-183 registered (Section 3 row, Section 5.28); Section 5.27 verdict; D-76 opened; Section 1; Section 4.
+- 2026-10-30: R-65 (E-49 post-run review, CONFIRM_WITH_SCOPE_LIMITS) in Section 6.2; E-49 S9 (Section 6.1); Section
+  8.1 row 69 and a Section 8.2 line (the end-token HYPOTHESIS is retracted); Section 5.27 lines; Section 3 row I-182;
+  Section 7.30 rows; D-76 updated; Section 1 header and line; Section 4 entry; README Section 13; RESEARCH_OUTPUTS
+  O-10 and L-11; hardware log costs from billing.

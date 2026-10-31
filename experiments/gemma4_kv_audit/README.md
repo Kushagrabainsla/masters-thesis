@@ -1,8 +1,10 @@
 # E-49: Gemma 4 decode waste audit and the K=V cache lead on 1 x H100 (preregistration)
 
 Status: PREDECLARED 2026-10-29. AMENDED A1 2026-10-30 (R-64 pre-run review, before any data). S5 rehearsal PASS
-2026-10-30. RUN 2026-10-30 (H100, Section 13): frozen decision PIVOT (one model or one cell only). R-65 pending.
-Idea: I-182. Journal entry: Section 6.1 E-49. Review: R-64 (`dossier/REVIEW_E-49_PRERUN_2026-10-29.md`).
+2026-10-30. RUN 2026-10-30 (H100, Section 13): frozen decision PIVOT (one model or one cell only). R-65 post-run
+review 2026-10-30: CONFIRM_WITH_SCOPE_LIMITS; it corrected the cause of the m26 64K loss (Section 13).
+Idea: I-182. Journal entry: Section 6.1 E-49. Reviews: R-64 (`dossier/REVIEW_E-49_PRERUN_2026-10-29.md`), R-65
+(`dossier/REVIEW_E-49_POSTRUN_2026-10-30.md`).
 Request: D-73 (user, 2026-10-29: "Yes, plan it"): one profiling test on a new model type.
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics unless a source is given.
 Text marked "(A1)" changed in Amendment A1. The version before A1 is commit 56bb221.
@@ -232,30 +234,61 @@ second pass-2 prior-work search and a review. It is not a speed claim.
   Not testable on the 4090 (residual risk, A1): the FA4 kernel names, the FA4 layer split, the FA4 head_dim 512
   path and the H100 memory margins.
 
-## 13. Result (S6 and S8, 2026-10-30; the post-run review R-65 is pending)
+## 13. Result (S6, S8 and S9, 2026-10-30; post-run review R-65)
 - Run (FACT): Pod isqx3210lt056m, 1 x H100 80GB HBM3, US-NE-1, session 20:01 to 20:22 UTC, both models exit 0.
-  Cost about $2.20 (time x price) plus $0.21 for the rehearsal. D-75 (user): balance floor $30 for this run only.
+  Cost $2.09 (billing) plus $0.21 for the rehearsal (billing), $2.30 in total. D-75 (user): balance floor $30 for
+  this run only.
 - Frozen decision (FACT, `analyze_e49.py`): PIVOT (one model or one cell only). m31 passes at 32K and 64K. m26 has
   no passing cell: its 64K cells are left out, and its 32K bound is 4.6%.
-- m31 (31B FP8, B = 4), valid, every check passes (FACT): S = 6.65% at 32K (S_low 6.53%) and 11.33% at 64K (S_low
-  11.14%); S_prof 6.9% and 11.4%. T(L) = 15.82 ms + 0.1044 ms per 1,000 context tokens; residuals within 0.31%;
-  local slope ratio 0.976. The global attention reads at 3,139 GB/s, 1.03 x the copy bandwidth (M1 and V5 pass).
-  Attention explains 98.6% of the device growth (V4b); device growth / wall growth is 0.96 (V4a); the sliding
-  attention changes by -2.1% (32K) and -3.5% (64K) against 2K (V4c). GSM8K 87.5%.
+- m31 (31B FP8, B = 4), valid, every check passes (FACT): S = 6.65% at 32K (one-sided 95% bounds 6.53% and
+  6.76%) and 11.33% at 64K (11.14% and 11.53%); S_prof 6.9% and 11.4%. S is the highest possible saving of a
+  compact cache at batch 4. It is not a measured speedup (R-65 C4). T(L) = 15.82 ms + 0.1044 ms per 1,000 context
+  tokens; residuals within 0.31%; local slope ratio 0.976. The global attention reads at 3,139 GB/s, 1.03 x the
+  copy bandwidth (M1 and V5 pass). Attention explains 98.6% of the device growth (V4b); device growth / wall
+  growth is 0.96 (V4a); the sliding attention changes by -2.1% (32K) and -3.5% (64K) against 2K (V4c). GSM8K
+  87.5%.
 - m26 (26B-A4B BF16, B = 8), valid (FACT): S = 6.09% at 32K (S_low 4.56%, df 2: 4 cells remain), S_prof 6.2%. The
   global attention reads at 3,059 GB/s (1.00 x copy). Attention explains 80.4% of the device growth (the MoE
-  kernel adds 0.38 ms from 2K to 32K). Sliding attention -2.6% (V4c passes). GSM8K 96.9%.
-- m26 64K cells (FACT): the scheduler check after prefill was ok (8 running, none waiting). Then 5 of 8 requests
-  left the engine after about 10 output tokens (advance [6, 32], then [0, 32]). The guard labelled both cells
-  "preempted": the label is wrong, the exclusion is right. HYPOTHESIS: the requests stopped at an end token of the
-  generation config (`eos_token_id` [1, 106, 50]); the probe sets `ignore_eos` but records no finish reason. A
-  later probe sets `min_tokens` = `max_tokens` and records the finish reason.
+  kernel adds 0.38 ms from 2K to 32K), so V4b passes by 0.45 points. Sliding attention -2.6% (V4c passes). GSM8K
+  96.9%. M2 is true only because no 64K cell exists (`m2 = local is None or ...`), so it gives no evidence (R-65).
+- m26 64K cells (FACT): the scheduler check after prefill was ok (8 running, none waiting). Then one request left
+  the engine in each timed block (advance [6, 32] in block 1, then [0, 32]). After 5 blocks, 3 requests ran, none
+  waited and no preemption occurred. The guard labelled both cells "preempted": the label is wrong ("finished by
+  length cap" is right), and the exclusion is right (the blocks mix batch 8 to batch 3).
+- Cause of the m26 64K loss (R-65, corrected 2026-10-30): the probe token budget. `max_tokens` = 4 + 5 x 32 + 8 +
+  64 = 236. With a prefill chunk of 2,048 tokens, decode steps go first. Request 0 decoded 226 tokens while the
+  other 7 requests did their prefill, so it had 10 tokens left when the timing started. Each later request ended
+  about 32 steps after the one before it. FACT: a replay of `run_cell` with this budget model (decode first, FCFS
+  prefill, stop at `max_tokens`, no free parameter) gives the exact record. With `max_tokens` 480 the cell passes.
+- Retracted (journal Section 8): the earlier HYPOTHESIS that the generation-config end tokens [1, 106, 50] stopped
+  the requests. FACT (vLLM 3966924d5, `sampling_params.py` `update_from_generation_config`): with `ignore_eos`
+  true, these ids do not go into `stop_token_ids`. `check_stop` tests the length cap before `min_tokens`, so
+  `min_tokens` = `max_tokens` cannot fix the loss.
+- Near misses (R-65 replay, FACT): after the timed phase, the m31 64K cells had 30 to 38 tokens left, the m26 32K
+  cells 14 to 22 and the m26 16K batch-16 cell 14. A fourth block would have lost the m26 cells. The check after
+  the blocks shows that every used cell kept its full batch, so the used data are not affected.
+- Fix before any rerun (R-65 C3, not done): set `max_tokens` from the prefill schedule (435 for 64K at B = 8); stop
+  a cell with status "budget" before timing if a request lacks tokens; log the finish reason of every request;
+  make M2 "unknown" when no 64K cell exists; add a fake-engine test with the 2,048-token budget.
 - Exploratory (not a decision): S_est at 16K is 6.25% (m31, B = 8) and 5.07% (m26, B = 16). The GPU idle share per
   step is below 1% for m31 and 4% to 7% for m26 (the MoE model leaves gaps between kernels). The profile wall time
   per step was 1.6 to 2.4 times the block median, so the R1 fix was needed on the H100 too.
 - Operations (FACT): the monitor lost SSH before AUTO_STOP; AUTO_STOP stopped the Pod at 20:26:51 as designed. The
   Pod was started again for 3 minutes only to copy the results (65 files, checksums match), then deleted. V8 ok
   (busy power median 681 W of 700 W).
+- R-65 (post-run review, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS. The reviewer recomputed the decision from
+  the raw files with exact t quantiles. Every m31 number reproduces. The hdim-512 FA4 kernel occurs only at global
+  layer positions, so the attribution is right. Scope: S is a ceiling at batch 4 (m31) and batch 8 (m26), from one
+  H100 in one session. The m26 evidence is incomplete, not negative.
+- R-65 INTERPRETATION (not measured): a batch model T = 14.48 + 0.336 B + 2.605e-5 B L ms fits all 10 m31 cells
+  within 0.5%. It gives S of about 10% to 14% at the KV pool limit. An ideal FP8 KV cache would save about 13.2%
+  (32K) and 18.7% (64K) at batch 4. The compact cache on top of FP8 KV adds only about 3.8% and 7.0%. FP8 KV is
+  lossy; the compact cache is exact.
+- R-65 prior work pass 2 (as of 2026-10-30): no engine, PR or paper stores the Gemma 4 K=V cache once. New
+  competitor paths: SGLang PR #46965 (open; FA4 SM90 FP8 KV for head_dim 512) and FlashInfer NVFP4 KV PRs.
+  Adjacent: arXiv 2609.13285 (Grouped Value Attention, trained from scratch). Journal Section 7.30.
+- Rule lesson (R-65): a lost deciding cell blocks GO and shows as PIVOT. A new preregistration needs an
+  INCONCLUSIVE outcome for "deciding cell lost".
 
 ## Amendments
 - A1 (2026-10-30, before any data; from R-64, verdict AMEND_THEN_RUN). Each item has a test (Section 12).
