@@ -1,6 +1,7 @@
 # E-50: Gemma 4 K=V headroom on top of an FP8 KV cache, near the KV pool limit, on 1 x H100 (preregistration)
 
-Status: PREDECLARED 2026-10-30. AMENDED A1 2026-10-30 (R-67 pre-run review, before any data). NOT RUN.
+Status: PREDECLARED 2026-10-30. AMENDED A1 2026-10-30 (R-67 pre-run review, before any data). S5 rehearsal PASS
+2026-10-31. RUN 2026-10-31 (H100, Section 13): frozen decision GO. R-68 (post-run review) pending.
 Idea: I-182. Journal entry: Section 6.1 E-50. Follows E-49 and its post-run review R-65. Review: R-67
 (`dossier/REVIEW_E-50_PRERUN_2026-10-30.md`).
 Request: D-76 (user, 2026-10-30, "Plan next test": fix the test code, then plan one H100 session of about $3 that
@@ -248,6 +249,58 @@ Outcomes:
   Not testable on the 4090: the FA3/FA4 selection and the V11 strings, the FP8 FA4 kernel and its JIT, the 64-token
   block, the 128-token global block and the kernel split, the H100 pool and B, the scale 1.0 path on the 31B
   model, the step times, M1 and V8.
+- S5 (2026-10-31 UTC, RTX 4090, EU-RO-1, Pod vhlhmqwc1yzsu3, 16 min, about $0.23 by time x price): PASS, no code
+  change needed. VERIFY 1 to 8 and 10 passed; item 9 passed except the rerun skip, which only the stub test covers.
+  - vLLM 0.33.0rc1.dev229+g3966924d5 started; only E2B was downloaded; the engine line has `kv_cache_dtype=fp8`;
+    `run.json` has 175,214 idle blocks, the KV cache dtype fp8, 5 KV groups and the CUDA graph sizes, and no error.
+  - All 11 cells are "ok": no request left early, no preemption, every block advanced 32 tokens, and `budget_left`
+    was above the need in every cell.
+  - The 64K pair batch was 35 = int(0.85 x 175,214 / 4,174), pool share 0.834. Request 0 held 1,099 tokens when the
+    timing started at B = 35 (bound 1,122), so the budget model holds on the real scheduler above B = 8.
+  - The profiles and the order split worked (both group profiles). The analysis ran and gave INVALID (V1, V5,
+    V11), as expected: V11 failed on the Triton kernel, so the negative case works on real data. AUTO_STOP stopped
+    the Pod; 47 checksums match.
+  - Gaps, no change (the rule does not use them): the per-request preemption record stays empty, because vLLM uses
+    its own internal request ids (the total count works); `vllm_flash_attn` has no version attribute ("unknown").
+  - Exploratory (E2B on Triton, not a decision): the sliding attention grows with L (V4c false), as in I-183. Engine
+    start 91 s; prefill about 14,800 tokens per second at 64K and B = 35.
+
+## 13. Result (S6 to S8, 2026-10-31 UTC; the post-run review R-68 is pending)
+- Run (FACT): Pod ek0w5tktqk4kvp, 1 x H100 80GB HBM3 (GPU 69045460), US-NE-1. Created 06:14 UTC; the image pull took
+  11 min; session 06:26 to 06:57; all three arms exit 0; 81 files copied with matching checksums; the Pod was
+  deleted at 06:57. Cost about $2.90 (time x price) plus about $0.23 for the rehearsal, inside the D-82 limit of $10.
+- Frozen decision (FACT, `analyze_e50.py`; the Mac rerun gives the same `summary.json`): GO (32K: S 0.121, low
+  0.120, up 0.122 at B = 19; 64K: S 0.150, low 0.149, up 0.151 at B = 11).
+- m31f8 (deciding: 31B FP8, FP8 KV), every check passes (V1 to V9, V11). The per-layer FA3/FA4 path ran (both
+  version lines, no Triton kernel). Idle pool 8,017 blocks; B_max 23.3 (32K) and 13.3 (64K); pool shares 0.82 and
+  0.83. GSM8K 90.6% with uncalibrated FP8 KV, so no accuracy caveat.
+  - Group 32K: T = 24.94 ms + 0.3633 ms per 1,000 tokens (df 2, residuals within 0.1%). The global attention reads
+    2,142 GB/s (0.70 x copy, M1). M2 1.00; sliding attention +0.06% (V4c); S_att 0.122 (no gap).
+  - Group 64K: T = 21.08 ms + 0.2148 ms per 1,000 tokens (df 3, residuals within 0.23%). 2,098 GB/s (0.69 x copy);
+    M2 1.01; sliding attention -0.12%; S_att 0.150.
+  - B = 4 (secondary): S 4.84% at 32K and 8.62% at 64K. R-65 estimated 3.8% and 7.0% for an ideal FP8 kernel.
+- FP8 against BF16 at B = 4 in the same Pod (secondary; two stock paths, A1): the FP8 path is 5.8% slower at 2K,
+  5.2% at 8K and 1.5% at 32K, and 2.6% faster at 64K. Its global attention reads 2,089 GB/s in FP8 bytes against
+  3,157 GB/s for BF16, so the time per context token falls by about a quarter, not by half. Its fixed part c is
+  1.08 ms larger (INTERPRETATION: the FA3/FA4 mix and the dequant kernel).
+- Capacity (secondary, INTERPRETATION): the FP8 pool holds 1.96 times the requests of the BF16 pool at 32K. At the
+  measured pair batches, the FP8 path decodes 516 tokens per second against 338 for BF16 at 32K (+52%) and 313
+  against 184 at 64K (+70%; the BF16 batch is at a pool share of 0.74). So FP8 KV wins on capacity, not step time.
+- m31bf (secondary): the B = 4 cells reproduce E-49 within 2.3% (c 16.19 against 15.82 ms; b 1.038e-4 against
+  1.044e-4 ms per token; copy 3,045 GB/s in both). The exact-cache ceiling near the BF16 pool limit is S 13.7%
+  (32K, B = 10, share 0.84) and 14.5% (64K, B = 5, share 0.74). The slope per sequence there is 1.27 and 1.23 times
+  the B = 4 value (2,489 to 2,560 GB/s against 3,157), so the R-65 linear batch model is low for BF16 (R-67 O4).
+- m26 (secondary; the E-49 cells with the fixed token budget): all 6 cells "ok", no request left early. S 6.08% at
+  32K (low 5.72%) and 10.46% at 64K (low 9.84%), df 4; R-65 predicted 10.5% at 64K (H2). Both cells pass the E-49
+  cell test (M1, M2, V4b and V4c true). The E-49 frozen decision stays PIVOT; this is new data, not a change of E-49.
+- Hypotheses: H1 holds (S_low 12.0% and 14.9%). H2 holds (10.46%). H3 holds (13.7% and 14.5%).
+- Operations (FACT): the image pull ran before the container start, so the boot watchdog started 11 min late; the
+  Pod time was 44 min, under the $4.50 cap. Two faults of the monitor script (it matched "setup done after", and
+  it counted the missing log during the setup as an ssh failure) ended the monitor early twice. The session was
+  not affected. Engine start: m31f8 122 s, m26 312 s, m31bf 165 s.
+- Scope (A1, R-67 O7): the GO is for the FP8 dequant kernel at 3966924d5. A faster FP8 kernel (vLLM PR #60372, FP8
+  MMA) makes the global attention a smaller share, so S falls. S is a ceiling; no compact kernel exists. A GO
+  allows only a prototype plan (Section 7).
 
 ## Amendments
 - A1 (2026-10-30, before any data; from R-67, verdict AMEND_THEN_RUN). Each item has a test (Section 12).
