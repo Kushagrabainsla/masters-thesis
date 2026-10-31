@@ -229,7 +229,8 @@ every session.
   is predeclared (`experiments/gemma4_kv_headroom/`): the FP8 KV stack near the pool limit decides; the 26B rerun
   and a BF16 arm are secondary. R-67 (Sonnet design review): AMEND_THEN_RUN; A1 applied the 6 fixes (a longer
   timeout for the FP8 arm, a stronger V11, local group checks, a rehearsal that tests the pool rule); 19 tests
-  pass. Next: D-81 (spend: an RTX 4090 rehearsal, cap $0.60; then 1 x H100, cap $4.50). 0 thesis Pods, 0 volumes.
+  pass. D-81 and D-82 decided by the user (2026-10-30): both spends, at most $10 of usage, a one-time floor of
+  $11. S5 rehearsal started (RTX 4090, Pod vhlhmqwc1yzsu3).
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1621,6 +1622,10 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   prove the attention path. E-50 A1 applied all six fixes and nine optional items; 19 tests
                   pass. No spend.
                   Source: dossier/REVIEW_E-50_PRERUN_2026-10-30.md. Ideas: I-182. Experiments: E-50.
+2026-10-30  [P10] D-81 and D-82 decided by the user: the E-50 spends (caps $0.60 and $4.50) within $10 of
+                  usage, with a one-time balance floor of $11 for E-50 only (the $35 check failed after the
+                  other project's spend). The S5 rehearsal started (RTX 4090, EU-RO-1, Pod vhlhmqwc1yzsu3).
+                  Source: user messages in chat. Ideas: I-182. Experiments: E-50.
 ```
 
 ---
@@ -6763,7 +6768,8 @@ proposed it and no acceptance is recorded.
 | D-74 | 2026-10-29 | Run E-49 (Gemma 4 K=V cache audit, I-182) after its pre-run review: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM Secure at $3.99/h (cap $6). Updated 2026-10-30: R-64 done, A1 applied, about 45 to 55 min on the H100 | Recommendation (main session). Not a decision. Needs the user's spend approval and a live balance check | D-73 planning was approved; pass 1 moved the target from hybrid recurrent models (crowded) to Gemma 4 | **Decided by the user 2026-10-30** ("Approve both": the rehearsal cap $0.60 and the H100 cap $6); live balance check ok |
 | D-75 | 2026-10-30 | One-time balance floor of $30 (not $35) for the E-49 H100 run only: the booking check and the mid-run stop rule (stop if the balance falls below $30 plus the remaining cost cap) | **Decided by the user 2026-10-30** ("Run, $30 floor") | After the rehearsal the $35 floor check failed by about $1.40, because another project's H200 Pod spends about $5.30/h on the shared account | Applies to this run only; the $35 floor stays for every other run |
 | D-76 | 2026-10-30 | After E-49 (PIVOT) and R-65 (CONFIRM_WITH_SCOPE_LIMITS). Recommended order: (1) free: patch the probe (R-65 C3: a budget from the prefill schedule, a budget guard, finish-reason logs, M2 "unknown" without a 64K cell, a fake-engine test with the 2,048-token budget); (2) one H100 session, about $3, with its own preregistration and the next free E-nn: rerun m26 with the fixed budget, and measure m31 at larger batches (8 at 32K, 5 at 64K) and with an FP8 KV cache at batch 4; (3) a prototype only if the stacked ceiling on FP8 KV stays at or above 5% at the pool-limit batch (kernel microbenchmark first, GPU about $4 to $8; engineering effort not costed). Alternatives: a rerun of m26 only (about $1.5 to $2.0), or stop I-182 ($0). The earlier option (b) with `min_tokens` = `max_tokens` is withdrawn (R-65 C2) | Recommendation (main session, after R-65). Not a decision | The 31B ceiling is 6.65% (32K) to 11.33% (64K) at batch 4 with every control passing. FP8 KV is the strongest baseline and may take most of the gain (R-65 estimate: 3.8% to 7.0% left on top). Measuring it costs less than a kernel | **Decided by the user (2026-10-30, "Plan next test")**: steps (1) and (2); the spend waits for D-81 |
-| D-81 | 2026-10-30 | Spend for E-50: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 48 min (cap $4.50; expected about $3.20) | Recommendation (main session), after R-67 (AMEND_THEN_RUN, A1 applied). Not a decision | The FP8 stack near the pool limit decides on a prototype (R-65); the same session closes the E-49 26B gap; R-67 worst case about $3.80 | **Open, waiting on the user** |
+| D-81 | 2026-10-30 | Spend for E-50: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 48 min (cap $4.50; expected about $3.20) | Recommendation (main session), after R-67 (AMEND_THEN_RUN, A1 applied). Not a decision | The FP8 stack near the pool limit decides on a prototype (R-65); the same session closes the E-49 26B gap; R-67 worst case about $3.80 | **Decided by the user (2026-10-30, "Go ahead then!")**: both spends, within the D-82 usage limit |
+| D-82 | 2026-10-30 | One-time balance rule for E-50 only: E-50 may use at most $10 of the balance, so the floor for the booking checks and for the mid-run stop rule (stop if the balance falls below the floor plus the remaining cost cap) is $11 (the live balance at S4 minus $10), not $35. The caps ($0.60 and $4.50) stay | **Decided by the user** (2026-10-30: "can we work with 10 dollar of usage?", then "Go ahead then!") | The S4 check failed at the $35 floor after the other project's H200 Pod billed $125 on 2026-10-30; it is stopped now | Applies to E-50 only; the $35 floor returns after it |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7187,3 +7193,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   7.30 row, Section 1, Section 4 entry, D-81 opened); `decode_probe.py` patched (R-65 C3); RESEARCH_OUTPUTS T-08.
 - 2026-10-30: R-67 (E-50 pre-run review, AMEND_THEN_RUN) in Section 6.2; E-50 A1 (Section 6.1, 19 tests pass);
   Section 5.27 lines; a Section 7.30 row; D-81 updated; Section 1 header and line; Section 4 entry.
+- 2026-10-30: D-81 decided by the user; D-82 (user: E-50 within $10 of usage, one-time floor $11); Section 1 line;
+  Section 4 entry.
