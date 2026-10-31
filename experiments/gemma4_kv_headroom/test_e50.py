@@ -174,7 +174,8 @@ def test_go(tmp_path: Path) -> None:
     assert an.decide(s).startswith("GO (")
     g32, g64 = p["groups"]["32768"], p["groups"]["65536"]
     assert (g32["batch"], g64["batch"]) == (22, 11) and g32["pool_share"] < 0.86       # 0.85 of the stub pool
-    assert 0.10 < g32["S"] < 0.14 and 0.11 < g64["S"] < 0.16 and g64["M2"] is True and g32["valid"]
+    assert 0.10 < g32["S"] < 0.14 and 0.11 < g64["S"] < 0.16 and g64["M2"] is True and g32["usable"]
+    assert 0.95 < g32["b_per_seq_ratio"] < 1.05   # the stub slope is linear in B, plus block noise (R-67 O4)
     assert p["decide"]["32768"]["S"] < g32["S"]                  # S grows with the batch
     assert not g32["S_att_gap"] and abs(g32["S_att"] - g32["S"]) < 0.01
     assert g32["attribution"]["split"]["32768"]["method"] == "order" and p["checks"]["V11"]
@@ -235,6 +236,58 @@ def test_pair_cells_stay_out_of_the_slope(tmp_path: Path) -> None:
     s = all_arms(tmp_path, bf=("--stub-pool-blocks", "12000"))
     bf = s["arms"]["m31bf"]
     assert bf["groups"]["65536"]["batch"] == 4 and bf["fit"]["n"] == 4
+
+
+def test_v11_needs_the_attention_path(tmp_path: Path) -> None:
+    """A1 (R-67 R3): a Triton backend line or a Triton attention kernel fails V11, even with the Gemma4Config line."""
+    s = all_arms(tmp_path, "--stub-triton")
+    p = s["arms"]["m31f8"]
+    assert not p["checks"]["V11"] and p["triton_kernels"] and "V11" in an.decide(s)
+
+
+def test_group_validity_is_local(tmp_path: Path) -> None:
+    """A1 (R-67 R4): a group whose own checks fail is lost, not INVALID. The other group can still decide."""
+    s = all_arms(tmp_path / "spread", "--stub-spread-cells", "32768:a32768,32768:a32768:1")
+    g32 = s["arms"]["m31f8"]["groups"]["32768"]
+    assert g32["ok"] and not g32["usable"] and g32["why"] == ["V7"] and an.decide(s).startswith("GO (65536")
+    s = all_arms(tmp_path / "primary", "--stub-preempt", "32768:a32768", "--stub-c-ms", "60")
+    g32 = s["arms"]["m31f8"]["groups"]["32768"]
+    assert g32["ok"] and "profiles" in g32["why"] and s["arms"]["m31f8"]["valid"]
+    assert an.decide(s).startswith("INCONCLUSIVE (deciding group lost: 32768 (")
+
+
+def test_ok_pairs_status_and_accuracy_caveat(tmp_path: Path) -> None:
+    """A1 (R-67 O1, O2): a run.json left at "ok_pairs" is analyzed; low FP8 accuracy is a caveat, not INVALID."""
+    s = all_arms(tmp_path / "pairs")
+    run = tmp_path / "pairs" / "m31f8" / "run.json"
+    run.write_text(run.read_text().replace('"status": "ok"', '"status": "ok_pairs"'))
+    assert an.decide(an.summarize(tmp_path / "pairs")).startswith("GO (")
+    s = all_arms(tmp_path / "acc", "--stub-accuracy", "0.2")
+    d = an.decide(s)
+    assert s["arms"]["m31f8"]["valid"] and d.startswith("GO (") and "accuracy caveat: GSM8K 0.2" in d
+
+
+def test_kill_needs_the_pool_share(tmp_path: Path) -> None:
+    """A1 (R-67 O6): a KILL needs B near the pool limit; at pool share 0.61 the same S gives INCONCLUSIVE."""
+    s = all_arms(tmp_path, "--stub-c-ms", "2000", "--stub-noise", "0.0001", "--stub-pool-blocks", "2000")
+    g = s["arms"]["m31f8"]["groups"]
+    assert (g["32768"]["batch"], g["65536"]["batch"]) == (2, 1) and g["65536"]["pool_share"] < 0.75
+    assert an.decide(s).startswith("INCONCLUSIVE (pool share below 0.75")
+
+
+def test_run_plan_on_budget_engine(tmp_path: Path, monkeypatch) -> None:
+    """A1 (R-67 O9): the real plan loop sizes the pair batch from the pool, marks a pair with no earlier cell of its
+    context as no_size, and writes the "ok_pairs" status."""
+    fake_vllm(monkeypatch)
+    a = types.SimpleNamespace(**ARGS, profile_cells="")
+    record: dict = {"status": "started"}
+    cells, tables = dp.run_plan(BudgetEngine(), list(range(200_000)), [(2048, 4, 0), (65536, 4, 0)],
+                                [(2048, "a65536", 0), (65536, "a65536", 0), (2048, "a32768", 0)], [], a, tmp_path, record)
+    by = {c.get("spec") or f"{c['context']}:{c['batch']}": c for c in cells}
+    assert record["free_blocks_idle"] == 40000 and record["status"] == "ok_pairs" and tables == {}
+    assert by["65536:4"]["blocks_per_request"] == 2422.0 and by["65536:a65536"]["batch"] == int(0.85 * 40000 / 2422)
+    assert by["65536:a65536"]["status"] == "ok" and by["65536:a65536"]["finished"] == {}
+    assert by["2048:a32768"]["status"] == "no_size" and (tmp_path / "cells.json").exists()
 
 
 def test_count_split() -> None:

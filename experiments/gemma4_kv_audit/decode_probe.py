@@ -261,6 +261,49 @@ def run_cell(engine, stream, ctx: int, batch: int, rep: int, args, profile: bool
     return cell, table
 
 
+def run_plan(engine, stream, slope: list, pairs: list, waste: list, args, out: Path, record: dict) -> tuple[list, dict]:
+    """Every cell in order: slope, pair, waste (E-50 A1, R-67 O9: a function, so a test can drive it). A pair cell
+    takes its batch from the idle pool and the blocks per request of the first earlier cell of its context. The
+    files cells.json and kernels.json are written after each cell, and run.json after the slope cells ("ok_slope")
+    and after the pair cells ("ok_pairs")."""
+    plan = [(c, "slope") for c in slope] + [(c, "pair") for c in pairs] + [(c, "waste") for c in waste]
+    profiled = {cell_key(*c) for c in cell_list(args.profile_cells)}
+    free_idle = scheduler_check(engine, 0).get("free_blocks")
+    record["free_blocks_idle"] = free_idle
+    sizes: dict[int, float] = {}   # blocks per request by context, from the first cell of each context
+    cells, tables = [], {}
+    for i, ((ctx, batch, rep), kind) in enumerate(plan):
+        key = cell_key(ctx, batch, rep)
+        spec = None
+        if isinstance(batch, str):
+            spec, batch = key, auto_batch(batch, sizes, free_idle, args)
+        if batch is None:   # no earlier cell of that context: the pair cell cannot be sized
+            cell, table = {"context": ctx, "batch": None, "rep": rep, "status": "no_size", "step_ms": [],
+                           "advance_min_max": []}, None
+        else:
+            cell, table = run_cell(engine, stream, ctx, batch, rep, args, key in profiled, out, spec)
+        cell["kind"] = kind
+        if spec:
+            cell.update(spec=spec, auto_for=int(spec.split(":")[1][1:]))
+        free = (cell.get("sched") or {}).get("free_blocks")
+        if free_idle and free is not None and cell["sched"].get("ok") and ctx not in sizes:
+            sizes[ctx] = (free_idle - free) / batch
+            cell["blocks_per_request"] = round(sizes[ctx], 1)
+        cells.append(cell)
+        if table:
+            tables[key] = table
+        (out / "cells.json").write_text(json.dumps(cells, indent=1))
+        (out / "kernels.json").write_text(json.dumps(tables, indent=1))
+        print(json.dumps({k: cell[k] for k in ("context", "batch", "rep", "status", "step_ms")}), flush=True)
+        if i == len(slope) - 1:   # the E-49 rule needs only the slope cells (R-64 R8)
+            record.update(status="ok_slope", slope_done_at=now())
+            (out / "run.json").write_text(json.dumps(record, indent=1))
+        if pairs and i == len(slope) + len(pairs) - 1:   # the E-50 rule needs the pair cells too
+            record.update(status="ok_pairs", pairs_done_at=now())
+            (out / "run.json").write_text(json.dumps(record, indent=1))
+    return cells, tables
+
+
 def gsm8k_check(llm, gsm8k: list[dict], n: int, out: Path) -> dict:
     from gsm8k import extract
     from vllm import SamplingParams
@@ -329,6 +372,7 @@ def stub_events(types: list[str], ctx: int, batch: int, b: float, c: float, args
     slide = 0.012 * batch / 4 * (1 + args.stub_sliding_growth * ctx / 65536)   # ms per sliding layer
     other = max(0.1, 0.9 * c - 0.012 * batch / 4 * (len(types) - n_glob)) / len(types)
     att = ["kernel_7", "kernel_8", "kernel_9"] if args.stub_opaque_names else \
+        ["kernel_unified_attention_2d", "kernel_unified_attention_3d", "reduce_segments"] if args.stub_triton else \
         ["void flash::FlashAttnFwdSm90<hdim256>", "void flash::FlashAttnFwdSm90<hdim512>", "void flash::FlashAttnFwdCombine"]
     names = ["sm90_xmma_gemm_e4m3", "void vllm::reshape_and_cache_flash_kernel<__nv_bfloat16>", *att,
              "argmax_kernel", "void vllm::block_table_gather"]
@@ -385,6 +429,7 @@ def stub(args, out: Path) -> None:
         todo += [(c, "pair") for c in cell_list(args.pair_cells)] + [(c, "waste") for c in cell_list(args.waste_cells)]
     profiled = {cell_key(*c) for c in cell_list(args.profile_cells)}
     preempt = {cell_key(*c) for c in cell_list(args.stub_preempt)}
+    spread = {cell_key(*c) for c in cell_list(args.stub_spread_cells)}
     free_idle = args.stub_pool_blocks * (2 if fp8 else 1)
     sizes: dict[int, float] = {}
     cells, tables, first = [], {}, True
@@ -412,6 +457,8 @@ def stub(args, out: Path) -> None:
                                  "step_ms": [], "advance_min_max": []})
             continue
         steps = [round(base * (1 + rng.uniform(-args.stub_noise, args.stub_noise)), 4) for _ in range(3)]
+        if key in spread:   # a block spread of about 6%, above the V7 limit
+            steps = [round(base * f, 4) for f in (0.97, 1.0, 1.03)]
         lag = 1 if args.stub_bad_advance else 0
         cells.append(cell | {"status": "ok", "sched": {"known": True, "ok": True, "running": batch, "waiting": 0,
                                                        "preemptions": 0},
@@ -432,12 +479,16 @@ def stub(args, out: Path) -> None:
         for i in range(32):
             sink.write(json.dumps({"id": f"g{i}", "correct": i < round(acc * 32)}) + "\n")
     dims = "{'sliding_attention': 256, 'full_attention': 512}"
-    log = ["INFO Using FLASH_ATTN backend", "INFO GPU KV cache size: 400,000 tokens",
+    backend = "TRITON_ATTN" if args.stub_triton else "FLASH_ATTN"
+    log = [f"INFO Using {backend} attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', "
+           "'TRITON_ATTN', 'FLEX_ATTENTION'].", "INFO GPU KV cache size: 400,000 tokens",
            "INFO Maximum concurrency for 66,048 tokens per request: 6.06x",
            f"INFO Initializing a V1 LLM engine with config: model='{args.model}', kv_cache_dtype={args.kv_cache_dtype}, seed=0",
            f"INFO Gemma4 model has heterogeneous head dimensions {dims}. " +
            ("Using per-layer FA3/FA4 selection for FP8 KV cache on SM90." if fp8 else
             "Using FA4 for all layers to avoid mixed FA3/FA4 penalty.")]
+    if not args.stub_triton:   # vLLM logs this line once per version (lru_cache on the message and its value)
+        log += [f"INFO Using FlashAttention version {v}" for v in ((3, 4) if fp8 else (4,))]
     if not args.stub_multimodal:
         log.append("INFO All limits of multimodal modalities supported by the model are set to 0, running in text-only mode.")
     (out / "log.txt").write_text("\n".join(log) + "\n")
@@ -491,6 +542,8 @@ def main() -> None:
     ap.add_argument("--stub-bad-advance", action="store_true")
     ap.add_argument("--stub-bad-attribution", action="store_true")
     ap.add_argument("--stub-opaque-names", action="store_true", help="attention kernels the regex does not match")
+    ap.add_argument("--stub-triton", action="store_true", help="a Triton attention backend in the log and the profile")
+    ap.add_argument("--stub-spread-cells", default="", help="cells L:B[:r] with a block spread of about 6%%")
     ap.add_argument("--stub-multimodal", action="store_true", help="no text-only log line")
     ap.add_argument("--stub-stop-after-slope", action="store_true")
     ap.add_argument("--stub-fail", action="store_true")
@@ -520,44 +573,9 @@ def main() -> None:
         record.update(init_seconds=round(time.time() - t, 1), kv=kv_record(llm), model=model_record(llm))
         record["gsm8k"] = gsm8k_check(llm, gsm8k, args.gsm8k_n, out)
         (out / "run.json").write_text(json.dumps(record, indent=1))
-        engine = llm.llm_engine
         slope, pairs, waste = cell_list(args.cells), cell_list(args.pair_cells), cell_list(args.waste_cells)
-        plan = [(c, "slope") for c in slope] + [(c, "pair") for c in pairs] + [(c, "waste") for c in waste]
-        stream = token_stream(llm.get_tokenizer(), gsm8k, max(c[0] for c, _ in plan) + 8)
-        profiled = {cell_key(*c) for c in cell_list(args.profile_cells)}
-        free_idle = scheduler_check(engine, 0).get("free_blocks")
-        record["free_blocks_idle"] = free_idle
-        sizes: dict[int, float] = {}   # blocks per request by context, from the first cell of each context
-        cells, tables = [], {}
-        for i, ((ctx, batch, rep), kind) in enumerate(plan):
-            key = cell_key(ctx, batch, rep)
-            spec = None
-            if isinstance(batch, str):
-                spec, batch = key, auto_batch(batch, sizes, free_idle, args)
-            if batch is None:   # no earlier cell of that context: the pair cell cannot be sized
-                cell, table = {"context": ctx, "batch": None, "rep": rep, "status": "no_size", "step_ms": [],
-                               "advance_min_max": []}, None
-            else:
-                cell, table = run_cell(engine, stream, ctx, batch, rep, args, key in profiled, out, spec)
-            cell["kind"] = kind
-            if spec:
-                cell.update(spec=spec, auto_for=int(spec.split(":")[1][1:]))
-            free = (cell.get("sched") or {}).get("free_blocks")
-            if free_idle and free is not None and cell["sched"].get("ok") and ctx not in sizes:
-                sizes[ctx] = (free_idle - free) / batch
-                cell["blocks_per_request"] = round(sizes[ctx], 1)
-            cells.append(cell)
-            if table:
-                tables[key] = table
-            (out / "cells.json").write_text(json.dumps(cells, indent=1))
-            (out / "kernels.json").write_text(json.dumps(tables, indent=1))
-            print(json.dumps({k: cell[k] for k in ("context", "batch", "rep", "status", "step_ms")}), flush=True)
-            if i == len(slope) - 1:   # the E-49 rule needs only the slope cells (R-64 R8)
-                record.update(status="ok_slope", slope_done_at=now())
-                (out / "run.json").write_text(json.dumps(record, indent=1))
-            if pairs and i == len(slope) + len(pairs) - 1:   # the E-50 rule needs the pair cells too
-                record.update(status="ok_pairs", pairs_done_at=now())
-                (out / "run.json").write_text(json.dumps(record, indent=1))
+        stream = token_stream(llm.get_tokenizer(), gsm8k, max(c[0] for c in slope + pairs + waste) + 8)
+        run_plan(llm.llm_engine, stream, slope, pairs, waste, args, out, record)
         record.update(status="ok", finished_at=now())
     except Exception as exc:  # recorded, then re-raised so the caller sees a non-zero exit
         kept = record["status"] if record["status"] in ("ok_slope", "ok_pairs") else "error"

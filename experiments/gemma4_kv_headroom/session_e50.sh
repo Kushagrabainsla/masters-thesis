@@ -28,6 +28,7 @@ C26=${C26:-2048:8,8192:8,32768:8,65536:8,65536:8:1,32768:8:1}
 P26=${P26:-2048:8,32768:8,65536:8}
 PROBE_ARGS=${PROBE_ARGS:-}
 PROBE_TIMEOUT=${PROBE_TIMEOUT:-1500}
+T31F8=${T31F8:-2100}                    # A1 (R-67 R2): the FP8 arm is a first use, so its speed is unknown
 NEW_RUN_CAP=${NEW_RUN_CAP:-3000}        # no new work after 50 min
 POD_LIMIT=${POD_LIMIT:-3600}            # session watchdog at 60 min
 AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-180}
@@ -93,7 +94,8 @@ for m, r in zip(sys.argv[1::2], sys.argv[2::2]):
     [ -f "$P/gsm8k.json" ] || python3 "$CODE/safedispatch_testA2/gsm8k.py" --tokenizer "$TOK" --out "$P" > "$ENV/gsm8k.log" 2>&1 || { log "gsm8k failed"; exit 1; }
     python3 "$CODE/runpod/gpu_microbench.py" --out "$ENV/microbench_start.json" > /dev/null 2>&1
     { python3 -c "import vllm, torch; print('vllm', vllm.__version__); print('torch', torch.__version__)"
-      echo "VLLM_BUILD_COMMIT=${VLLM_BUILD_COMMIT:-unset}"; } > "$RES/versions.txt" 2>&1
+      python3 -c "import vllm.vllm_flash_attn as fa; print('vllm_flash_attn', getattr(fa, '__version__', 'unknown'))"
+      echo "VLLM_BUILD_COMMIT=${VLLM_BUILD_COMMIT:-unset}"; } > "$RES/versions.txt" 2>&1   # A1 (R-67 O7)
     python3 -m vllm.collect_env > "$RES/collect_env.txt" 2>&1 || true
 fi
 log "setup done after $(elapsed) s; versions: $(tr '\n' ' ' < "$RES/versions.txt")"
@@ -108,7 +110,8 @@ gpu_free() {  # wait up to 180 s until the GPU has less than 2 GiB in use (R-64 
     done
     log "WARNING: GPU still has ${used:-?} MiB in use"
 }
-# $1 arm, $2 model, $3 revision, $4 slope cells, $5 pair cells, $6 profile cells, $7 KV cache dtype, $8 s needed
+# $1 arm, $2 model, $3 revision, $4 slope cells, $5 pair cells, $6 profile cells, $7 KV cache dtype, $8 s needed,
+# $9 timeout in s
 probe() {
     out=$RES/$1
     case " $ONLY " in *" $1 "*) ;; *) log "$1: not selected"; return;; esac
@@ -122,16 +125,16 @@ probe() {
             --profile-cells "$6" --kv-cache-dtype "$7" --waste-cells "" --max-model-len 67584 $PROBE_ARGS \
             > "$out/probe_stdout.txt" 2>&1; rc=$?
     else
-        timeout -k 30 "$PROBE_TIMEOUT" python3 "$E49/decode_probe.py" --model "$2" --revision "$3" --out "$out" \
+        timeout -k 30 "$9" python3 "$E49/decode_probe.py" --model "$2" --revision "$3" --out "$out" \
             --gsm8k "$RES/gsm8k/gsm8k.json" --cells "$4" --pair-cells "$5" --profile-cells "$6" --kv-cache-dtype "$7" \
             --waste-cells "" --max-model-len 67584 $PROBE_ARGS > "$out/log.txt" 2>&1; rc=$?
     fi
     log "$1: exit $rc after $(elapsed) s"
     gpu_free
 }
-probe m31f8 "$M31" "$R31" "$S31" "$PF8" "$PP" fp8 0       # the deciding arm first
-probe m26 "$M26" "$R26" "$C26" "" "$P26" auto 600         # the second arm needs 10 min before the cap
-probe m31bf "$M31" "$R31" "$A31" "$PBF" "$PP" auto 600
+probe m31f8 "$M31" "$R31" "$S31" "$PF8" "$PP" fp8 0 "$T31F8"          # the deciding arm first
+probe m26 "$M26" "$R26" "$C26" "" "$P26" auto 600 "$PROBE_TIMEOUT"    # the second arm needs 10 min before the cap
+probe m31bf "$M31" "$R31" "$A31" "$PBF" "$PP" auto 600 "$PROBE_TIMEOUT"
 [ "$STUB" = 1 ] || python3 "$CODE/runpod/gpu_microbench.py" --out "$ENV/microbench_end.json" > /dev/null 2>&1
 [ -n "$TEL" ] && kill "$TEL" 2>/dev/null
 python3 "$E50/analyze_e50.py" --res "$RES" --out "$RES/summary.json" > "$RES/decision.txt" 2>&1 || true

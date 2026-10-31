@@ -186,10 +186,10 @@ def attribution(d: Path, tables: dict, batch: int, med: dict, types: list[str]) 
     return out
 
 
-def model_summary(res: Path, key: str, bw: float | None) -> dict:
-    spec, d = MODELS[key], res / key
+def model_summary(res: Path, key: str, bw: float | None, spec: dict | None = None) -> dict:
+    spec, d = spec or MODELS[key], res / key   # E-50 passes its own arm spec
     run, cells, tables = load(d / "run.json", {}), load(d / "cells.json", []), load(d / "kernels.json", {})
-    if run.get("status") not in ("ok", "ok_slope") or not cells:
+    if run.get("status") not in ("ok", "ok_slope", "ok_pairs") or not cells:   # "ok_pairs": E-50 (R-67 O1)
         return {"status": run.get("status", "missing"), "valid": False, "why": ["run not ok"]}
     B = spec["batch"]
     slope = [c for c in cells if c["batch"] == B and c["context"] in SLOPE_CONTEXTS and c.get("status", "ok") == "ok"
