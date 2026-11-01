@@ -186,8 +186,8 @@ maps every file to what it contains.
 
 **As of 2026-10-31, after the E-49 H100 run (frozen decision PIVOT), its R-65 post-run review
 (CONFIRM_WITH_SCOPE_LIMITS) and the E-50 H100 run (frozen decision GO) with its R-68 post-run review
-(CONFIRM_WITH_SCOPE_LIMITS), and the E-51 predeclaration (the compact kernel test).** Rewrite this section
-every session.
+(CONFIRM_WITH_SCOPE_LIMITS), and the E-51 predeclaration (the compact kernel test) with its R-69 pre-run review
+and amendment A1.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
 - Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
@@ -241,7 +241,11 @@ every session.
   capacity, not step time" (true only at small batch). D-83 decided by the user ("Plan the kernel test"): E-51 is
   predeclared (`experiments/gemma4_kv_kernel/`): Triton standard and compact kernels against the stock FA4 FP8
   kernel; GO needs sigma_mma >= 0.25 with a layout effect; KILL if the layout itself gives less than the kill line.
-  Next: the R-69 design review, then D-84 (spend). 0 thesis Pods, 0 volumes.
+  R-69 (Sonnet pre-run review): AMEND_THEN_RUN. The kernels and the stock call are sound; the rule had 5 blockers.
+  Amendment A1 (before any data): one configuration per family at both lengths, a KILL needs a compact kernel at
+  0.6 x copy, 5 confirmation repeats with a replication test, a correctness check of every configuration, fail
+  fast, the engine's cache layout. 15 tests pass, with a CPU emulation of the Triton kernels. Next: D-84 (spend),
+  then the RTX 4090 rehearsal. 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1154,7 +1158,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark) | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1 | `experiments/gemma4_kv_audit/README.md` |
 | I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
@@ -1652,6 +1656,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   decode kernel and its standard-layout twin against the stock FA4 FP8 kernel, at the E-50
                   pool batches, with the R-68 kill line. 8 tests pass on the Mac. No spend.
                   Source: experiments/gemma4_kv_kernel/README.md. Ideas: I-182. Experiments: E-51.
+2026-10-31  [P10] R-69 (Sonnet) pre-run review of E-51: AMEND_THEN_RUN. The kernels and the stock call are
+                  sound; the rule had 5 blockers (dt over two configurations, a false KILL from a slow
+                  compact kernel, the V4 scope, the cell order, one checked configuration). Amendment A1
+                  fixes them and adds 5 confirmation repeats with a replication test. 15 tests pass.
+                  No spend. Source: dossier/REVIEW_E-51_PRERUN_2026-10-31.md. Ideas: I-182. Experiments: E-51.
 ```
 
 ---
@@ -3699,7 +3708,7 @@ its kernels exist (DeepSeek, FlashMLA, FlashInfer MLA). Section 7.30.
 Exact surviving gap: no GPU serving engine found that realizes the 37.5% saving. Do not claim the saving or the layout
 as novel; the contribution is the engine mechanism (cache spec, kernel path) and its measured effect.
 Experiments: E-49 (RUN 2026-10-30, PIVOT); E-50 (RUN 2026-10-31, GO: the FP8 KV stack near the pool limit); E-51 (predeclared 2026-10-31: the compact
-kernel microbenchmark).
+kernel microbenchmark; amended A1 after R-69).
 Reviews: R-67 (E-50 pre-run, Sonnet, 2026-10-30): AMEND_THEN_RUN; the fixes are E-50 A1.
 Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1. R-65
 (post-run, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS.
@@ -5004,7 +5013,7 @@ faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cu
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
 
 **E-51 Compact K=V decode attention kernel against the stock vLLM kernel** (predeclared 2026-10-31, I-182, D-83).
-STATUS: PREDECLARED, NOT RUN. Package: `experiments/gemma4_kv_kernel/` (README is the preregistration). Question: on
+STATUS: PREDECLARED, AMENDED A1 (R-69), NOT RUN. Package: `experiments/gemma4_kv_kernel/` (README is the preregistration). Question: on
 1 x H100, does a decode attention kernel that reads the compact K=V rows (640 of 1,024 values per head and token)
 cut the context-growing attention time of a Gemma 4 31B global layer enough, against the best stock FA4 FP8 kernel
 with a 15% allowance for the coming FP8 MMA kernel? Method: a kernel microbenchmark with no engine: the stock call of
@@ -5015,7 +5024,16 @@ KILL if sigma_layout is below the kill line in both groups; INCONCLUSIVE if the 
 0.5 x copy; else PIVOT ("kernel quality" or "below the bar"). Validity: correctness against the reference of the
 stored values, the stock kernel within 15% of the E-50 in-engine time (V3), spread, bandwidth, telemetry. Budget:
 about 25 to 30 min of H100 (cap $3) and an RTX 4090 rehearsal (cap $0.60). Tests: 8 pass on the Mac (the math and
-every decision path; the Triton kernels run only on a GPU). Next: the R-69 design review, then D-84 (spend).
+every decision path; the Triton kernels run only on a GPU).
+A1 (2026-10-31, from R-69, before any data): dt uses one configuration per family at both lengths (the fastest at X
+among the configurations that pass the correctness cell); a KILL also needs the compact kernel at 0.6 x copy on dt
+in both groups (else INCONCLUSIVE); dt is the median of 5 confirmation repeats, and the decision must come out the
+same in at least 4 of 5 repeats; every swept configuration runs in the correctness cell (Triton bound 0.01), and a
+failed configuration is dropped; fail fast on SM90; the group cells run first and set the status "ok_groups"; V3 also
+checks dt; V4 uses the decision rows; the engine's cache layout; K = V oracle rows (reported); BF16 at the group
+cells with 4 configurations; caps `KB_TIMEOUT` 1,500 s, boot watchdog 2,040 s, cost cap $3 (expected $1.50 to
+$2.20). Tests: 15 pass on the Mac, with a CPU emulation of the Triton kernel source (worst error 0.0021) and a dry
+run of the GPU code paths. Next: D-84 (spend), then the S5 rehearsal.
 
 **E-50 Gemma 4 K=V headroom on top of an FP8 KV cache, near the KV pool limit** (predeclared 2026-10-30, I-182,
 D-76). STATUS: PREDECLARED, AMENDED A1 (2026-10-30, R-67, before any data), S5 REHEARSAL PASS (2026-10-31, RTX 4090,
@@ -5907,6 +5925,24 @@ too small in our measured regime, or not testable without fleet data. Our teleme
 this serving regime: removing the cap gains at most 0.65% (E-44) to 2.4% (E-46). Both passes: D-70 options A and B
 remain the best use of the time. Write-up: `dossier/FRONTIER_R-62_2026-10-29.md`.
 
+**R-69 Pre-run review of E-51 (compact K=V decode attention kernel, I-182)** (2026-10-31, Sonnet, a different
+model from the author; the kernel source run on the CPU through a small `tl` shim, the stock call checked against
+vLLM `forward()` at 3966924d5 and the FA4 interface, stub grids for the rule, read-only GitHub PR searches).
+AMEND_THEN_RUN. FACT: the kernel logic is right (8 split and tile combinations, both layouts, FP8 and BF16, partial
+pages, empty splits: error 0.0021 at most); no int32 overflow; the stock call matches the engine argument by
+argument; page 64 equals tile_n on SM90; the V3 targets, the kill lines and the go line recompute. Blockers: R1 dt
+took the best row at 2K and the best row at X separately, so two configurations entered one dt (+0.014 on sigma_mma
+in an example, against a GO corridor of 0.25 to 0.266); R2 a slow compact kernel gave KILL (standard 0.70 x copy,
+compact 0.49 x copy); R3 V4 tested 340 rows, not the deciding rows; R4 the deciding cells ran last, so a timeout lost
+the decision; R5 only one Triton configuration was checked for correctness. Plan fixes: R6 fail fast (the RTX 4090
+cannot run the FA4 FP8 call, so the stock call first runs on the H100); R7 the caps did not fit the $3 cap (an 11 min
+pull plus the 45 min boot watchdog is $3.72); R8 the BF16 standard kernel cannot run at 2 stages on the 4090.
+Optional O1 to O9, among them a K = V oracle (O1) and a direct FA PR 199 measurement (O2). The main session checked
+R1 to R5 in the code (and reproduced the false KILL of R2), the FA4 SM90 assert and the engine's cache layout. All
+are fixed in amendment A1, with one change: the oracle route to a KILL in R2 is not adopted (the Triton oracle
+describes the family, the stock oracle the dequant kernel), so the oracle rows are reported only. O3 (5 repeats) is
+adopted because `MEASUREMENT.md` Section 1.5 requires it. Write-up: `dossier/REVIEW_E-51_PRERUN_2026-10-31.md`.
+
 **R-68 Post-run review of E-50 (Gemma 4 K=V headroom on top of an FP8 KV cache, I-182)** (2026-10-31, Sonnet, a
 different model from the author; an independent refit with exact t quantiles, kernel and grid reading from the
 profiles, read-only checks of vLLM and FlashAttention PRs). CONFIRM_WITH_SCOPE_LIMITS. The GO reproduces; no number
@@ -6560,6 +6596,7 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | vLLM PR #60372 (open, updated 2026-10-29) | 2026-10 | Swaps the SM90 FP8-KV dequant kernel for FP8 MMA on the full-attention layers and removes the 32-split cap; its table on Gemma 4 with FP8 KV: AIME 86.88 against 87.29 (BF16), GPQA 86.55 against 85.42 | The FP8 competitor gets faster soon and looks near lossless; E-50 measures the dequant kernel at 3966924d5 | doc-only (R-67 read it) |
 | vLLM PR #60372 (open, mergeable, 2026-10-31 read by R-68); FlashAttention PR 199 (SM90 FP8 MMA at head_dim 512, merged 2026-10-29) | 2026-10 | The PR mainly removes the 32-split cap for FA4 layers; a reviewer's end-to-end test gives +4.5% and +11.3% decode at concurrency 32 and 128 from the cap removal and 0% to 1% from the FP8 MMA kernel; the FA PR 199 table (H200, head_dim 512) shows FP8 kernels that do not follow the bytes | E-50 measured the capped dequant path; the next test must use the best stock FP8 kernel as the baseline | doc-only (R-68 read them) |
 | Community llama.cpp test of q8_0 KV on Gemma 4 | 2026-04-24 | Large KL for q8_0 KV (0.108 for 31B, 0.377 for 26B-A4B) | "FP8 KV is near lossless" is not settled; a different quantizer | search-only (R-68) |
+| vLLM PRs #41944 (drop the V projection for `attention_k_eq_v`; open) and #61267 (a LoRA fix for `attention_k_eq_v`); transformers PR #50189 | 2026-10 | Engine work on the Gemma 4 K=V layers | None stores the K=V cache once (5 GitHub queries for PRs updated since 2026-10-25, and one web search) | search-only (R-69) |
 
 ---
 
@@ -6856,7 +6893,7 @@ proposed it and no acceptance is recorded.
 | D-81 | 2026-10-30 | Spend for E-50: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 48 min (cap $4.50; expected about $3.20) | Recommendation (main session), after R-67 (AMEND_THEN_RUN, A1 applied). Not a decision | The FP8 stack near the pool limit decides on a prototype (R-65); the same session closes the E-49 26B gap; R-67 worst case about $3.80 | **Decided by the user (2026-10-30, "Go ahead then!")**: both spends, within the D-82 usage limit |
 | D-82 | 2026-10-30 | One-time balance rule for E-50 only: E-50 may use at most $10 of the balance, so the floor for the booking checks and for the mid-run stop rule (stop if the balance falls below the floor plus the remaining cost cap) is $11 (the live balance at S4 minus $10), not $35. The caps ($0.60 and $4.50) stay | **Decided by the user** (2026-10-30: "can we work with 10 dollar of usage?", then "Go ahead then!") | The S4 check failed at the $35 floor after the other project's H200 Pod billed $125 on 2026-10-30; it is stopped now | Applies to E-50 only; the $35 floor returns after it |
 | D-83 | 2026-10-31 | After E-50 (GO) and R-68 (CONFIRM_WITH_SCOPE_LIMITS): the next test is a kernel microbenchmark with its own preregistration, no engine, 1 x H100 for about 30 min (about $2 to $3). Compare the stock FP8 dequant kernel, the stock FP8 MMA kernel (FA PR 199) and a compact FP8 kernel at B 19 / 32K and B 11 / 64K, with 32 splits and automatic splits. Metric sigma = 1 - t_compact / t_stock on the time that grows with the context. Stop the layout work if sigma is below 0.155 (32K) and 0.125 (64K), because S is then below 5%; go to an accuracy gate only if sigma is at least 0.25. Keep QK at 512 dims. Alternatives: write up I-182 as an engine optimization with the E-49 and E-50 data, or wait for vLLM PR #60372 and rerun the baseline | Recommendation (main session, after R-68). Not a decision | The ceiling is 12% to 15% on top of FP8 KV, but the stock FP8 kernel's elasticity is 0.49, so the real saving is plausibly 4% to 8%; the kernel test decides it for about $2 to $3 | **Decided by the user (2026-10-31, "Plan the kernel test")**: E-51; the spend waits for D-84 |
-| D-84 | 2026-10-31 | Spend for E-51: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 25 to 30 min (cap $3; expected about $2). The $35 balance floor applies again after D-82 | Recommendation (main session), after R-69. Not a decision | The kernel test decides if the compact layout is worth an engine prototype (R-68) | **Open, waiting on R-69 and the user** |
+| D-84 | 2026-10-31 | Spend for E-51 (with A1): an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 22 to 33 min (cap $3; expected about $1.50 to $2.20). The $35 balance floor applies again after D-82 | Recommendation (main session), after R-69 and A1. Not a decision | The kernel test decides if the compact layout is worth an engine prototype (R-68) | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7290,3 +7327,6 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   updated; Section 1 header and line; Section 4 entry; README Section 13; RESEARCH_OUTPUTS O-11, O-12, U-04, L-14.
 - 2026-10-31: D-83 decided by the user; E-51 predeclared (Section 6.1, Section 5.27, Section 3 row I-182, D-84
   opened, Section 1 header and line, Section 4 entry).
+- 2026-10-31: R-69 (E-51 pre-run review, AMEND_THEN_RUN) in Section 6.2; E-51 amendment A1 (Section 6.1); D-84
+  updated; Section 7.30 row; Section 5.27; Section 3 row I-182; Section 1 header and line; Section 4 entry;
+  RESEARCH_OUTPUTS T-09 and L-15.

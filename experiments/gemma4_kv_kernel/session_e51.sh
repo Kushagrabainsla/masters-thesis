@@ -11,8 +11,8 @@ RES=${RES:-/workspace/results/e51}
 STUB=${STUB:-0}
 STUB_ARGS=${STUB_ARGS:-}
 KB_ARGS=${KB_ARGS:-}
-KB_TIMEOUT=${KB_TIMEOUT:-1800}
-POD_LIMIT=${POD_LIMIT:-2700}            # session watchdog at 45 min
+KB_TIMEOUT=${KB_TIMEOUT:-1500}          # A1 (R7): with the 11 min pull, the Pod stays inside the $3 cap
+POD_LIMIT=${POD_LIMIT:-1980}            # session watchdog at 33 min, before the boot watchdog (2,040 s)
 AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-180}
 AUTO_STOP=${AUTO_STOP:-0}
 if [ -n "${VLLM_CACHE_ROOT:-}" ]; then
@@ -60,7 +60,8 @@ else
     TEL=$!
     python3 "$CODE/runpod/gpu_microbench.py" --out "$ENV/microbench_start.json" > /dev/null 2>&1
     { python3 -c "import vllm, torch, triton; print('vllm', vllm.__version__); print('torch', torch.__version__); print('triton', triton.__version__)"
-      echo "VLLM_BUILD_COMMIT=${VLLM_BUILD_COMMIT:-unset}"; } > "$RES/versions.txt" 2>&1
+      echo "VLLM_BUILD_COMMIT=${VLLM_BUILD_COMMIT:-unset}"
+      python3 -m pip list 2>/dev/null | grep -i -E '^(triton|nvidia-cutlass-dsl|quack-kernels|flashinfer)' || true; } > "$RES/versions.txt" 2>&1
 fi
 log "setup done after $(elapsed) s; versions: $(tr '\n' ' ' < "$RES/versions.txt")"
 

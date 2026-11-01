@@ -216,10 +216,11 @@ def workspace(q: torch.Tensor, splits: int) -> tuple[torch.Tensor, torch.Tensor]
 
 def triton_attn(q, cache_v, block_table, seq_lens, out, ws, *, splits: int, num_warps: int = 8, num_stages: int = 2,
                 tile: int = 32, cache_k=None, qr=None, cache_r=None, k_scale=1.0, v_scale=1.0, r_scale=1.0,
-                sm_scale=1.0):
+                sm_scale=1.0, info: dict | None = None):
     """One decode attention call. Standard: cache_k and cache_v [blocks, BS, Hk, 512]. Compact: q is qc, qr is the
     rotated query part, cache_v and cache_r are the two column views of one [blocks, BS, Hk, 640] row tensor.
-    `tile` tokens are read per loop step (it divides the page size)."""
+    `tile` tokens are read per loop step (it divides the page size). If `info` is a dict, it gets the registers,
+    spills and shared memory bytes of the compiled split kernel (A1, O5; None where Triton does not give them)."""
     compact = cache_r is not None
     b, hq, d = q.shape
     hk, bs = cache_v.shape[2], cache_v.shape[1]
@@ -228,7 +229,7 @@ def triton_attn(q, cache_v, block_table, seq_lens, out, ws, *, splits: int, num_
     k_t = cache_v if compact else cache_k
     r_t = cache_r if compact else cache_k
     qr_t = qr if compact else q
-    _split_kernel[(b, hk, splits)](
+    kern = _split_kernel[(b, hk, splits)](
         q, qr_t, k_t, cache_v, r_t, block_table, seq_lens, op, lp,
         q.stride(0), q.stride(1), qr_t.stride(0), qr_t.stride(1),
         k_t.stride(0), k_t.stride(1), k_t.stride(2), cache_v.stride(0), cache_v.stride(1), cache_v.stride(2),
@@ -237,6 +238,10 @@ def triton_attn(q, cache_v, block_table, seq_lens, out, ws, *, splits: int, num_
         k_scale, v_scale, r_scale, sm_scale,
         GQA=gqa, MP=max(16, triton.next_power_of_2(gqa)), D=d, RDIM=RD, BS=bs, TB=tile, SPLITS=splits,
         COMPACT=compact, num_warps=num_warps, num_stages=num_stages)
+    if info is not None:
+        md = getattr(kern, "metadata", None)
+        info.update(regs=getattr(kern, "n_regs", None), spills=getattr(kern, "n_spills", None),
+                    shared=md.get("shared") if isinstance(md, dict) else getattr(md, "shared", None))
     _merge_kernel[(b, hq)](op, lp, out, op.stride(0), op.stride(1), op.stride(2), lp.stride(0), lp.stride(1),
                            out.stride(0), out.stride(1), D=d, SPLITS=splits, num_warps=4)
     return out
