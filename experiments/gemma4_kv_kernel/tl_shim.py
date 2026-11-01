@@ -51,6 +51,7 @@ class _TL(types.ModuleType):
     constexpr = _Constexpr
     float32 = torch.float32
     bfloat16 = torch.bfloat16
+    float16 = torch.float16
     int64 = torch.int64
     int32 = torch.int32
 

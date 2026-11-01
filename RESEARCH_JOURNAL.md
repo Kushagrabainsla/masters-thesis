@@ -257,8 +257,10 @@ and its R-70 post-run review (CONFIRM_WITH_CORRECTIONS).** Rewrite this section 
   the real layout also cuts the FP8 cast work by 37.5%, which no run measured. The compact FP8 kernel has an
   FP8-only defect (its BF16 version is faster at twice the bytes). Billed: $1.42 for the H100, $1.56 for E-51 with
   the rehearsal. D-85 decided by the user (2026-11-01, "1 go ahead"): option (c), a fixed compact Triton FP8 kernel
-  with the R-70 controls (E-52, about $2, cap $3). Next: the kernel variants and their CPU tests, the E-52
-  preregistration, the R-71 pre-run review, then D-86 (the spend). 0 thesis Pods, 0 volumes.
+  with the R-70 controls (E-52, about $2, cap $3). E-52 predeclared (`experiments/gemma4_kv_views/`): FP16
+  compute (FACT: Triton converts FP8 to BF16 with three instructions per 2 values on sm_90, to FP16 with one) and
+  the views layout [K_rot | V_unrot | V_rot], read by the unchanged standard kernel through two overlapping views;
+  19 tests pass. Next: R-71 (pre-run review), then D-86 (the spend). 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1171,7 +1173,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin; R-70 (2026-11-01): CONFIRM_WITH_CORRECTIONS: the oracle bounds the byte route only (at most about 10% of dt), not the layout; the compact FP8 kernel has an FP8-only defect; the speed claim is untested; D-85 decided by the user: fix the compact kernel (E-52) | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin; R-70 (2026-11-01): CONFIRM_WITH_CORRECTIONS: the oracle bounds the byte route only (at most about 10% of dt), not the layout; the compact FP8 kernel has an FP8-only defect; the speed claim is untested; D-85 decided by the user: fix the compact kernel (E-52); E-52 predeclared 2026-11-01 (FP16 compute and the views layout) | `experiments/gemma4_kv_audit/README.md` |
 | I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
@@ -1697,6 +1699,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   with free work first, then one H100 test (E-52, about $2, cap $3) with the R-70 controls.
                   The spend waits for D-86 (the final plan and cap, after the pre-run review) and a live
                   balance check. Source: chat. Ideas: I-182. Experiments: E-52.
+2026-11-01  [P10] E-52 predeclared (D-85): the compact K=V kernel fixed with free work. FP16 compute (FACT:
+                  Triton converts FP8 to BF16 with three instructions per 2 values on sm_90, to FP16 with
+                  one) and the views layout [K_rot | V_unrot | V_rot], read by the unchanged standard kernel
+                  through two overlapping views. The E-51 rule with the R-70 fixes of V3 and V4. 19 tests
+                  pass. Source: experiments/gemma4_kv_views/README.md. Ideas: I-182. Experiments: E-52.
 ```
 
 ---
@@ -3745,7 +3752,7 @@ Exact surviving gap: no GPU serving engine found that realizes the 37.5% saving.
 as novel; the contribution is the engine mechanism (cache spec, kernel path) and its measured effect.
 Experiments: E-49 (RUN 2026-10-30, PIVOT); E-50 (RUN 2026-10-31, GO: the FP8 KV stack near the pool limit); E-51 (predeclared 2026-10-31: the compact
 kernel microbenchmark; amended A1 after R-69; RUN 2026-11-01: INVALID; exploratory: the FP8 kernels are bound on
-chip; R-70: CONFIRM_WITH_CORRECTIONS, the oracle bounds the byte route only).
+chip; R-70: CONFIRM_WITH_CORRECTIONS, the oracle bounds the byte route only); E-52 (predeclared 2026-11-01: FP16 compute and the views layout).
 Reviews: R-67 (E-50 pre-run, Sonnet, 2026-10-30): AMEND_THEN_RUN; the fixes are E-50 A1.
 Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1. R-65
 (post-run, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS.
@@ -3758,6 +3765,9 @@ tailed keys), so a prototype needs an accuracy gate. Competitor: FP8 or NVFP4 KV
 all KV bytes, can stack). Prototype risk: the compact page (5,120 B per token and layer) does not match the
 sliding page (16,384 B) in the hybrid allocator. 2026-10-30 (R-65): both models read the global KV at 3.0 to 3.1
 TB/s, so the byte model holds. vLLM `AttentionSpec` has a `head_size_v` field that a prototype can use.
+2026-11-01 (main session): Triton 3.8.0 converts FP8 to BF16 with three instructions per 2 values on sm_90 and to
+FP16 with one (Section 7.30). The compact row in the order [K_rot | V_unrot | V_rot] is read by the unchanged
+standard kernel through two overlapping 512-value views (E-52).
 Verdict history: 2026-10-29: MEASURE-FIRST (main session, before R-64). 2026-10-30: MEASURE-FIRST kept (R-64:
 novelty low, the engine gap and its measured effect are the open item; likely outcome PIVOT or GO).
 2026-10-30: E-49 PIVOT by the frozen rule (one model or one cell only). The 31B result is clean: the compact
@@ -5053,6 +5063,28 @@ INTERPRETATION: the fusions cost 3% to 5% when they fire (non-default backends);
 2026-10-29, VALIDATED. Package: `experiments/fp8_fusion_validate/`. vLLM nightly (0.33.0rc1.dev157+gedad8b03c): fusions off
 faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cutlass at batch 64 and 256 (2% to 3.5%);
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
+
+**E-52 Fixed compact K=V decode attention kernels (FP16 compute, two overlapping views) against their standard
+twin and the stock vLLM kernel** (predeclared 2026-11-01, I-182, D-85).
+STATUS: PREDECLARED, NOT RUN. Package: `experiments/gemma4_kv_views/` (README is the preregistration). Question: on
+1 x H100 with an FP8 KV cache, does the compact layout, read by the standard Triton decode kernel through two
+overlapping views and with FP16 compute, cut the context-growing attention time of a Gemma 4 31B global layer by at
+least the kill line against the same kernel on the standard layout (15.5% at 32K, 12.5% at 64K), and by the go
+margin against the stock FA4 FP8 kernel? Two fixes from free work: (1) FP16 compute. FACT (Triton 3.8.0 source):
+FP8 E4M3 to FP16 is one packed conversion per 2 values; to BF16 on sm_90 it adds two scalar conversions; the E-51
+kernels cast to BF16, the stock FA4 FP8 path computes in FP16. HYPOTHESIS H4: the BF16 cast set most of the E-51
+Triton time. (2) The views layout: the row [K_rot | V_unrot | V_rot]; values 0 to 511 are the K of the unchanged
+standard kernel (with the k_norm weight in the query), values 128 to 639 are its V, so the compact kernel has the
+same instructions as its twin and only the DRAM bytes differ (640 against 1,024 per token). The stock FA4 kernel
+reads the same views (reported). Rule (frozen): the E-51 rule (A1) with the primary families `triton_std_fp8h` and
+`triton_cmpv_fp8h`: GO if sigma_mma >= 0.25 and sigma_layout >= the kill line in a group; KILL if sigma_layout is
+below the kill lines in both groups while the views kernel reads at least 0.6 x copy on dt; INCONCLUSIVE for the
+E-51 reasons; replication in 4 of 5 repeats. R-70 fixes: V3 bounds only the X cells and dt; V4 uses the central 20
+of 30 replays and bounds the across-repeat range of each primary dt at 3%; NVML clocks; the power-cap share reported.
+Controls (R-70): BF16 K = V rows, FP8 K = V and pool rows, a cast x layout factorial at the E-51 configuration, PTX
+counts. Wide sweep (R-70 recommendation 5): 54 configurations per primary family. Budget: RTX 4090 rehearsal (cap
+$0.60), then 1 x H100 for about 25 to 35 min (cap $3). S3 (Mac): `test_e52.py` 19 passed, `test_e51.py` 16 passed,
+the CPU dry run within 0.0021 for every layout and compute dtype. Next: R-71 (pre-run review), then D-86 (the spend).
 
 **E-51 Compact K=V decode attention kernel against the stock vLLM kernel** (predeclared 2026-10-31, I-182, D-83).
 STATUS: RUN 2026-11-01 (H100): frozen decision INVALID (V3, V4); R-70 (S8): CONFIRM_WITH_CORRECTIONS.
@@ -6694,6 +6726,7 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | vLLM PR #60372 body (open, updated 2026-10-29) | 2026-10 | FP8 MMA plus the split change: 1.04 x end to end on one H200; multimodal Gemma 4 with FP8 KV uses Triton; Nsight shows a 2.6% longer whole-cycle GPU span for FP8 | The Triton path is a production path for some Gemma 4 FP8 configurations | checked 2026-11-01 (main session, PR body) |
 | vLLM blog "FP8 KV cache" | 2026-04-22 | On an H100 with FA3, the FP8 decode slope is 54% of BF16 for Llama-3.1-8B and 80% for gpt-oss-20b | Counter-evidence for a general on-chip claim; no head-dim-512 data | doc-only (R-70) |
 | QServe, arXiv 2405.04532; FP8 TCO, arXiv 2502.01070; SGLang issue #10083 | 2024 to 2025 | KV4 dequantization reaches the CUDA-core roofline on an A100; under 25% FP8 decode gain on an H100; the cost of dequantization at read time | Context for dequant-bound decode | search-only (R-70, search summaries) |
+| Triton 3.8.0 `third_party/nvidia/lib/TritonNVIDIAGPUToLLVM/ElementwiseOpToLLVM.cpp` (tag v3.8.0) | 2026 | FP8 E4M3 to FP16 is one `cvt.rn.f16x2.e4m3x2` per 2 values; FP8 E4M3 to BF16 on sm_90 is that plus two scalar `cvt.bf16.f16` | The E-51 Triton kernels cast to BF16; the basis of H4 and of the FP16 fix (E-52) | checked 2026-11-01 (main session read the conversion table and both sequences) |
 
 ---
 
@@ -7440,3 +7473,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   RESEARCH_OUTPUTS O-13, T-10, L-17, L-18; HARDWARE_LOG H100 cost billed ($1.42).
 - 2026-11-01: D-85 decided by the user (Section 10 row, Section 1 line, Section 3 row I-182, Section 5.27 verdict
   history, Section 4 entry).
+- 2026-11-01: E-52 predeclared (Section 6.1 entry, Section 5.27 Experiments line and research log, Section 3 row
+  I-182, Section 7.30 row, Section 1 line, Section 4 entry).

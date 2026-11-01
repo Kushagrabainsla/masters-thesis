@@ -15,6 +15,16 @@ shapes (INTERPRETATION; R-68 suggests 512-dim QK for a later kernel).
 
 Without a GPU (the Mac tests) only the PyTorch helpers run: `rope`, `make_kv`, `compact_query`, `pack_compact`,
 `paged_reference` and `split_reference` (the same split and merge rule as the kernels, in PyTorch).
+
+E-52 adds two things (the E-51 behaviour stays the default):
+- `cast`: the dtype that the cache values, the query and P take before each dot. E-51 used BF16. FACT (Triton 3.8.0,
+  `ElementwiseOpToLLVM.cpp`): FP8 E4M3 to FP16 is one `cvt.rn.f16x2.e4m3x2` per 2 values; to BF16 on sm_90 it adds two
+  scalar `cvt.bf16.f16`. The stock FA4 FP8 path computes in FP16 for this reason.
+- The views layout: the compact row in the order [K_rot (128) | V_unrot (384) | V_rot (128)]. Its first 512 values
+  are the K of the unchanged standard kernel ([K_rot | V_unrot], with w moved into the query) and its last 512 values
+  are the V ([V_unrot | V_rot]). The two views overlap in 384 values, so a kernel that reads both reads 640 values
+  per token from DRAM. The output comes in the V-view order ([unrotated dims | rotated dims]); `unpermute` restores
+  the natural order (an engine can fold the order into the o_proj columns instead).
 """
 
 from __future__ import annotations
@@ -28,6 +38,8 @@ ROPE_ANGLES = 64                     # 0.25 x 512 / 2 angle pairs rotate
 THETA = 1_000_000.0                  # Gemma 4 global rope theta (as `kv_layout_check.py`)
 ROT = list(range(0, ROPE_ANGLES)) + list(range(HEAD // 2, HEAD // 2 + ROPE_ANGLES))   # the 128 rotated dims
 RD = len(ROT)
+UNROT = [d for d in range(HEAD) if d not in set(ROT)]                               # the 384 unrotated dims
+KV_OFFSET = RD                       # the V view starts after K_rot in the views row (E-52)
 
 try:  # Triton is in the Pod image; the Mac tests run without it
     import triton
@@ -66,6 +78,26 @@ def compact_query(q_rope: torch.Tensor, w: torch.Tensor) -> tuple[torch.Tensor, 
 def pack_compact(k: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
     """The compact row [V (512) | K on the rotated dims (128)] on the last axis."""
     return torch.cat([v, k[..., torch.tensor(ROT, device=k.device)]], -1)
+
+
+def pack_views(k: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
+    """The E-52 compact row [K_rot (128) | V_unrot (384) | V_rot (128)] on the last axis (640 values)."""
+    rot, un = torch.tensor(ROT, device=k.device), torch.tensor(UNROT, device=k.device)
+    return torch.cat([k[..., rot], v[..., un], v[..., rot]], -1)
+
+
+def views_query(q_rope: torch.Tensor, w: torch.Tensor) -> torch.Tensor:
+    """The query of the K view [K_rot | V_unrot]: q on the rotated dims, then q * w on the unrotated dims."""
+    rot, un = torch.tensor(ROT, device=q_rope.device), torch.tensor(UNROT, device=q_rope.device)
+    return torch.cat([q_rope[..., rot], (q_rope * w)[..., un]], -1)
+
+
+def unpermute(o: torch.Tensor) -> torch.Tensor:
+    """An output in the V-view order ([unrotated dims | rotated dims]) back in the natural dim order."""
+    out = torch.empty_like(o)
+    out[..., torch.tensor(UNROT, device=o.device)] = o[..., :len(UNROT)]
+    out[..., torch.tensor(ROT, device=o.device)] = o[..., len(UNROT):]
+    return out
 
 
 def gqa_attend(q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, scale: float = 1.0) -> torch.Tensor:
@@ -143,7 +175,8 @@ if triton is not None:
                       s_btb, s_ob, s_oh, s_os, s_lb, s_lh,
                       k_scale, v_scale, r_scale, sm_scale,
                       GQA: tl.constexpr, MP: tl.constexpr, D: tl.constexpr, RDIM: tl.constexpr,
-                      BS: tl.constexpr, TB: tl.constexpr, SPLITS: tl.constexpr, COMPACT: tl.constexpr):
+                      BS: tl.constexpr, TB: tl.constexpr, SPLITS: tl.constexpr, COMPACT: tl.constexpr,
+                      CAST: tl.constexpr):
         # A split owns whole pages of BS tokens; it reads each page as BS / TB tiles of TB tokens.
         b = tl.program_id(0)
         hk = tl.program_id(1)
@@ -158,10 +191,10 @@ if triton is not None:
         rmask = rows < GQA
         qh = hk * GQA + rows
         dims = tl.arange(0, D)
-        q = tl.load(Q + b * s_qb + qh[:, None] * s_qh + dims[None, :], mask=rmask[:, None], other=0.0)
+        q = tl.load(Q + b * s_qb + qh[:, None] * s_qh + dims[None, :], mask=rmask[:, None], other=0.0).to(CAST)
         rdims = tl.arange(0, RDIM)
         # Standard layout: QR is Q and qr is not used.
-        qr = tl.load(QR + b * s_qrb + qh[:, None] * s_qrh + rdims[None, :], mask=rmask[:, None], other=0.0)
+        qr = tl.load(QR + b * s_qrb + qh[:, None] * s_qrh + rdims[None, :], mask=rmask[:, None], other=0.0).to(CAST)
         m_i = tl.full([MP], float("-inf"), tl.float32)
         l_i = tl.zeros([MP], tl.float32)
         acc = tl.zeros([MP, D], tl.float32)
@@ -171,21 +204,21 @@ if triton is not None:
             pb = tl.load(BT + b * s_btb + j).to(tl.int64)
             tmask = (j * BS + toks) < seq
             v = tl.load(V + pb * s_vn + toks[:, None] * s_vt + hk * s_vh + dims[None, :], mask=tmask[:, None],
-                        other=0.0).to(tl.bfloat16)
+                        other=0.0).to(CAST)
             if COMPACT:
                 kr = tl.load(R + pb * s_rn + toks[:, None] * s_rt + hk * s_rh + rdims[None, :], mask=tmask[:, None],
-                             other=0.0).to(tl.bfloat16)
+                             other=0.0).to(CAST)
                 s = tl.dot(q, tl.trans(v)) * (v_scale * sm_scale) + tl.dot(qr, tl.trans(kr)) * (r_scale * sm_scale)
             else:
                 k = tl.load(K + pb * s_kn + toks[:, None] * s_kt + hk * s_kh + dims[None, :], mask=tmask[:, None],
-                            other=0.0).to(tl.bfloat16)
+                            other=0.0).to(CAST)
                 s = tl.dot(q, tl.trans(k)) * (k_scale * sm_scale)
             s = tl.where(tmask[None, :], s, float("-inf"))
             m_new = tl.maximum(m_i, tl.max(s, 1))
             alpha = tl.exp(m_i - m_new)
             p = tl.exp(s - m_new[:, None])
             l_i = l_i * alpha + tl.sum(p, 1)
-            acc = acc * alpha[:, None] + tl.dot(p.to(tl.bfloat16), v) * v_scale
+            acc = acc * alpha[:, None] + tl.dot(p.to(CAST), v) * v_scale
             m_i = m_new
         ok = l_i > 0
         safe = tl.where(ok, l_i, 1.0)
@@ -208,6 +241,11 @@ if triton is not None:
         tl.store(O + b * s_Ob + h * s_Oh + dims, out.to(O.dtype.element_ty))
 
 
+def views_of(rows: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    """The K view (values 0 to 511) and the V view (values 128 to 639) of views rows [..., 640]."""
+    return rows[..., :HEAD], rows[..., KV_OFFSET:KV_OFFSET + HEAD]
+
+
 def workspace(q: torch.Tensor, splits: int) -> tuple[torch.Tensor, torch.Tensor]:
     b, hq, d = q.shape
     return (torch.empty(b, hq, splits, d, dtype=torch.float32, device=q.device),
@@ -216,11 +254,13 @@ def workspace(q: torch.Tensor, splits: int) -> tuple[torch.Tensor, torch.Tensor]
 
 def triton_attn(q, cache_v, block_table, seq_lens, out, ws, *, splits: int, num_warps: int = 8, num_stages: int = 2,
                 tile: int = 32, cache_k=None, qr=None, cache_r=None, k_scale=1.0, v_scale=1.0, r_scale=1.0,
-                sm_scale=1.0, info: dict | None = None):
+                sm_scale=1.0, info: dict | None = None, cast: str = "bf16"):
     """One decode attention call. Standard: cache_k and cache_v [blocks, BS, Hk, 512]. Compact: q is qc, qr is the
-    rotated query part, cache_v and cache_r are the two column views of one [blocks, BS, Hk, 640] row tensor.
-    `tile` tokens are read per loop step (it divides the page size). If `info` is a dict, it gets the registers,
-    spills and shared memory bytes of the compiled split kernel (A1, O5; None where Triton does not give them)."""
+    rotated query part, cache_v and cache_r are the two column views of one [blocks, BS, Hk, 640] row tensor. The E-52
+    views layout is the standard call on the two views of `views_of` with the query of `views_query`.
+    `tile` tokens are read per loop step (it divides the page size). `cast` ("bf16" or "fp16") is the dtype of the
+    dot inputs (E-52). If `info` is a dict, it gets the registers, spills and shared memory bytes of the compiled split
+    kernel (A1, O5; None where Triton does not give them); with info["asm"] set, also its PTX and TTGIR text."""
     compact = cache_r is not None
     b, hq, d = q.shape
     hk, bs = cache_v.shape[2], cache_v.shape[1]
@@ -237,11 +277,16 @@ def triton_attn(q, cache_v, block_table, seq_lens, out, ws, *, splits: int, num_
         block_table.stride(0), op.stride(0), op.stride(1), op.stride(2), lp.stride(0), lp.stride(1),
         k_scale, v_scale, r_scale, sm_scale,
         GQA=gqa, MP=max(16, triton.next_power_of_2(gqa)), D=d, RDIM=RD, BS=bs, TB=tile, SPLITS=splits,
-        COMPACT=compact, num_warps=num_warps, num_stages=num_stages)
+        COMPACT=compact, CAST=tl.float16 if cast == "fp16" else tl.bfloat16, num_warps=num_warps,
+        num_stages=num_stages)
     if info is not None:
         md = getattr(kern, "metadata", None)
+        want_asm = info.pop("asm", False)
         info.update(regs=getattr(kern, "n_regs", None), spills=getattr(kern, "n_spills", None),
                     shared=md.get("shared") if isinstance(md, dict) else getattr(md, "shared", None))
+        if want_asm:
+            asm = getattr(kern, "asm", None) or {}
+            info.update(ptx=asm.get("ptx"), ttgir=asm.get("ttgir"))
     _merge_kernel[(b, hq)](op, lp, out, op.stride(0), op.stride(1), op.stride(2), lp.stride(0), lp.stride(1),
                            out.stride(0), out.stride(1), D=d, SPLITS=splits, num_warps=4)
     return out
