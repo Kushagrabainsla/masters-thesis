@@ -275,8 +275,8 @@ and its R-70 post-run review (CONFIRM_WITH_CORRECTIONS).** Rewrite this section 
   week 6. D-88 decided by the user ("Write-up and try build"): week 1 is the chapter draft and the gates G1
   (page-size plan), G2 (upstream re-scan) and G3 (real-activation accuracy, a separate spend). Week 1 so far: G1 PASS (an isolated page-size
   plan, about 1.30 to 1.42 times the requests), G2 PASS (no upstream overlap; the o_proj fold is exact for
-  the per-channel FP8 checkpoint; the RoPE layout matches), chapter draft 1 written. Next: G3. 0 thesis Pods,
-  0 volumes.
+  the per-channel FP8 checkpoint; the RoPE layout matches), chapter draft 1 written. G3 is E-53 (predeclared, `experiments/gemma4_kv_accuracy/`;
+  17 tests pass). Next: R-73 (pre-run review), then the spend approval. 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1189,7 +1189,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin; R-70 (2026-11-01): CONFIRM_WITH_CORRECTIONS: the oracle bounds the byte route only (at most about 10% of dt), not the layout; the compact FP8 kernel has an FP8-only defect; the speed claim is untested; D-85 decided by the user: fix the compact kernel (E-52); E-52 predeclared 2026-11-01 (FP16 compute and the views layout); E-52 RUN 2026-11-01: INVALID (V4); exploratory KILL of the byte route (about 80% on-chip work, e_h 0.22 to 0.24); the stock FA4 kernel reads the compact rows through two views, exactly and 7% to 10% faster; R-72 (2026-11-01): CONFIRM_WITH_CORRECTIONS (a co-limit; the page-size risk); D-88 open | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin; R-70 (2026-11-01): CONFIRM_WITH_CORRECTIONS: the oracle bounds the byte route only (at most about 10% of dt), not the layout; the compact FP8 kernel has an FP8-only defect; the speed claim is untested; D-85 decided by the user: fix the compact kernel (E-52); E-52 predeclared 2026-11-01 (FP16 compute and the views layout); E-52 RUN 2026-11-01: INVALID (V4); exploratory KILL of the byte route (about 80% on-chip work, e_h 0.22 to 0.24); the stock FA4 kernel reads the compact rows through two views, exactly and 7% to 10% faster; R-72 (2026-11-01): CONFIRM_WITH_CORRECTIONS (a co-limit; the page-size risk); D-88 decided by the user (the write-up and a gated build); gates G1 and G2 PASS; E-53 (gate G3) predeclared | `experiments/gemma4_kv_audit/README.md` |
 | I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
@@ -1757,6 +1757,9 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   matches E-52). Chapter draft 1 written. Next: G3 (real-activation accuracy), its own spend.
                   Source: dossier/GATE_G1_PAGESIZE_I-182_2026-11-01.md, dossier/GATE_G2_UPSTREAM_I-182_2026-11-01.md,
                   thesis/chapters/i182-compact-kv-cache.md. Ideas: I-182.
+2026-11-01  [P10] E-53 predeclared (gate G3 of D-88): the accuracy of the compact FP8 KV cache on real Gemma 4
+                  31B activations, against the standard FP8 cache, with an FP16 range check. 17 tests pass.
+                  Source: experiments/gemma4_kv_accuracy/README.md. Ideas: I-182. Experiments: E-53.
 ```
 
 ---
@@ -3806,7 +3809,8 @@ as novel; the contribution is the engine mechanism (cache spec, kernel path) and
 Experiments: E-49 (RUN 2026-10-30, PIVOT); E-50 (RUN 2026-10-31, GO: the FP8 KV stack near the pool limit); E-51 (predeclared 2026-10-31: the compact
 kernel microbenchmark; amended A1 after R-69; RUN 2026-11-01: INVALID; exploratory: the FP8 kernels are bound on
 chip; R-70: CONFIRM_WITH_CORRECTIONS, the oracle bounds the byte route only); E-52 (predeclared 2026-11-01: FP16 compute and the views layout; RUN 2026-11-01: INVALID (V4); exploratory
-KILL of the byte route; the stock kernel reads the compact rows through two views).
+KILL of the byte route; the stock kernel reads the compact rows through two views); E-53 (predeclared
+2026-11-01: gate G3, real-activation accuracy).
 Reviews: R-67 (E-50 pre-run, Sonnet, 2026-10-30): AMEND_THEN_RUN; the fixes are E-50 A1.
 Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1. R-65
 (post-run, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS.
@@ -5129,6 +5133,23 @@ INTERPRETATION: the fusions cost 3% to 5% when they fire (non-default backends);
 2026-10-29, VALIDATED. Package: `experiments/fp8_fusion_validate/`. vLLM nightly (0.33.0rc1.dev157+gedad8b03c): fusions off
 faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cutlass at batch 64 and 256 (2% to 3.5%);
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
+
+**E-53 Real-activation accuracy of the compact FP8 KV cache of the Gemma 4 31B global layers (gate G3)**
+(predeclared 2026-11-01, I-182, D-88).
+STATUS: PREDECLARED, NOT RUN. Package: `experiments/gemma4_kv_accuracy/` (README is the preregistration). Question: on
+real Gemma 4 31B activations (the E-50 checkpoint, prefill of 4 seeded real texts of about 8K tokens from the image's
+files), does the compact FP8 storage of the global layers (the E-52 views row cast to E4M3 with scale 1.0, read with
+the views query rounded to BF16) give an attention-output error no larger than the standard FP8 storage (K and V each
+cast to E4M3 with scale 1.0), and do the views-path values fit FP16? Capture: vLLM 3966924d5 in-process and eager,
+pre-hooks on the global attention layers (`LLM.apply_model`; `gemma4.py` 565 to 572), K and V of every token and Q of
+the last 256 positions; the analysis runs on the Pod GPU in float32. Rule (frozen, project heuristics): FAIL (stop the
+build) if a global layer has a median compact error above 2 x the standard error, or a views query value above
+32,752; PASS if every global layer has a median ratio of 1.25 or less, a largest-error ratio of 2 or less, |q'| at most
+6,550 and a saturated share at most 0.1 points above the standard; otherwise INCONCLUSIVE. Validity: V1 H100, V2 every
+global layer recorded with the expected shapes, V3 the identity K_unrot = w * V_unrot within 1e-2 (w recovered from
+the data), V4 a finite reference. Budget: 1 x H100 SXM Secure, about 15 to 30 min, cap $3; no GPU rehearsal (no cheap
+GPU holds the model), replaced by the stub session, the CPU tests and a fail-fast after the first prompt. S3 (Mac):
+`test_e53.py` 17 passed. Next: R-73 (pre-run review), then the spend approval.
 
 **E-52 Fixed compact K=V decode attention kernels (FP16 compute, two overlapping views) against their standard
 twin and the stock vLLM kernel** (predeclared 2026-11-01, I-182, D-85).
@@ -7637,3 +7658,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-11-01: D-88 decided by the user (Section 10 row, Section 6.1 E-52, Section 1 line, Section 4 entry).
 - 2026-11-01: D-88 week 1: gates G1 and G2 PASS, chapter draft 1 (Section 1 line, Section 4 entry, Section 5.27
   research log, Section 7.30 rows); E-52 README Section 10 o_proj text corrected by G2; RESEARCH_OUTPUTS O-14 scope.
+- 2026-11-01: E-53 predeclared (Section 6.1 entry, Section 5.27, Section 3 row I-182, Section 1 line, Section 4
+  entry).
