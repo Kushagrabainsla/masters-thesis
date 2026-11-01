@@ -60,3 +60,5 @@
 {"at": "2026-10-31T06:13:03Z", "event": "ended", "id": "vhlhmqwc1yzsu3", "note": ""}
 {"at": "2026-10-31T06:14:07Z", "event": "created", "experiment": "E-50", "id": "ek0w5tktqk4kvp", "kind": "pod", "name": "msthesis-e-50-session-20261031", "note": "E-50 H100 session (S6); D-81 and D-82 (user, 2026-10-30)"}
 {"at": "2026-10-31T06:57:43Z", "event": "ended", "id": "ek0w5tktqk4kvp", "note": ""}
+{"at": "2026-11-01T02:26:19Z", "event": "created", "experiment": "E-51", "id": "yqbmujou3dt42q", "kind": "pod", "name": "msthesis-e-51-rehearsal-20261101", "note": "E-51 RTX 4090 rehearsal (S5); D-84 (user, 2026-10-31)"}
+{"at": "2026-11-01T03:05:04Z", "event": "ended", "id": "yqbmujou3dt42q", "note": "E-51 S5 rehearsal; AUTO_STOP stopped it; results copied (27 files, checksums match); deleted 2026-11-01"}

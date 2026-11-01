@@ -334,6 +334,13 @@ def confirm(plan: list[dict], dev, fp8_dtype, errors: list, args) -> list[dict]:
             e.update(status="error", error=f"{type(exc).__name__}: {exc}"[:300])
             errors.append(f"confirm {p}: {traceback.format_exc()[-800:]}")
         entries.append(e)
+    for e in entries:               # A2: one untimed pass (S5: the first timed repeat was 5.5% slow, a cold start)
+        if e["status"] == "ok":
+            try:
+                graph_time(e["fn"])
+            except Exception as exc:  # recorded, not fatal
+                e.update(status="error", error=f"{type(exc).__name__}: {exc}"[:300])
+                errors.append(f"confirm warm-up {e['kernel']}: {traceback.format_exc()[-800:]}")
     for r in range(an.REPEATS):
         for e in entries if r % 2 == 0 else entries[::-1]:
             if e["status"] != "ok":

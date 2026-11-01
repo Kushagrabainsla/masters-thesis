@@ -1,11 +1,13 @@
 # E-51: a compact K=V decode attention kernel for Gemma 4 against the stock vLLM kernel, on 1 x H100 (preregistration)
 
-Status: PREDECLARED 2026-10-31. AMENDED A1 2026-10-31 (R-69 pre-run review, before any data). NOT RUN.
+Status: PREDECLARED 2026-10-31. AMENDED A1 2026-10-31 (R-69 pre-run review, before any data). S5 rehearsal PASS
+2026-11-01 (RTX 4090), AMENDED A2 (from the rehearsal, before the H100 run). NOT RUN on the H100.
 Idea: I-182. Journal entry: Section 6.1 E-51. Follows E-50 and its post-run review R-68 (recommendation 1 to 6).
 Request: D-83 (user, 2026-10-31, "Plan the kernel test": a compact FP8 attention kernel timed against the stock vLLM
 kernels at batch 19 / 32K and batch 11 / 64K, with the R-68 stop line; plan only, no GPU yet).
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics unless a source is given.
-Text marked "(A1)" changed in Amendment A1. The version before A1 is commit 0fb1b39.
+Text marked "(A1)" changed in Amendment A1. The version before A1 is commit 0fb1b39. Text marked "(A2)" changed in
+Amendment A2; the version before A2 (the rehearsal code) is commit a429b4e.
 
 ## 1. Question
 On 1 x H100, does a decode attention kernel that reads the compact K=V cache of the Gemma 4 31B global layers (640
@@ -72,11 +74,13 @@ compact layout cuts the time by less than 15.5% (32K) and 12.5% (64K) even again
   per call = replay time / 20 (median; spread = max / min - 1). The first eager call records the registers, spills
   and shared memory of each Triton configuration (A1, O5).
 - Confirmation phase (A1, O3; `MEASUREMENT.md` Section 1.5): after the four group cells, each decision row (Section
-  5) and each oracle row is captured in a new graph and timed 5 times. Odd repeats run the rows in the reverse order
-  (A B .. B A). Then `run.json` gets the status "ok_groups"; the reported cells follow.
+  5) and each oracle row is captured in a new graph and timed 5 times, after one untimed pass over all rows (A2; the
+  rehearsal's first timed repeat was 5.5% slow). Odd repeats run the rows in the reverse order (A B .. B A). Then
+  `run.json` gets the status "ok_groups"; the reported cells follow.
 - L2 (A1, O9): the group caches are larger than the 50 MB L2, except the compact FP8 rows at B 11 and 2K (57.7 MB,
   close to it). At B 4 and 2K the standard FP8 cache (33.6 MB) fits in L2 (reported cells only). INTERPRETATION
-  (R-69): the effect on dt is below 1%.
+  (R-69): the effect on dt is below 1%. FACT (S5, A2): on the RTX 4090 (72 MB L2) the compact FP8 rows at B 11 and 2K
+  read at 1,061 GB/s, 1.15 x copy. A 2K row that reads from L2 only makes dt larger (conservative).
 - Correctness cell: B 2, L 3,000 (a partial last page), Gemma 4 K=V data (V RMS-normed, w = 1 + 0.1 N(0, 1),
   K = rope_p(w V)), q ~ N(0, 1/512) with RoPE at position 2,999, stored in FP8 and BF16. The stock kernels and every
   Triton configuration of the sweep run on it (A1, R5); the output is zeroed before each run.
@@ -113,7 +117,8 @@ compact layout cuts the time by less than 15.5% (32K) and 12.5% (64K) even again
 - V4 (A1, R3): for each decision row, the median over the 5 repeats of the replay spread is at most 2%. The decision
   rows are the selected configuration of each FP8 family at 2K and X, and the stock kernel with 32 splits at the
   four V3 cells.
-- V5 (positive control): the copy bandwidth exists, and no decision row reads above 1.15 x copy.
+- V5 (positive control; A2): the copy bandwidth exists, and no decision row at X and no dt rate of an FP8 family
+  reads above 1.15 x copy. The 2K rows are left out, because their cache can sit in L2 (Section 4).
 - V6: hard throttle in at most 2% of busy telemetry samples.
 
 ## 7. Decision rule (frozen; A1 before any data)
@@ -185,7 +190,7 @@ Deciding groups: X = 32,768 (B 19) and 65,536 (B 11), FP8. Kill lines (R-68): 0.
 - `session_e51.sh`: the Pod session (STUB=1 runs it on a Mac).
 - `tl_shim.py` (A1): a CPU emulation of the Triton calls of `compact_attn.py` (from R-69). `cpu_dryrun_e51.py` (A1):
   runs the kernel source and the GPU code paths of `kbench_e51.py` on it.
-- `test_e51.py`: 15 tests (Section 12).
+- `test_e51.py`: 16 tests (Section 12).
 - Upload to the Pod: `gemma4_kv_kernel`, `runpod`, `fp8_quant_fusion`, `nvfp4_dispatch`, `safedispatch_testA`,
   `safedispatch_testA2` and `ledger`, without `results`.
 
@@ -229,6 +234,31 @@ Deciding groups: X = 32,768 (B 19) and 65,536 (B 11), FP8. Kill lines (R-68): 0.
   10. A rerun skips a finished benchmark; a failed run keeps its partial data. Record the Triton times for the H100
       time model.
   Not testable on the 4090: the stock FA4 call, V3, the H100 times and bandwidths, and fail fast on SM90.
+- S5 record (2026-11-01, PASS with A2): Pod yqbmujou3dt42q, RTX 4090 Secure, EU-RO-1, $0.89/h, created 02:25 UTC,
+  image pull about 1.5 min, session 02:28 to 02:31 UTC (`kbench` 172 s: the correctness cell, the compiles, the four
+  group cells and the confirmation), stopped by AUTO_STOP, results copied (27 files, checksums match), Pod deleted.
+  About $0.14 (estimate; billing pending). Results: `results/e51-rehearsal-4090-20261101/`. VERIFY:
+  1. PASS: Triton 3.8.0, vLLM 0.33.0rc1.dev229+g3966924d5, torch 2.14.0+cu130, nvidia-cutlass-dsl 4.8.0,
+     quack-kernels 0.6.5 in `versions.txt`.
+  2. PASS: all 16 FP8 configurations of each Triton kernel at 2 stages and all 4 BF16 configurations at 1 stage
+     compiled and passed; the largest error is 0.0019 (FP8) and 0.0019 (BF16), below 0.005.
+  3. PASS: no spills in any configuration; registers 128 (standard FP8, 8 warps) and 175 (compact FP8, 8 warps),
+     254 and 255 at 4 warps; shared memory 50 KB and 57 KB at tile 32.
+  4. PASS: both FP8 Triton kernels are memory-bound on dt: the standard kernel at 943 and 945 GB/s, the compact kernel
+     at 931 and 915 GB/s (copy 920 GB/s). sigma_layout = 0.367 at 32K and 0.355 at 64K (the byte share is 0.375).
+  5. PASS: e_triton = 0.885 (32K) and 0.991 (64K); the K = V row reads about half the DRAM bytes.
+  6. PASS (by test): the run ended "ok"; with the group cells only, the confirmation is the last step, and the
+     "ok_groups" write is in the shared main loop (the R4 test).
+  7. PASS: the stock FP8 rows failed with "q.dtype torch.bfloat16 != k.dtype torch.float8_e4m3fn": vLLM's wrapper
+     turns on the FP8 dequant path only at capability 9.x (FACT, `flash_attn_interface.py` at 3966924d5). The stock
+     BF16 rows failed with "paged KV not supported on SM 8.0". Fail fast was off. The analysis gave INVALID (V1, V2,
+     V3, V5); V5 was a false alarm (A2), and under A2 it gives the expected INVALID (V1, V2, V3).
+  8. PASS: the largest median replay spread of the decision rows is 0.81%; 2 of 160 sweep rows are above 2% (8.2% at
+     most), and they do not decide.
+  9. PASS: AUTO_STOP stopped the Pod (EXITED) before the boot watchdog time.
+  10. PASS (by test): the rerun skip and the partial-data move are in the stub session test. Time model: the four
+      group cells took 172 s on the RTX 4090.
+- S3 after A2 (2026-11-01, Mac): 16 passed (a new V5 test: an L2-resident 2K row leaves V5; a fast X row fails it).
 
 ## Amendments
 - A1 (2026-10-31, before any data; from R-69, verdict AMEND_THEN_RUN). Each item has a test (Section 12).
@@ -256,3 +286,10 @@ Deciding groups: X = 32,768 (B 19) and 65,536 (B 11), FP8. Kill lines (R-68): 0.
     after the BF16 cut); O7 part 2, the graph-slot padding (it cancels in dt; Section 10).
   - Unchanged: the question, the hypotheses, the groups and the cells, the primary metrics, the kill and go lines,
     the 15% FP8 MMA allowance and the stock call.
+- A2 (2026-11-01, from the S5 rehearsal, before the H100 run; for the post-run review to check):
+  - V5 uses the decision rows at X and the dt rates of the FP8 families, not the 2K rows (Sections 4 and 6). Reason:
+    the rehearsal failed V5 only because the compact FP8 rows at B 11 and 2K (57.7 MB) sat in the 72 MB L2 of the
+    RTX 4090 (1,061 GB/s, 1.15 x copy). On the H100 (50 MB L2) the same row is close to the L2 size.
+  - The confirmation phase starts with one untimed pass over all rows (Section 4). Reason: the first timed repeat of
+    the first row was 5.5% slow (196.5 against 186.2 us).
+  - Unchanged: the rule, the metrics, the other checks and the cells.

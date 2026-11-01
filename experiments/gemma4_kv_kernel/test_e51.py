@@ -207,6 +207,20 @@ def test_v4_uses_the_decision_rows_only(tmp_path: Path) -> None:
     assert analyze(tmp_path)["decision"] == "INVALID (V4)"
 
 
+def test_v5_ignores_an_l2_resident_2k_row(tmp_path: Path) -> None:
+    """A2 (S5 rehearsal): a 2K row that reads from L2 faster than 1.15 x copy leaves V5; a fast X row still fails it."""
+    stub_run(tmp_path)
+
+    def fast_2k(d):
+        e = next(e for e in d["confirm"] if e["kernel"] == "triton_cmp_fp8" and e["batch"] == 11 and e["context"] == 2048)
+        e.update(repeats=[15.0] * 5, us=15.0)            # 57.7 MB in 15 us: 3.8 TB/s, above 1.15 x 3,045 GB/s
+
+    edit(tmp_path, fast_2k)
+    s = analyze(tmp_path)
+    assert s["checks"]["V5"] and s["decision"].startswith("GO ("), s["decision"]
+    assert s["fp8"]["65536"]["sigma_mma"] < s["fp8"]["32768"]["sigma_mma"]        # a faster 2K row makes dt larger
+
+
 def test_wrong_configuration_is_dropped(tmp_path: Path) -> None:
     """A1 (R5): the fastest compact configuration fails the correctness cell, so it is never selected."""
     s = stub(tmp_path, "--stub-bad-config", "8/8/32")

@@ -245,7 +245,9 @@ and amendment A1.** Rewrite this section every session.
   Amendment A1 (before any data): one configuration per family at both lengths, a KILL needs a compact kernel at
   0.6 x copy, 5 confirmation repeats with a replication test, a correctness check of every configuration, fail
   fast, the engine's cache layout. 15 tests pass, with a CPU emulation of the Triton kernels. D-84 decided by the user
-  ("Yes, $14 floor"): both spends, with a one-time $14 balance floor. Next: the RTX 4090 rehearsal. 0 thesis
+  ("Yes, $14 floor"): both spends, with a one-time $14 balance floor. S5 rehearsal (RTX 4090, 2026-11-01): PASS with
+  amendment A2. Both Triton kernels read at about 1.0 x copy on dt; sigma_layout 0.367 (32K) and 0.355 (64K). A2 moves
+  V5 to the X rows and the dt rates (a 2K row sat in L2) and adds a warm-up pass. Next: the H100 run (S6). 0 thesis
   Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
@@ -1666,6 +1668,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   H100 run (cap $3), with a one-time balance floor of $14 for E-51 only. The live check
                   had failed the $35 floor. S4 reads: H100 SXM Secure $3.99/h, RTX 4090 Secure $0.89/h.
                   Source: chat. Ideas: I-182. Experiments: E-51.
+2026-11-01  [P10] E-51 S5 rehearsal (RTX 4090, Pod yqbmujou3dt42q, about $0.14): PASS with amendment A2. The
+                  Triton standard and compact FP8 kernels are memory-bound on dt (about 1.0 x copy);
+                  sigma_layout 0.367 (32K) and 0.355 (64K). A2: V5 uses the X rows and the dt rates (a 2K row
+                  sat in the 72 MB L2), and the confirmation starts with an untimed pass.
+                  Source: experiments/gemma4_kv_kernel/README.md Section 12. Ideas: I-182. Experiments: E-51.
 ```
 
 ---
@@ -5018,7 +5025,7 @@ faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cu
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
 
 **E-51 Compact K=V decode attention kernel against the stock vLLM kernel** (predeclared 2026-10-31, I-182, D-83).
-STATUS: PREDECLARED, AMENDED A1 (R-69), NOT RUN. Package: `experiments/gemma4_kv_kernel/` (README is the preregistration). Question: on
+STATUS: PREDECLARED, AMENDED A1 (R-69) and A2 (S5), S5 PASS, NOT RUN ON THE H100. Package: `experiments/gemma4_kv_kernel/` (README is the preregistration). Question: on
 1 x H100, does a decode attention kernel that reads the compact K=V rows (640 of 1,024 values per head and token)
 cut the context-growing attention time of a Gemma 4 31B global layer enough, against the best stock FA4 FP8 kernel
 with a 15% allowance for the coming FP8 MMA kernel? Method: a kernel microbenchmark with no engine: the stock call of
@@ -5039,7 +5046,11 @@ checks dt; V4 uses the decision rows; the engine's cache layout; K = V oracle ro
 cells with 4 configurations; caps `KB_TIMEOUT` 1,500 s, boot watchdog 2,040 s, cost cap $3 (expected $1.50 to
 $2.20). Tests: 15 pass on the Mac, with a CPU emulation of the Triton kernel source (worst error 0.0021) and a dry
 run of the GPU code paths. D-84 decided by the user (2026-10-31, "Yes, $14 floor"): both spends, a one-time
-$14 balance floor. Next: the S5 rehearsal.
+$14 balance floor. S5 (2026-11-01, RTX 4090, Pod yqbmujou3dt42q, about $0.14): PASS with amendment A2. The
+Triton standard and compact FP8 kernels read at 943 and 931 GB/s on dt at 32K (copy 920 GB/s); sigma_layout 0.367
+(32K) and 0.355 (64K); all 40 configurations pass the correctness cell (error 0.0019 at most); no spills; e_triton
+0.885 and 0.991. A2: V5 uses the X rows and the dt rates (the compact FP8 rows at B 11 and 2K sat in the 72 MB L2
+and read at 1.15 x copy), and the confirmation starts with an untimed pass. Next: the H100 run (S6).
 
 **E-50 Gemma 4 K=V headroom on top of an FP8 KV cache, near the KV pool limit** (predeclared 2026-10-30, I-182,
 D-76). STATUS: PREDECLARED, AMENDED A1 (2026-10-30, R-67, before any data), S5 REHEARSAL PASS (2026-10-31, RTX 4090,
@@ -7337,3 +7348,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   updated; Section 7.30 row; Section 5.27; Section 3 row I-182; Section 1 header and line; Section 4 entry;
   RESEARCH_OUTPUTS T-09 and L-15.
 - 2026-10-31: D-84 decided by the user (Section 10 row, Section 6.1 E-51, Section 1 line, Section 4 entry).
+- 2026-11-01: E-51 S5 rehearsal PASS and amendment A2 (Section 6.1, Section 1 line, Section 4 entry);
+  RESEARCH_OUTPUTS L-16.

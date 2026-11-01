@@ -266,7 +266,7 @@ def decision_rows(rows: list[dict], ci: dict) -> list[dict]:
     return out
 
 
-def checks(res: Path, kb: dict, run: dict, bw: float | None, rows: list[dict], ci: dict) -> dict:
+def checks(res: Path, kb: dict, run: dict, bw: float | None, rows: list[dict], ci: dict, groups: dict) -> dict:
     dec = decision_rows(rows, ci)
     v3 = {}
     for (b, length), target in TARGETS.items():
@@ -275,8 +275,11 @@ def checks(res: Path, kb: dict, run: dict, bw: float | None, rows: list[dict], c
     for X, b in GROUPS.items():           # A1: the growth too, since the rule uses dt
         d = dt_of(ci, "stock_fp8_s32", S32, b, X)
         v3[f"dt {b}:{X}"] = round(d[0] / (TARGETS[(b, X)] - TARGETS[(b, 2048)]), 4) if d else None
+    # V5 (A2): the rows at X and the dt rates. A 2K row can read from L2 (the S5 rehearsal: the compact FP8 rows at
+    # B 11 and 2K, 57.7 MB, read at 1.15 x copy in the 72 MB L2 of the RTX 4090); that only makes dt larger.
     gbps = [e["batch"] * e["context"] * 4 * (640 if "cmp" in e["kernel"] else 1024) / (e["us"] * 1e-6) / 1e9
-            for e in dec]
+            for e in dec if e["context"] > 2048]
+    gbps += [v for g in groups.values() if g.get("ok") for v in g["dt_gbps"].values()]
     spreads = [statistics.median(e["spreads"]) for e in dec]
     gpu = (run.get("gpu") or {}).get("name", "")
     return {"V1": "H100" in gpu and "80GB" in gpu.replace(" ", ""),
@@ -351,11 +354,12 @@ def summarize(res: Path) -> dict:
     bw = copy_gbps(res)
     rows = validated(kb.get("cells", []), kb.get("correctness"))
     ci = conf_index(kb.get("confirm"))
+    fp8 = {str(X): group(rows, X, True, bw, ci) for X in GROUPS}
     out = {"copy_gbps": bw, "run_status": run.get("status", "missing"), "fail_fast": run.get("fail_fast"),
            "late_error": run.get("late_error"), "gpu": run.get("gpu"),
            "versions": {k: run.get(k) for k in ("torch", "triton", "vllm")},
-           "checks": checks(res, kb, run, bw, rows, ci) if kb else {"V1": False},
-           "fp8": {str(X): group(rows, X, True, bw, ci) for X in GROUPS},
+           "checks": checks(res, kb, run, bw, rows, ci, fp8) if kb else {"V1": False},
+           "fp8": fp8,
            "bf16": {str(X): group(rows, X, False, bw, None) for X in GROUPS},
            "common_config": common_layout(rows), "linearity": linearity(rows),
            "dropped_rows": len(kb.get("cells", [])) - len(rows), "correctness": kb.get("correctness")}
