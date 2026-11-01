@@ -244,8 +244,9 @@ and amendment A1.** Rewrite this section every session.
   R-69 (Sonnet pre-run review): AMEND_THEN_RUN. The kernels and the stock call are sound; the rule had 5 blockers.
   Amendment A1 (before any data): one configuration per family at both lengths, a KILL needs a compact kernel at
   0.6 x copy, 5 confirmation repeats with a replication test, a correctness check of every configuration, fail
-  fast, the engine's cache layout. 15 tests pass, with a CPU emulation of the Triton kernels. Next: D-84 (spend),
-  then the RTX 4090 rehearsal. 0 thesis Pods, 0 volumes.
+  fast, the engine's cache layout. 15 tests pass, with a CPU emulation of the Triton kernels. D-84 decided by the user
+  ("Yes, $14 floor"): both spends, with a one-time $14 balance floor. Next: the RTX 4090 rehearsal. 0 thesis
+  Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1661,6 +1662,10 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   compact kernel, the V4 scope, the cell order, one checked configuration). Amendment A1
                   fixes them and adds 5 confirmation repeats with a replication test. 15 tests pass.
                   No spend. Source: dossier/REVIEW_E-51_PRERUN_2026-10-31.md. Ideas: I-182. Experiments: E-51.
+2026-10-31  [P10] D-84 decided by the user ("Yes, $14 floor"): the E-51 RTX 4090 rehearsal (cap $0.60) and the
+                  H100 run (cap $3), with a one-time balance floor of $14 for E-51 only. The live check
+                  had failed the $35 floor. S4 reads: H100 SXM Secure $3.99/h, RTX 4090 Secure $0.89/h.
+                  Source: chat. Ideas: I-182. Experiments: E-51.
 ```
 
 ---
@@ -5033,7 +5038,8 @@ failed configuration is dropped; fail fast on SM90; the group cells run first an
 checks dt; V4 uses the decision rows; the engine's cache layout; K = V oracle rows (reported); BF16 at the group
 cells with 4 configurations; caps `KB_TIMEOUT` 1,500 s, boot watchdog 2,040 s, cost cap $3 (expected $1.50 to
 $2.20). Tests: 15 pass on the Mac, with a CPU emulation of the Triton kernel source (worst error 0.0021) and a dry
-run of the GPU code paths. Next: D-84 (spend), then the S5 rehearsal.
+run of the GPU code paths. D-84 decided by the user (2026-10-31, "Yes, $14 floor"): both spends, a one-time
+$14 balance floor. Next: the S5 rehearsal.
 
 **E-50 Gemma 4 K=V headroom on top of an FP8 KV cache, near the KV pool limit** (predeclared 2026-10-30, I-182,
 D-76). STATUS: PREDECLARED, AMENDED A1 (2026-10-30, R-67, before any data), S5 REHEARSAL PASS (2026-10-31, RTX 4090,
@@ -6893,7 +6899,7 @@ proposed it and no acceptance is recorded.
 | D-81 | 2026-10-30 | Spend for E-50: an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 48 min (cap $4.50; expected about $3.20) | Recommendation (main session), after R-67 (AMEND_THEN_RUN, A1 applied). Not a decision | The FP8 stack near the pool limit decides on a prototype (R-65); the same session closes the E-49 26B gap; R-67 worst case about $3.80 | **Decided by the user (2026-10-30, "Go ahead then!")**: both spends, within the D-82 usage limit |
 | D-82 | 2026-10-30 | One-time balance rule for E-50 only: E-50 may use at most $10 of the balance, so the floor for the booking checks and for the mid-run stop rule (stop if the balance falls below the floor plus the remaining cost cap) is $11 (the live balance at S4 minus $10), not $35. The caps ($0.60 and $4.50) stay | **Decided by the user** (2026-10-30: "can we work with 10 dollar of usage?", then "Go ahead then!") | The S4 check failed at the $35 floor after the other project's H200 Pod billed $125 on 2026-10-30; it is stopped now | Applies to E-50 only; the $35 floor returns after it |
 | D-83 | 2026-10-31 | After E-50 (GO) and R-68 (CONFIRM_WITH_SCOPE_LIMITS): the next test is a kernel microbenchmark with its own preregistration, no engine, 1 x H100 for about 30 min (about $2 to $3). Compare the stock FP8 dequant kernel, the stock FP8 MMA kernel (FA PR 199) and a compact FP8 kernel at B 19 / 32K and B 11 / 64K, with 32 splits and automatic splits. Metric sigma = 1 - t_compact / t_stock on the time that grows with the context. Stop the layout work if sigma is below 0.155 (32K) and 0.125 (64K), because S is then below 5%; go to an accuracy gate only if sigma is at least 0.25. Keep QK at 512 dims. Alternatives: write up I-182 as an engine optimization with the E-49 and E-50 data, or wait for vLLM PR #60372 and rerun the baseline | Recommendation (main session, after R-68). Not a decision | The ceiling is 12% to 15% on top of FP8 KV, but the stock FP8 kernel's elasticity is 0.49, so the real saving is plausibly 4% to 8%; the kernel test decides it for about $2 to $3 | **Decided by the user (2026-10-31, "Plan the kernel test")**: E-51; the spend waits for D-84 |
-| D-84 | 2026-10-31 | Spend for E-51 (with A1): an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 22 to 33 min (cap $3; expected about $1.50 to $2.20). The $35 balance floor applies again after D-82 | Recommendation (main session), after R-69 and A1. Not a decision | The kernel test decides if the compact layout is worth an engine prototype (R-68) | **Open, waiting on the user** |
+| D-84 | 2026-10-31 | Spend for E-51 (with A1): an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 22 to 33 min (cap $3; expected about $1.50 to $2.20). The $35 balance floor applies again after D-82 | Recommendation (main session), after R-69 and A1. Not a decision | The kernel test decides if the compact layout is worth an engine prototype (R-68) | **Decided by the user (2026-10-31, "Yes, $14 floor")**: both spends, with a one-time balance floor of $14 for E-51 only (the live check failed the $35 floor; S4 prices from the catalog: H100 SXM Secure $3.99/h, RTX 4090 Secure $0.89/h) |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7330,3 +7336,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-31: R-69 (E-51 pre-run review, AMEND_THEN_RUN) in Section 6.2; E-51 amendment A1 (Section 6.1); D-84
   updated; Section 7.30 row; Section 5.27; Section 3 row I-182; Section 1 header and line; Section 4 entry;
   RESEARCH_OUTPUTS T-09 and L-15.
+- 2026-10-31: D-84 decided by the user (Section 10 row, Section 6.1 E-51, Section 1 line, Section 4 entry).
