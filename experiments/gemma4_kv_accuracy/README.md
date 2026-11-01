@@ -3,7 +3,8 @@
 Status: PREDECLARED 2026-11-01. (A1) AMENDED A1 2026-11-01 after the S2 review R-73 (verdict AMEND_THEN_RUN,
 `dossier/REVIEW_E-53_PRERUN_2026-11-01.md`), before any data. (A2) AMENDED A2 2026-11-01 after S5 rehearsal 1 (a bug
 in the run record), before any data. (A3) AMENDED A3 2026-11-01 after S5 rehearsal 2 (the copy). S5 PASS (rehearsal
-2). NOT RUN on the H100. S4: D-89 (the user approved the rehearsal and the H100 run
+2). RUN 2026-11-01 on the H100: frozen decision FAIL (layer 41: median per-prompt ratio 2.38; Section 13). Post-run
+review R-74 pending. S4: D-89 (the user approved the rehearsal and the H100 run
 on 2026-11-01, "Run both", with a one-time $10 balance floor).
 Idea: I-182. Gate: G3 of D-88 (after G1 PASS and G2 PASS, `dossier/GATE_G1_PAGESIZE_I-182_2026-11-01.md` and
 `dossier/GATE_G2_UPSTREAM_I-182_2026-11-01.md`). Journal entry: Section 6.1 E-53 (the main session adds it).
@@ -428,6 +429,60 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
   - (A3) FACT (rehearsal 2, in the AUTO_STOP window): one rsync stream to the Mac gives 5.8 MB/s, 4 streams 21.4 MB/s,
     and 8 streams of one file each 16.1 MB/s (20 MB files). At one stream, the 3.1 GB of the H100 run need about 9 min,
     which is longer than the 300 s window.
+
+## 13. Result (stages S6 to S8, 2026-11-01)
+- Run (S6, FACT): 1 x H100 80GB HBM3, Pod `8ikp2grsi19ieu`, EUR-NO-2, Secure, $3.99/h, D-89. The SSH port 213 s
+  after the create (the image was on the host). The session took 420 s: setup with the 33.3 GB download 280 s (cap
+  420 s), the capture 117 s (engine 93.5 s, eager; the 4 prefills with the saves about 15 s), the analysis 14 s on
+  CUDA (metrics 12.5 s). The copy of RES (29 files) and of the captures (41 files, 3.1 GB) to the Mac took 136 s with
+  8 streams (A3); every checksum matches. The main session deleted the Pod in the AUTO_STOP delay. Cost about $0.98
+  (estimate; billing pending). Results: `results/e53-h100-20261101/`; ledger `e53-h100-20261101`.
+- Validity (FACT): V1 to V5 pass. V1: H100 80GB HBM3. V2: all 10 global layers (5, 11, ..., 59) in every prompt, with
+  the planned shapes; the route "LLM.apply_model"; modes "NONE"; a BF16 cache; vLLM 0.33.0rc1.dev229+g3966924d5; 41
+  capture files with their SHA-256. V3: the largest identity error 0.0024 (the BF16 level), the module form "weight"
+  in every layer. V4: a finite reference. V5: the largest engine gap 0.0017 (bound 0.05).
+- Decision (the frozen rule of Section 7): **FAIL** (layer 41: the median per-prompt ratio 2.38 is above 2). The
+  action of the consequence table: stop the build (D-88); I-182 keeps its exact capacity result. The user confirms the
+  step (journal D-90).
+- Per global layer (FACT; the medians over the 4 prompts; ratio = err_compact / err_standard, float32):
+
+| Layer | 5 | 11 | 17 | 23 | 29 | 35 | 41 | 47 | 53 | 59 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| err_standard | 0.0440 | 0.0264 | 0.0391 | 0.0736 | 0.0345 | 0.0288 | 0.0259 | 0.0693 | 0.0519 | 0.0276 |
+| err_compact | 0.0404 | 0.0333 | 0.0469 | 0.0382 | 0.0347 | 0.0333 | 0.0604 | 0.0980 | 0.0513 | 0.0225 |
+| median ratio | 0.930 | 1.230 | 1.191 | 0.566 | 1.007 | 1.189 | 2.384 | 1.334 | 0.983 | 0.818 |
+| largest ratio | 1.058 | 1.317 | 1.235 | 0.574 | 1.011 | 1.238 | 2.685 | 1.626 | 1.090 | 0.877 |
+
+- The other PASS conditions hold (FACT): the largest |q'| is 19.2 (bound 6,550); no FP16 value is not finite; 0
+  saturated values in both storages; the FP16 ratios equal the float32 ratios to 1e-4. The 4 per-prompt ratios of
+  layer 41 are 2.69, 2.11, 2.42 and 2.35.
+- Mac recompute (FACT): `analyze_e53.py --device cpu` on the copied captures gives the same decision text; the largest
+  difference of the per-layer medians against the Pod run is 3.7e-5 (`exploratory/summary_mac_cpu.json`).
+- Exploratory (after the frozen decision, on the same captures; not part of the rule; scripts and outputs in
+  `exploratory/`):
+  1. FACT: the k_norm weight is one constant in each global layer (0.0600 to 0.0654 on all 512 dims). In layer 29 it
+     is 0.0625 = 2^-4 exactly. A power-of-2 scale does not move a value on the FP8 grid, so in layer 29 the two
+     storages round the same values: the identity error is 0 and the ratio is 1.007.
+  2. FACT: the score path carries the difference. In layer 41 the score-path error is 0.050 (compact) against 0.026
+     (standard); the value-path errors are 0.015 and 0.014. The rotated dims give the same score error in both
+     storages. The unrotated dims give almost all of the score error (probability-weighted RMS 0.05 to 0.16, against
+     0.004 to 0.024 on the rotated dims): in layer 41, 0.138 (compact) against 0.096 (standard); in layer 23, 0.090
+     against 0.164 (`e53_score_probe.py`).
+  3. FACT: the BF16 mismatch of K and w * V is small: the compact path without FP8 has an error of 0 to 0.0094
+     against the BF16 reference (0 in layer 29).
+  4. FACT: the attention-sink token at position 0 has the same K in all 4 prompts and takes 13% to 19% of the
+     attention in layers 5 to 23 (2% to 8% in the others). With position 0 kept in BF16 in both storages, the
+     score-path ratio of layer 5 moves from 0.71 to 1.03, of layer 59 from 0.61 to 0.96; in layer 41 (3%) it stays
+     at 1.84 (`e53_sink_probe.py`).
+  5. FACT (`e53_kfirst_probe.py`; a layout chosen after the FAIL): the mirror row [K | V_rot] (also 640 values; the K
+     view is fp8(K) in another order, so its scores equal the standard storage; V_unrot = fp8(K_unrot) / w) gives
+     median ratios 1.00 to 1.30 and largest ratios 1.00 to 1.39. Under the frozen rule this is INCONCLUSIVE (3 layers
+     above 1.25), not FAIL.
+  INTERPRETATION: the compact row rounds the unrotated part of K on the FP8 grid of V, and the standard storage rounds
+  K on its own grid. If w is not a power of 2, the two roundings differ, and a few dominant values (the sink token in
+  the early layers; HYPOTHESIS: large channels in layer 41) decide which grid wins in each layer. The FAIL is a
+  property of the shared rounding with the KV scale 1.0, not a code error. Both storages also leave K (RMS about
+  0.065) partly in the FP8 subnormal range; a calibrated KV scale was not tested.
 
 ## Amendments
 - A1 (2026-11-01, before any data; from R-73, verdict AMEND_THEN_RUN, `dossier/REVIEW_E-53_PRERUN_2026-11-01.md`):
