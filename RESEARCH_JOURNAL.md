@@ -278,7 +278,7 @@ and its R-70 post-run review (CONFIRM_WITH_CORRECTIONS).** Rewrite this section 
   the per-channel FP8 checkpoint; the RoPE layout matches), chapter draft 1 written. G3 is E-53 (predeclared, `experiments/gemma4_kv_accuracy/`).
   R-73 (Sonnet pre-run review): AMEND_THEN_RUN (B1 to B4); amendment A1 (before any data): tighter caps (worst
   case $2.93), a check V5 that ties the reference to the engine output, per-prompt ratios with the FP16 emulation, an
-  action for every outcome, the raw captures kept; 20 tests pass. D-89 (open, the user decides): an RTX 4090
+  action for every outcome, the raw captures kept; 20 tests pass. D-89 decided by the user ("Run both"): an RTX 4090
   rehearsal (cap $0.60), then the H100 run (cap $3), with a one-time $10 balance floor. 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
@@ -1768,6 +1768,9 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   no action for INCONCLUSIVE or INVALID). Amendment A1 answers every blocker and adds an RTX
                   4090 rehearsal with Gemma 4 E2B; 20 tests pass. D-89 (the spend) is open.
                   Source: dossier/REVIEW_E-53_PRERUN_2026-11-01.md. Ideas: I-182. Experiments: E-53.
+2026-11-01  [P10] D-89 decided by the user ("Run both"), after a plain-language explanation: the E-53 RTX 4090
+                  rehearsal (cap $0.60) and the H100 run (cap $3), with a one-time $10 balance floor.
+                  Source: chat. Ideas: I-182. Experiments: E-53.
 ```
 
 ---
@@ -5170,6 +5173,8 @@ Every outcome has a written action (README Section 7). The raw captures (about 3
 SHA-256 checks and stay out of git. S5 plan: an RTX 4090 rehearsal with `google/gemma-4-E2B-it` (3 global layers own
 a cache; 8 query heads, 1 KV head, head dim 512), cap $0.60; expected REHEARSAL INVALID (V1, and V3 by design). Not
 adopted: O1, O3. S3 after A1: 20 passed. Next: S4 (D-89).
+S4 (2026-11-01): D-89 decided by the user ("Run both"); the live prices are RTX 4090 Secure $0.89/h and H100 SXM
+Secure $3.99/h; the live balance check passed at the one-time $10 floor.
 
 **E-52 Fixed compact K=V decode attention kernels (FP16 compute, two overlapping views) against their standard
 twin and the stock vLLM kernel** (predeclared 2026-11-01, I-182, D-85).
@@ -7234,7 +7239,7 @@ proposed it and no acceptance is recorded.
 | D-86 | 2026-11-01 | Spend for E-52: an RTX 4090 Secure rehearsal ($0.89/h, about 25 min, cap $0.60), then 1 x H100 SXM Secure ($3.99/h, about 25 to 35 min, cap $3); live catalog read 2026-11-01 (stock HIGH for both). The live balance check fails the $35 floor; a one-time floor of $12 passes ($14 fails) | Recommendation (main session), asked while R-71 runs. Not a decision | E-52 is the controlled test of the fixed compact kernel (D-85) | **Decided by the user (2026-11-01, "1")**: both spends, with a one-time balance floor of $12 for E-52 only, if R-71 changes neither the plan nor the cost cap |
 | D-87 | 2026-11-01 | Confirm the E-52 spend after amendment A1 (R-71 changed the plan: the rule, the controls, the compile check; the caps are the same): an RTX 4090 Secure rehearsal ($0.89/h, about 25 min, cap $0.60), then 1 x H100 SXM Secure ($3.99/h, about 25 to 35 min, cap $3), with the one-time $12 balance floor of D-86 | Recommendation (main session), after R-71 and A1. Not a decision | D-86 was given only if R-71 changed neither the plan nor the cap | **Decided by the user (2026-11-01, "Run it")**, after a plain-language explanation of the run and its possible results; the live balance check passed at the $12 floor |
 | D-88 | 2026-11-01 | Next step for I-182 after E-52 (INVALID by V4 under the power cap) and R-72 (CONFIRM_WITH_CORRECTIONS): the byte route to speed is closed on the H100 FP8 kernel classes (about 3% of the step time), the memory saving is exact and the stock FA4 kernel reads the compact rows through two views at the same error and 7% to 10% faster. Options: (a) write up I-182 as an exact memory mechanism plus the measurement findings O-13 to O-15 (1 to 2 weeks, $0); (b) the engine prototype in vLLM (the compact cache write, the views read, the query preparation, the o_proj fold; then an end-to-end capacity and throughput test near the KV pool limit, BF16 and FP8 KV), gated: week-1 gates G1 the page-size plan (vLLM pads the compact page, ratio 3.2), G2 an upstream re-scan and the o_proj weight format, G3 accuracy on real activations (about $2); a hard stop at the end of week 6; GPU about $20 to $40; (c) the FP8 MMA kernel test (R-70 option b) | R-72 and the main session: (a) now and (b) as the gated build in parallel; not (c) (HYPOTHESIS: KILL again, and it adds no capacity). Not a decision | (a) is the thesis floor; (b) is the only route to an end-to-end capacity and throughput result (R-72: 40% to 55% to reach it by week 6); weeks 7 to 9 stay for thesis assembly | **Decided by the user (2026-11-01, "Write-up and try build")**, after a plain-language explanation: (a) now and (b) as the gated build; G3 needs its own spend approval |
-| D-89 | 2026-11-01 | The E-53 spend (gate G3 of D-88) after amendment A1 (R-73, AMEND_THEN_RUN): an RTX 4090 Secure rehearsal with Gemma 4 E2B ($0.89/h, live read 2026-11-01; about 20 to 25 min; cap $0.60, worst case $0.59), then 1 x H100 SXM Secure with the 31B checkpoint ($3.99/h, live read 2026-11-01; about 18 to 29 min; cap $3, worst case $2.93), with a one-time balance floor of $10 (the live check on 2026-11-01 failed at the $12 floor and passed at $10) | Recommendation (main session), after R-73 and A1: both spends, the rehearsal first, because the hooks inside a live vLLM, the output hook of V5 and the copy of the captures have not run yet. Not a decision | R-73 F1 asks for the rehearsal or a written waiver at S4. The worst case of both runs ($3.52) leaves at least the floor | **Open, waiting on the user** |
+| D-89 | 2026-11-01 | The E-53 spend (gate G3 of D-88) after amendment A1 (R-73, AMEND_THEN_RUN): an RTX 4090 Secure rehearsal with Gemma 4 E2B ($0.89/h, live read 2026-11-01; about 20 to 25 min; cap $0.60, worst case $0.59), then 1 x H100 SXM Secure with the 31B checkpoint ($3.99/h, live read 2026-11-01; about 18 to 29 min; cap $3, worst case $2.93), with a one-time balance floor of $10 (the live check on 2026-11-01 failed at the $12 floor and passed at $10) | Recommendation (main session), after R-73 and A1: both spends, the rehearsal first, because the hooks inside a live vLLM, the output hook of V5 and the copy of the captures have not run yet. Not a decision | R-73 F1 asks for the rehearsal or a written waiver at S4. The worst case of both runs ($3.52) leaves at least the floor | **Decided by the user (2026-11-01, "Run both")**, after a plain-language explanation of the runs, the costs and the possible results; the live balance check passed at the $10 floor |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7702,3 +7707,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-11-01: R-73 (E-53 pre-run review, AMEND_THEN_RUN) in Section 6.2; E-53 amendment A1 (Section 6.1); D-89 open
   (Section 10); E-52 billing (Section 6.1, Section 1); Section 3 row I-182; Section 5.27; Section 1 line; Section 4
   entry; HARDWARE_LOG E-52 billed costs.
+- 2026-11-01: D-89 decided by the user (Section 10 row, Section 6.1 E-53 S4, Section 1 line, Section 4 entry).
