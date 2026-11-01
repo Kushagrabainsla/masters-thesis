@@ -38,8 +38,18 @@ def main() -> None:
                 for k in ("REG", "STACK", "SHARED", "LOCAL"):
                     m = re.search(rf"{k}:(\d+)", use)
                     entry[k.lower()] = int(m.group(1)) if m else None
-                sass = subprocess.run([tool, "-sass", str(f)], capture_output=True, text=True, timeout=120).stdout
-                ops = [m.group(1) for m in re.finditer(r"/\*[0-9a-f]{4,}\*/\s+(?:@!?U?P\w+\s+)?([A-Z][A-Z0-9]*)", sass)]
+                r = subprocess.run([tool, "-sass", str(f)], capture_output=True, text=True, timeout=120)
+                sass = r.stdout + r.stderr
+                # A2 (S5): the rehearsal parser counted 0 opcodes, so the raw text is kept and the count is looser:
+                # an opcode is a capital word followed by a dot or a space, after an optional predicate
+                (a.out.parent / "sass").mkdir(exist_ok=True)
+                (a.out.parent / "sass" / f"{d.name}_{f.stem}.sass").write_text(sass)
+                ops = []
+                for line in sass.splitlines():
+                    m = re.search(r"\*/\s*(?:@!?U?P[A-Z0-9]+\s+)?([A-Z][A-Z0-9_]*)[.\s]", line)
+                    if m:
+                        ops.append(m.group(1))
+                entry["lines"], entry["instructions"] = len(sass.splitlines()), len(ops)
                 entry["ops"] = {op: sum(1 for o in ops if o == op) for op in OPS}
                 entry["f2f_variants"] = sorted(set(re.findall(r"\bF2FP?\.[A-Z0-9_.]+", sass)))[:12]
             except Exception as exc:  # reported only

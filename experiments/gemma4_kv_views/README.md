@@ -279,6 +279,23 @@ e-lines (A1): e_h 0.413 at 32K and 0.333 at 64K (the e at which a bytes-only gai
   dry run passes with the poisoned tail slots; `test_e51.py` 16 passed after the `split_args` refactor. Not tested on
   the Mac: `compile_check_e52.py`, `dram_probe_e52.py` and `sass_counts_e52.py` need Triton, a GPU or the CUDA tools;
   the rehearsal runs them (Section 9).
+- S5 (2026-11-01, RTX 4090, Pod 90d0y7vy24vxgp, EU-RO-1, $0.89/h; created 09:28:36 UTC, stopped by AUTO_STOP, deleted
+  about 10:02 UTC; billing pending): PASS. The image was cached on the host (setup 8 s). FACT:
+  1. Compile check: 124 of 124 entries compiled for sm_90 (a cross-compile from sm_89) in 75 s; no crash. The FP16
+     kernels hold 128 `cvt.rn.f16x2.e4m3x2` and no `cvt.bf16.f16`; the BF16 kernels hold 128 and 256. The standard
+     and views PTX are identical in 54 of 54 configurations. Every kernel has `cp.async`. Shared memory: 50,176 B at
+     `num_stages` 2 and 50,180 B at 3 (stage 3 adds no K or V buffer).
+  2. Correctness (sm_89, poisoned tail slots): every Triton configuration passes (FP16 compute 0.00166 at most, BF16
+     0.00185); the views outputs have the standard exact-attention error (0.0233 FP8, 0.0029 BF16).
+  3. NVML: the decision rows read 2,745 MHz or more during the replays. Telemetry: 5% of busy samples under the cap.
+  4. L-18 gate: at 4:2K the views time is 1.013 x the standard time (bound 1.05).
+  5. Time: correctness 64 s, the four group cells 544 s, the confirmation 179 s; `kbench` 787 s against 900 s; the
+     session 877 s. No cell needed the deadline.
+  6. The 4090 is DRAM-bound for every Triton FP8 kernel (0.98 to 1.02 x copy on dt), so every compact variant gives
+     sigma_layout 0.35 to 0.36 there (the factorial), and the 11:2K flag is set (its 72 MB L2 holds the 57.7 MB views
+     rows). As planned, the 4090 says nothing about the H100 speed (L-18).
+  7. The decision INVALID (V1, V2, V3) is the expected one: the 4090 has no SM90 stock kernel.
+  8. The SASS opcode counts were all 0 (a parser fault; the register counts were read). Fixed in A2.
 
 ## Amendments
 - A1 (2026-11-01, before any data; from R-71, verdict AMEND_THEN_RUN; `dossier/REVIEW_E-52_PRERUN_2026-11-01.md`):
@@ -302,3 +319,7 @@ e-lines (A1): e_h 0.413 at 32K and 0.333 at 64K (the e at which a bytes-only gai
   - The H4 text no longer states a conversion rate as a fact (Section 2).
   - Unchanged: the question's kill and go lines, the groups and cells, the primary metrics, the 15% FP8 MMA allowance,
     the stock call, the caps and the cost cap.
+- A2 (2026-11-01, from the S5 rehearsal, before the H100 session uploaded its code; diagnostic only): the SASS parser of
+  `sass_counts_e52.py` counted 0 opcodes. It now keeps the raw SASS text (`sass/`) and matches an opcode as a capital
+  word after the address comment and an optional predicate. Unchanged: the rule, the metrics, the benchmark and every
+  other script.
