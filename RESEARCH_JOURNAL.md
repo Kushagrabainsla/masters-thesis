@@ -260,7 +260,8 @@ and its R-70 post-run review (CONFIRM_WITH_CORRECTIONS).** Rewrite this section 
   with the R-70 controls (E-52, about $2, cap $3). E-52 predeclared (`experiments/gemma4_kv_views/`): FP16
   compute (FACT: Triton converts FP8 to BF16 with three instructions per 2 values on sm_90, to FP16 with one) and
   the views layout [K_rot | V_unrot | V_rot], read by the unchanged standard kernel through two overlapping views;
-  19 tests pass. Next: R-71 (pre-run review), then D-86 (the spend). 0 thesis Pods, 0 volumes.
+  19 tests pass. D-86 decided by the user ("1"): both spends with a one-time $12 floor, if R-71
+  changes neither the plan nor the cap. Next: R-71, then S5. 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1704,6 +1705,9 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   one) and the views layout [K_rot | V_unrot | V_rot], read by the unchanged standard kernel
                   through two overlapping views. The E-51 rule with the R-70 fixes of V3 and V4. 19 tests
                   pass. Source: experiments/gemma4_kv_views/README.md. Ideas: I-182. Experiments: E-52.
+2026-11-01  [P10] D-86 decided by the user ("1"): the E-52 RTX 4090 rehearsal (cap $0.60) and the H100 run
+                  (cap $3), with a one-time balance floor of $12 for E-52 only, if R-71 changes neither the
+                  plan nor the cap. Source: chat. Ideas: I-182. Experiments: E-52.
 ```
 
 ---
@@ -5085,6 +5089,8 @@ Controls (R-70): BF16 K = V rows, FP8 K = V and pool rows, a cast x layout facto
 counts. Wide sweep (R-70 recommendation 5): 54 configurations per primary family. Budget: RTX 4090 rehearsal (cap
 $0.60), then 1 x H100 for about 25 to 35 min (cap $3). S3 (Mac): `test_e52.py` 19 passed, `test_e51.py` 16 passed,
 the CPU dry run within 0.0021 for every layout and compute dtype. Next: R-71 (pre-run review), then D-86 (the spend).
+D-86 (user, 2026-11-01, "1"): the rehearsal (cap $0.60) and the H100 run (cap $3) with a one-time $12 balance floor,
+if R-71 changes neither the plan nor the cap.
 
 **E-51 Compact K=V decode attention kernel against the stock vLLM kernel** (predeclared 2026-10-31, I-182, D-83).
 STATUS: RUN 2026-11-01 (H100): frozen decision INVALID (V3, V4); R-70 (S8): CONFIRM_WITH_CORRECTIONS.
@@ -7026,6 +7032,7 @@ proposed it and no acceptance is recorded.
 | D-83 | 2026-10-31 | After E-50 (GO) and R-68 (CONFIRM_WITH_SCOPE_LIMITS): the next test is a kernel microbenchmark with its own preregistration, no engine, 1 x H100 for about 30 min (about $2 to $3). Compare the stock FP8 dequant kernel, the stock FP8 MMA kernel (FA PR 199) and a compact FP8 kernel at B 19 / 32K and B 11 / 64K, with 32 splits and automatic splits. Metric sigma = 1 - t_compact / t_stock on the time that grows with the context. Stop the layout work if sigma is below 0.155 (32K) and 0.125 (64K), because S is then below 5%; go to an accuracy gate only if sigma is at least 0.25. Keep QK at 512 dims. Alternatives: write up I-182 as an engine optimization with the E-49 and E-50 data, or wait for vLLM PR #60372 and rerun the baseline | Recommendation (main session, after R-68). Not a decision | The ceiling is 12% to 15% on top of FP8 KV, but the stock FP8 kernel's elasticity is 0.49, so the real saving is plausibly 4% to 8%; the kernel test decides it for about $2 to $3 | **Decided by the user (2026-10-31, "Plan the kernel test")**: E-51; the spend waits for D-84 |
 | D-84 | 2026-10-31 | Spend for E-51 (with A1): an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 22 to 33 min (cap $3; expected about $1.50 to $2.20). The $35 balance floor applies again after D-82 | Recommendation (main session), after R-69 and A1. Not a decision | The kernel test decides if the compact layout is worth an engine prototype (R-68) | **Decided by the user (2026-10-31, "Yes, $14 floor")**: both spends, with a one-time balance floor of $14 for E-51 only (the live check failed the $35 floor; S4 prices from the catalog: H100 SXM Secure $3.99/h, RTX 4090 Secure $0.89/h) |
 | D-85 | 2026-11-01 | Next step for I-182 after E-51 (INVALID by its frozen rule) and R-70 (CONFIRM_WITH_CORRECTIONS: the K = V oracle bounds the byte route only, at most about 10% of dt on the two FP8 dequant kernels; the speed claim is untested). Options: (a) stop the speed work and keep I-182 as a capacity result (1.6 times the global KV capacity) plus O-13; record "speed claim untested", not "no speed benefit" (R-70); (b) E-52 on the FP8 MMA kernel of FA PR 199 (overlay) with the K = V oracle, re-scoped by R-70: a BF16 K = V control, a pool probe, V3 on the X cells and dt only, a robust V4 and the SM clock from NVML; about $2, cap $3; KILL of the byte route if e stays below 0.413 (32K) and 0.333 (64K); (c) E-52 on a fixed compact Triton FP8 kernel (the R-70 Q4 variants: drop kr, load V twice, slice qc; also an FP8 to FP16 cast as in FA4; a wider sweep with `num_stages` 3), with the same controls and fixes; about $2, cap $3. First version (before R-70): (a) the same without the wording rule; (b) the FP8 MMA oracle test with a fixed V3 and V4, about $1 to $2; (c) a profile of the compact kernel's on-chip defect | R-70: (b), after the free offline half of (c) (an sm_90 compile and a PTX diff); not (a) as a kill; HYPOTHESIS: (b) ends in KILL. Main session (after R-70): (c), with the free offline half first. Both are recommendations, not decisions | (c) is the only test of the real layout, which also cuts the cast work (R-70 H3); a compact kernel at parity with its twin is already 8% to 12% faster on dt than the stock FP8 kernel, so the capacity gain would come with no slowdown; the Triton path is a production path for multimodal Gemma 4 with FP8 KV (PR 60372). (b) tests the kernel that vLLM would ship, but R-70 expects a KILL there | **Decided by the user (2026-11-01, "1 go ahead")**: option (c). The H100 test (about $2, cap $3) and a rehearsal wait for D-86: the user's OK of the final plan and cap, and a live balance check |
+| D-86 | 2026-11-01 | Spend for E-52: an RTX 4090 Secure rehearsal ($0.89/h, about 25 min, cap $0.60), then 1 x H100 SXM Secure ($3.99/h, about 25 to 35 min, cap $3); live catalog read 2026-11-01 (stock HIGH for both). The live balance check fails the $35 floor; a one-time floor of $12 passes ($14 fails) | Recommendation (main session), asked while R-71 runs. Not a decision | E-52 is the controlled test of the fixed compact kernel (D-85) | **Decided by the user (2026-11-01, "1")**: both spends, with a one-time balance floor of $12 for E-52 only, if R-71 changes neither the plan nor the cost cap |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7475,3 +7482,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   history, Section 4 entry).
 - 2026-11-01: E-52 predeclared (Section 6.1 entry, Section 5.27 Experiments line and research log, Section 3 row
   I-182, Section 7.30 row, Section 1 line, Section 4 entry).
+- 2026-11-01: D-86 decided by the user (Section 10 row, Section 6.1 E-52, Section 1 line, Section 4 entry).
