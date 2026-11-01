@@ -1,7 +1,8 @@
 # E-52: fixed compact K=V decode attention kernels (FP16 compute, two overlapping views) against their standard twin and the stock vLLM kernel, on 1 x H100 (preregistration)
 
 Status: PREDECLARED 2026-11-01. AMENDED A1 2026-11-01 (R-71 pre-run review, verdict AMEND_THEN_RUN, before any data).
-NOT RUN.
+S5 PASS (RTX 4090), AMENDED A2 (diagnostic only). RUN 2026-11-01 on the H100: frozen decision INVALID (V4); the
+exploratory label is KILL (byte route only); post-run review R-72 pending (Section 13).
 Idea: I-182. Journal entry: Section 6.1 E-52. Follows E-51 (frozen decision INVALID; exploratory readout) and its
 post-run review R-70 (CONFIRM_WITH_CORRECTIONS). Request: D-85 (user, 2026-11-01, "1 go ahead": fix the compact
 kernel with free work first, then one H100 test with the R-70 controls). Spend: D-86 (user, "1"), valid only if R-71
@@ -296,6 +297,52 @@ e-lines (A1): e_h 0.413 at 32K and 0.333 at 64K (the e at which a bytes-only gai
      rows). As planned, the 4090 says nothing about the H100 speed (L-18).
   7. The decision INVALID (V1, V2, V3) is the expected one: the 4090 has no SM90 stock kernel.
   8. The SASS opcode counts were all 0 (a parser fault; the register counts were read). Fixed in A2.
+
+## 13. Result (S6 to S8, 2026-11-01 UTC; post-run review R-72 pending)
+- Run (FACT): Pod tj0ad1ljwhqy6i, H100 80GB HBM3 (sm_90), EUR-NO-2, Secure, $3.99/h, created 10:04:08 UTC; SSH after
+  211 s. Session 10:09:36 to 10:20:17: compile check 124 of 124 in 83 s; `kbench` 553 s (no cell needed the deadline).
+  Results copied (315 files, checksums match); the Pod was deleted in the AUTO_STOP delay (about 10:23 UTC). About
+  $1.25 (estimate; billing pending); E-52 about $1.56 with the rehearsal. Design commit 3130fcd (A2). Copy 3,025 GB/s.
+  Results: `results/e52-h100-20261101/`.
+- **Frozen decision: INVALID (V4).** The run does not decide.
+  - V4: one Triton decision row failed. The standard FP16 kernel at 19:2K (16/4/32/2) had central spreads of 5.5%,
+    0.2%, 5.8%, 0.15% and 5.2% (median 5.2%; bound 2%). FACT (NVML): those three repeats ran at 1,515, 1,605 and
+    1,715 MHz; the two clean ones at 1,980. Every other Triton decision row had a median spread of 1.4% or less. The
+    dt ranges were 0.14% to 0.63% for the Triton families (bound 3%) and 1.9% for the stock family (bound 5%).
+    Telemetry: 18.9% of busy samples under the software power cap (mean 1,833 MHz, lowest 1,320 MHz).
+  - V1, V2, V3, V5 and V6 pass. V3: 1.025 and 1.003 at X; dt 1.066 and 1.020 (2K ratios 0.836 and 0.845, reported).
+    Every configuration of every kernel passes the correctness cell with the poisoned tail (FP16 compute 0.00166; the
+    stock kernel on the views 0.00166, the same as on the standard layout).
+- Exploratory readout (not a decision; R-72 checks it). The numbers are FACT; the meaning is INTERPRETATION.
+  - With V4 set aside, the A1 rule gives KILL (byte route only) in 5 of 5 repeats, and the baseline check gives the
+    same word. sigma_layout is 0.042 (32K) and 0.065 (64K) against the kill lines 0.155 and 0.125. e_h is 0.216 and
+    0.240 (0.20 to 0.27 per repeat) against the e-lines 0.413 and 0.333. The oracle is valid (e_bf16_triton 0.856 and
+    0.817). Flags (a) and (c) in both groups.
+  - The pool rows (every byte from L2) cut dt by only 17% to 20% for the standard FP16 kernel, 14% to 15% for the
+    views kernel and 20% to 22% for the stock kernel. The standard FP16 kernel reads at 0.87 to 0.90 x copy on dt.
+    INTERPRETATION: about 80% of the context-growing time is on-chip work in all three FP8 kernel families, and it
+    overlaps the DRAM reads, so removing bytes saves little.
+  - H4 (partly true): at the same configuration, FP16 compute cuts dt by 14% (32K) and 13% (64K) against BF16
+    compute (910 against 1,061 us; 1,053 against 1,205 us). H5 is false: `num_stages` 3 is 2% to 3% slower than 2.
+  - The standard Triton FP16 kernel is 24% (32K) and 25% (64K) faster on dt than the stock FA4 FP8 kernel
+    (std_vs_stock 0.763 and 0.749); the views kernel is 27% and 30% faster (sigma_dq 0.270 and 0.300). sigma_mma is
+    0.141 and 0.176 (go line 0.25).
+  - The stock FA4 kernel reads the views layout with no code change and with the same error. It is 9.6% (32K) and
+    6.6% (64K) faster on dt with it (sigma_stock_layout); at B 4 and 32K it takes 273.7 against 290.3 us.
+  - BF16 cache: sigma_layout 0.327 and 0.296 (the layout works where the kernel is bound by bytes); e_bf16_stock 0.59
+    and 0.58; BF16 pool share 0.48 and 0.46.
+  - The E-51 fused kernel stays 28% (BF16 compute) and 23% to 25% (FP16) slower than its twin (the factorial).
+  - The selected configurations are 16/4/32/2 (32K) and 64/4/32/2 (64K): 255 registers, no spills. The PTX of the
+    standard and views calls is identical. ncu is not in the image (no DRAM counter).
+- What this means (INTERPRETATION): on one H100, the FP8 decode attention of the Gemma 4 global layers is mostly
+  on-chip work, also after the cast fix, so a layout that removes DRAM bytes gives only about 4% to 10% of the
+  context-growing time, with the stock kernel or with Triton. The memory saving of I-182 (37.5% of the global KV
+  cache) is exact and costs no speed: the unchanged stock kernel reads the compact rows through two views and is a
+  little faster. The speed claim is closed for the byte route on these kernel classes. A kernel with less on-chip work
+  per token (FP8 MMA, or one that casts V once) is not tested.
+- Lesson (L-19): the power cap slowed a short row that follows heavy rows in 3 of 5 repeats. The row's spread voids
+  V4, but it barely moves dt (the Triton dt ranges were 0.6% at most). E-51 and E-52 are both INVALID for this reason.
+- Next: R-72 (the post-run review), then the user decides the next step (D-88).
 
 ## Amendments
 - A1 (2026-11-01, before any data; from R-71, verdict AMEND_THEN_RUN; `dossier/REVIEW_E-52_PRERUN_2026-11-01.md`):
