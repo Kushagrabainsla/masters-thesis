@@ -1,7 +1,8 @@
 # E-51: a compact K=V decode attention kernel for Gemma 4 against the stock vLLM kernel, on 1 x H100 (preregistration)
 
 Status: PREDECLARED 2026-10-31. AMENDED A1 2026-10-31 (R-69 pre-run review, before any data). S5 rehearsal PASS
-2026-11-01 (RTX 4090), AMENDED A2 (from the rehearsal, before the H100 run). NOT RUN on the H100.
+2026-11-01 (RTX 4090), AMENDED A2 (from the rehearsal, before the H100 run). RUN 2026-11-01 on the H100: frozen
+decision INVALID (V3, V4); post-run review R-70 pending (Section 13).
 Idea: I-182. Journal entry: Section 6.1 E-51. Follows E-50 and its post-run review R-68 (recommendation 1 to 6).
 Request: D-83 (user, 2026-10-31, "Plan the kernel test": a compact FP8 attention kernel timed against the stock vLLM
 kernels at batch 19 / 32K and batch 11 / 64K, with the R-68 stop line; plan only, no GPU yet).
@@ -259,6 +260,46 @@ Deciding groups: X = 32,768 (B 19) and 65,536 (B 11), FP8. Kill lines (R-68): 0.
   10. PASS (by test): the rerun skip and the partial-data move are in the stub session test. Time model: the four
       group cells took 172 s on the RTX 4090.
 - S3 after A2 (2026-11-01, Mac): 16 passed (a new V5 test: an L2-resident 2K row leaves V5; a fast X row fails it).
+
+## 13. Result (S6 and S7, 2026-11-01 UTC; post-run review R-70 pending)
+- Run (FACT): Pod kxu827n54y2lb0, H100 80GB HBM3 (sm_90), US-NE-1, Secure, $3.99/h, created 03:14 UTC. The image pull
+  took about 11 min (the first 520 s SSH wait timed out; the second try passed). Session 03:29 to 03:33 UTC (`kbench`
+  228 s). Results copied (27 files, checksums match); the Pod was deleted in the AUTO_STOP delay (about 03:35 UTC).
+  About $1.40 (estimate; billing pending). Design commit a1e8b13 (A2). Copy 3,045 GB/s. Results:
+  `results/e51-h100-20261101/`.
+- **Frozen decision: INVALID (V3, V4).** The run does not decide.
+  - V3: the stock FP8 kernel with 32 splits at 19:2K takes 0.837 x its in-engine time (the bound is 0.85); at 11:2K
+    0.863; at 19:32K 0.993; at 11:64K 0.975. Its dt ties to the engine within 2.5% (1.025 and 0.986). FACT: the
+    fixed cost at 2K is lower here than in the engine (no graph padding, no other kernels; Section 10).
+  - V4: the stock row at 19:32K has a median replay spread of 4.2% (the bound is 2%), and the stock row at 11:64K
+    2.7%. 27 of 392 sweep rows are above 2% (17% at most). FACT (telemetry): the SM clock fell from 1,980 to 1,530 MHz
+    at times, and power reached 701 W under the software power cap (reason 0x4). The RTX 4090 spreads were 0.8% at most.
+  - V1, V2, V5 and V6 pass. All 40 Triton configurations and the four stock kernels pass the correctness cell (error
+    0.0019 at most).
+- Exploratory readout (not a decision; R-70 checks it). The numbers are FACT; the meaning is INTERPRETATION.
+  - The compact Triton FP8 kernel is slower than its standard twin: sigma_layout -0.285 (32K) and -0.289 (64K),
+    sigma_dq -0.137 and -0.179, sigma_mma -0.338 and -0.387. On dt it reads at 0.376 and 0.370 x copy; the standard
+    Triton FP8 kernel at 0.773 and 0.764 x copy; the stock FA4 FP8 kernel at 0.684 and 0.699 x copy. Without V3 and
+    V4, the A1 rule gives INCONCLUSIVE (the compact kernel is below 0.6 x copy). The rule before A1 would have given
+    KILL (R-69 R2).
+  - The standard Triton FP8 kernel is faster on dt than the stock FA4 FP8 kernel: dt 0.885 x (32K) and 0.915 x (64K).
+  - The oracle (K = V, half the DRAM bytes) cuts dt by only 10.1% and 8.3% for the stock kernel (e_stock 0.202 and
+    0.165) and by 8.9% and 9.8% for the Triton standard kernel (e_triton 0.179 and 0.196). The same Triton oracle gave
+    0.885 and 0.991 on the RTX 4090. INTERPRETATION: on the H100 at these shapes, both FP8 dequant kernels are limited
+    mostly on chip, not by DRAM bytes. A saving of 37.5% of the bytes alone then gives about 0.2 x 0.375 = 7.5% of
+    dt, below the kill lines (0.155 and 0.125). HYPOTHESIS to check: L2 serves the second read on the H100 too.
+  - BF16 (one sweep measurement): both Triton BF16 kernels read at about 1.0 x copy on dt, and sigma_layout is 0.337
+    (32K) and 0.368 (64K). The layout effect is real when the kernel is bound by bytes.
+  - The selected configuration is 32 splits, 4 warps, tile 32 for each FP8 family; no spills; the 4-warp
+    configurations of both layouts use 255 registers.
+  - B 4 (reported): the stock FP8 kernel takes 287.6 us (32 splits) and 269.5 us (automatic) at 32K; the Triton
+    standard kernel 235.8 us; the compact kernel 309.1 us.
+- What this means (INTERPRETATION): with an FP8 KV cache on the H100, the decode attention at B 11 to 19 is bound on
+  chip (the FP8 to BF16 dequant and the small-M MMA), not by the bytes that the compact layout removes. A byte-only
+  layout cannot reach S = 5% with the current kernels, unless a kernel with less on-chip work per byte (for example
+  the FP8 MMA kernel of FA PR 199) is bound by bytes. The compact Triton kernel also has a defect of its own (0.37 x
+  copy against 0.77 for its twin).
+- Next: R-70 (the post-run review); then the user decides the next step (D-85).
 
 ## Amendments
 - A1 (2026-10-31, before any data; from R-69, verdict AMEND_THEN_RUN). Each item has a test (Section 12).

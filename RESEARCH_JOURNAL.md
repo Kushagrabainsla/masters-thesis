@@ -247,8 +247,11 @@ and amendment A1.** Rewrite this section every session.
   fast, the engine's cache layout. 15 tests pass, with a CPU emulation of the Triton kernels. D-84 decided by the user
   ("Yes, $14 floor"): both spends, with a one-time $14 balance floor. S5 rehearsal (RTX 4090, 2026-11-01): PASS with
   amendment A2. Both Triton kernels read at about 1.0 x copy on dt; sigma_layout 0.367 (32K) and 0.355 (64K). A2 moves
-  V5 to the X rows and the dt rates (a 2K row sat in L2) and adds a warm-up pass. Next: the H100 run (S6). 0 thesis
-  Pods, 0 volumes.
+  V5 to the X rows and the dt rates (a 2K row sat in L2) and adds a warm-up pass. E-51 RUN on the H100 (2026-11-01, about $1.40):
+  frozen decision INVALID (V3 at one 2K cell, V4 spread under the power cap). Exploratory: the compact Triton FP8
+  kernel is 29% slower than its twin (0.37 x copy on dt); the K = V oracle shows that the FP8 dequant kernels are bound
+  on chip on the H100 (elasticity 0.17 to 0.20), so a byte-only layout gives about 7.5% of dt. BF16 sigma_layout 0.34
+  and 0.37. Next: R-70 (post-run review), then D-85 (the next step for I-182). 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1161,7 +1164,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1 | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin | `experiments/gemma4_kv_audit/README.md` |
 | I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
@@ -1673,6 +1676,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   sigma_layout 0.367 (32K) and 0.355 (64K). A2: V5 uses the X rows and the dt rates (a 2K row
                   sat in the 72 MB L2), and the confirmation starts with an untimed pass.
                   Source: experiments/gemma4_kv_kernel/README.md Section 12. Ideas: I-182. Experiments: E-51.
+2026-11-01  [P10] E-51 RUN on 1 x H100 (Pod kxu827n54y2lb0, about $1.40): frozen decision INVALID (V3 at the
+                  19:2K stock time, V4 replay spread under the power cap). Exploratory: the compact Triton
+                  FP8 kernel is 29% slower than its twin; the K = V oracle shows the FP8 dequant kernels
+                  are bound on chip (elasticity 0.17 to 0.20). BF16 sigma_layout 0.34 and 0.37. D-85 opened.
+                  Source: experiments/gemma4_kv_kernel/README.md Section 13. Ideas: I-182. Experiments: E-51.
 ```
 
 ---
@@ -3720,7 +3728,8 @@ its kernels exist (DeepSeek, FlashMLA, FlashInfer MLA). Section 7.30.
 Exact surviving gap: no GPU serving engine found that realizes the 37.5% saving. Do not claim the saving or the layout
 as novel; the contribution is the engine mechanism (cache spec, kernel path) and its measured effect.
 Experiments: E-49 (RUN 2026-10-30, PIVOT); E-50 (RUN 2026-10-31, GO: the FP8 KV stack near the pool limit); E-51 (predeclared 2026-10-31: the compact
-kernel microbenchmark; amended A1 after R-69).
+kernel microbenchmark; amended A1 after R-69; RUN 2026-11-01: INVALID; exploratory: the FP8 kernels are bound on
+chip).
 Reviews: R-67 (E-50 pre-run, Sonnet, 2026-10-30): AMEND_THEN_RUN; the fixes are E-50 A1.
 Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1. R-65
 (post-run, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS.
@@ -5025,7 +5034,8 @@ faster for Qwen3-8B and Qwen3-14B on deep_gemm (2% to 6%) and for Qwen3-8B on cu
 GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not fuse. Pod rowtn7ir0qu7t7, about $5.70.
 
 **E-51 Compact K=V decode attention kernel against the stock vLLM kernel** (predeclared 2026-10-31, I-182, D-83).
-STATUS: PREDECLARED, AMENDED A1 (R-69) and A2 (S5), S5 PASS, NOT RUN ON THE H100. Package: `experiments/gemma4_kv_kernel/` (README is the preregistration). Question: on
+STATUS: RUN 2026-11-01 (H100): frozen decision INVALID (V3, V4); R-70 pending. AMENDED A1 (R-69) and A2 (S5), S5
+PASS. Package: `experiments/gemma4_kv_kernel/` (README is the preregistration). Question: on
 1 x H100, does a decode attention kernel that reads the compact K=V rows (640 of 1,024 values per head and token)
 cut the context-growing attention time of a Gemma 4 31B global layer enough, against the best stock FA4 FP8 kernel
 with a 15% allowance for the coming FP8 MMA kernel? Method: a kernel microbenchmark with no engine: the stock call of
@@ -5051,6 +5061,17 @@ Triton standard and compact FP8 kernels read at 943 and 931 GB/s on dt at 32K (c
 (32K) and 0.355 (64K); all 40 configurations pass the correctness cell (error 0.0019 at most); no spills; e_triton
 0.885 and 0.991. A2: V5 uses the X rows and the dt rates (the compact FP8 rows at B 11 and 2K sat in the 72 MB L2
 and read at 1.15 x copy), and the confirmation starts with an untimed pass. Next: the H100 run (S6).
+S6 and S7 (2026-11-01, H100, Pod kxu827n54y2lb0, US-NE-1, about $1.40; image pull about 11 min; `kbench` 228 s):
+frozen decision INVALID (V3, V4). V3: the stock FP8 kernel's 2K time at B 19 is 0.837 x its in-engine time (bound
+0.85), while its dt ties to the engine within 2.5%. V4: a 4.2% median replay spread on the stock row at 19:32K; the
+H100 ran under the software power cap (SM clock 1,980 to 1,530 MHz). Exploratory readout (README Section 13): the
+compact Triton FP8 kernel is slower than its standard twin (sigma_layout -0.285 at 32K, -0.289 at 64K; 0.37 x copy
+on dt against 0.77 x copy; the stock FA4 FP8 kernel 0.68 x copy), so the A1 rule would give INCONCLUSIVE and the rule
+before A1 KILL. The K = V oracle cuts dt by only 8% to 10% for the stock kernel (e_stock 0.20 and 0.17) and for the
+Triton standard kernel (e_triton 0.18 and 0.20; 0.9 to 1.0 on the RTX 4090): on the H100 both FP8 dequant kernels are
+bound mostly on chip, so a byte-only saving of 37.5% gives about 7.5% of dt, below the kill lines. BF16: both Triton
+kernels are bound by bytes, and sigma_layout is 0.34 and 0.37. The standard Triton FP8 kernel is 8% to 12% faster on
+dt than the stock FA4 FP8 kernel. Next: R-70 (post-run review), then D-85.
 
 **E-50 Gemma 4 K=V headroom on top of an FP8 KV cache, near the KV pool limit** (predeclared 2026-10-30, I-182,
 D-76). STATUS: PREDECLARED, AMENDED A1 (2026-10-30, R-67, before any data), S5 REHEARSAL PASS (2026-10-31, RTX 4090,
@@ -6911,6 +6932,7 @@ proposed it and no acceptance is recorded.
 | D-82 | 2026-10-30 | One-time balance rule for E-50 only: E-50 may use at most $10 of the balance, so the floor for the booking checks and for the mid-run stop rule (stop if the balance falls below the floor plus the remaining cost cap) is $11 (the live balance at S4 minus $10), not $35. The caps ($0.60 and $4.50) stay | **Decided by the user** (2026-10-30: "can we work with 10 dollar of usage?", then "Go ahead then!") | The S4 check failed at the $35 floor after the other project's H200 Pod billed $125 on 2026-10-30; it is stopped now | Applies to E-50 only; the $35 floor returns after it |
 | D-83 | 2026-10-31 | After E-50 (GO) and R-68 (CONFIRM_WITH_SCOPE_LIMITS): the next test is a kernel microbenchmark with its own preregistration, no engine, 1 x H100 for about 30 min (about $2 to $3). Compare the stock FP8 dequant kernel, the stock FP8 MMA kernel (FA PR 199) and a compact FP8 kernel at B 19 / 32K and B 11 / 64K, with 32 splits and automatic splits. Metric sigma = 1 - t_compact / t_stock on the time that grows with the context. Stop the layout work if sigma is below 0.155 (32K) and 0.125 (64K), because S is then below 5%; go to an accuracy gate only if sigma is at least 0.25. Keep QK at 512 dims. Alternatives: write up I-182 as an engine optimization with the E-49 and E-50 data, or wait for vLLM PR #60372 and rerun the baseline | Recommendation (main session, after R-68). Not a decision | The ceiling is 12% to 15% on top of FP8 KV, but the stock FP8 kernel's elasticity is 0.49, so the real saving is plausibly 4% to 8%; the kernel test decides it for about $2 to $3 | **Decided by the user (2026-10-31, "Plan the kernel test")**: E-51; the spend waits for D-84 |
 | D-84 | 2026-10-31 | Spend for E-51 (with A1): an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 22 to 33 min (cap $3; expected about $1.50 to $2.20). The $35 balance floor applies again after D-82 | Recommendation (main session), after R-69 and A1. Not a decision | The kernel test decides if the compact layout is worth an engine prototype (R-68) | **Decided by the user (2026-10-31, "Yes, $14 floor")**: both spends, with a one-time balance floor of $14 for E-51 only (the live check failed the $35 floor; S4 prices from the catalog: H100 SXM Secure $3.99/h, RTX 4090 Secure $0.89/h) |
+| D-85 | 2026-11-01 | Next step for I-182 after E-51 (INVALID by its frozen rule; exploratory: FP8 decode attention on the H100 is bound on chip, K = V elasticity 0.17 to 0.20). Options: (a) stop the speed claim of I-182 and keep it as a capacity result (1.6 times the global KV capacity) plus the E-51 measurement finding (O-13); (b) one short test of the FP8 MMA kernel (FA PR 199 overlay, R-69 O2) with the K = V oracle and a fixed V3 and V4, about $1 to $2, to see whether the next kernel is bound by bytes; (c) a profile of the on-chip defect of the compact Triton kernel | Recommendation (main session), after R-70. Not a decision | E-51 shows that bytes are not the H100 bottleneck of the FP8 dequant kernels; only a kernel with less on-chip work per byte can reopen the speed claim | **Open, waiting on R-70 and the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7350,3 +7372,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-10-31: D-84 decided by the user (Section 10 row, Section 6.1 E-51, Section 1 line, Section 4 entry).
 - 2026-11-01: E-51 S5 rehearsal PASS and amendment A2 (Section 6.1, Section 1 line, Section 4 entry);
   RESEARCH_OUTPUTS L-16.
+- 2026-11-01: E-51 RUN (INVALID; exploratory readout) in Section 6.1; D-85 opened; Section 3 row I-182; Section
+  5.27; Section 1 line; Section 4 entry; README Section 13; RESEARCH_OUTPUTS O-13, T-10, L-17.
