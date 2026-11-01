@@ -281,7 +281,8 @@ and its R-70 post-run review (CONFIRM_WITH_CORRECTIONS).** Rewrite this section 
   action for every outcome, the raw captures kept; 20 tests pass. D-89 decided by the user ("Run both"): an RTX 4090
   rehearsal (cap $0.60), then the H100 run (cap $3), with a one-time $10 balance floor. Rehearsal 1 found a
   transformers 5.20.2 config error in the run record, also present for the 31B (A2 fixes it; 21 tests pass).
-  Rehearsal 2 next. 0 thesis Pods, 0 volumes.
+  Rehearsal 2: S5 PASS (the hooks work in a live vLLM; engine gap 0.0017); A3 copies with 8 parallel
+  streams. The H100 run is next. 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1776,6 +1777,10 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
 2026-11-01  [P10] E-53 S5 rehearsal 1 (RTX 4090, about 4 min): the engine starts; the capture stops at the run
                   record (a transformers 5.20.2 per-layer config error, also present for the 31B). Amendment
                   A2 fixes it before any data; 21 tests pass. Rehearsal 2 next.
+                  Source: experiments/gemma4_kv_accuracy/README.md Section 12. Ideas: I-182. Experiments: E-53.
+2026-11-01  [P10] E-53 S5 rehearsal 2 (RTX 4090, about 10 min): S5 PASS (10 VERIFY items; the hooks work in a
+                  live vLLM; engine gap 0.0017). A3: the capture copy uses 8 parallel rsync streams (one
+                  stream gives 5.8 MB/s). Next: the H100 run.
                   Source: experiments/gemma4_kv_accuracy/README.md Section 12. Ideas: I-182. Experiments: E-53.
 ```
 
@@ -5153,7 +5158,7 @@ GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not
 
 **E-53 Real-activation accuracy of the compact FP8 KV cache of the Gemma 4 31B global layers (gate G3)**
 (predeclared 2026-11-01, I-182, D-88).
-STATUS: PREDECLARED, AMENDED A1 (2026-11-01, R-73, before any data) and A2 (S5), NOT RUN on the H100. Package: `experiments/gemma4_kv_accuracy/` (README is the preregistration). Question: on
+STATUS: PREDECLARED, AMENDED A1 (2026-11-01, R-73, before any data) A2 and A3 (S5), S5 PASS (rehearsal 2), NOT RUN on the H100. Package: `experiments/gemma4_kv_accuracy/` (README is the preregistration). Question: on
 real Gemma 4 31B activations (the E-50 checkpoint, prefill of 4 seeded real texts of about 8K tokens from the image's
 files), does the compact FP8 storage of the global layers (the E-52 views row cast to E4M3 with scale 1.0, read with
 the views query rounded to BF16) give an attention-output error no larger than the standard FP8 storage (K and V each
@@ -5187,6 +5192,11 @@ transformers 5.20.2 raises AmbiguousGlobalPerLayerAttributeError (not an Attribu
 (Mac): the 31B config raises too (`num_key_value_heads`, `head_dim`), so the H100 run would have stopped there. A2
 (before any data): `cfg_value` records the per-layer values of the global layers; they are information only, and the
 rule is unchanged; 21 tests pass. Next: rehearsal 2 inside the same $0.60 cap.
+S5 rehearsal 2 (2026-11-01, RTX 4090 Pod y0p9vr8jhy39n1, EU-RO-1, about 10 min): S5 PASS. All 10 VERIFY items hold:
+the hooks on layers 4, 9 and 14 in a live vLLM, 0 prompt problems, q, k, v and o in BF16 with the planned shapes, the
+largest engine gap (V5) 0.0017, the checksums of the copy, and AUTO_STOP at 300 s. Decision: REHEARSAL INVALID (V1,
+V3), as expected. A3 (before any data): one rsync stream gives 5.8 MB/s to the Mac and 4 streams 21 MB/s, so the H100
+copy uses 8 parallel streams. Next: S6 (the H100 run).
 
 **E-52 Fixed compact K=V decode attention kernels (FP16 compute, two overlapping views) against their standard
 twin and the stock vLLM kernel** (predeclared 2026-11-01, I-182, D-85).
@@ -7722,3 +7732,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-11-01: D-89 decided by the user (Section 10 row, Section 6.1 E-53 S4, Section 1 line, Section 4 entry).
 - 2026-11-01: E-53 S5 rehearsal 1 and amendment A2 (Section 6.1 E-53, Section 1 line, Section 4 entry); HARDWARE_LOG
   row.
+- 2026-11-01: E-53 S5 rehearsal 2 (S5 PASS) and amendment A3 (Section 6.1 E-53, Section 1 line, Section 4 entry);
+  HARDWARE_LOG row; ledger e53-rehearsal2-4090-20261101.

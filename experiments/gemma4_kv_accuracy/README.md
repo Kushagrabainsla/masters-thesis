@@ -2,7 +2,8 @@
 
 Status: PREDECLARED 2026-11-01. (A1) AMENDED A1 2026-11-01 after the S2 review R-73 (verdict AMEND_THEN_RUN,
 `dossier/REVIEW_E-53_PRERUN_2026-11-01.md`), before any data. (A2) AMENDED A2 2026-11-01 after S5 rehearsal 1 (a bug
-in the run record), before any data. NOT RUN on the H100. S4: D-89 (the user approved the rehearsal and the H100 run
+in the run record), before any data. (A3) AMENDED A3 2026-11-01 after S5 rehearsal 2 (the copy). S5 PASS (rehearsal
+2). NOT RUN on the H100. S4: D-89 (the user approved the rehearsal and the H100 run
 on 2026-11-01, "Run both", with a one-time $10 balance floor).
 Idea: I-182. Gate: G3 of D-88 (after G1 PASS and G2 PASS, `dossier/GATE_G1_PAGESIZE_I-182_2026-11-01.md` and
 `dossier/GATE_G2_UPSTREAM_I-182_2026-11-01.md`). Journal entry: Section 6.1 E-53 (the main session adds it).
@@ -414,6 +415,19 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
     `num_global_key_value_heads` read as None in this version; `per_layer_config` gives head dim 512 and (31B) 4 KV
     heads at the global layers.
   - (A2) S3 after A2 (Mac): the same command: 21 passed in about 65 s.
+  - Rehearsal 2 (2026-11-01, RTX 4090 Pod `y0p9vr8jhy39n1`, EU-RO-1, about 10 min, after A2): S5 PASS. The SSH port
+    169 s after the create. The session took 77 s: setup with the E2B download 20 s, the capture 70 s (prompts 4.9 s,
+    engine 31.2 s, 4 prefills with the saves about 8.5 s), the analysis 5 s (metrics 3.1 s on CUDA). The VERIFY items:
+    (1) vLLM 0.33.0rc1.dev229+g3966924d5; (2) the E2B snapshot in `models.txt`; (3) the engine with the E-53 arguments
+    on 24 GB; (4) the route "LLM.apply_model", modes "NONE", cache "auto", the hooked layers [4, 9, 14] and 3 k_norm
+    weights; (5) 0 problems in every prompt, `special_after_0` 0; (6) 12 capture files with q and o [256, 8, 512] and k
+    and v [8,192, 1, 512] in BF16, and 13 SHA-256 lines; (7) the largest engine gap (V5, the Triton BF16 kernel)
+    0.0017; (8) the copy to the Mac matches `capture_sha.txt` (13 files, 248 MB in 46 s); (9) AUTO_STOP stopped the
+    Pod at 300 s; (10) every step is far inside the H100 caps. Decision: `REHEARSAL INVALID (V1, V3)`, as expected (V3:
+    E2B has no K=V; the identity error is 1.39). V2, V4 and V5 pass. Ledger: `e53-rehearsal2-4090-20261101`.
+  - (A3) FACT (rehearsal 2, in the AUTO_STOP window): one rsync stream to the Mac gives 5.8 MB/s, 4 streams 21.4 MB/s,
+    and 8 streams of one file each 16.1 MB/s (20 MB files). At one stream, the 3.1 GB of the H100 run need about 9 min,
+    which is longer than the 300 s window.
 
 ## Amendments
 - A1 (2026-11-01, before any data; from R-73, verdict AMEND_THEN_RUN, `dossier/REVIEW_E-53_PRERUN_2026-11-01.md`):
@@ -460,3 +474,8 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
   error name. These values are information only: the rule reads `global_layers`, which the code reads before that
   line. One new test (`test_config_values_survive_per_layer_attributes`). Next: rehearsal 2 under D-89, inside the
   same $0.60 rehearsal cap. Unchanged: the question, the rule, the checks, the caps and the plan.
+- A3 (2026-11-01, after S5 rehearsal 2, before any data; Section 12): the main session copies CAPDIR with 8 parallel
+  rsync streams, one file each, in path order (prompt 0 first), and then one rsync of the folder for any missing file.
+  INTERPRETATION: the 80 MB files of the H100 run make the share of the handshake small, so 3.1 GB take about 1.5 to
+  2.5 min, inside the 300 s window. The fallback of Section 9 (start the Pod again and finish the copy) stays.
+  Unchanged: the question, the rule, the checks, the caps and the plan.
