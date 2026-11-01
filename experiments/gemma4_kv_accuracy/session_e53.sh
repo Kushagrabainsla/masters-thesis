@@ -1,10 +1,13 @@
 #!/bin/sh
-# E-53 session (README Sections 4 and 9): version and hardware record, telemetry, the pinned checkpoint download (as
-# E-50), the capture (vLLM in-process, one engine start, 4 prompts), the analysis on the GPU, then the frozen
-# decision. The same safety as E-52: session watchdog, a timeout for each step and AUTO_STOP. The Pod start command
-# adds the boot watchdog (experiments/runpod/pod_cmd.py, CAP 2,040 s). The raw captures (about 3 GB) go to CAPDIR,
-# outside RES, so a copy of RES moves only small files. STUB=1 runs the same flow on a Mac with synthetic captures
-# (no GPU, no vLLM, no download); STUB_ARGS passes stub flags to capture_e53.py (for example "--stub-fail").
+# E-53 session (README Sections 4 and 9; amendment A1 after R-73): version and hardware record, telemetry, the pinned
+# checkpoint download (as E-50), the capture (vLLM in-process, one engine start, 4 prompts), the analysis on the GPU,
+# the frozen decision, then (A1, R-73 F2) the checksum list of the raw captures, so the main session copies CAPDIR to
+# the Mac in the AUTO_STOP window. The same safety as E-52: session watchdog, a timeout for each step and AUTO_STOP.
+# The Pod start command adds the boot watchdog (experiments/runpod/pod_cmd.py, A1: CAP 1,740 s). (A1, R-73 B1) The
+# session starts about 140 s after the boot watchdog (E-52), so POD_LIMIT 1,440 s fires at about 1,580 s after boot,
+# before the boot watchdog. The raw captures (about 3.1 GB) go to CAPDIR, outside RES. STUB=1 runs the same flow on a
+# Mac with synthetic captures (no GPU, no vLLM, no download); STUB_ARGS passes stub flags to capture_e53.py (for
+# example "--stub-fail"). CAP_ARGS passes the shape flags of the S5 rehearsal (README Section 9).
 set -u
 CODE=${CODE:-/workspace/code}
 E53=$CODE/gemma4_kv_accuracy
@@ -15,11 +18,11 @@ STUB_ARGS=${STUB_ARGS:-}
 CAP_ARGS=${CAP_ARGS:-}
 M31=${M31:-RedHatAI/gemma-4-31B-it-FP8-dynamic}
 R31=${R31:-d4ab4f579dd3516f97d8a6a4c98d0653480bad15}
-DL_TIMEOUT=${DL_TIMEOUT:-600}           # E-50: 130 s for this checkpoint (33.3 GB)
-CAP_TIMEOUT=${CAP_TIMEOUT:-900}         # the engine start (E-50: 122 to 165 s with compile) and 4 prefills
-AN_TIMEOUT=${AN_TIMEOUT:-300}           # 3.1 GB read and 40 x 6 attention passes in float32
-POD_LIMIT=${POD_LIMIT:-1980}            # session watchdog at 33 min, before the boot watchdog (2,040 s)
-AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-180}
+DL_TIMEOUT=${DL_TIMEOUT:-420}           # (A1) E-50: 130 s for this checkpoint (33.3 GB)
+CAP_TIMEOUT=${CAP_TIMEOUT:-600}         # (A1) the engine start (E-50: 87 s plus compile) and 4 prefills
+AN_TIMEOUT=${AN_TIMEOUT:-240}           # (A1) 3.1 GB read and 40 x 11 attention passes in float32
+POD_LIMIT=${POD_LIMIT:-1440}            # (A1) session watchdog at 24 min: about 1,580 s after boot, before 1,740 s
+AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-300} # (A1, F2) the copy window for RES and CAPDIR (3.1 GB at 30 MB/s: 100 s)
 AUTO_STOP=${AUTO_STOP:-0}
 export VLLM_ENABLE_V1_MULTIPROCESSING=0  # the engine core and the worker in this process (README Section 4)
 if [ -n "${VLLM_CACHE_ROOT:-}" ]; then
@@ -40,6 +43,13 @@ run_to() {  # $1 seconds, then the command: with GNU timeout where it exists (th
     s=$1; shift
     if command -v timeout > /dev/null 2>&1; then timeout -k 10 "$s" "$@"; else "$@"; fi
 }
+sha_list() {  # (A1, F2) the SHA-256 of every file under $1, with paths relative to $1 (RUNPOD.md Section 6 format)
+    if command -v sha256sum > /dev/null 2>&1; then
+        find "$1" -type f -exec sha256sum {} + | sed "s|$1/||" | sort -k 2
+    else
+        find "$1" -type f -exec shasum -a 256 {} + | sed "s|$1/||" | sort -k 2
+    fi
+}
 stop_pod() {
     [ "$AUTO_STOP" = 1 ] && [ -n "${RUNPOD_POD_ID:-}" ] && [ -n "${RUNPOD_API_KEY:-}" ] || return 0
     python3 -c "
@@ -53,7 +63,7 @@ print(urllib.request.urlopen(r, timeout=30).status)
 TEL=""; WD=""
 finish() {
     [ -n "$TEL" ] && kill "$TEL" 2>/dev/null; [ -n "$WD" ] && kill "$WD" 2>/dev/null
-    [ "$AUTO_STOP" = 1 ] && { log "AUTO_STOP in $AUTO_STOP_DELAY s; copy the results now"; sleep "$AUTO_STOP_DELAY"; }
+    [ "$AUTO_STOP" = 1 ] && { log "AUTO_STOP in $AUTO_STOP_DELAY s; copy RES and CAPDIR now"; sleep "$AUTO_STOP_DELAY"; }
     stop_pod exit
 }
 trap finish EXIT; trap 'exit 130' INT TERM
@@ -114,4 +124,7 @@ log "analysis: exit $rc after $(elapsed) s"
 python3 "$E53/analyze_e53.py" --res "$RES" --out "$RES/summary.json" > "$RES/decision.txt" 2>&1 || true
 [ -n "$TEL" ] && kill "$TEL" 2>/dev/null
 log "decision: $(tail -1 "$RES/decision.txt")"
+# (A1, R-73 F2) keep the raw captures: the checksum list in RES; the main session copies CAPDIR and compares it
+sha_list "$CAPDIR" > "$RES/capture_sha.txt" 2>/dev/null
+log "captures: $(wc -l < "$RES/capture_sha.txt" | tr -d ' ') files, $(du -sk "$CAPDIR" | cut -f1) KB in $CAPDIR; copy them with RES"
 log "done after $(elapsed) s"

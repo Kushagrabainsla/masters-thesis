@@ -1,19 +1,23 @@
 # E-53: accuracy of the compact FP8 K=V global cache on real Gemma 4 31B activations (gate G3 of D-88; preregistration)
 
-Status: PREDECLARED 2026-11-01. NOT RUN. The S2 review (rubber duck and a hostile review by a different model) is not
-done yet. No spend is approved: D-88 says that G3 needs its own spend approval (S4).
+Status: PREDECLARED 2026-11-01. (A1) AMENDED A1 2026-11-01 after the S2 review R-73 (verdict AMEND_THEN_RUN,
+`dossier/REVIEW_E-53_PRERUN_2026-11-01.md`), before any data. NOT RUN. No spend is approved: D-88 says that G3 needs
+its own spend approval (S4).
 Idea: I-182. Gate: G3 of D-88 (after G1 PASS and G2 PASS, `dossier/GATE_G1_PAGESIZE_I-182_2026-11-01.md` and
 `dossier/GATE_G2_UPSTREAM_I-182_2026-11-01.md`). Journal entry: Section 6.1 E-53 (the main session adds it).
 Labels: FACT (a source, a log or a computation was read), INTERPRETATION (reasoning), HYPOTHESIS (not tested).
 All thresholds are project heuristics unless a source is given.
+(A1) Text marked "(A1)" changed in Amendment A1. The version before A1 is commit 6c22626.
 
 ## 1. Question
 On real Gemma 4 31B activations, does the compact FP8 KV storage of the global layers (the E-52 views row
 [K_rot | V_unrot | V_rot], quantized to FP8 E4M3 with scale 1.0, read with the views query [q_rot | (q * w)_unrot]
 rounded to BF16) give an attention-output error no larger than the standard FP8 KV storage (K and V each quantized to
 E4M3 with scale 1.0), and do the views-path values fit FP16 with margin?
-"No" is the FAIL of Section 7: a global layer where the median compact error is more than 2 times the standard error,
-or a views query value above 32,752 (half the FP16 maximum). A FAIL stops the vLLM prototype (D-88).
+(A1, R-73 B4) "No" is the FAIL of Section 7: a global layer where the median over the prompts of the per-prompt ratio
+err_compact / err_standard is above 2. A FAIL stops the vLLM prototype (D-88). A views query value above 32,752 (half
+the FP16 maximum) is no longer a FAIL: a scaled query can fix it, so it gives INCONCLUSIVE with the action "pre-scale
+the query".
 
 ## 2. Rubber duck
 - What the layout claims (FACT, E-52 and R-71): the views layout is exact in real arithmetic (an independent check
@@ -36,26 +40,33 @@ or a views query value above 32,752 (half the FP16 maximum). A FAIL stops the vL
   then runs on the same GPU from the files. The frozen rule decides.
 - Expected (HYPOTHESIS): err_standard 2% to 6% (the CPU tests on Gemma 4 K=V data give about 4.9%); the ratio
   err_compact / err_standard 0.9 to 1.1; the largest |q'| below 1,000; no saturated value in either storage; PASS.
+- (A1) What R-73 found (FACT, R-73): the hook path and the FP8 cast match the vLLM source; the worst case was above
+  the cost cap and the session watchdog fired after the boot watchdog (B1); no check tied the analysis reference to
+  the engine (B2); the saturated-share rule failed a layout that saturates the same values (B3); INCONCLUSIVE and
+  INVALID had no action (B4). INTERPRETATION (R-73): on synthetic data the error ratio is 0.90 to 1.07 for log-normal
+  w with sigma 0.3 and 1.0, so PASS is the likely result; the gate adds real information through V3, the range of q',
+  the saturation and the true error level. A1 answers every item (Amendments).
 
 ## 3. Hypotheses
 - H1 (primary): PASS (Section 7): in every global layer the compact error stays within 1.25 times (median) and 2
-  times (largest) the standard error, |q'| has a 10 times FP16 margin, and the compact rows do not saturate more.
-- H0: FAIL (Section 7): in some global layer the median compact error is more than 2 times the standard error, or
-  |q'| is above 32,752.
+  times (largest) the standard error, (A1) per prompt and also in the FP16 emulation, |q'| has a 10 times FP16 margin,
+  no FP16 value is lost, and the compact rows do not saturate more values.
+- H0 (A1): FAIL (Section 7): in some global layer the median per-prompt ratio (float32) is above 2.
 
 ## 4. Setup (frozen)
 
 ### 4.1 Hardware, software and model
 - Hardware: 1 x H100 80GB HBM3 (SXM), Secure Cloud, on-demand, `minCudaVersion` 13.0. Volume disk 100 GB at
-  `/workspace`, container disk 40 GB. Why this GPU: it is the prototype target and the GPU of E-49 to E-52, and the
-  rehearsal GPUs cannot hold the model (Section 9).
+  `/workspace`, container disk 40 GB. Why this GPU: it is the prototype target and the GPU of E-49 to E-52. (A1, R-73
+  F8) No cheap GPU holds the 31B weights, so the S5 rehearsal runs a small Gemma 4 model (Section 9).
 - Software (FACT, E-49 to E-52): the image `vllm/vllm-openai@sha256:f255c4fad2f30ff5ee80db14d3a03afe9ae0f10d3470339864ff04745fe44cb3`
-  (vLLM 0.33.0rc1.dev229+g3966924d5, torch 2.14.0+cu130). The session records the versions.
+  (vLLM 0.33.0rc1.dev229+g3966924d5, torch 2.14.0+cu130, transformers 5.20.2). The session records the versions.
 - Model (FACT, E-50, G2): `RedHatAI/gemma-4-31B-it-FP8-dynamic` at revision `d4ab4f579dd3516f97d8a6a4c98d0653480bad15`
   (33.3 GB). The session downloads it with `snapshot_download(model, revision=...)`, as `session_e50.sh` does.
-- Model facts (FACT, G1 and G2): 60 layers; 10 global layers (5, 11, ..., 59) with 32 query heads, 4 KV heads and
-  head_dim 512; attention scale 1.0; no soft-cap. The capture reads the global layers from the config
-  (`layer_types == "full_attention"`) and checks them.
+- Model facts (FACT, G1 and G2; (A1) the pinned `config.json`, read 2026-11-01): 60 layers; 10 global layers (5, 11,
+  ..., 59) with 32 query heads, `num_global_key_value_heads` 4 and `global_head_dim` 512; `attention_k_eq_v` true;
+  `num_kv_shared_layers` 0; attention scale 1.0; no soft-cap. The capture reads the global layers from the config and
+  checks them.
 
 ### 4.2 Engine (`capture_e53.py`, `ENGINE`)
 - `LLM(model=<id>, revision=<sha>, seed=0, enforce_eager=True, kv_cache_dtype="auto" (BF16), max_model_len=8448,
@@ -64,6 +75,9 @@ or a views query value above 32,752 (half the FP16 maximum). A FAIL stops the vL
   The id, the revision and text-only mode are as E-50.
 - One `generate` call per prompt, with `max_tokens=1` and temperature 0. `max_num_batched_tokens` is larger than the
   prompt, so each prompt is one prefill step (INTERPRETATION; the hooks also handle chunks by position).
+- (A1, R-73 F1) Shape flags: `--heads`, `--kv-heads`, `--head-dim` and `--global-layers` keep the frozen 31B values
+  (32, 4, 512, 10) as defaults. Only the S5 rehearsal sets them, with `--rehearsal` (Section 9). The head dim must be
+  512 (the views layout).
 
 ### 4.3 How the hooks reach the model (FACT, vLLM 3966924d5, read with `gh api` on 2026-11-01)
 | Source (file: lines) | What it shows |
@@ -71,7 +85,7 @@ or a views query value above 32,752 (half the FP16 maximum). A FAIL stops the vL
 | `vllm/envs.py`: 1448 to 1450 | `VLLM_ENABLE_V1_MULTIPROCESSING` is 1 if not set; the session sets 0 |
 | `vllm/entrypoints/llm.py`: 341, 604 to 614 | `LLM` builds `LLMEngine.from_engine_args`; `LLM.apply_model(func)` calls `llm_engine.apply_model` |
 | `vllm/v1/engine/llm_engine.py`: 186 to 188, 116 to 123, 136 to 138 | multiprocessing only if the variable is set; `EngineCoreClient.make_client(multiprocess_mode=...)`; in-process, `model_executor = engine_core.engine_core.model_executor` |
-| `vllm/v1/engine/llm_engine.py`: 503 to 504, 506 to 509 | `apply_model` sends `collective_rpc("apply_model", args=(func,))`; the attribute path `driver_worker.model_runner.model` (the fallback of the capture) |
+| `vllm/v1/engine/llm_engine.py`: 503 to 504, 506 to 509 | `apply_model` sends `collective_rpc("apply_model", args=(func,))`; (A1, F8) 506 to 509 read `driver_worker.model_runner.model`; the fallback of the capture is `driver_worker.worker.model_runner.get_model()`; both work (`worker_base.py` 370 to 371) |
 | `vllm/v1/engine/core_client.py`: 376 to 401, 498 to 505 | `InprocClient` builds `EngineCore` in this process; its `collective_rpc` calls the engine core |
 | `vllm/v1/engine/core.py`: 1152 to 1159 | `EngineCore.collective_rpc` calls `model_executor.collective_rpc` |
 | `vllm/v1/executor/uniproc_executor.py`: 54, 90 to 103 | `driver_worker = WorkerWrapperBase`; `run_method(self.driver_worker, method, args, kwargs)` in this process |
@@ -79,23 +93,31 @@ or a views query value above 32,752 (half the FP16 maximum). A FAIL stops the vL
 | `vllm/v1/worker/worker_base.py`: 165 to 167, 370 to 371 | `apply_model` returns `fn(self.get_model())`; the wrapper sends unknown attributes to the worker |
 | `vllm/v1/worker/gpu_worker.py`: 1164 to 1165; `gpu_model_runner.py`: 3078 to 3086 | `get_model` returns the model (unwrapped from a CUDA graph wrapper) |
 | `vllm/config/vllm.py`: 1782 to 1784, 1800 | `enforce_eager` sets `CompilationMode.NONE` and `CUDAGraphMode.NONE`, and turns off the JIT warm-up |
+| (A1, F7) `vllm/config/compilation.py`: 37 to 41, 53 to 59 | `CompilationMode` is an `IntEnum` and `CUDAGraphMode` an `Enum`; both have the member `NONE`; the capture writes `.name` |
 | `vllm/model_executor/models/gemma4_mm.py`: 1145 to 1150 | the language model has the prefix `language_model` |
 | `vllm/model_executor/models/gemma4.py`: 419, 451, 453 to 455, 468 to 470, 513 to 518, 520 to 538 | scale 1.0; `k_norm = RMSNorm` (weighted); `v_norm` with `has_weight=False`; `is_sliding` from `config.layer_types`; `get_rope(..., is_neox_style=True)`; `self.attn = Attention(...)` |
 | `vllm/model_executor/models/gemma4.py`: 540 to 575, 745 to 749 | `forward(positions, hidden_states)`: `k_norm` (565), `rotary_emb(positions, q, k)` (567), `v_norm` (570), then `self.attn(q, k, v)` (572); the decoder layer calls `self_attn(positions=..., hidden_states=...)` with keywords |
+| (A1, F1) `vllm/model_executor/models/gemma4.py`: 422 to 426, 546 to 553 | a layer at or above `num_hidden_layers - num_kv_shared_layers` is KV-shared and calls `self.attn(q, None, None)`; the capture hooks only the global layers that own a cache |
 | `vllm/model_executor/layers/attention/attention.py`: 333 to 339, 490 to 497, 538 to 543 | `layer_name`, `num_heads`, `head_size`, `num_kv_heads`, `sliding_window`; `forward(query, key, value, ...)`; the inputs become [tokens, heads, head_size] |
+| (A1, B2) `vllm/model_executor/layers/attention/attention.py`: 510, 532 to 533, 584 | the output has the query dtype and [tokens, heads x head_size_v]; `forward` returns it |
 | `vllm/model_executor/layers/attention/attention.py`: 136 to 152, 474 to 484 | the default K and V scales are 1.0; the query is quantized only with an FP8 KV cache (not in this capture) |
 | `vllm/model_executor/layers/layernorm.py`: 39 to 44, 145 to 150 | `RMSNorm` computes w * x / rms; `GemmaRMSNorm` (1 + w) is not the class of `gemma4.py` |
 | `vllm/model_executor/layers/rotary_embedding/gemma4_rope.py`: 58 to 77 | the frequencies use the head size 512 as the denominator and are 0 for the pairs 64 to 255 |
+| (A1, F1) transformers 5.20.2 `models/gemma4/configuration_gemma4.py`: 210 to 223 | a global layer takes `global_head_dim`; it takes `num_global_key_value_heads` only if `attention_k_eq_v` is true |
 
 The hooks (`capture_e53.py`, `register` and `Store`):
 - A forward pre-hook with kwargs on each `Attention` module whose parent is a `Gemma4Attention` with `is_sliding`
-  False and no KV sharing. These are the global layers only. The hook gets (query, key, value) after RoPE.
+  False and no KV sharing. These are the global layers that own a KV cache. The hook gets (query, key, value) after
+  RoPE.
+- (A1, R-73 B2) A forward hook on the same module copies the engine's attention output o for the same rows as q.
 - A forward pre-hook with kwargs on that parent gets the `positions` of the same rows.
-- Rows kept: K and V at every position below the prompt length; Q at the last 256 positions. The hook copies the rows
-  to the CPU at once. After each prompt the script saves BF16 q, k, v and the positions to `CAPDIR/p<i>/L<layer>.pt`
-  and records the SHA-256 of each file. It saves the k_norm weight of each global layer to `CAPDIR/k_norm.pt`.
-- Fail fast, before the first prompt: the hooked layers must be the global layers of the config, each with 32 heads,
-  4 KV heads, head size 512 and no sliding window. Fail fast, after the first prompt: every global layer must have q
+- Rows kept: K and V at every position below the prompt length; Q and (A1) o at the last 256 positions. The hooks copy
+  the rows to the CPU at once. After each prompt the script saves BF16 q, k, v, (A1) o and the positions to
+  `CAPDIR/p<i>/L<layer>.pt` and records the SHA-256 of each file. It saves the k_norm weight of each global layer to
+  `CAPDIR/k_norm.pt`.
+- Fail fast, before the first prompt: (A1) the config must have the planned count of global layers that own a cache
+  (10), the hooked layers must be those layers, and each must have the planned heads, KV heads and head size (32, 4,
+  512) and no sliding window. Fail fast, after the first prompt: every global layer must have q and (A1) o
   [256, 32, 512] and k and v [8,192, 4, 512] in BF16, the key positions 0 to 8,191 once each, and the last 256 query
   positions. If a check fails, the capture stops at once (status "fail_fast", exit 3).
 
@@ -105,18 +127,29 @@ The hooks (`capture_e53.py`, `register` and `Store`):
 - The file order of prompt p comes from `random.Random(53 x 1,000 + p)`. Families: p0 the vllm Python files, p1 the
   torch Python files, p2 the Markdown and reStructuredText files of the whole site-packages folder, p3 all of them. A
   usable file has 2 KB to 200 KB and is not a license, notice, authors or change-log file. If a family runs out, the
-  prompt continues with the other files.
+  prompt continues with the other files. (A1, R-73 Q6) The builder walks each root once.
+- (A1, R-73 F4) A file whose token ids hold a special id (`tokenizer.all_special_ids`; for example the text `<bos>` or
+  `<|image|>` in a vllm source file) is skipped. So BOS at position 0 is the only special id of a prompt.
+  `prompts.json` records `special_after_0` (it must be 0, V2) and the count of skipped files.
 - `prompts.json` keeps the token ids, their SHA-256 (little-endian int32 values), and the path and SHA-256 of each
   file. A rerun with the same plan uses the same prompts.
 
 ### 4.5 Analysis (`analyze_e53.py`; on the Pod GPU after the capture; float32 with TF32 off)
-- Per prompt and global layer: q [256, 32, 512], k and v [8,192, 4, 512], all BF16 as recorded.
-- Attention: causal (the query at position p reads the keys 0 to p), scale 1.0, query head h reads KV head h // 8.
+- Per prompt and global layer: q [256, 32, 512], k and v [8,192, 4, 512] and (A1) the engine output o [256, 32, 512],
+  all BF16 as recorded. (A1, R-73 F2) The analysis checks the SHA-256 of each file against `capture_run.json`.
+- Attention: causal (the query at position p reads the keys 0 to p), scale 1.0, query head h reads KV head
+  h // (heads / KV heads) (8 for both the 31B and the rehearsal model).
   - (a) Reference: the BF16 K and V (the BF16 KV cache holds exactly these values).
   - (b) Standard FP8: fp8(K) and fp8(V), read with the BF16 query.
   - (c) Compact: row = [K_rot | V_unrot | V_rot] (`compact_attn.pack_views`), fp8(row), K view = values 0 to 511, V
     view = values 128 to 639 (`views_of`), query q' = BF16([q_rot | (q * w)_unrot]) with w in BF16 (`views_query`),
     output in the natural order (`unpermute`).
+  - (A1, R-73 B2) The engine gap: ||ref - o|| / ||o|| (V5).
+  - (A1, R-73 F3) The FP16 emulation of (b) and (c): q, q' and P in FP16 (the FP8 values are exact in FP16). It enters
+    the rule (Section 7).
+  - (A1, reported only) The score path and the value path of each storage (FP8 K only, FP8 V only; R-73 F6), the
+    compact storage in E5M2 (2 mantissa bits; the sensitivity control, R-73 O2), and the compact path with w from the
+    data.
 - The FP8 cast (FACT, vLLM 3966924d5): `vllm/v1/attention/backends/flash_attn.py` 1432 to 1466
   (`do_kv_cache_update` calls `reshape_and_cache_flash(..., self.kv_cache_dtype, layer._k_scale, layer._v_scale)`);
   `csrc/cache_kernels.cu` 252 to 262 (`CopyWithScaleOp` calls `fp8::scaled_convert`) and 335 to 423
@@ -127,132 +160,198 @@ The hooks (`capture_e53.py`, `register` and `Store`):
   with `to(torch.float8_e4m3fn)`; a test checks the saturation, a tie and the subnormals.
 - w: `w_data` per unrotated dim is the median of K / V over tokens and heads where |V| >= 0.05. The module gives w in
   two possible forms, "weight" and "1 + weight" (a Gemma RMSNorm can use 1 + weight), each in BF16. The form nearest
-  to `w_data` is the w of the views query: the data decide. Without a module weight, the views query uses `w_data`.
-  HYPOTHESIS: the data choose "weight" (layernorm.py 39 to 44).
+  to `w_data` is the w of the views query: the data decide. HYPOTHESIS: the data choose "weight" (layernorm.py 39 to
+  44). (A1, R-73 F5) Without a module weight, V3 fails (a fit of w to the same data cannot show a wrong module w).
 
 ## 5. Metrics
 - Primary, per prompt and layer: err_standard and err_compact, the relative L2 error ||O - O_ref|| / ||O_ref|| over
-  the 256 query rows, 32 heads and 512 dims. Lower is better. Also their ratio.
-- Per layer (the decision): the median and the largest over the 4 prompts of each error and their ratios; the largest
-  |q'|; the saturated share (|x| > 448 before the cast) of the stored values, pooled over the prompts (1,024 values per
-  token and KV head for the standard rows, 640 for the compact rows).
-- Reported only: the subnormal and flush-to-zero shares; the largest |q|; the largest |K view| and |V view| before and
-  after the cast (after the cast at most 448, so K' and V' always fit FP16: FACT from the E4M3 range); the identity
-  error with each form of w; the RoPE check (Section 8); the largest error of one head. Exploratory: err_compact with
-  `w_data`; an FP16-compute emulation (q, q' and P in FP16) with its count of values that are not finite.
+  the 256 query rows, 32 heads and 512 dims. Lower is better.
+- (A1, R-73 F3) Per prompt p and layer l: the ratio r = err_compact / err_standard (float32), the ratio r16 of the
+  FP16 emulation, and rr = max(r, r16).
+- Per layer (the decision): (A1) the median of r over the 4 prompts (FAIL), the median and the largest of rr (PASS);
+  the largest |q'|; the count of FP16 output values that are not finite; (A1, R-73 B3) the count of saturated values
+  (|x| > 448 before the cast) in the compact rows and in the standard rows, pooled over the prompts.
+- Reported only: the ratio of the medians and the ratio of the maxima (the rule before A1); the saturated shares, also
+  over the same support (the 128 K_rot values per token and head in both storages) and the K_unrot saturation of the
+  standard storage (A1, B3); the subnormal and flush-to-zero shares; the largest |q|; the largest |K view| and
+  |V view| before and after the cast (after the cast at most 448, so K' and V' always fit FP16: FACT from the E4M3
+  range); the identity error with each form of w and (A1, F5) the largest identity error of one token; the RoPE check
+  (Section 8); the largest error of one head; (A1) the largest engine gap of one head; the score-path, value-path,
+  E5M2 and data-w errors (Section 4.5).
 - Minimum effect that matters: the bounds of Section 7 (no speed metric).
 - Repeats: 4 prompts for each of the 10 global layers. The computation is deterministic on fixed tensors.
 
 ## 6. Validity checks (a failed check makes the run INVALID)
 - V1: the GPU of the capture is H100 80GB.
 - V2: every global layer of every prompt is recorded with the expected shapes. In detail: the capture status is "ok";
-  the plan is the frozen plan (4 prompts, 8,192 tokens, 256 query rows); the hooked layers are the global layers of
-  the config; every prompt has 8,192 tokens; every prompt and global layer has metrics with q [256, 32, 512], k and v
-  [8,192, 4, 512] in BF16 and the planned positions. The fail fast of the capture is a V2 failure.
+  the plan is the frozen plan (4 prompts, 8,192 tokens, 256 query rows, (A1) 32 heads, 4 KV heads, head dim 512, 10
+  global layers); the hooked layers are the global layers of the config; every prompt has 8,192 tokens; every prompt
+  and global layer has metrics with q and (A1) o [256, 32, 512], k and v [8,192, 4, 512] in BF16 and the planned
+  positions. The fail fast of the capture is a V2 failure. (A1) Also: no capture prompt has a problem; no prompt has a
+  special id after position 0 (R-73 F4); every capture file has its recorded SHA-256 (F2); and in a real run (also the
+  rehearsal) vLLM is 0.33.0rc1.dev229+g3966924d5, the compile mode and the CUDA graph mode are NONE, the KV cache is
+  BF16, and the config has the planned count of global layers (F5, F7).
 - V3: the identity holds: for every prompt and layer, ||K_unrot - w * V_unrot|| / ||K_unrot|| <= 1e-2 (the BF16
-  level), with the w that the data chose.
+  level), with the w that the data chose. (A1, R-73 F5) Also: every global layer has a module k_norm weight, and the
+  chosen module form is within 0.02 of `w_data` in every prompt and layer.
 - V4: the reference is finite for every prompt and layer.
+- V5 (A1, R-73 B2): the analysis reference models the engine: for every prompt and layer, ||ref - o|| / ||o|| <= 0.05.
+  INTERPRETATION (R-73): the BF16 output rounding gives about 0.002 to 0.01; a wrong head mapping, scale or mask gives
+  values far above 0.05. The rehearsal gives the first real value (Section 9).
 
-## 7. Decision rule (frozen; project heuristics)
-Per global layer l: med_std(l) and med_cmp(l) are the medians over the 4 prompts of err_standard and err_compact;
-max_std(l) and max_cmp(l) are the largest; q_max(l) is the largest |q'|; sat_std(l) and sat_cmp(l) are the pooled
-saturated shares.
-- INVALID: V1, V2, V3 or V4 fails (the result names them).
-- FAIL (stop the build): a layer with med_cmp(l) > 2 x med_std(l), or the largest |q'| over all layers and prompts
-  above 65,504 / 2 = 32,752.
-- PASS (the gate opens the build), if every global layer has all four: med_cmp(l) <= 1.25 x med_std(l);
-  max_cmp(l) <= 2 x max_std(l); q_max(l) <= 6,550 (a 10 times FP16 margin); sat_cmp(l) <= sat_std(l) + 0.001 (0.1
-  percentage points).
+## 7. Decision rule (frozen; project heuristics; (A1) changed by A1)
+(A1) Per global layer l: med_r(l) is the median over the 4 prompts of r (float32); med_rr(l) and max_rr(l) are the
+median and the largest of rr = max(r, r16); q_max(l) is the largest |q'|; nf16(l) is the count of FP16 output values
+that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated values.
+- INVALID: V1, V2, V3, V4 or V5 fails (the result names them).
+- FAIL (stop the build): (A1) a layer with med_r(l) > 2.
+- PASS (the gate opens the build), if every global layer has all five: (A1) med_rr(l) <= 1.25; max_rr(l) <= 2;
+  q_max(l) <= 6,550 (a 10 times FP16 margin); nf16(l) = 0; sat_cmp(l) <= sat_std(l).
 - INCONCLUSIVE: every other result, with each failed PASS condition named (layer and condition).
-- FACT (algebra): PASS and FAIL cannot both hold. INTERPRETATION: the compact rows have 640 values per token and head,
-  so the same saturated K_rot values give a share 1.6 times larger than in the standard rows (a test shows it).
+- FACT (algebra): PASS and FAIL cannot both hold. (A1, R-73 B3) FACT: K_rot is a part of K and V cannot saturate (RMS
+  1 over 512 dims, so |V| <= 22.6), so the compact rows never hold more saturated values than the standard rows; the
+  count rule is a sanity check.
+- (A1, R-73 F3) INTERPRETATION: if the extra error of the layout is independent of the FP8 error, a ratio of 1.25
+  allows an extra error of 0.75 times the FP8 error (the square root of 1.25^2 - 1), and a ratio of 2 allows 1.73
+  times. The FAIL uses the float32 ratio only: an FP16-compute problem is a fault of the kernel path, which a scale can
+  fix, so it gives INCONCLUSIVE, not FAIL.
+- (A1, R-73 B4) Consequences (the user confirms each step; written before any data):
+
+| Outcome | When | Action |
+|---|---|---|
+| PASS | every PASS condition holds | week 2 of the build starts (D-88) |
+| FAIL | a layer with med_r above 2 | stop the build (D-88); I-182 keeps its exact capacity result |
+| INCONCLUSIVE (range) | only q_max above 6,550 (above 32,752 is the FP16 range) or nf16 above 0 failed | pre-scale the query (q' times 2^-m with the kernel scale 2^m; the scores stay the same) and test the scale argument in week 2 |
+| INCONCLUSIVE (other) | any other failed PASS condition | the user decides; the report lists the layers and the conditions; no rerun without a new S4 |
+| INVALID (fail fast) | the capture stopped | fix the cause, then one rerun under a new S4 with a stated cost cap |
+| INVALID (V3 only) | the identity or the module w fails | report the recovered w; the user decides |
+| INVALID (V5 only) | the reference does not model the engine | fix the reference (head mapping, scale, mask) and analyze the copied captures again on the Mac; no new Pod |
+| INVALID (other) | V1, V2, V4, or several checks | fix the cause; a rerun needs a new S4 |
+
+  FACT (R-73; checked by the author): the FlashAttention backend passes the scale to the kernel
+  (`softmax_scale=self.scale`, `flash_attn.py` 1413, 1500, 1590, 1622 and 1698). HYPOTHESIS: the FA4 FP8 path accepts
+  a scale other than 1.0 (not tested; week 2 tests it).
+  The decision text names the action.
 
 ## 8. Controls and baselines
 - Baseline: the standard FP8 storage (the engine's FP8 KV path with scale 1.0) on the same tensors.
 - A/A: not needed (no timing); the spread over the 4 prompts is reported.
-- Positive controls: V3 on real data; the RoPE check (reported): for each rotated pair the fit of K as the RoPE
-  rotation of (a V_i, b V_j) leaves a residual near the BF16 level, and the fit without RoPE does not fit, if and only if
-  the hook point is after RoPE (`rope_check`); on the CPU the views path is exact without rounding, and the two errors
-  are similar on well-scaled Gemma 4 K=V data.
+- Positive controls: V3 on real data; (A1, R-73 B2) V5 ties the float32 reference to the engine output of the same
+  rows; the RoPE check (reported): for each rotated pair the fit of K as the RoPE rotation of (a V_i, b V_j) leaves a
+  residual near the BF16 level, and the fit without RoPE does not fit, if and only if the hook point is after RoPE
+  (`rope_check`); on the CPU the views path is exact without rounding, and the two errors are similar on well-scaled
+  Gemma 4 K=V data.
+- (A1, R-73 O2) Sensitivity control (reported): the compact storage in E5M2 gives a ratio near 2 (the stub gives
+  about 2), so the harness can see a 2 times storage error.
 - Negative controls (CPU tests): broken K=V data fail V3; the wrong form of w fails V3; a capture before RoPE fails the
-  RoPE check.
+  RoPE check; (A1) a wrong head mapping fails V5; a missing module weight fails V3.
 
 ## 9. Budget
 - Price: 1 x H100 SXM Secure at $3.99/h (the E-52 live read on 2026-11-01; S4 reads it again). Cost cap: $3.
-- Time model (INTERPRETATION, from the E-50 to E-52 records and the Mac timing):
+- Time model (A1; INTERPRETATION, from the E-50 to E-52 records and the Mac timing):
 
 | Step | Estimate | Source |
 |---|---|---|
-| Create to SSH | 3.5 min (image on the host) to 11 min (pull) | E-52 211 s; E-50 and E-51 about 11 min pulls |
+| Create to SSH | 3.5 min (image on the host) to 11 min (pull); delete the Pod at 15 min | E-52 211 s; E-50 and E-51 about 11 min pulls |
 | Upload the code, start the session | under 1 min | E-52 |
 | Setup, versions, hardware record | about 1 min | E-52 |
-| Download of 33.3 GB | 2 to 4 min | E-50: 130 s for this checkpoint |
-| Engine start (eager) | 1.5 to 3 min | E-50: 122 to 165 s with compile and CUDA graphs; eager mode skips both |
-| 4 prefills, copies and saves (3.1 GB) | 1 to 2 min | the first prefill can compile kernels (no JIT warm-up in eager mode, config/vllm.py 1800) |
-| Analysis | 1 to 2 min | 3.1 GB read; 4.4 s per prompt and layer on the Mac CPU (test), far less on the H100 |
-| AUTO_STOP delay | 3 min | copy the results in this time |
-| Pod time | about 15 to 30 min, $1.00 to $2.00 | |
+| Download of 33.3 GB | 2 to 4 min (cap 420 s) | E-50: 130 s for this checkpoint |
+| Engine start (eager) | 1.5 to 3 min | E-50: 87 s plus 60 s of compile (R-73), which eager mode removes |
+| 4 prefills, copies and saves (3.1 GB) | 1 to 2 min (with the engine start: cap 600 s) | the first prefill can compile kernels (no JIT warm-up in eager mode, config/vllm.py 1800) |
+| Analysis | 1 to 2 min (cap 240 s) | 3.1 GB read; 2.4 to 4.4 s per prompt and layer on the Mac CPU (test), far less on the H100 |
+| (A1, F2) Copy of RES and CAPDIR (3.1 GB) to the Mac | 2 to 5 min, inside the AUTO_STOP window (300 s) | INTERPRETATION (R-73): 3.1 GB at 30 MB/s takes about 100 s |
+| Pod time | about 18 to 29 min, $1.20 to $1.95 | |
 
-- Caps: download 600 s, capture 900 s, analysis 300 s (`DL_TIMEOUT`, `CAP_TIMEOUT`, `AN_TIMEOUT`); session watchdog
-  1,980 s (`POD_LIMIT`); boot watchdog CAP 2,040 s from the container start (`experiments/runpod/pod_cmd.py --cap
-  2040`, as E-52); `AUTO_STOP=1` with a 180 s delay. The step caps add up to 1,800 s, below the session watchdog.
-- Worst case: with an 11 min pull, 11 + 34 = 45 min, $3.00. The boot watchdog does not cover the image pull, so the
-  main session deletes the Pod if the image pull takes more than 15 min. With a pull of exactly 15 min the worst case
-  is 49 min, $3.26 (open risk, Section 10).
+- Caps (A1, R-73 B1): download 420 s, capture 600 s, analysis 240 s (`DL_TIMEOUT`, `CAP_TIMEOUT`, `AN_TIMEOUT`); the
+  steps and the setup add up to about 1,380 s, below the session watchdog of 1,440 s (`POD_LIMIT`). The session starts
+  about 140 s after the boot watchdog arms (E-52), so the session watchdog fires at about 1,580 s after boot, before the
+  boot watchdog of 1,740 s (`experiments/runpod/pod_cmd.py --cap 1740`). `AUTO_STOP=1` with a 300 s delay (the copy
+  window).
+- Worst case (A1, R-73 B1): the boot watchdog does not cover the image pull. Rule: the main session deletes the Pod if
+  it has no SSH port 15 min after the create call; this deadline sits inside the create-to-SSH wait loop (one tool
+  call, RUNPOD.md Section 3), not in a timer. So the worst case is 15 + 29 = 44 min, $2.93, plus the volume disk until
+  the delete (about $0.03/h for 100 GB). Balance: S4 runs `experiments/runpod/balance.py --need 3 --hours 0.75` live
+  before the booking.
 - Order of work (the most decisive data first): the capture of prompt 0 with the fail fast, then prompts 1 to 3, then
   the analysis. The time caps cut the later prompts first; then V2 fails (INVALID), and no partial decision is made.
-- Balance: S4 runs `experiments/runpod/balance.py --need 3 --hours 0.75` live before the booking.
-- No GPU rehearsal (stage S5), and why: FACT: the rehearsal GPUs of PROTOCOL.md (L4, RTX 4090) have 24 GB, and the
-  checkpoint has 33.3 GB (G2), so neither can load it. The small Gemma 4 models that fit do not have
-  `attention_k_eq_v` (G2 Section 3.5), so they cannot test the identity. INTERPRETATION: a 48 GB GPU (for example an
-  L40S) could hold the checkpoint, but it runs another attention backend (FA4 head_dim 512 needs SM90) and needs the
-  same download and engine start. This design does not use it; the user can choose it at S4.
-- What replaces the rehearsal: (1) the stub session (`STUB=1`) from a clean copy of the upload folders; (2) the CPU
-  tests, which include the hooks on a model tree with the vLLM class names and call pattern; (3) the fail fast before
-  and after the first prompt, so a hook fault costs only the download and the engine start (about 6 to 9 min, about
-  $0.40 to $0.60). (4) VERIFY items that the main session reads in the first minutes of the run: "setup done" and the
-  `models.txt` line with the snapshot folder; `capture_log.txt` with `{"prompt": 0, "layers": 10, "problems": 0, ...}`;
-  "capture: exit 0" in `session.log`; `capture_run.json` with `engine.compilation_mode` NONE and the route
-  "LLM.apply_model".
-- Run steps for the main session (S6): create the Pod with the boot watchdog (`pod_cmd.py --cap 2040`), the name from
-  `pods.py name E-53 session` and the env `THESIS_TAG=msthesis`, `THESIS_EXPERIMENT=E-53`,
-  `HF_HOME=/workspace/cache/hf`, `VLLM_CACHE_ROOT=/workspace/cache/vllm`; register the id; upload the three folders of
-  Section 11; start `session_e53.sh` with `AUTO_STOP=1` in the background; copy only `RES` (`/workspace/results/e53`);
-  check the checksums; delete the Pod.
+- (A1, R-73 F2) Keep the raw captures (PROTOCOL.md principle 7). At the end the session writes `capture_sha.txt` (the
+  SHA-256 of every file in CAPDIR) and logs the size. In the AUTO_STOP window the main session copies RES and CAPDIR:
+  `rsync -rlt -e "ssh -F <config>" <alias>:/workspace/capture_e53/ <repo>/experiments/gemma4_kv_accuracy/results/e53-h100-<date>/capture/`,
+  then compares `shasum -a 256` of the copy with `capture_sha.txt`. The folder `.gitignore` keeps `capture/` out of git
+  (3.1 GB); the checksum list stays in git. If the window ends before the copy, start the Pod again with 0 GPUs
+  (RUNPOD.md Section 6) and finish the copy; if time is short, copy prompt 0 (about 780 MB) and `k_norm.pt` first.
+- (A1, R-73 F1) S5 rehearsal (needs the user's approval at S4, as a separate spend, or a waiver logged in the journal
+  Section 10):
+  - GPU and price: 1 x RTX 4090, Secure Cloud ($0.89/h, the E-52 read on 2026-11-01; S4 reads it again). Cap $0.60.
+    Boot watchdog `pod_cmd.py --cap 1500`, `POD_LIMIT=1200`, the same 15 min pull rule: worst case 15 + 25 = 40 min,
+    $0.59. Plan about 20 to 25 min, $0.30 to $0.37 (E-50 S5 with the same image and model: 16 min, about $0.24).
+  - Model (FACT, the Hugging Face `config.json` at the revision, read 2026-11-01): `google/gemma-4-E2B-it` at revision
+    `3e22461f65e89153144f8adb70e3b8c2cc9845a7` (the E-50 S5 model). 35 layers; global layers 4, 9, 14, 19, 24, 29 and 34;
+    `num_kv_shared_layers` 20, so only 4, 9 and 14 own a cache; 8 query heads; `num_key_value_heads` 1 and no
+    `num_global_key_value_heads`; `global_head_dim` 512; `attention_k_eq_v` false; global RoPE proportional, factor
+    0.25, theta 1,000,000 (as the 31B). FACT (transformers 5.20.2, Section 4.3): its global layers have 1 KV head and
+    head dim 512. So the GQA ratio (8) and the head dim are the 31B values, and the views layout applies.
+  - Session env: `M31=google/gemma-4-E2B-it R31=3e22461f65e89153144f8adb70e3b8c2cc9845a7 POD_LIMIT=1200
+    CAP_ARGS="--rehearsal --heads 8 --kv-heads 1 --global-layers 3"`, with `AUTO_STOP=1`.
+  - Expected decision: `REHEARSAL INVALID (V1, V3, ...)`: the GPU is not an H100, and E2B has no K=V identity (V3
+    fails by design). It cannot test FA4 for head dim 512 (the RTX 4090 runs the Triton backend, E-50 S5), the 31B
+    weights or V3.
+  - VERIFY items: (1) the image starts and vLLM is 0.33.0rc1.dev229+g3966924d5; (2) `models.txt` has the E2B snapshot
+    folder; (3) the engine starts with the E-53 arguments (eager, 8,448 tokens, 4 sequences, utilization 0.85) on
+    24 GB; (4) `capture_run.json` has the route "LLM.apply_model", `compilation_mode` "NONE", `cudagraph_mode` "NONE",
+    `cache_dtype` "auto", the hooked layers [4, 9, 14] and 3 k_norm weights; (5) prompt 0 has 3 layers and 0 problems,
+    and every prompt has `special_after_0` 0; (6) the capture files hold q, k, v and o, with SHA-256 values; (7) the
+    analysis runs on CUDA within its cap, and V5 (the engine gap with the Triton BF16 kernel) is at most 0.05: this is
+    the first real value of V5; (8) the copy of CAPDIR to the Mac matches `capture_sha.txt`, and its time is
+    measured; (9) AUTO_STOP stops the Pod; (10) the times of the prompt builder, the engine start and each step fit the
+    H100 caps.
+- Run steps for the main session (S6 and S7; A1): create the Pod with the boot watchdog (`pod_cmd.py --cap 1740`), the
+  name from `pods.py name E-53 session` and the env `THESIS_TAG=msthesis`, `THESIS_EXPERIMENT=E-53`,
+  `HF_HOME=/workspace/cache/hf`, `VLLM_CACHE_ROOT=/workspace/cache/vllm`; (A1, R-73 O5) ask for EUR-NO-2 first
+  (HYPOTHESIS: the image can be on the host, as in E-52; not a rule); register the id; wait for SSH inside one tool
+  call with the 15 min delete deadline; upload the three folders of Section 11; start `session_e53.sh` with
+  `AUTO_STOP=1` in the background; copy RES and CAPDIR in the AUTO_STOP window and compare the checksums; delete the
+  Pod. (A1, R-73 O4) In S7, write the ledger manifest from `summary.json` (`ledger_metrics`) and add the
+  `HARDWARE_LOG.md` row.
 
 ## 10. Threats to validity
-- The engine compute dtype is not modeled in the decision: the analysis compares the storages with float32 compute.
-  The stock FA4 FP8 path computes in FP16, and the FA3 path quantizes Q to FP8 (flash_attn.py 1276 to 1296). The FP16
-  emulation is reported only.
+- The engine compute dtype: the decision compares the storages with float32 compute and (A1) with the FP16 emulation.
+  The stock FA4 FP8 path computes in FP16, and the FA3 path quantizes Q to FP8 (flash_attn.py 1276 to 1296). The FA3
+  path is not emulated.
 - Prefill queries at 8,192 tokens, not decode at 32K to 64K. HYPOTHESIS: the FP8 error per key does not depend on the
-  context length, so the relative output error changes little with more keys. Longer contexts are not tested.
+  context length, so the relative output error changes little with more keys. Longer contexts are not tested ((A1) R-73
+  O1 is not adopted; Amendments).
 - The capture runs with a BF16 KV cache, so every layer sees BF16 attention in the layers before it. The design
   measures the storage error of each layer alone. The growth of the error over the 10 global layers and the effect on
-  the model output are not tested (the week-6 end-to-end test of D-88 measures them).
+  the model output are not tested (the week-6 end-to-end test of D-88 measures them; (A1) R-73 O3 is not adopted).
 - 4 prompts of code and documentation text, not chat. The BOS token is included, so the attention sinks are in the
-  data.
+  data. (A1) Special-token strings in the source text are kept out (Section 4.4).
 - Scale 1.0 for K and V (`kv_cache_scheme` null). A calibrated checkpoint needs the two-scale rule of E-52 A1 (O1);
   not tested here.
-- The raw captures (about 3.1 GB) are not copied off the Pod, as the brief asks; they go with the Pod. To keep the run
-  repeatable, `prompts.json` keeps the token ids and `capture_run.json` keeps the SHA-256 of every capture file. The
-  main session can copy them if it wants to keep them.
+- (A1) The V5 bound (0.05) is an estimate: nobody checked the rounding inside the FA4 BF16 kernel (R-73). The
+  rehearsal gives a Triton value, not an FA4 value.
+- (A1) The copy of 3.1 GB can take longer than the 300 s window on a slow link; then a 0-GPU start finishes it
+  (Section 9). Its price is not read here.
 - Not in E-53: the condition C2 of G1 (the P3 flag log lines and the sliding block-16 timing). It needs another engine
   configuration and a second engine start. The main session decides if it adds it.
-- The worst-case cost with a 15 min pull is $0.26 above the cap (Section 9).
 
 ## 11. Files
-- `capture_e53.py`: the prompts, the engine, the hooks, the fail fast, the capture files; `--stub` for the Mac.
+- `capture_e53.py`: the prompts, the engine, the hooks (A1: the output hook), the fail fast, the capture files;
+  (A1) the shape flags and `--rehearsal`; `--stub` for the Mac.
 - `analyze_e53.py`: the metrics on the GPU (`--capture`), then the frozen checks and rule (summary.json and the
-  decision); without `--capture` it decides again from `metrics.json`.
+  decision); without `--capture` it decides again from `metrics.json`. (A1) With `--capture` on the copied captures it
+  runs on the Mac too (about 2.4 to 4.4 s per prompt and layer).
 - `session_e53.sh`: the Pod session (versions, hardware record, telemetry, download, capture, analysis, watchdog,
-  AUTO_STOP; `STUB=1`).
+  AUTO_STOP; `STUB=1`; (A1) `capture_sha.txt`).
 - `test_e53.py`: the tests.
+- (A1) `.gitignore`: keeps `results/*/capture/` (the copied raw captures) out of git.
 - `../gemma4_kv_kernel/compact_attn.py` (unchanged): `rope`, `ROT`, `UNROT`, `pack_views`, `views_of`, `views_query`,
   `unpermute`.
 - Upload folders: `gemma4_kv_accuracy`, `gemma4_kv_kernel`, `runpod`.
 - Outputs in `RES` (`/workspace/results/e53`, small): `session.log`, `versions.txt`, `env-*/` (telemetry, hardware,
   `models.txt`), `prompts.json`, `capture_run.json`, `capture_log.txt`, `metrics.json`, `analysis_log.txt`,
-  `summary.json`, `decision.txt`. In `CAPDIR` (`/workspace/capture_e53`, not copied): the capture files.
+  `summary.json`, `decision.txt`, (A1) `capture_sha.txt`. In `CAPDIR` (`/workspace/capture_e53`; (A1) copied to the Mac
+  as `results/e53-h100-<date>/capture/`): the capture files and `k_norm.pt`.
 
 ## 12. Verification record (stages S3 and S5)
 - S3 (2026-11-01, Mac, no GPU and no vLLM): `uv run --no-project --with numpy --with torch --with pytest python -m
@@ -274,8 +373,68 @@ saturated shares.
   8. The stub session from a clean copy of the upload folders: PASS; a second run skips the capture; `--stub-fail`
      gives INVALID (V2); `--stub-no-tensors` stops the capture with exit 3 and gives INVALID (V2: fail fast).
   Not tested on the Mac: vLLM, the engine start, the hooks inside vLLM, the tokenizer of the snapshot and the GPU.
-- S2: not done.
-- S5: no rehearsal (Section 9).
+- (A1) S3 after A1 (2026-11-01, Mac): the same command: 20 passed in about 70 s. New or changed tests (FACT):
+  1. B1: the session defaults (420, 600, 240, 1,440, 300 s) keep the step caps inside the session watchdog and the
+     session watchdog before the boot watchdog; the worst cases are $2.93 (H100) and $0.59 (rehearsal).
+  2. B2: the stub engine output (the BF16 of the float32 attention) gives an engine gap below 0.01 and passes V5; a
+     wrong head mapping (KV heads rolled, or query heads rolled with 1 KV head) fails V5 with its action; the output
+     hook records the same rows as q on the model tree.
+  3. B3: the same saturated K_rot values give equal counts (256 and 256) and pass the count rule, with shares of 1.6
+     times on the old support and equal shares on the K_rot support; K_unrot saturation counts only in the standard
+     rows; more saturated compact values give INCONCLUSIVE.
+  4. B4 and F3: a |q'| above 32,752 gives INCONCLUSIVE "(the FP16 range); action: pre-scale the query", also on the
+     real computation with one query value of 50,000; FP16 values that are not finite and a worse FP16 ratio give
+     INCONCLUSIVE; the R-73 F3 case (ratio of the maxima 1.5, one prompt at 3 times its own error) is caught by the
+     per-prompt ratio; FAIL names the action "stop the build"; every outcome names its action.
+  5. F4: a file with the text `<bos>` is skipped and `special_after_0` stays 0; without the filter a second BOS id
+     enters the prompt; a prompt with a special id fails V2.
+  6. F5: a stub without module weights fails V3; a real-run record without the engine facts fails V2; a rehearsal
+     record with compile mode "0" fails V2. F7: an IntEnum mode gives "NONE". F1: the KV-sharing rule gives [4, 9, 14]
+     for E2B and the 10 layers for the 31B; the rehearsal shapes (8 heads, 1 KV head, 3 layers) run through the whole
+     capture and analysis, and the decision starts with "REHEARSAL".
+  7. F2: the session writes `capture_sha.txt` (5 files in the stub); a capture file with another SHA-256 fails V2.
+     F6 and O2: the value-path errors of the two storages are equal; the E5M2 ratio is above 1.5.
+  8. Timing at the real size with the A1 metrics (11 attention passes): 2.4 s on the Mac CPU.
+- S2: R-73 (2026-11-01): AMEND_THEN_RUN; A1 answers it (Amendments).
+- S5: (A1) the rehearsal plan is in Section 9; not run yet.
 
 ## Amendments
-None.
+- A1 (2026-11-01, before any data; from R-73, verdict AMEND_THEN_RUN, `dossier/REVIEW_E-53_PRERUN_2026-11-01.md`):
+  - B1 (blocker), adopted: the boot watchdog 1,740 s; the caps 420, 600 and 240 s; the session watchdog 1,440 s, which
+    now fires before the boot watchdog; the 15 min pull rule as a deadline inside the create-to-SSH wait loop; the
+    worst case 44 min, $2.93 (Section 9). Not needed: R-73's alternative of a $3.30 cap.
+  - B2 (blocker), adopted: the output hook, `o` in every capture file, the engine gap and V5 (at most 0.05), a stub test
+    and a negative test (Sections 4.3, 4.5, 6, 8).
+  - B3 (blocker), adopted: the count rule replaces the share rule; the shares over the same support and the K_unrot
+    saturation are reported; the test is updated (Sections 5 and 7).
+  - B4 (blocker), adopted: the consequence table; a |q'| above 32,752 is INCONCLUSIVE with the action "pre-scale the
+    query"; FAIL is the ratio only (Sections 1, 3 and 7).
+  - F1, adopted: the S5 rehearsal on an RTX 4090 with `google/gemma-4-E2B-it` (its config read and recorded), the
+    shape flags with the frozen defaults, the rule that hooks only the global layers that own a cache, the VERIFY items
+    and the cap $0.60 (Sections 4.2, 4.3 and 9). The user approves or waives it at S4. Not adopted: R-73's HYPOTHESIS
+    of a 6-layer cut of the 31B config with dummy weights, because it is not tested and E2B already ran this image in
+    E-50 S5.
+  - F2, adopted: the captures are copied to the Mac in a 300 s AUTO_STOP window with `capture_sha.txt` and a folder
+    `.gitignore`; the analysis checks every SHA-256 (V2); the copy time is in the budget (Sections 9 and 11).
+  - F3, adopted: per-prompt ratios for the median and the largest tests; the FP16 emulation enters the PASS tests
+    (the larger of the two ratios, and no value that is not finite); the quadrature note. One choice of the author:
+    FAIL keeps the float32 ratio, because an FP16-compute fault is fixable by a scale (Section 7).
+  - F4, adopted: files with special ids are skipped; `special_after_0` must be 0 (V2).
+  - F5, adopted: V3 needs the module weight of every global layer and a match of its form; V2 checks the vLLM version,
+    the compile and graph modes, a BF16 cache and the planned count of global layers in a real run; the largest
+    identity error of one token is reported, not in the rule: R-73 marks it optional, and a bound for one token has no
+    calibration yet (the stub gives 0.002; the rehearsal and the run report it).
+  - F6, adopted as reported metrics: the score-path and value-path errors.
+  - F7, adopted: the mode names (`.name`).
+  - F8, adopted: the README text corrections (Sections 4.1, 4.3 and 9).
+  - O1, not adopted: a 16K or 32K prompt changes `max_model_len`, adds 1.4 to 2.7 GB of captures and a chunked
+    prefill path, and the B1 caps leave little time for it. The context claim stays a threat (Section 10).
+  - O2, adopted as a reported control: the compact storage in E5M2 (Section 8).
+  - O3, not adopted: the splice test needs new code and its own rehearsal; the week-6 test covers the growth.
+  - O4, adopted in the run steps: the ledger manifest from `summary.json` and the hardware log row (Section 9). No new
+    adapter file: the main session writes the manifest, as for E-52.
+  - O5, adopted as a note: ask for EUR-NO-2 first (a HYPOTHESIS, not a rule).
+  - R-73 notes (Answer 6), adopted: V2 now also fails when a capture prompt after prompt 0 had a problem; the prompt
+    builder walks each root once.
+  - Unchanged: the question's storages and the FP8 cast, the plan (4 prompts, 8,192 tokens, 256 query rows), the
+    model and image, the engine arguments, V1, V4, the PASS bounds 1.25, 2 and 6,550, and the FAIL bound 2.
