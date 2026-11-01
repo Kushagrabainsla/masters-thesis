@@ -261,7 +261,10 @@ and its R-70 post-run review (CONFIRM_WITH_CORRECTIONS).** Rewrite this section 
   compute (FACT: Triton converts FP8 to BF16 with three instructions per 2 values on sm_90, to FP16 with one) and
   the views layout [K_rot | V_unrot | V_rot], read by the unchanged standard kernel through two overlapping views;
   19 tests pass. D-86 decided by the user ("1"): both spends with a one-time $12 floor, if R-71
-  changes neither the plan nor the cap. Next: R-71, then S5. 0 thesis Pods, 0 volumes.
+  changes neither the plan nor the cap. R-71 (Sonnet pre-run review): AMEND_THEN_RUN;
+  amendment A1 (before any data): KILL is the byte route only, with named causes for every other low result,
+  V4 on the Triton rows, a sm_90 compile check, cast x stage rows, a deadline, an ncu probe; 26 tests pass.
+  A1 changes the plan, so D-87: the user confirms the amended plan (same caps). 0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
   FlashInferFp8DeepGEMMDynamicBlockScaledKernel logs "Enabled custom fusions: norm_quant, act_quant", but the
@@ -1708,6 +1711,13 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
 2026-11-01  [P10] D-86 decided by the user ("1"): the E-52 RTX 4090 rehearsal (cap $0.60) and the H100 run
                   (cap $3), with a one-time balance floor of $12 for E-52 only, if R-71 changes neither the
                   plan nor the cap. Source: chat. Ideas: I-182. Experiments: E-52.
+2026-11-01  [P10] R-71 (Sonnet) pre-run review of E-52: AMEND_THEN_RUN. The views layout is exact; FP16 is safe.
+                  B1: the KILL by a competence test could condemn the layout when the views do not share
+                  their reads; B2: V4 could void the run on the stock row. Amendment A1 (before any data):
+                  KILL is the byte route only, the other low results are INCONCLUSIVE with named causes;
+                  V4 on the Triton rows; a sm_90 compile check, cast x stage rows, a deadline, an ncu probe.
+                  26 tests pass. D-87 opened (the user confirms the amended plan).
+                  Source: dossier/REVIEW_E-52_PRERUN_2026-11-01.md. Ideas: I-182. Experiments: E-52.
 ```
 
 ---
@@ -5070,7 +5080,7 @@ GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not
 
 **E-52 Fixed compact K=V decode attention kernels (FP16 compute, two overlapping views) against their standard
 twin and the stock vLLM kernel** (predeclared 2026-11-01, I-182, D-85).
-STATUS: PREDECLARED, NOT RUN. Package: `experiments/gemma4_kv_views/` (README is the preregistration). Question: on
+STATUS: PREDECLARED, AMENDED A1 (R-71), NOT RUN. Package: `experiments/gemma4_kv_views/` (README is the preregistration). Question: on
 1 x H100 with an FP8 KV cache, does the compact layout, read by the standard Triton decode kernel through two
 overlapping views and with FP16 compute, cut the context-growing attention time of a Gemma 4 31B global layer by at
 least the kill line against the same kernel on the standard layout (15.5% at 32K, 12.5% at 64K), and by the go
@@ -5091,6 +5101,15 @@ $0.60), then 1 x H100 for about 25 to 35 min (cap $3). S3 (Mac): `test_e52.py` 1
 the CPU dry run within 0.0021 for every layout and compute dtype. Next: R-71 (pre-run review), then D-86 (the spend).
 D-86 (user, 2026-11-01, "1"): the rehearsal (cap $0.60) and the H100 run (cap $3) with a one-time $12 balance floor,
 if R-71 changes neither the plan nor the cap.
+A1 (2026-11-01, from R-71, before any data; README Amendments): KILL is now the byte route only: sigma_layout below the
+kill lines in both groups, e_h below 0.413 (32K) and 0.333 (64K) in both groups, and e_bf16_triton >= 0.5 (the K = V
+oracle valid on this GPU); every other low result is INCONCLUSIVE with flags (a) time does not follow bytes,
+(b) the views do not share their DRAM reads, (c) the L2 path or the on-chip work caps. The views kernel runs at the
+standard selection. V4 bounds the Triton rows (spread 2%, dt range 3%) and the stock dt range (5%). A baseline check
+against the E-51 stock dt gives INCONCLUSIVE ("baseline off") if the word changes. New: a sm_90 compile check in its
+own process (crashed entries skipped), cast x stage rows (H5: `num_stages` 3), a 720 s deadline, an ncu DRAM probe,
+SASS counts, NVML read during the replay, poisoned tail slots, a sticky-error stop. Caps unchanged. S3 after A1:
+`test_e52.py` 26 passed, `test_e51.py` 16 passed. Next: D-87 (the user confirms the amended plan), then S5.
 
 **E-51 Compact K=V decode attention kernel against the stock vLLM kernel** (predeclared 2026-10-31, I-182, D-83).
 STATUS: RUN 2026-11-01 (H100): frozen decision INVALID (V3, V4); R-70 (S8): CONFIRM_WITH_CORRECTIONS.
@@ -6030,6 +6049,25 @@ I-174 (exact symmetries for power) died in the free screen; I-175 and I-176 died
 too small in our measured regime, or not testable without fleet data. Our telemetry bounds every power-cap idea in
 this serving regime: removing the cap gains at most 0.65% (E-44) to 2.4% (E-46). Both passes: D-70 options A and B
 remain the best use of the time. Write-up: `dossier/FRONTIER_R-62_2026-10-29.md`.
+
+**R-71 Pre-run review of E-52 (fixed compact K=V kernels: FP16 compute, two overlapping views; I-182)**
+(2026-11-01, Sonnet, a different model from the author; an independent views-identity script, the author's rule on a
+synthetic grid, an FP16 against BF16 emulation, E-51 data recomputed, read-only GitHub reads of Triton v3.8.0, vLLM
+3966924d5, flash-attention b273a02 and FlashMLA; no Runpod call). AMEND_THEN_RUN. FACT: the views layout is exact
+(1e-15 in float64); the Triton cast sequences are as the author states; FA4 keeps aligned strided views and has no
+K/V stride check; FP16 compute is safe for these inputs (error 0.0004 to 0.0037, BF16 up to 0.045); the 19 tests
+pass. Blockers: B1, the KILL word tests the wrong object: the views kernel runs the twin's code, so its 640-byte rate
+is 0.625 x the twin's rate / (1 - sigma_layout), and views that do not share their reads give KILL at a twin rate of
+0.96 x copy or more (a false KILL of the layout); B2, V4 can void the run again on the stock row (E-51: dt range 2.71%
+against the 3% bound; HYPOTHESIS 25% to 40%). Fixes F1 to F10 (the views kernel at the standard selection, the free
+sm_90 compile check promised in D-85, a cast x stage table because the E-51 kernels did not double-buffer at
+`num_stages` 2 (FACT, shared-memory model of 10 rows), a 720 s deadline, an ncu DRAM probe, predicated PTX lines, NVML
+during the replay, a baseline check against the E-51 stock dt, expected control ranges, the $12 floor and a pull
+rule) and O1 to O6. The main session checked the B1 algebra, the shared-memory model against its own E-51 numbers and
+the Triton compile API (ASTSource, `warmup`). All are applied in amendment A1, except 7 stock repeats (the
+replication pairs one repeat of each family), dropping warps 2, and O3 (the deadline caps the time); O5 uses a finite
+poison value instead of NaN. R-71 also notes: D-86 holds only if the plan stays the same; A1 changes it, so the user
+must confirm again (D-87). Write-up: `dossier/REVIEW_E-52_PRERUN_2026-11-01.md`.
 
 **R-70 Post-run review of E-51 (compact K=V decode attention kernel, I-182)** (2026-11-01, Sonnet, a different
 model from the author; an independent recompute script, the author's `label()` and `decide()` with V3 and V4 forced
@@ -7033,6 +7071,7 @@ proposed it and no acceptance is recorded.
 | D-84 | 2026-10-31 | Spend for E-51 (with A1): an RTX 4090 rehearsal (cap $0.60), then 1 x H100 SXM for about 22 to 33 min (cap $3; expected about $1.50 to $2.20). The $35 balance floor applies again after D-82 | Recommendation (main session), after R-69 and A1. Not a decision | The kernel test decides if the compact layout is worth an engine prototype (R-68) | **Decided by the user (2026-10-31, "Yes, $14 floor")**: both spends, with a one-time balance floor of $14 for E-51 only (the live check failed the $35 floor; S4 prices from the catalog: H100 SXM Secure $3.99/h, RTX 4090 Secure $0.89/h) |
 | D-85 | 2026-11-01 | Next step for I-182 after E-51 (INVALID by its frozen rule) and R-70 (CONFIRM_WITH_CORRECTIONS: the K = V oracle bounds the byte route only, at most about 10% of dt on the two FP8 dequant kernels; the speed claim is untested). Options: (a) stop the speed work and keep I-182 as a capacity result (1.6 times the global KV capacity) plus O-13; record "speed claim untested", not "no speed benefit" (R-70); (b) E-52 on the FP8 MMA kernel of FA PR 199 (overlay) with the K = V oracle, re-scoped by R-70: a BF16 K = V control, a pool probe, V3 on the X cells and dt only, a robust V4 and the SM clock from NVML; about $2, cap $3; KILL of the byte route if e stays below 0.413 (32K) and 0.333 (64K); (c) E-52 on a fixed compact Triton FP8 kernel (the R-70 Q4 variants: drop kr, load V twice, slice qc; also an FP8 to FP16 cast as in FA4; a wider sweep with `num_stages` 3), with the same controls and fixes; about $2, cap $3. First version (before R-70): (a) the same without the wording rule; (b) the FP8 MMA oracle test with a fixed V3 and V4, about $1 to $2; (c) a profile of the compact kernel's on-chip defect | R-70: (b), after the free offline half of (c) (an sm_90 compile and a PTX diff); not (a) as a kill; HYPOTHESIS: (b) ends in KILL. Main session (after R-70): (c), with the free offline half first. Both are recommendations, not decisions | (c) is the only test of the real layout, which also cuts the cast work (R-70 H3); a compact kernel at parity with its twin is already 8% to 12% faster on dt than the stock FP8 kernel, so the capacity gain would come with no slowdown; the Triton path is a production path for multimodal Gemma 4 with FP8 KV (PR 60372). (b) tests the kernel that vLLM would ship, but R-70 expects a KILL there | **Decided by the user (2026-11-01, "1 go ahead")**: option (c). The H100 test (about $2, cap $3) and a rehearsal wait for D-86: the user's OK of the final plan and cap, and a live balance check |
 | D-86 | 2026-11-01 | Spend for E-52: an RTX 4090 Secure rehearsal ($0.89/h, about 25 min, cap $0.60), then 1 x H100 SXM Secure ($3.99/h, about 25 to 35 min, cap $3); live catalog read 2026-11-01 (stock HIGH for both). The live balance check fails the $35 floor; a one-time floor of $12 passes ($14 fails) | Recommendation (main session), asked while R-71 runs. Not a decision | E-52 is the controlled test of the fixed compact kernel (D-85) | **Decided by the user (2026-11-01, "1")**: both spends, with a one-time balance floor of $12 for E-52 only, if R-71 changes neither the plan nor the cost cap |
+| D-87 | 2026-11-01 | Confirm the E-52 spend after amendment A1 (R-71 changed the plan: the rule, the controls, the compile check; the caps are the same): an RTX 4090 Secure rehearsal ($0.89/h, about 25 min, cap $0.60), then 1 x H100 SXM Secure ($3.99/h, about 25 to 35 min, cap $3), with the one-time $12 balance floor of D-86 | Recommendation (main session), after R-71 and A1. Not a decision | D-86 was given only if R-71 changed neither the plan nor the cap | **Open, waiting on the user** |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7483,3 +7522,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-11-01: E-52 predeclared (Section 6.1 entry, Section 5.27 Experiments line and research log, Section 3 row
   I-182, Section 7.30 row, Section 1 line, Section 4 entry).
 - 2026-11-01: D-86 decided by the user (Section 10 row, Section 6.1 E-52, Section 1 line, Section 4 entry).
+- 2026-11-01: R-71 (E-52 pre-run review, AMEND_THEN_RUN) in Section 6.2; E-52 amendment A1 (Section 6.1); D-87
+  opened; Section 1 line; Section 4 entry.

@@ -25,10 +25,12 @@ Usage: kbench_e52.py --out <dir> [--cells B:L,...] [--fail-fast auto|on|off] [--
 from __future__ import annotations
 
 import argparse
+import hashlib
 import itertools
 import json
 import math
 import random
+import re
 import signal
 import statistics
 import sys
@@ -65,16 +67,34 @@ TRITON = {  # name: (cache dtype, layout, compute dtype, sweep)
     "triton_cmp_bf16": ("bf16", "fused", "bf16", "bf16")}
 ORACLE = an.ORACLE                            # K = V (the V view as K and V), timing only
 POOL = an.POOL                                # pages from the pool, timing only
-SWEEP_ALIAS = ("stock_bf16_s32_alias", "triton_std_bf16_alias")   # the BF16 K = V control, in the sweep
+SWEEP_ALIAS = ("stock_bf16_s32_alias", "triton_std_bf16_alias",   # the BF16 K = V control, in the sweep
+               "triton_std_bf16_pool")                            # A1 (R-71 F9): the BF16 pool calibration
 ROW = {"std": 2 * D, "views": D + 128, "fused": D + 128}          # cache values per token and KV head
 PTX_OPS = ("cvt.rn.f16x2.e4m3x2", "cvt.bf16.f16", "cvt.f32.f16", "cvt.rn.bf16.f32", "mma.sync", "wgmma.mma_async",
            "ldmatrix", "ld.shared", "st.shared", "bar.sync", "cp.async", "ld.global")
+DEADLINE_S = 720                              # A1 (R-71 F4): after this, the remaining group cells run LITE only
+POISON = 448.0                                # A1 (R-71 O5): the unused slots of the last page (the E4M3 maximum)
+STICKY = ("illegal memory access", "device-side assert", "unspecified launch failure")   # A1 (R-71 O6)
+CRASHED: set = set()                          # "kernel s/w/t/st" entries that crashed the compile check (A1, F2)
 _NV: dict = {}
+
+
+def crashed(kname: str, cfg: dict) -> bool:
+    return f"{base_of(kname)} {an.cfg_key(cfg)}" in CRASHED if "splits" in cfg else False
 
 
 class Timeout(BaseException):
     """SIGTERM from the session's `timeout`: recorded in run.json. Not an Exception, so no per-configuration handler
     catches it."""
+
+
+class Sticky(BaseException):
+    """A CUDA error that breaks the context (A1, R-71 O6): every later row would fail, so the run stops at once."""
+
+
+def check_sticky(exc: Exception) -> None:
+    if any(s in str(exc) for s in STICKY):
+        raise Sticky(f"{type(exc).__name__}: {exc}"[:300]) from exc
 
 
 def now() -> str:
@@ -102,11 +122,13 @@ def cfg_dict(c: tuple) -> dict:
     return {"splits": c[0], "warps": c[1], "tile": c[2], "stages": c[3]}
 
 
-def triton_configs(kind: str, cell: tuple[int, int] | None = None) -> list[tuple[int, int, int, int]]:
-    """The Triton configurations (splits, warps, tile, stages) of a sweep kind at a cell (None: the correctness cell)."""
+def triton_configs(kind: str, cell: tuple[int, int] | None = None, lite: bool = False) \
+        -> list[tuple[int, int, int, int]]:
+    """The Triton configurations (splits, warps, tile, stages) of a sweep kind at a cell (None: the correctness cell).
+    lite (A1, R-71 F4): after the deadline, the remaining group cells run the LITE rows only."""
     if kind == "wide":
-        return list(itertools.product(SPLITS, WARPS, TILES, STAGES)) if cell is None or cell in GROUP_CELLS \
-            else list(LITE)
+        return list(itertools.product(SPLITS, WARPS, TILES, STAGES)) if (cell is None or cell in GROUP_CELLS) \
+            and not lite else list(LITE)
     if kind == "e51":
         return [E51_CFG]
     return list(BF16_CONFIGS) if cell is None or cell in GROUP_CELLS else []
@@ -159,13 +181,12 @@ def graph_time(step) -> tuple[float, float, dict]:
         a.record()
         g.replay()
         z.record()
+        clk = sm_clock() if i % CLOCK_EVERY == CLOCK_EVERY - 1 else None   # A1 (R-71 F7): while the replay runs
         z.synchronize()
         times.append(a.elapsed_time(z) * 1000.0 / CALLS)
-        if i % CLOCK_EVERY == CLOCK_EVERY - 1:
-            clk = sm_clock()
-            if clk:
-                clocks.append(clk[0])
-                caps += bool(clk[1] & 0x4)
+        if clk:
+            clocks.append(clk[0])
+            caps += bool(clk[1] & 0x4)
     del g
     clock = {"clock_mhz": round(statistics.mean(clocks)) if clocks else None,
              "clock_min": min(clocks) if clocks else None, "cap_samples": caps, "clock_samples": len(clocks)}
@@ -268,19 +289,23 @@ def make_fn(kname: str, cfg: dict, c: dict):
 
 
 def ptx_counts(ptx: str) -> dict:
-    """Static counts of the instructions that H4 and the fused defect name (README Section 5)."""
-    lines = [ln.strip() for ln in ptx.splitlines()]
+    """Static counts over the whole kernel (not per loop iteration) of the instructions that H4 and the fused defect
+    name (README Section 5). A1 (R-71 F6): a leading predicate such as `@%p3` or `@!%p3` is removed first."""
+    lines = [re.sub(r"^@!?%p\d+\s+", "", ln.strip()) for ln in ptx.splitlines()]
     return {op: sum(1 for ln in lines if ln.startswith(op)) for op in PTX_OPS}
 
 
 def timed(row: dict, factory, errors: list, where: str, asm_dir: Path | None = None) -> None:
     """Time one configuration into `row`: the median us, the central spread and the clock record, or the error."""
+    if crashed(row["kernel"], row["config"]):
+        row.update(status="error", error="crashed the compiler in the compile check")
+        return
     try:
         fn = factory()
         if row["kernel"].startswith("triton_"):
             info = {"asm": asm_dir is not None}
             fn(info)                            # one eager call: the compile, the registers and the shared memory
-            ptx, ttgir = info.pop("ptx", None), info.pop("ttgir", None)
+            ptx, ttgir, cubin = info.pop("ptx", None), info.pop("ttgir", None), info.pop("cubin", None)
             row.update(info)
             if asm_dir is not None and ptx:
                 asm_dir.mkdir(parents=True, exist_ok=True)
@@ -288,10 +313,14 @@ def timed(row: dict, factory, errors: list, where: str, asm_dir: Path | None = N
                 (asm_dir / f"{stem}.ptx").write_text(ptx)
                 if ttgir:
                     (asm_dir / f"{stem}.ttgir").write_text(ttgir)
+                if isinstance(cubin, (bytes, bytearray)):
+                    (asm_dir / f"{stem}.cubin").write_bytes(cubin)   # the session dumps its SASS (A1, R-71 F2)
                 row["ptx_counts"] = ptx_counts(ptx)
+                row["ptx_sha"] = hashlib.sha256(ptx.encode()).hexdigest()[:16]
         us, spread, clock = graph_time(fn)
         row.update(us=round(us, 2), spread=round(spread, 4), status="ok", **clock)
     except Exception as exc:  # recorded, not fatal (for example out of shared memory)
+        check_sticky(exc)
         row.update(status="error", error=f"{type(exc).__name__}: {exc}"[:300])
         errors.append(f"{where}: {traceback.format_exc()[-800:]}")
 
@@ -316,9 +345,12 @@ def correctness(dev, fp8_dtype, errors: list, args, b: int = 2, length: int = 30
     kv32 = torch.zeros(b * nblk, HK, BS, 2 * D)       # float32 pages; FP8 cannot be index-assigned on the CPU
     c32, v32 = torch.zeros(b * nblk, HK, BS, D + 128), torch.zeros(b * nblk, HK, BS, D + 128)
     pad = nblk * BS - length
+    # A1 (R-71 O5): the unused slots of the last page hold large finite values (+-448, the E4M3 maximum), as an engine
+    # holds stale values there; a kernel that does not mask them gives a large error. Finite, so 0 x value stays 0.
+    poison = POISON * (1 - 2 * (torch.arange(pad * HK * D) % 2)).view(pad, HK, D).to(torch.float64)
     for s in range(b):
-        kp = torch.cat([kv[s][0], torch.zeros(pad, HK, D, dtype=torch.float64)]).view(nblk, BS, HK, D)
-        vp = torch.cat([kv[s][1], torch.zeros(pad, HK, D, dtype=torch.float64)]).view(nblk, BS, HK, D)
+        kp = torch.cat([kv[s][0], poison]).view(nblk, BS, HK, D)
+        vp = torch.cat([kv[s][1], -poison]).view(nblk, BS, HK, D)
         blocks = bt[s, :nblk].long()
         kv32[blocks] = torch.cat([kp, vp], -1).transpose(1, 2).float()
         c32[blocks] = ca.pack_compact(kp, vp).transpose(1, 2).float()
@@ -351,6 +383,7 @@ def correctness(dev, fp8_dtype, errors: list, args, b: int = 2, length: int = 30
                 o = c["out"].cpu()
                 entry[kname] = {"err": rel_err(o, ref[layout]), "exact_err": rel_err(exact_of[layout](o), exact)}
             except Exception as exc:  # recorded, not fatal
+                check_sticky(exc)
                 entry[kname] = {"error": f"{type(exc).__name__}: {exc}"[:300]}
                 errors.append(f"correctness {kname}: {traceback.format_exc()[-800:]}")
         for kname, (kdt, layout, _, kind) in TRITON.items():
@@ -359,6 +392,9 @@ def correctness(dev, fp8_dtype, errors: list, args, b: int = 2, length: int = 30
             by, exact_errs = {}, []
             for cfg_t in triton_configs(kind):
                 cfg = cfg_dict(cfg_t)
+                if crashed(kname, cfg):
+                    by[an.cfg_key(cfg)] = "crashed the compiler in the compile check"
+                    continue
                 try:
                     c["out"].zero_()                  # a configuration that writes nothing must not pass
                     make_fn(kname, cfg, c)()
@@ -367,6 +403,7 @@ def correctness(dev, fp8_dtype, errors: list, args, b: int = 2, length: int = 30
                     by[an.cfg_key(cfg)] = rel_err(o, ref[layout])
                     exact_errs.append(rel_err(exact_of[layout](o), exact))
                 except Exception as exc:  # recorded, not fatal (for example out of shared memory)
+                    check_sticky(exc)
                     by[an.cfg_key(cfg)] = f"{type(exc).__name__}: {exc}"[:200]
                     errors.append(f"correctness {kname} {cfg}: {traceback.format_exc()[-800:]}")
             ok = [e for e in by.values() if isinstance(e, float)]
@@ -376,7 +413,7 @@ def correctness(dev, fp8_dtype, errors: list, args, b: int = 2, length: int = 30
     return res
 
 
-def bench_cell(b: int, length: int, dev, fp8_dtype, errors: list, args) -> list[dict]:
+def bench_cell(b: int, length: int, dev, fp8_dtype, errors: list, args, lite: bool = False) -> list[dict]:
     import torch
 
     gen = torch.Generator(device=dev).manual_seed(b * 100_003 + length)
@@ -396,7 +433,7 @@ def bench_cell(b: int, length: int, dev, fp8_dtype, errors: list, args) -> list[
         trit += [(k, TRITON[base_of(k)][3]) for k in SWEEP_ALIAS if k.startswith("triton") and name in k] if group \
             else []
         for kname, kind in trit:
-            for cfg_t in triton_configs(kind, (b, length)):
+            for cfg_t in triton_configs(kind, (b, length), lite):
                 row = {"kernel": kname, "batch": b, "context": length, "config": cfg_dict(cfg_t),
                        "bytes": nbytes(b, length, layout_of(kname), name == "fp8")}
                 dump = asm_dir if cfg_t == E51_CFG and kname in TRITON else None
@@ -424,9 +461,13 @@ def confirm(plan: list[dict], dev, fp8_dtype, errors: list, args) -> list[dict]:
             gen = torch.Generator(device=dev).manual_seed(cell[0] * 100_003 + cell[1])
             cells[cell] = make_cell(*cell, dev, fp8_dtype, gen)
         e = dict(p, repeats=[], spreads=[], clocks=[], caps=[], status="ok")
+        if crashed(p["kernel"], p["config"]):
+            entries.append(e | {"status": "error", "error": "crashed the compiler in the compile check"})
+            continue
         try:
             e["fn"] = make_fn(p["kernel"], p["config"], cells[cell])
         except Exception as exc:  # recorded, not fatal
+            check_sticky(exc)
             e.update(status="error", error=f"{type(exc).__name__}: {exc}"[:300])
             errors.append(f"confirm {p}: {traceback.format_exc()[-800:]}")
         entries.append(e)
@@ -435,6 +476,7 @@ def confirm(plan: list[dict], dev, fp8_dtype, errors: list, args) -> list[dict]:
             try:
                 graph_time(e["fn"])
             except Exception as exc:  # recorded, not fatal
+                check_sticky(exc)
                 e.update(status="error", error=f"{type(exc).__name__}: {exc}"[:300])
                 errors.append(f"confirm warm-up {e['kernel']}: {traceback.format_exc()[-800:]}")
     for r in range(an.REPEATS):
@@ -448,6 +490,7 @@ def confirm(plan: list[dict], dev, fp8_dtype, errors: list, args) -> list[dict]:
                 e["clocks"].append(clock.get("clock_mhz"))
                 e["caps"].append(clock.get("cap_samples"))
             except Exception as exc:  # recorded, not fatal
+                check_sticky(exc)
                 e.update(status="error", error=f"{type(exc).__name__}: {exc}"[:300])
                 errors.append(f"confirm {e['kernel']} {e['batch']}:{e['context']}: {traceback.format_exc()[-800:]}")
     for e in entries:
@@ -491,7 +534,7 @@ def stub_time(args, kname: str, b: int, length: int, cfg: dict) -> float:
     return (args.stub_fixed_us + max(hbm, chip)) * penalty
 
 
-def stub_rows(args, b: int, length: int, rng) -> list[dict]:
+def stub_rows(args, b: int, length: int, rng, lite: bool = False) -> list[dict]:
     group = (b, length) in GROUP_CELLS
     rows = []
     for name in ("fp8", "bf16"):
@@ -505,7 +548,7 @@ def stub_rows(args, b: int, length: int, rng) -> list[dict]:
         trit += [(k, TRITON[base_of(k)][3]) for k in SWEEP_ALIAS if k.startswith("triton") and name in k] if group \
             else []
         for kname, kind in trit:
-            for cfg_t in triton_configs(kind, (b, length)):
+            for cfg_t in triton_configs(kind, (b, length), lite):
                 rows.append({"kernel": kname, "batch": b, "context": length, "config": cfg_dict(cfg_t),
                              "bytes": nbytes(b, length, layout_of(kname), name == "fp8"), "regs": 128, "spills": 0,
                              "shared": 65536})
@@ -513,6 +556,8 @@ def stub_rows(args, b: int, length: int, rng) -> list[dict]:
         r.update(status="ok", spread=0.004, clock_mhz=1980, clock_min=1980, cap_samples=0, clock_samples=3,
                  us=round(stub_time(args, r["kernel"], b, length, r["config"]) * (1 + rng.uniform(-0.003, 0.003)), 2))
         r["gbps"] = round(r["bytes"] / (r["us"] * 1e-6) / 1e9, 1)
+        if crashed(r["kernel"], r["config"]):
+            r.update(status="error", error="crashed the compiler in the compile check")
     return rows
 
 
@@ -532,7 +577,10 @@ def stub_correctness(args) -> dict:
                 k = an.cfg_key(cfg_dict(cfg_t))
                 wrong = kname == "triton_cmpv_fp8h" and (args.stub_bad_correct or k in bad)
                 by[k] = 0.5 if wrong else 0.004
-            entry[kname] = {"by_config": by, "err_max": max(by.values()), "exact_err_max": 0.03}
+                if crashed(kname, cfg_dict(cfg_t)):
+                    by[k] = "crashed the compiler in the compile check"
+            entry[kname] = {"by_config": by, "err_max": max((e for e in by.values() if isinstance(e, float)),
+                                                           default=None), "exact_err_max": 0.03}
         res[name] = entry
     return res
 
@@ -576,11 +624,20 @@ def main() -> None:
     ap.add_argument("--stub-bad-correct", action="store_true", help="every views FP16 configuration fails")
     ap.add_argument("--stub-hang-after-groups", type=float, default=0.0, help="seconds to wait after ok_groups")
     ap.add_argument("--stub-fail", action="store_true")
+    ap.add_argument("--stub-sticky", action="store_true", help="the first group cell raises a sticky CUDA error")
+    ap.add_argument("--deadline", type=float, default=DEADLINE_S, help="seconds after which group cells run LITE")
+    ap.add_argument("--compile-check", type=Path, help="compile_check.json: skip the entries that crashed there")
     args = ap.parse_args()
     out = args.out
     out.mkdir(parents=True, exist_ok=True)
     errors: list[str] = []
-    record = {"args": {k: str(v) for k, v in vars(args).items()}, "started_at": now(), "status": "started"}
+    if args.compile_check and args.compile_check.exists():
+        cc = json.loads(args.compile_check.read_text()).get("kernels", {})
+        CRASHED.update(k for k, e in cc.items() if e.get("status") in ("crashed", "compiling"))
+    t0 = time.time()
+    record = {"args": {k: str(v) for k, v in vars(args).items()}, "started_at": now(), "status": "started",
+              "phases": {}, "lite_cells": []}
+    mark = lambda name: record["phases"].__setitem__(name, round(time.time() - t0, 1))   # A1 (R-71 F4)
     if args.stub:
         rng, dev, fp8, sm90 = random.Random(args.stub_seed), None, None, True
         record.update(stub=True, gpu={"name": "STUB NVIDIA H100 80GB HBM3"})
@@ -614,6 +671,7 @@ def main() -> None:
         if not args.skip_correctness:
             result["correctness"] = stub_correctness(args) if args.stub else correctness(dev, fp8, errors, args)
             save()
+            mark("correctness")
             bad = an.deciding_failures(result["correctness"])
             if bad and fail_fast:
                 record["fail_fast"] = bad
@@ -622,13 +680,23 @@ def main() -> None:
             raise RuntimeError("stub failure (--stub-fail)")
         done = set()
         for b, length in cell_list(args.cells):
-            rows = stub_rows(args, b, length, rng) if args.stub else bench_cell(b, length, dev, fp8, errors, args)
+            if args.stub and args.stub_sticky:
+                raise Sticky("RuntimeError: CUDA error: an illegal memory access was encountered (--stub-sticky)")
+            # A1 (R-71 F4): after the deadline, the remaining group cells run the LITE rows only, so the confirmation
+            # (the decision data) still runs inside KB_TIMEOUT
+            lite = (b, length) in GROUP_CELLS and time.time() - t0 > args.deadline
+            if lite:
+                record["lite_cells"].append(f"{b}:{length}")
+            rows = stub_rows(args, b, length, rng, lite) if args.stub else \
+                bench_cell(b, length, dev, fp8, errors, args, lite)
             result["cells"].extend(rows)
             done.add((b, length))
             save()
+            mark(f"cell {b}:{length}")
             if result["confirm"] is None and set(GROUP_CELLS) <= done:
                 plan = an.confirm_plan(an.validated(result["cells"], result["correctness"]))
                 result["confirm"] = stub_confirm(args, plan, rng) if args.stub else confirm(plan, dev, fp8, errors, args)
+                mark("confirm")
                 save("ok_groups")                       # the decision data is complete
                 if args.stub_hang_after_groups:
                     time.sleep(args.stub_hang_after_groups)

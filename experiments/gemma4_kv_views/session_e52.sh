@@ -12,6 +12,7 @@ STUB=${STUB:-0}
 STUB_ARGS=${STUB_ARGS:-}
 KB_ARGS=${KB_ARGS:-}
 KB_TIMEOUT=${KB_TIMEOUT:-1500}          # with the 11 min pull, the Pod stays inside the $3 cap
+CC_TIMEOUT=${CC_TIMEOUT:-300}           # A1 (R-71 F2): each run of the sm_90 compile check
 POD_LIMIT=${POD_LIMIT:-1980}            # session watchdog at 33 min, before the boot watchdog (2,040 s)
 AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-180}
 AUTO_STOP=${AUTO_STOP:-0}
@@ -66,6 +67,16 @@ else
 fi
 log "setup done after $(elapsed) s; versions: $(tr '\n' ' ' < "$RES/versions.txt")"
 
+# A1 (R-71 F2): compile every Triton configuration for sm_90 in its own process first (on the H100 this fills the
+# Triton cache; on the 4090 it is a cross-compile). After a crash the next run marks the entry and goes on.
+if [ "$STUB" != 1 ] && ! grep -q '"done": true' "$RES/compile_check.json" 2>/dev/null; then
+    for i in 1 2 3; do
+        timeout -k 10 "$CC_TIMEOUT" python3 "$E52/compile_check_e52.py" --out "$RES" > "$RES/compile_check.log" 2>&1 && break
+        log "compile check: run $i stopped (exit $?); next run marks the entry"
+    done
+    log "compile check: $(tail -1 "$RES/compile_check.log") after $(elapsed) s"
+fi
+
 out=$RES/kbench
 if [ -f "$out/run.json" ] && grep -q '"status": "ok"' "$out/run.json"; then
     log "kbench: ok before, skip"
@@ -75,9 +86,24 @@ else
     if [ "$STUB" = 1 ]; then
         python3 "$E52/kbench_e52.py" --stub --out "$out" $STUB_ARGS $KB_ARGS > "$out/log.txt" 2>&1; rc=$?
     else
-        timeout -k 30 "$KB_TIMEOUT" python3 "$E52/kbench_e52.py" --out "$out" $KB_ARGS > "$out/log.txt" 2>&1; rc=$?
+        timeout -k 30 "$KB_TIMEOUT" python3 "$E52/kbench_e52.py" --out "$out" --compile-check "$RES/compile_check.json" \
+            $KB_ARGS > "$out/log.txt" 2>&1; rc=$?
     fi
     log "kbench: exit $rc after $(elapsed) s"
+fi
+if [ "$STUB" != 1 ]; then
+    # A1 (R-71 F5): a direct DRAM-bytes count, if the Pod allows the counters; diagnostic only
+    if command -v ncu > /dev/null 2>&1; then
+        timeout -k 10 240 ncu --metrics dram__bytes_read.sum --kernel-name regex:"_split_kernel|flash|fmha|fwd" \
+            --launch-count 20 python3 "$E52/dram_probe_e52.py" \
+            > "$RES/dram_probe.txt" 2>&1
+        log "dram probe: exit $? ($(grep -c 'dram__bytes_read.sum' "$RES/dram_probe.txt") metric lines)"
+    else
+        echo "ncu not found" > "$RES/dram_probe.txt"; log "dram probe: ncu not found"
+    fi
+    # A1 (R-71 F2): registers, spills and SASS opcodes of the saved cubins; diagnostic only
+    timeout -k 10 300 python3 "$E52/sass_counts_e52.py" --out "$RES/sass_counts.json" "$RES/cubin" "$out/asm" \
+        > /dev/null 2>&1; log "sass counts: exit $?"
 fi
 [ "$STUB" = 1 ] || python3 "$CODE/runpod/gpu_microbench.py" --out "$ENV/microbench_end.json" > /dev/null 2>&1
 [ -n "$TEL" ] && kill "$TEL" 2>/dev/null

@@ -1,17 +1,22 @@
 # E-52: fixed compact K=V decode attention kernels (FP16 compute, two overlapping views) against their standard twin and the stock vLLM kernel, on 1 x H100 (preregistration)
 
-Status: PREDECLARED 2026-11-01. NOT RUN.
+Status: PREDECLARED 2026-11-01. AMENDED A1 2026-11-01 (R-71 pre-run review, verdict AMEND_THEN_RUN, before any data).
+NOT RUN.
 Idea: I-182. Journal entry: Section 6.1 E-52. Follows E-51 (frozen decision INVALID; exploratory readout) and its
 post-run review R-70 (CONFIRM_WITH_CORRECTIONS). Request: D-85 (user, 2026-11-01, "1 go ahead": fix the compact
-kernel with free work first, then one H100 test with the R-70 controls; the spend waits for D-86).
+kernel with free work first, then one H100 test with the R-70 controls). Spend: D-86 (user, "1"), valid only if R-71
+changes neither the plan nor the cap; A1 changes the plan, so the user must confirm it again.
 Labels: FACT, INTERPRETATION, HYPOTHESIS. Thresholds are project heuristics unless a source is given.
+Text marked "(A1)" changed in Amendment A1. The version before A1 is commit 2931aba.
 
 ## 1. Question
 On 1 x H100, with an FP8 KV cache, does the compact K=V layout (640 of 1,024 values per head and token), read by the
 standard Triton decode kernel through two overlapping views and with FP16 compute, cut the context-growing attention
-time of a Gemma 4 31B global layer by at least the kill line against the same kernel on the standard layout (15.5% at
-32K, 12.5% at 64K), and by the go margin against the stock FA4 FP8 kernel? "No" (KILL): sigma_layout is below the kill
-lines in both groups while the compact kernel reads at least 0.6 x copy on dt.
+time of a Gemma 4 31B global layer by at least the kill line against the same kernel and configuration on the
+standard layout (15.5% at 32K, 12.5% at 64K), and by the go margin against the stock FA4 FP8 kernel? (A1) The views
+kernel saves DRAM bytes only. So "no" (KILL, byte route only) is: sigma_layout is below the kill lines in both groups
+and the time does not follow the bytes (K = V elasticity e_h below 0.413 at 32K and 0.333 at 64K), with a K = V oracle
+that works on this GPU. Every other low result is INCONCLUSIVE with a named cause.
 
 ## 2. Rubber duck
 - E-51 (FACT, README Section 13 there, R-70): the compact Triton FP8 kernel was 29% slower than its twin. Its BF16
@@ -20,38 +25,47 @@ lines in both groups while the compact kernel reads at least 0.6 x copy on dt.
   the RTX 4090). So the E-51 kernels were bound on chip on the H100.
 - New FACT (Triton 3.8.0, `third_party/nvidia/lib/TritonNVIDIAGPUToLLVM/ElementwiseOpToLLVM.cpp`): FP8 E4M3 to FP16 is
   one `cvt.rn.f16x2.e4m3x2` per 2 values. FP8 E4M3 to BF16 on sm_90 is that instruction plus two scalar
-  `cvt.bf16.f16`. The E-51 kernels cast to BF16. FACT (FA4 source at b273a02, R-70): the stock FA4 FP8 path computes in
-  FP16 ("the single-instruction fp8->fp16" path).
+  `cvt.bf16.f16` (R-71 confirmed it). The E-51 kernels cast to BF16. FACT (FA4 source at b273a02, R-70): the stock FA4
+  FP8 path computes in FP16 ("the single-instruction fp8->fp16" path).
 - FACT (FlashMLA Hopper FP8 note, 2025-09-29): on an H800 (also SM90) an FP8 decode kernel was bound by the
   dequantization, at about 50 clock cycles per 512 values against 34 for the MMA.
-- HYPOTHESIS H4 (main session): the BF16 cast sets most of the E-51 Triton FP8 time. Arithmetic (INTERPRETATION): one
-  token and KV head has 1,024 values, so the BF16 path has 1,024 scalar conversions. If they run at 16 per clock and
-  SM (the rate that the FlashMLA note uses for its float to BF16 step), they take 64 clocks, against a DRAM floor of
-  88 clocks and a measured 114 clocks (R-70 arithmetic). The FP16 path needs 512 packed conversions. The low K = V
-  elasticity fits H4: halving the bytes does not remove the casts.
+- HYPOTHESIS H4 (main session): the BF16 cast sets most of the E-51 Triton FP8 time. (A1, R-71) The rate of
+  `cvt.bf16.f16` on SM90 has no primary source: NVIDIA's throughput table has no row for it. If it is 16 per clock and
+  SM, the BF16 path costs about 64 clocks per token and KV head, near the whole E-51 time (114 clocks; DRAM floor 88);
+  if it is 64, it costs about 16 more clocks than the FP16 path, and the cast alone cannot explain E-51. The SASS
+  counts of the compile check (Section 4) show which instruction it becomes.
+- (A1, R-71 F3) FACT (E-51 rows, recomputed by R-71): the shared memory of every E-51 Triton kernel equals one K tile,
+  one V tile, the q tile and the p tile. So at `num_stages` 2 the loads were not double-buffered. HYPOTHESIS H5: the
+  E-51 kernels exposed the memory latency, and `num_stages` 3 (in the wide sweep) is a second lever. The cast x stage
+  table (Section 4) separates H4 from H5.
 - New layout (the views). E-51's fused kernel loads V once and uses it in two dot roles; R-70 (INTERPRETATION) names
   this as the most likely FP8 defect. The views layout stores each row as [K_rot (128) | V_unrot (384) | V_rot (128)].
   Its first 512 values are the K of the standard kernel ([K_rot | V_unrot], with the k_norm weight w moved into the
   query) and its last 512 values are the V ([V_unrot | V_rot]). So the unchanged standard kernel reads the compact
-  cache, with one load per dot role, and the 384 shared values come from L2 on the second read. The compact kernel then
-  has the same instructions as its twin, and only the DRAM bytes differ (640 against 1,024 per token). The output comes
-  in the V-view order; an engine folds that order into the o_proj columns (exact, no run-time cost).
-- The stock FA4 kernel reads the same views ("_views" rows, reported): the engine already passes K and V as strided
-  views. INTERPRETATION: its gain is about 0.375 x e_stock, so about 7.5% of dt, because the stock kernel is bound on
-  chip (E-51).
-- What would kill the layout: a twin and a views kernel that read at least 0.6 x copy, with sigma_layout below the
-  kill line in both groups (for example, the two views do not share their DRAM reads). If FP16 compute does not make
-  the pair bound by bytes, the result is INCONCLUSIVE (the E-51 rule), and the speed question stays open.
-- Expected (HYPOTHESIS): H4 holds; the Triton standard FP16 kernel reads at 0.85 x copy or more on dt; sigma_layout
-  0.25 to 0.37; GO.
+  cache, with one load per dot role, and the 384 shared values come from L1 or L2 on the second read. The compact
+  kernel then has the same instructions as its twin, and only the DRAM bytes differ (640 against 1,024 per token). The
+  output comes in the V-view order; an engine folds that order into the o_proj columns (exact, no run-time cost).
+  FACT (R-71): the layout is exact (an independent check agrees to 1e-15 in float64).
+- The stock FA4 kernel reads the same views ("_views" rows, reported). FACT (R-71): the vLLM wrapper checks only
+  `stride(-1) == 1`, FA4 keeps aligned strided views as they are, and K and V use separate TMA atoms. INTERPRETATION:
+  its gain is about 0.375 x e_stock, so about 7.5% of dt, because the stock kernel is bound on chip (E-51).
+- (A1, R-71 B1) What the views test can and cannot show. FACT (algebra): the views kernel runs the twin's code, so its
+  rate on 640 bytes is 0.625 x the twin's rate / (1 - sigma_layout). The E-51 KILL test (the compact kernel at 0.6 x
+  copy) would therefore fire for a twin at 0.96 x copy whose views do not share their reads: a false KILL of the
+  layout. A1 removes it. A low sigma_layout has three possible causes: (a) the time does not follow the bytes, (b) the
+  views do not share their DRAM reads, (c) the L2 path or the on-chip work caps the views kernel. Only (a) closes the
+  byte route, and only for the Triton FP16 family: a kernel that stages V once (R-70 H3) is not tested by E-52.
+- Expected (HYPOTHESIS): H4 or H5 holds; the Triton standard FP16 kernel reads at 0.85 x copy or more on dt;
+  sigma_layout 0.25 to 0.37; GO.
 - Not in E-52 (D-85): R-70's option (b), the FP8 MMA kernel of FA PR 199. sigma_mma keeps the 15% allowance for it.
 
 ## 3. Hypotheses
 - H1 (primary, the E-51 rule): in at least one group, sigma_mma >= 0.25 and sigma_layout >= the kill line.
 - H4 (mechanism, reported): with FP16 compute, the Triton standard FP8 kernel reads at 0.85 x copy or more on dt, and
   its K = V elasticity e_h is 0.6 or more.
-- H0: sigma_layout is below the kill lines (KILL if the compact kernel reads at 0.6 x copy or more), or the pair stays
-  bound on chip (INCONCLUSIVE).
+- H5 (A1, mechanism, reported): `num_stages` 3 gives a gain of its own (the cast x stage table).
+- H0 (A1): sigma_layout is below the kill lines; KILL (byte route only) if the time does not follow the bytes,
+  otherwise INCONCLUSIVE with its cause.
 
 ## 4. Setup (frozen)
 - Hardware: 1 x H100 80GB HBM3 (SXM), Secure Cloud, on-demand, `minCudaVersion` 13.0. Rehearsal: RTX 4090 (Triton
@@ -81,40 +95,62 @@ lines in both groups while the compact kernel reads at least 0.6 x copy on dt.
   - K = V rows (timing only; the V view as K and V): in the sweep for BF16 (`stock_bf16_s32_alias`,
     `triton_std_bf16_alias`; R-70 control), in the confirmation for FP8 (`stock_fp8_s32_alias`,
     `triton_std_fp8h_alias` at the selected configuration).
-  - pool rows (timing only; R-70 probe; confirmation): `stock_fp8_s32_pool`, `triton_std_fp8h_pool`,
-    `triton_cmpv_fp8h_pool`. Each block table entry maps into a pool of 8 MB of pages, so after the first call the bytes
-    come from L2.
+  - pool rows (timing only; R-70 probe): each block table entry maps into a pool of 8 MB of pages, so after the first
+    call the bytes come from L2. In the confirmation: `stock_fp8_s32_pool`, `triton_std_fp8h_pool`,
+    `triton_cmpv_fp8h_pool`; (A1, R-71 F9) in the sweep: `triton_std_bf16_pool` (the calibration).
+  - (A1, R-71 F3) cast x stage rows (confirmation, reported): `triton_std_fp8h` and `triton_std_fp8` (BF16 compute) at
+    the selected splits, warps and tile with `num_stages` 2 and 3.
 - Timing: each configuration is captured as 20 calls in one CUDA graph and replayed 30 times; time per call = replay
   time / 20 (median). Spread (R-70) = max / min - 1 of the central 20 of the 30 replays. NVML SM clock and clock event
-  reasons after every 10th replay (no root needed). The first eager call of each Triton configuration records its
-  registers, spills and shared memory; at 19:32K, the PTX and TTGIR of each Triton kernel at 32/4/32/2 are saved with
-  instruction counts.
-- Order (as E-51 A1): the correctness cell, the four group cells (19:2K, 19:32K, 11:2K, 11:64K), the confirmation
-  phase (then `run.json` has "ok_groups"), then the reported cells 19:8K, 11:8K, 4:2K, 4:32K. At 4:2K the standard FP8
-  cache (33.6 MB) fits in the L2 of both GPUs.
-- Confirmation (as E-51 A1 and A2): after one untimed pass, each decision row and each K = V and pool row is captured
-  in a new graph and timed 5 times; odd repeats run in the reverse order.
+  reasons after every 10th replay, (A1, R-71 F7) read while the replay runs. The first eager call of each Triton
+  configuration records its registers, spills and shared memory; at 19:32K, the PTX, TTGIR and (A1) cubin of each
+  Triton kernel at 32/4/32/2 are saved, with PTX counts that include predicated lines (A1, R-71 F6).
+- (A1, R-71 F2) Compile check, before the benchmark, in its own process (`compile_check_e52.py`): every Triton kernel
+  and configuration is compiled for sm_90 (`_split_kernel.warmup` with the target set to sm_90; nothing launches). On
+  the RTX 4090 it is a cross-compile; on the H100 it fills the Triton cache. An entry that crashes the compiler is
+  marked "crashed" by the next run and skipped by the benchmark. Per entry: status, seconds, shared memory, PTX counts
+  and SHA, and the cubin. After the benchmark, `sass_counts_e52.py` reads registers, spills and SASS opcodes from the
+  cubins with `cuobjdump` (if the image has it).
+- (A1, R-71 F5) DRAM probe, after the benchmark (diagnostic): `ncu --metrics dram__bytes_read.sum` on one call each of
+  the standard, K = V and views kernels and the stock kernel on both layouts at 19:32K (`dram_probe_e52.py`). If the
+  Pod refuses the counters (ERR_NVGPUCTRPERM), the log says so.
+- Order (as E-51 A1): the compile check, the correctness cell, the four group cells (19:2K, 19:32K, 11:2K, 11:64K),
+  the confirmation phase (then `run.json` has "ok_groups"), the reported cells 19:8K, 11:8K, 4:2K, 4:32K, then the DRAM
+  probe and the SASS counts. At 4:2K the standard FP8 cache (33.6 MB) fits in the L2 of both GPUs. (A1, R-71 F4) If
+  more than 720 s of the benchmark have passed before a group cell starts, that cell runs the 4 reported-cell
+  configurations only, so the confirmation still runs inside `KB_TIMEOUT`; `run.json` lists those cells and the time
+  of each phase.
+- Confirmation (as E-51 A1 and A2): after one untimed pass, each decision row and each K = V, pool and cast x stage row
+  is captured in a new graph and timed 5 times; odd repeats run in the reverse order.
 - Correctness cell (as E-51, seed 52): B 2, L 3,000, Gemma 4 K=V data stored in FP8 and BF16; every configuration of
   every Triton kernel and the stock kernels, each against the float32 reference of its own stored values (the views
   kernels against the views reference), and against the exact attention (the views outputs after `unpermute`). The
-  output is zeroed before each run.
+  output is zeroed before each run. (A1, R-71 O5) The unused slots of the last page hold +-448 (the E4M3 maximum, as
+  an engine holds stale values there), so a kernel that does not mask them fails. They are finite, so a kernel that
+  masks the scores but multiplies P = 0 by a stale value stays correct.
 - Fail fast (as E-51 A1): if the stock FP8 kernel with 32 splits or a primary Triton family fails the correctness
-  cell, the run stops (`--fail-fast auto`: on SM90).
+  cell, the run stops (`--fail-fast auto`: on SM90). (A1, R-71 O6) An illegal memory access or a device-side assert
+  stops the run at once (every later row would fail).
 - Not timed: the query preparation (an elementwise op on B x 32 x 512 values), the KV write, the o_proj order.
 
 ## 5. Metrics
 - Primary (FP8), as E-51 (A1) with the primary families above: for each group X, dt(X) = t(X) - t(2K) at the group
-  batch. Selection: one configuration per family and group, the fastest at X among the configurations that pass the
-  correctness cell and ran at 2K and at X. dt = the median over the 5 repeats of the per-repeat differences.
+  batch. Selection: the stock and standard families each take the fastest configuration at X among the configurations
+  that pass the correctness cell and ran at 2K and at X. (A1, R-71 F1) The views family runs at the configuration that
+  the standard family selected, so sigma_layout compares one compiled kernel at one configuration on the two layouts.
+  dt = the median over the 5 repeats of the per-repeat differences.
   - sigma_mma = 1 - dt_compact / (0.85 x dt_stock).
-  - sigma_layout = 1 - dt_compact / dt_standard (the same compiled kernel on the two layouts).
+  - sigma_layout = 1 - dt_compact / dt_standard.
+  - (A1) e_h = 2 x (1 - dt_alias / dt_standard), the K = V elasticity of the selected standard configuration (in each
+    repeat too), and e_bf16_triton, the same for the BF16 standard kernel (sweep): they enter the KILL condition.
 - Secondary (reported only): sigma_dq = 1 - dt_compact / dt_stock; the sigmas of each repeat and their range; the dt
-  rate of each family; sigma_stock_layout = 1 - dt(stock s32 views) / dt(stock s32); the K = V elasticities
-  e = 2 x (1 - dt_alias / dt) for the stock kernel (e_stock) and the selected standard FP16 configuration (e_h), and
-  for BF16 (e_bf16, from the sweep); the pool shares 1 - dt_pool / dt; the cast x layout factorial at 32/4/32/2 (sweep
-  values); BF16 (one sweep measurement, with the fused BF16 kernel); the B 4 times; the linearity at 8K; the views over
-  standard time at 4:2K; the PTX counts; the NVML clocks of the decision rows; the share of busy telemetry samples
-  under the software power cap (0x4).
+  rate of each family; (A1) sigma_layout with the views kernel's own selection; sigma_stock_layout = 1 - dt(stock s32
+  views) / dt(stock s32); e_stock; e_bf16_stock; the pool shares 1 - dt_pool / dt (FP8 and BF16); (A1) the cast x stage
+  table; the cast x layout factorial at 32/4/32/2 (sweep values); BF16 (one sweep measurement, with the fused BF16
+  kernel); the B 4 times; the linearity at 8K; the views over standard time at 4:2K and (A1, R-71 F1) at 11:2K against
+  19:2K (flagged if 3% lower: the 11:2K views rows, 57.7 MB, can sit in the 50 MB L2 and make dt larger); the PTX
+  counts and (A1) whether the standard and views PTX are the same; the compile check, the SASS counts and the DRAM
+  probe; the NVML clocks of the decision rows; the share of busy telemetry samples under the software power cap (0x4).
 - Minimum effect that matters: the kill line (S = 5%) and the go line (S about 8%), as E-51 (R-68).
 
 ## 6. Validity checks (a failed check makes the run INVALID)
@@ -125,84 +161,108 @@ lines in both groups while the compact kernel reads at least 0.6 x copy on dt.
   its base kernel.
 - V3 (R-70 fix): the stock FP8 kernel with 32 splits is within 15% of the E-50 in-engine time per call at 19:32K
   (1,358.1 us) and 11:64K (1,507.2 us), and its dt is within 15% of the in-engine dt (1,119.8 and 1,364.0 us). The 2K
-  ratios are reported without a bound (E-51: 0.837 and 0.863, a fixed cost that the engine has and this benchmark
-  lacks).
-- V4 (R-70 fix): for each decision row, the median over the 5 repeats of the central spread is at most 2%; and for
-  each primary family, the range of its 5 per-repeat dt values is at most 3% of their median. The decision rows are
-  the selected configuration of each primary family at 2K and X, and the stock kernel with 32 splits at 2K and X.
+  ratios are reported without a bound (E-51: 0.837 and 0.863).
+- V4 (A1, R-71 B2): for each Triton decision row (the standard selection and the views kernel at it, at 2K and X), the
+  median over the 5 repeats of the central spread is at most 2%; the range of the 5 per-repeat dt values of each
+  Triton family is at most 3% of their median; and that range of the stock family is at most 5%. The stock spreads
+  are reported (E-51: the stock rows had spreads of 4.2% and 2.7% and dt ranges of 2.7% and 0.6%; the Triton rows had
+  dt ranges of 1.0% at most).
 - V5 (as E-51 A2): the copy bandwidth exists, and no decision row at X and no dt rate of a primary family reads above
   1.15 x copy.
 - V6: hard throttle (0x8, 0x20, 0x40, 0x80) in at most 2% of busy telemetry samples. The software power cap (0x4) is
   reported, not bounded (R-70: E-51 had 14.6% of busy samples under it).
 
-## 7. Decision rule (frozen)
-The E-51 rule (Section 7 there, A1), with the E-52 primary families. Deciding groups: X = 32,768 (B 19) and 65,536
-(B 11), FP8. Kill lines (R-68): 0.155 at 32K and 0.125 at 64K.
+## 7. Decision rule (frozen; A1 before any data)
+Deciding groups: X = 32,768 (B 19) and 65,536 (B 11), FP8. Kill lines (R-68): 0.155 at 32K and 0.125 at 64K. The
+e-lines (A1): e_h 0.413 at 32K and 0.333 at 64K (the e at which a bytes-only gain 0.375 x e reaches the kill line).
 - GO: in at least one group, sigma_mma >= 0.25 and sigma_layout >= the kill line of that group. A GO allows the next
   steps only: the accuracy gate (R-68 recommendation 7) and an engine prototype plan (the views layout, the query and
-  o_proj order, the page-size plan).
-- KILL: sigma_layout below the kill line in both groups, and the views kernel reads at least 0.6 x copy on dt in both
-  groups. The layout gives too little with kernels that read near the bytes, so the speed work stops; I-182 stays a
-  capacity result.
+  o_proj order, the scales, the page-size plan).
+- KILL, byte route only (A1, R-71 B1): sigma_layout below the kill line in both groups, e_h below the e-line in both
+  groups, and the K = V oracle valid on this GPU (e_bf16_triton >= 0.5 in both groups). Consequence: the byte route is
+  closed for the Triton FP16 family; a kernel that stages V once is not tested; I-182 keeps its capacity result.
 - INCONCLUSIVE: the benchmark did not finish (a status other than "ok" or "ok_groups"), a group or its confirmation
-  is missing, the Triton standard kernel reads below 0.5 x copy on dt in a group, or sigma_layout is below the kill
-  lines while the views kernel reads below 0.6 x copy in a group (the on-chip limit of the kernels can explain it).
+  is missing, or the Triton standard kernel reads below 0.5 x copy on dt in a group (the layout test is weak). (A1) Also
+  when sigma_layout is below the kill lines in both groups and KILL does not hold. The result then names its flags and
+  their consequences: (a) without a valid oracle: "time does not follow bytes, but the K = V oracle is not valid on
+  this GPU"; (b) e_h >= 0.6 and sigma_layout < 0.25 x e_h: "the views do not share their DRAM reads: the next kernel
+  must read each 640-value row once"; (c) the views pool share below 0.3: "the L2 path or the on-chip work caps the
+  views kernel: the next step is a profile"; no flag: "the views kernel gains less than its bytes predict".
 - PIVOT: otherwise, with the reason "kernel quality" (sigma_layout >= 0.25 in a group) or "below the bar".
-- Replication (as E-51 A1): the rule runs on the medians and on each of the 5 repeats alone. The decision stands only
-  if at least 4 of the 5 repeats give the same word. Otherwise INCONCLUSIVE ("the decision does not replicate").
+- Replication (as E-51 A1): the rule runs on the medians and on each of the 5 repeats alone (e_h per repeat). The
+  decision stands only if at least 4 of the 5 repeats give the same word. Otherwise INCONCLUSIVE ("the decision does
+  not replicate").
+- Baseline check (A1, R-71 F8): the rule runs again with the E-51 stock dt (1,147.8 and 1,344.9 us) in place of this
+  session's stock dt. If the first word differs, the result is INCONCLUSIVE ("baseline off"). Its ratio is reported.
 - INVALID: V1 to V6 fail, no copy bandwidth, or the fail-fast stop.
 
 ## 8. Controls and baselines
-- Baseline: the stock FA4 FP8 kernel (the selected split setting), tied to the engine by V3.
-- Layout control: `triton_std_fp8h`, the same compiled kernel as `triton_cmpv_fp8h`; only the addresses differ.
+- Baseline: the stock FA4 FP8 kernel (the selected split setting), tied to the engine by V3 and (A1) to E-51 by the
+  baseline check.
+- Layout control: `triton_std_fp8h`, the same compiled kernel as `triton_cmpv_fp8h` at the same configuration; only
+  the addresses differ.
 - A/A: the 5 confirmation repeats of each row.
-- Positive controls: V5; the BF16 K = V rows (e_bf16 near 1 if K = V halves the DRAM bytes, R-70); the pool rows.
+- Positive controls: V5; the BF16 K = V rows (R-70); the pool rows. (A1, R-71 F9) Expected ranges, written before the
+  run: e_bf16 0.5 to 1.0 (the second read still moves through the L2-to-SM path, so it can read below 1 while DRAM
+  bytes halve); the BF16 pool share 0.5 to 1.0 (the fp32 partials, 40 MB at B 19, also pass through L2).
 - Negative control: the views and standard kernels give the same attention within the error of the dtype (the
-  correctness cell, after `unpermute`).
-- Mechanism control (reported): the cast x layout factorial at 32/4/32/2 separates the effect of FP16 compute from
-  the effect of the layout, and ties E-52 to the E-51 kernels (`triton_std_fp8`, `triton_cmp_fp8`).
+  correctness cell, after `unpermute`), and the poisoned tail slots change nothing (A1).
+- Mechanism controls (reported): the cast x layout factorial at 32/4/32/2 and (A1) the cast x stage table at the
+  selected configuration separate FP16 compute, the stage count and the layout, and tie E-52 to the E-51 kernels.
 
 ## 9. Budget
-- H100 SXM Secure at the live price (E-51: $3.99/h; S4 reads it again). Image pull 5 to 11 min (E-51: about 11 min).
-- Time model (INTERPRETATION): about 65 Triton compiles in the correctness cell (3 to 5 min; the views kernel shares
-  the compiled standard kernel), 4 to 10 FA4 variants (1 to 5 min), the sweep (about 4 to 6 min) and the confirmation
-  (about 2 min): the benchmark takes about 10 to 18 min. Pod time about 25 to 35 min, about $1.70 to $2.40. Cost cap
-  $3.
-- Caps (as E-51): `KB_TIMEOUT` 1,500 s; session watchdog 1,980 s; boot watchdog CAP 2,040 s after the container
-  starts; `AUTO_STOP=1` with a 180 s delay. With an 11 min pull, the worst case is 45 min of Pod time, $3.00 at
-  $3.99/h. The group cells and the confirmation come first, so a timeout keeps the decision data.
-- Rehearsal (S5): RTX 4090 (E-51: $0.89/h), the group cells and 4:2K, `--fail-fast off`, `KB_TIMEOUT` 900, boot
-  watchdog CAP 1,800 s, `AUTO_STOP=1`. About 20 min, cap $0.60. VERIFY items: every Triton layout and compute dtype
-  compiles and passes the correctness cell; the PTX files exist and show `cvt.rn.f16x2.e4m3x2` in the FP16 kernels;
-  the NVML clock is read; at 4:2K the views time is within 5% of the standard time (the L-18 gate: an L2-resident
-  shape, where DRAM does not hide an on-chip difference); the time model of the group cells.
-- Balance: the $35 floor applies again (D-84's $14 floor was for E-51 only); S4 checks it live.
+- H100 SXM Secure at the live price ($3.99/h, read 2026-11-01, stock HIGH). Image pull 5 to 11 min (E-51: about 11).
+- Time model (A1, R-71 F4): 628 sweep rows, about 40 confirmation entries plus the cast x stage rows, about 65 split
+  kernel compiles (the views kernel shares the standard binary). R-71 estimates 10 to 23 min for the benchmark; the
+  compile check moves the compiles into its own process first. The deadline (720 s) keeps the confirmation inside
+  `KB_TIMEOUT`. Pod time about 25 to 35 min, about $1.70 to $2.40. Cost cap $3.
+- Caps (as E-51): `KB_TIMEOUT` 1,500 s; (A1) `CC_TIMEOUT` 300 s per compile-check run (3 runs at most); the ncu probe
+  240 s; session watchdog 1,980 s; boot watchdog CAP 2,040 s after the container starts; `AUTO_STOP=1` with a 180 s
+  delay. With an 11 min pull, the worst case is 45 min of Pod time, $3.00 at $3.99/h. (A1, R-71 F10) The boot watchdog
+  does not cover the image pull, so the main session deletes the Pod if the pull takes more than 15 min.
+- Rehearsal (S5): RTX 4090 ($0.89/h, read 2026-11-01, stock HIGH), the group cells and 4:2K, `--fail-fast off`,
+  `KB_TIMEOUT` 900, boot watchdog CAP 1,800 s, `AUTO_STOP=1`. About 25 min, cap $0.60. VERIFY items: the sm_90 compile
+  check runs (cross-compile) with no crash, and shows `cvt.rn.f16x2.e4m3x2` and no `cvt.bf16.f16` in the FP16 kernels
+  and the same PTX for the standard and views calls; every Triton layout and compute dtype compiles for sm_89 and
+  passes the correctness cell with the poisoned tail; the NVML clock is read; at 4:2K the views time is within 5% of
+  the standard time (the L-18 gate: an L2-resident shape, where DRAM does not hide an on-chip difference); the time
+  model of the group cells. FACT (R-71): on the 4090 (99 KB of shared memory) up to 18 configurations per family fail
+  at stage 3 with tile 32 or 64; they are recorded and skipped there, and the 4090 cannot test them.
+- Balance: (A1) D-86 sets a one-time floor of $12 for E-52 (the live check failed the $35 floor); S4 checks it again.
 
 ## 10. Threats to validity
-- The views share their DRAM reads only if the second read finds the lines in L2 or in flight (HYPOTHESIS; no DRAM
-  counter). The dt rate on 640 bytes, the pool rows and the stock views rows report it. If they do not share, the
-  views kernel reads 1,024 bytes per token, sigma_layout is near 0 and its rate on 640 bytes is near 0.6 x the
-  standard rate, so the rule gives INCONCLUSIVE or KILL; the PTX counts and the rates then tell which.
-- FP16 range: the query, P and the cache values must fit FP16. FA4 makes the same choice for this path. The
-  correctness cell checks it on Gemma 4 data (q ~ N(0, 1/512), RMS-normed V); real activations are not tested here
-  (the accuracy gate after a GO).
-- The wide sweep has 54 configurations per family: one configuration per family is selected and then confirmed in 5
-  repeats, as E-51 (L-15). The selected configuration can sit at the grid edge again; that is reported.
-- The stock FA4 kernel may reject the views strides; then the "_views" rows fail and are reported.
+- The views share their DRAM reads only if the second read finds the lines in L1, in L2 or in flight (HYPOTHESIS;
+  R-71 puts it at 90% or more). (A1) The flags (b) and (c), the pool rows, the stock views rows and the DRAM probe
+  report it; the rule no longer gives KILL for a views kernel that does not share.
+- FP16 range: the query, P and the cache values must fit FP16. FA4 makes the same choice for this path. FACT (R-71):
+  in an emulation with logit scales 1 to 30 and k_norm spreads 0.1 to 3, the FP16 error was 0.0004 to 0.0037 (BF16 up
+  to 0.045). Real activations are not tested here (the accuracy gate after a GO).
+- The wide sweep has 54 configurations for the standard family: one configuration is selected and then confirmed in 5
+  repeats, as E-51 (L-15). (A1) The views kernel uses that configuration, so no second selection enters sigma_layout.
+  (A1, R-71 O4) The Triton family chooses from 54 configurations and the stock family from 2: a GO means "a tuned
+  Triton kernel on the views layout beats the 2-setting stock kernel", not "the layout beats the engine kernel".
+- The stock FA4 kernel may still reject the views strides at run time; then the "_views" rows fail and are reported.
 - The FP8 MMA stock kernel is not in the image; sigma_mma keeps the 15% allowance (R-68, R-69).
-- Power-cap noise (L-17): the central spread, the dt range bound and the NVML clocks.
+- Power-cap noise (L-17): the central spread, the dt range bounds and the NVML clocks.
 - No CUDA graph padding (as E-51): the fixed cost cancels in dt; V3 no longer bounds the 2K ratios.
+- (A1, R-71 O2) The o_proj fold is exact for BF16 weights. Block-scaled FP8 or NVFP4 o_proj weights keep one scale per
+  128 columns, and the V-view order crosses those blocks, so an engine needs a run-time permute or a re-quantization.
+- (A1, R-71 O1) Two scales: an engine that stores K_rot with its own scale s_k and V with s_v passes s_v as both
+  descales and multiplies the rotated query part by s_k / s_v (tested on the CPU).
 - The query preparation and the o_proj order are not timed.
 - One GPU, one session, decode only, uniform contexts, random data.
 
 ## 11. Files
-- `kbench_e52.py`: the benchmark (cells, sweeps, correctness, confirmation, NVML clocks, PTX dumps, stub mode).
+- `kbench_e52.py`: the benchmark (cells, sweeps, correctness, confirmation, NVML clocks, PTX dumps, deadline,
+  compile-check skip, sticky stop, stub mode).
 - `analyze_e52.py`: the frozen analysis and rule (summary.json and the decision).
-- `session_e52.sh`: the Pod session (records, telemetry, copy bandwidth, the benchmark, the analysis, watchdogs).
+- `session_e52.sh`: the Pod session (records, telemetry, copy bandwidth, the compile check, the benchmark, the DRAM
+  probe, the SASS counts, the analysis, watchdogs).
+- (A1) `compile_check_e52.py`, `dram_probe_e52.py`, `sass_counts_e52.py`: the diagnostics of R-71 F2 and F5.
 - `cpu_dryrun_e52.py`: the GPU code paths on the CPU emulation of Triton.
-- `test_e52.py`: the tests (the views identity, the CPU emulation, every decision path, the R-70 fixes, a stub session).
-- `../gemma4_kv_kernel/compact_attn.py` (the kernels: `cast`, the views helpers; the E-51 default is unchanged) and
-  `tl_shim.py` (FP16 added).
+- `test_e52.py`: the tests.
+- `../gemma4_kv_kernel/compact_attn.py` (the kernels: `cast`, the views helpers, (A1) `split_args` for the compile
+  check; the E-51 default is unchanged) and `tl_shim.py` (FP16 added).
 - Upload folders: gemma4_kv_views, gemma4_kv_kernel, runpod, fp8_quant_fusion, nvfp4_dispatch, safedispatch_testA,
   safedispatch_testA2, ledger.
 
@@ -213,6 +273,32 @@ The E-51 rule (Section 7 there, A1), with the E-52 primary families. Deciding gr
   partial pages and empty splits is within 0.0021 of the reference of its stored values (FP16 compute 0.0017 at most);
   the views outputs after `unpermute` have the same exact-attention error as the standard ones; the K = V and pool
   steps match their references; the confirmation path gives 5 repeats for every Triton row.
+- S3 after A1 (2026-11-01, Mac): `test_e52.py` 26 passed (new: the two-scale rule, predicated PTX lines, the flags,
+  views that do not share give INCONCLUSIVE, the byte-route KILL and its oracle condition, the baseline check, V4 on the
+  Triton rows and the stock dt range, the 11:2K flag, the compile-check skip, the sticky stop, the deadline); the CPU
+  dry run passes with the poisoned tail slots; `test_e51.py` 16 passed after the `split_args` refactor. Not tested on
+  the Mac: `compile_check_e52.py`, `dram_probe_e52.py` and `sass_counts_e52.py` need Triton, a GPU or the CUDA tools;
+  the rehearsal runs them (Section 9).
 
 ## Amendments
-None yet.
+- A1 (2026-11-01, before any data; from R-71, verdict AMEND_THEN_RUN; `dossier/REVIEW_E-52_PRERUN_2026-11-01.md`):
+  - B1 (blocker): the KILL by a competence test of the views kernel is removed (Section 7). KILL is the byte route only
+    (R-71 fix 4, the R-70 scope), with the oracle condition added by the main session (e_bf16_triton >= 0.5), and every
+    other low result is INCONCLUSIVE with the flags (a), (b), (c) and their consequences (Sections 1, 2, 7).
+  - B2 (blocker): V4 bounds the Triton decision rows and the stock dt range at 5%; the stock spreads are reported
+    (Section 6). Not adopted: 7 stock repeats (R-71 fix 3), because the replication rule pairs one stock, one standard
+    and one views repeat.
+  - F1: the views kernel at the standard selection; its own selection reported; the 11:2K flag (Section 5).
+  - F2: the sm_90 compile check in its own process, with the SASS counts (Sections 4 and 9). It runs on the Pods: the
+    Mac has no Linux host for Triton (Docker Desktop is installed but is not open source and was not started).
+  - F3: the cast x stage rows; H5 (Sections 2, 3, 4).
+  - F4: the 720 s deadline and the phase times (Sections 4 and 9). Not adopted: dropping warps 2.
+  - F5: the ncu DRAM probe (Section 4). F6: predicated PTX lines. F7: NVML read while the replay runs.
+  - F8: the baseline check against the E-51 stock dt (Section 7). F9: the expected ranges and the BF16 pool row
+    (Section 8). F10: the $12 floor (D-86) and the 15 min pull rule (Section 9).
+  - O1: the two-scale test. O2 and O4: Section 10. O5: the poisoned tail slots, with a finite value (448) instead of
+    NaN, because a kernel that masks the scores still multiplies P = 0 by the stale value, and 0 x NaN is NaN. O6: the
+    sticky-error stop. Not adopted: O3 (an early H4 gate), because the deadline already caps the time.
+  - The H4 text no longer states a conversion rate as a fact (Section 2).
+  - Unchanged: the question's kill and go lines, the groups and cells, the primary metrics, the 15% FP8 MMA allowance,
+    the stock call, the caps and the cost cap.

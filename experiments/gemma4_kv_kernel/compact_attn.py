@@ -260,7 +260,31 @@ def triton_attn(q, cache_v, block_table, seq_lens, out, ws, *, splits: int, num_
     views layout is the standard call on the two views of `views_of` with the query of `views_query`.
     `tile` tokens are read per loop step (it divides the page size). `cast` ("bf16" or "fp16") is the dtype of the
     dot inputs (E-52). If `info` is a dict, it gets the registers, spills and shared memory bytes of the compiled split
-    kernel (A1, O5; None where Triton does not give them); with info["asm"] set, also its PTX and TTGIR text."""
+    kernel (A1, O5; None where Triton does not give them); with info["asm"] set, also its PTX, TTGIR and cubin."""
+    grid, args, kw = split_args(q, cache_v, block_table, seq_lens, ws, splits=splits, num_warps=num_warps,
+                                num_stages=num_stages, tile=tile, cache_k=cache_k, qr=qr, cache_r=cache_r,
+                                k_scale=k_scale, v_scale=v_scale, r_scale=r_scale, sm_scale=sm_scale, cast=cast)
+    b, hq, d = q.shape
+    op, lp = ws
+    kern = _split_kernel[grid](*args, **kw)
+    if info is not None:
+        md = getattr(kern, "metadata", None)
+        want_asm = info.pop("asm", False)
+        info.update(regs=getattr(kern, "n_regs", None), spills=getattr(kern, "n_spills", None),
+                    shared=md.get("shared") if isinstance(md, dict) else getattr(md, "shared", None))
+        if want_asm:
+            asm = getattr(kern, "asm", None) or {}
+            info.update(ptx=asm.get("ptx"), ttgir=asm.get("ttgir"), cubin=asm.get("cubin"))
+    _merge_kernel[(b, hq)](op, lp, out, op.stride(0), op.stride(1), op.stride(2), lp.stride(0), lp.stride(1),
+                           out.stride(0), out.stride(1), D=d, SPLITS=splits, num_warps=4)
+    return out
+
+
+def split_args(q, cache_v, block_table, seq_lens, ws, *, splits: int, num_warps: int, num_stages: int, tile: int,
+               cache_k=None, qr=None, cache_r=None, k_scale=1.0, v_scale=1.0, r_scale=1.0, sm_scale=1.0,
+               cast: str = "bf16"):
+    """The grid, positional arguments and keyword arguments of one `_split_kernel` launch (shared by `triton_attn`
+    and the E-52 compile check, which calls `_split_kernel.warmup` with them)."""
     compact = cache_r is not None
     b, hq, d = q.shape
     hk, bs = cache_v.shape[2], cache_v.shape[1]
@@ -269,24 +293,13 @@ def triton_attn(q, cache_v, block_table, seq_lens, out, ws, *, splits: int, num_
     k_t = cache_v if compact else cache_k
     r_t = cache_r if compact else cache_k
     qr_t = qr if compact else q
-    kern = _split_kernel[(b, hk, splits)](
-        q, qr_t, k_t, cache_v, r_t, block_table, seq_lens, op, lp,
-        q.stride(0), q.stride(1), qr_t.stride(0), qr_t.stride(1),
-        k_t.stride(0), k_t.stride(1), k_t.stride(2), cache_v.stride(0), cache_v.stride(1), cache_v.stride(2),
-        r_t.stride(0), r_t.stride(1), r_t.stride(2),
-        block_table.stride(0), op.stride(0), op.stride(1), op.stride(2), lp.stride(0), lp.stride(1),
-        k_scale, v_scale, r_scale, sm_scale,
-        GQA=gqa, MP=max(16, triton.next_power_of_2(gqa)), D=d, RDIM=RD, BS=bs, TB=tile, SPLITS=splits,
-        COMPACT=compact, CAST=tl.float16 if cast == "fp16" else tl.bfloat16, num_warps=num_warps,
-        num_stages=num_stages)
-    if info is not None:
-        md = getattr(kern, "metadata", None)
-        want_asm = info.pop("asm", False)
-        info.update(regs=getattr(kern, "n_regs", None), spills=getattr(kern, "n_spills", None),
-                    shared=md.get("shared") if isinstance(md, dict) else getattr(md, "shared", None))
-        if want_asm:
-            asm = getattr(kern, "asm", None) or {}
-            info.update(ptx=asm.get("ptx"), ttgir=asm.get("ttgir"))
-    _merge_kernel[(b, hq)](op, lp, out, op.stride(0), op.stride(1), op.stride(2), lp.stride(0), lp.stride(1),
-                           out.stride(0), out.stride(1), D=d, SPLITS=splits, num_warps=4)
-    return out
+    args = (q, qr_t, k_t, cache_v, r_t, block_table, seq_lens, op, lp,
+            q.stride(0), q.stride(1), qr_t.stride(0), qr_t.stride(1),
+            k_t.stride(0), k_t.stride(1), k_t.stride(2), cache_v.stride(0), cache_v.stride(1), cache_v.stride(2),
+            r_t.stride(0), r_t.stride(1), r_t.stride(2),
+            block_table.stride(0), op.stride(0), op.stride(1), op.stride(2), lp.stride(0), lp.stride(1),
+            k_scale, v_scale, r_scale, sm_scale)
+    kw = dict(GQA=gqa, MP=max(16, triton.next_power_of_2(gqa)), D=d, RDIM=RD, BS=bs, TB=tile, SPLITS=splits,
+              COMPACT=compact, CAST=tl.float16 if cast == "fp16" else tl.bfloat16, num_warps=num_warps,
+              num_stages=num_stages)
+    return (b, hk, splits), args, kw
