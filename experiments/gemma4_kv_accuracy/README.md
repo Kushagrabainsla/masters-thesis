@@ -1,8 +1,9 @@
 # E-53: accuracy of the compact FP8 K=V global cache on real Gemma 4 31B activations (gate G3 of D-88; preregistration)
 
 Status: PREDECLARED 2026-11-01. (A1) AMENDED A1 2026-11-01 after the S2 review R-73 (verdict AMEND_THEN_RUN,
-`dossier/REVIEW_E-53_PRERUN_2026-11-01.md`), before any data. NOT RUN. No spend is approved: D-88 says that G3 needs
-its own spend approval (S4).
+`dossier/REVIEW_E-53_PRERUN_2026-11-01.md`), before any data. (A2) AMENDED A2 2026-11-01 after S5 rehearsal 1 (a bug
+in the run record), before any data. NOT RUN on the H100. S4: D-89 (the user approved the rehearsal and the H100 run
+on 2026-11-01, "Run both", with a one-time $10 balance floor).
 Idea: I-182. Gate: G3 of D-88 (after G1 PASS and G2 PASS, `dossier/GATE_G1_PAGESIZE_I-182_2026-11-01.md` and
 `dossier/GATE_G2_UPSTREAM_I-182_2026-11-01.md`). Journal entry: Section 6.1 E-53 (the main session adds it).
 Labels: FACT (a source, a log or a computation was read), INTERPRETATION (reasoning), HYPOTHESIS (not tested).
@@ -396,7 +397,23 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
      F6 and O2: the value-path errors of the two storages are equal; the E5M2 ratio is above 1.5.
   8. Timing at the real size with the A1 metrics (11 attention passes): 2.4 s on the Mac CPU.
 - S2: R-73 (2026-11-01): AMEND_THEN_RUN; A1 answers it (Amendments).
-- S5: (A1) the rehearsal plan is in Section 9; not run yet.
+- S5: (A1) the rehearsal plan is in Section 9.
+  - (A2) Rehearsal 1 (2026-11-01, RTX 4090 Pod `kwvva30c4tb2af`, EU-RO-1, about 4 min, D-89): the SSH port 94 s after
+    the create; the boot watchdog armed (cap 1,500 s); `RUNPOD_POD_ID` and `RUNPOD_API_KEY` set; vLLM
+    0.33.0rc1.dev229+g3966924d5, torch 2.14.0+cu130, transformers 5.20.2; setup with the E2B download 20 s; 4 prompts
+    of 8,192 tokens in 3.5 s, `special_after_0` 0 in each; the engine started in 29.2 s (eager, the E-53 arguments;
+    `compilation_mode` and `cudagraph_mode` "NONE", cache "auto", BF16; the log: heterogeneous head dims force the
+    TRITON_ATTN backend on sm_89). Then the capture stopped at the run record (`capture_e53.py` line 560):
+    transformers 5.20.2 raises `AmbiguousGlobalPerLayerAttributeError`, which is not an AttributeError, for
+    `config.head_dim`, so `getattr` with a default does not catch it. The analysis and the decision ran on the empty
+    capture: `REHEARSAL INVALID (V1, V2, V3, V4, V5)`, as the frozen rule requires. RES copied (29 files, checksums
+    match). The main session deleted the Pod in the AUTO_STOP delay. VERIFY items 1, 2, 3 and the engine part of 4
+    hold; items 4 (the route and the hooks) to 10 are open.
+  - (A2) FACT (the Mac, transformers 5.20.2, the two pinned configs): the 31B config also raises, for
+    `num_key_value_heads` and `head_dim`, so the H100 run would have stopped at the same line. `global_head_dim` and
+    `num_global_key_value_heads` read as None in this version; `per_layer_config` gives head dim 512 and (31B) 4 KV
+    heads at the global layers.
+  - (A2) S3 after A2 (Mac): the same command: 21 passed in about 65 s.
 
 ## Amendments
 - A1 (2026-11-01, before any data; from R-73, verdict AMEND_THEN_RUN, `dossier/REVIEW_E-53_PRERUN_2026-11-01.md`):
@@ -438,3 +455,8 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
     builder walks each root once.
   - Unchanged: the question's storages and the FP8 cast, the plan (4 prompts, 8,192 tokens, 256 query rows), the
     model and image, the engine arguments, V1, V4, the PASS bounds 1.25, 2 and 6,550, and the FAIL bound 2.
+- A2 (2026-11-01, after S5 rehearsal 1, before any data; Section 12): `cfg_value` reads the config values of the run
+  record. For a per-layer attribute it records the values of the global layers from `per_layer_config`, and else the
+  error name. These values are information only: the rule reads `global_layers`, which the code reads before that
+  line. One new test (`test_config_values_survive_per_layer_attributes`). Next: rehearsal 2 under D-89, inside the
+  same $0.60 rehearsal cap. Unchanged: the question, the rule, the checks, the caps and the plan.

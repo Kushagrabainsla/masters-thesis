@@ -213,6 +213,40 @@ def test_global_layers_rule_and_mode_names() -> None:
     assert cap.mode_name("auto") == "auto"
 
 
+def test_config_values_survive_per_layer_attributes() -> None:
+    """(A2, S5) transformers 5.20.2 raises an error that is not an AttributeError for a per-layer attribute (rehearsal
+    1: `head_dim` of E2B; on the Mac also `num_key_value_heads` of the 31B). The run record then holds the values of
+    the global layers, and a config without a per-layer view gives the error name; a plain attribute stays as it is."""
+
+    class Ambiguous(Exception):
+        pass
+
+    class Layer:
+        def __init__(self, head_dim, kv):
+            self.head_dim, self.num_key_value_heads = head_dim, kv
+
+    class Cfg:
+        num_attention_heads = 32
+        per_layer_config = [Layer(512 if i % 6 == 5 else 256, 4 if i % 6 == 5 else 16) for i in range(12)]
+
+        def __getattribute__(self, key):
+            if key in ("head_dim", "num_key_value_heads"):
+                raise Ambiguous(key)
+            return super().__getattribute__(key)
+
+    class NoView(Cfg):
+        per_layer_config = None
+
+    cfg = Cfg()
+    with pytest.raises(Ambiguous):
+        getattr(cfg, "head_dim", None)
+    assert cap.cfg_value(cfg, "num_attention_heads", [5, 11]) == "32"
+    assert cap.cfg_value(cfg, "head_dim", [5, 11]) == "per-layer ['512']"
+    assert cap.cfg_value(cfg, "num_key_value_heads", [5, 11]) == "per-layer ['4']"
+    assert cap.cfg_value(cfg, "missing", [5, 11]) == "None"
+    assert cap.cfg_value(NoView(), "head_dim", [5, 11]) == "per-layer (Ambiguous)"
+
+
 class Attention(nn.Module):
     """A stand-in with the class name and attributes of the vLLM Attention module (attention.py 333 to 339). Its
     output is its query, so the output hook must record the q rows."""

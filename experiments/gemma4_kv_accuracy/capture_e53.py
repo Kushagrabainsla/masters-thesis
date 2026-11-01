@@ -418,6 +418,20 @@ def mode_name(x) -> str:
     return getattr(x, "name", None) or str(x)
 
 
+def cfg_value(cfg, key: str, layers: list[int]) -> str:
+    """(A2, S5) One config value as text for the run record (information only; the rule reads `global_layers`).
+    transformers 5.20.2 raises AmbiguousGlobalPerLayerAttributeError, which is not an AttributeError, for a per-layer
+    attribute (Gemma 4: `head_dim`, and `num_key_value_heads` in the 31B), so getattr with a default does not catch it.
+    Then the record holds the values of the global layers from `per_layer_config`."""
+    try:
+        return str(getattr(cfg, key, None))
+    except Exception as exc:
+        try:
+            return f"per-layer {sorted({str(getattr(cfg.per_layer_config[i], key, None)) for i in layers})}"
+        except Exception:
+            return f"per-layer ({type(exc).__name__})"
+
+
 # ---------------------------------------------------------------- main
 
 
@@ -557,7 +571,7 @@ def main() -> None:
             expected = global_layers(layer_types, int(cfg.num_hidden_layers),
                                      int(getattr(cfg, "num_kv_shared_layers", 0) or 0))
             record["config"] = {"global_layers": expected, "layer_types_count": len(layer_types)} | {
-                k: str(getattr(cfg, k, None)) for k in ("num_attention_heads", "num_key_value_heads",
+                k: cfg_value(cfg, k, expected) for k in ("num_attention_heads", "num_key_value_heads",
                                                         "num_global_key_value_heads", "head_dim", "global_head_dim",
                                                         "attention_k_eq_v", "num_kv_shared_layers", "rms_norm_eps",
                                                         "rope_parameters")}
