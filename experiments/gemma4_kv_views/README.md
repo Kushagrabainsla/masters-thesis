@@ -246,8 +246,11 @@ e-lines (A1): e_h 0.413 at 32K and 0.333 at 64K (the e at which a bytes-only gai
 - The FP8 MMA stock kernel is not in the image; sigma_mma keeps the 15% allowance (R-68, R-69).
 - Power-cap noise (L-17): the central spread, the dt range bounds and the NVML clocks.
 - No CUDA graph padding (as E-51): the fixed cost cancels in dt; V3 no longer bounds the 2K ratios.
-- (A1, R-71 O2) The o_proj fold is exact for BF16 weights. Block-scaled FP8 or NVFP4 o_proj weights keep one scale per
-  128 columns, and the V-view order crosses those blocks, so an engine needs a run-time permute or a re-quantization.
+- (A1, R-71 O2; corrected by gate G2, 2026-11-01) The o_proj fold is exact for BF16 weights, for per-channel FP8 (the
+  E-49 and E-50 checkpoint RedHatAI/gemma-4-31B-it-FP8-dynamic has one scale per output row; FACT, its config) and for
+  block sizes that divide 64 (NVFP4: 16). It is not exact for 128-column block scales (FP8-block 128 x 128), because the
+  V-view order crosses those blocks; then an engine needs a run-time permute (G2 estimate: under 0.2% of a step) or a
+  re-quantization.
 - (A1, R-71 O1) Two scales: an engine that stores K_rot with its own scale s_k and V with s_v passes s_v as both
   descales and multiplies the rotated query part by s_k / s_v (tested on the CPU).
 - The query preparation and the o_proj order are not timed.

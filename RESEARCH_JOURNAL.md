@@ -273,7 +273,9 @@ and its R-70 post-run review (CONFIRM_WITH_CORRECTIONS).** Rewrite this section 
   co-limit, not "on-chip work"; H4 false; the SASS cause is a missing nvdisasm). D-88 (open, the user decides): R-72
   and the main session recommend the write-up now and the vLLM prototype as a gated build with a hard stop at
   week 6. D-88 decided by the user ("Write-up and try build"): week 1 is the chapter draft and the gates G1
-  (page-size plan), G2 (upstream re-scan) and G3 (real-activation accuracy, a separate spend). 0 thesis Pods,
+  (page-size plan), G2 (upstream re-scan) and G3 (real-activation accuracy, a separate spend). Week 1 so far: G1 PASS (an isolated page-size
+  plan, about 1.30 to 1.42 times the requests), G2 PASS (no upstream overlap; the o_proj fold is exact for
+  the per-channel FP8 checkpoint; the RoPE layout matches), chapter draft 1 written. Next: G3. 0 thesis Pods,
   0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
@@ -1748,6 +1750,13 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   and the gates G1 (page-size plan), G2 (upstream re-scan, o_proj format) and G3 (accuracy
                   on real activations, about $2, needs its own spend approval). Hard stop at the end of
                   week 6; weeks 7 to 9 for thesis assembly. Source: chat. Ideas: I-182.
+2026-11-01  [P10] D-88 week 1: gate G1 PASS (an isolated page-size plan: the sliding pages padded to the compact
+                  page, so the unifier keeps them equal; about 1.30 to 1.42 times the requests at 32K to
+                  64K; no scheduler change). Gate G2 PASS (no upstream work stores the K=V cache once; the
+                  checkpoint's o_proj is per-channel FP8, so the order fold is exact; vLLM's RoPE layout
+                  matches E-52). Chapter draft 1 written. Next: G3 (real-activation accuracy), its own spend.
+                  Source: dossier/GATE_G1_PAGESIZE_I-182_2026-11-01.md, dossier/GATE_G2_UPSTREAM_I-182_2026-11-01.md,
+                  thesis/chapters/i182-compact-kv-cache.md. Ideas: I-182.
 ```
 
 ---
@@ -3813,6 +3822,11 @@ TB/s, so the byte model holds. vLLM `AttentionSpec` has a `head_size_v` field th
 2026-11-01 (main session): Triton 3.8.0 converts FP8 to BF16 with three instructions per 2 values on sm_90 and to
 FP16 with one (Section 7.30). The compact row in the order [K_rot | V_unrot | V_rot] is read by the unchanged
 standard kernel through two overlapping 512-value views (E-52).
+2026-11-01 (D-88 gates): G1 PASS: vLLM would pad a compact page that does not divide the sliding page; an isolated
+plan pads the sliding pages to the compact page instead (FP8: 16-token sliding blocks, 64-token compact global
+blocks, scheduler block 64; about 1.30 to 1.42 times the requests at 32K to 64K, a loss below about 5.6K
+tokens). G2 PASS: no upstream overlap; the o_proj fold is exact for the per-channel FP8 checkpoint; vLLM's
+RoPE layout matches. Chapter: `thesis/chapters/i182-compact-kv-cache.md` (draft 1).
 Verdict history: 2026-10-29: MEASURE-FIRST (main session, before R-64). 2026-10-30: MEASURE-FIRST kept (R-64:
 novelty low, the engine gap and its measured effect are the open item; likely outcome PIVOT or GO).
 2026-10-30: E-49 PIVOT by the frozen rule (one model or one cell only). The 31B result is clean: the compact
@@ -6856,6 +6870,8 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | vLLM blog "FP8 KV cache" | 2026-04-22 | On an H100 with FA3, the FP8 decode slope is 54% of BF16 for Llama-3.1-8B and 80% for gpt-oss-20b | Counter-evidence for a general on-chip claim; no head-dim-512 data | doc-only (R-70) |
 | QServe, arXiv 2405.04532; FP8 TCO, arXiv 2502.01070; SGLang issue #10083 | 2024 to 2025 | KV4 dequantization reaches the CUDA-core roofline on an A100; under 25% FP8 decode gain on an H100; the cost of dequantization at read time | Context for dequant-bound decode | search-only (R-70, search summaries) |
 | Triton 3.8.0 `third_party/nvidia/lib/TritonNVIDIAGPUToLLVM/ElementwiseOpToLLVM.cpp` (tag v3.8.0) | 2026 | FP8 E4M3 to FP16 is one `cvt.rn.f16x2.e4m3x2` per 2 values; FP8 E4M3 to BF16 on sm_90 is that plus two scalar `cvt.bf16.f16` | The E-51 Triton kernels cast to BF16; the basis of H4 and of the FP16 fix (E-52) | checked 2026-11-01 (main session read the conversion table and both sequences) |
+| Gate G2 scan, 14 repositories (vLLM, SGLang, TensorRT-LLM, llama.cpp, FlashInfer, LMCache and others), 2026-10-25 to 2026-11-01 | 2026-11-01 | No PR, issue or RFC stores the Gemma 4 K=V cache once or compactly; adjacent: vLLM #41944, TensorRT-LLM #19166 and a vllm-ascend fork drop only the V projection; vLLM #60372 (FP8 MMA, the lossy competitor); #60674 edits the same gemma4.py code; #64307, #64344, #56156, #60996 touch page packing. A third-party note (club-3090 KV_MATH.md) wrongly says that vLLM stores K=V once (E-49 page sizes show both) | The engine gap is still open; merge risk in gemma4.py | search-only (G2; titles, keyword, code and web search) |
+| RedHatAI/gemma-4-31B-it-FP8-dynamic `config.json` (the E-49 and E-50 checkpoint) | 2026-11-01 | Weights FP8 E4M3 with one scale per output channel ("strategy": "channel"); `kv_cache_scheme` null (vLLM then uses KV scale 1.0) | The o_proj order fold of the views layout is exact for this checkpoint; one shared KV scale holds by default | checked 2026-11-01 (main session read the config) |
 
 ---
 
@@ -7619,3 +7635,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   8.1 row 72; D-88 updated (the recommendation); Section 3 row I-182; Section 5.27; Section 1 line; Section 4 entry;
   README Section 13; RESEARCH_OUTPUTS O-13 to O-15, T-11, L-19.
 - 2026-11-01: D-88 decided by the user (Section 10 row, Section 6.1 E-52, Section 1 line, Section 4 entry).
+- 2026-11-01: D-88 week 1: gates G1 and G2 PASS, chapter draft 1 (Section 1 line, Section 4 entry, Section 5.27
+  research log, Section 7.30 rows); E-52 README Section 10 o_proj text corrected by G2; RESEARCH_OUTPUTS O-14 scope.
