@@ -1,0 +1,36 @@
+	[4mGPU0	NIC0	NIC1	NIC2	NIC3	NIC4	NIC5	NIC6	NIC7	NIC8	NIC9	CPU Affinity	NUMA Affinity	GPU NUMA ID[0m
+GPU0	 X 	NODE	PIX	NODE	NODE	SYS	SYS	SYS	SYS	NODE	NODE	0-47,96-143	0		N/A
+NIC0	NODE	 X 	NODE	NODE	NODE	SYS	SYS	SYS	SYS	NODE	NODE				
+NIC1	PIX	NODE	 X 	NODE	NODE	SYS	SYS	SYS	SYS	NODE	NODE				
+NIC2	NODE	NODE	NODE	 X 	NODE	SYS	SYS	SYS	SYS	NODE	NODE				
+NIC3	NODE	NODE	NODE	NODE	 X 	SYS	SYS	SYS	SYS	NODE	NODE				
+NIC4	SYS	SYS	SYS	SYS	SYS	 X 	NODE	NODE	NODE	SYS	SYS				
+NIC5	SYS	SYS	SYS	SYS	SYS	NODE	 X 	NODE	NODE	SYS	SYS				
+NIC6	SYS	SYS	SYS	SYS	SYS	NODE	NODE	 X 	NODE	SYS	SYS				
+NIC7	SYS	SYS	SYS	SYS	SYS	NODE	NODE	NODE	 X 	SYS	SYS				
+NIC8	NODE	NODE	NODE	NODE	NODE	SYS	SYS	SYS	SYS	 X 	PIX				
+NIC9	NODE	NODE	NODE	NODE	NODE	SYS	SYS	SYS	SYS	PIX	 X 				
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+
+NIC Legend:
+
+  NIC0: ibp25s0
+  NIC1: ibp41s0
+  NIC2: ibp59s0
+  NIC3: ibp92s0
+  NIC4: ibp155s0
+  NIC5: ibp170s0
+  NIC6: ibp187s0
+  NIC7: ibp218s0
+  NIC8: rocep83s0f0
+  NIC9: rocep83s0f1
+

@@ -1,0 +1,11 @@
+21:49:15 setup done after 82 s; versions: vllm 0.33.0rc1.dev229+g3966924d5 torch 2.14.0+cu130 transformers 5.20.2 VLLM_BUILD_COMMIT=unset 
+21:49:15 disk: mfs#us-ga-2.runpod.net:9421  818T  544T  275T  67% /workspace
+21:51:38 capture: exit 0 after 225 s; {"status": "ok", "prompts": 7}
+21:51:38 GPU memory in use before the analysis: 0 MiB
+21:52:24 analysis: exit 0 after 271 s
+21:52:38 kernel arm: exit 0 after 285 s; {"outcome": "MATCH", "max_gap": {"STOCK": 0.001694519168851632, "CALSTD": 0.0016976717624627292, "TIED": 0.001696827820298078}, "reason": ""}
+21:52:40 decision: PASS (R1 0.670 and R2 1.131 against CALSTD_JOINT (FP16 0.670 and 1.131); P STOCK 0.0432, CALSTD 0.0271, CALSTD_JOINT 0.0256, TIED 0.0289; per-layer TIED/STOCK 0.362 to 0.944; position 0 exact R1 0.798 and R2 1.134; E5M2 3.25; tie 0.987; C0/STOCK 1.085; largest |q| 20.8; largest engine gap 0.0017; action: the FP8 compact build continues with the tied scales (D-88 week 2); E-55 (the model-level splice) next); kernel arm (secondary): MATCH (largest gap STOCK 0.0017, CALSTD 0.0017, TIED 0.0017)
+21:52:49 captures: 71 files, 7725303 KB in /workspace/capture_e54; copy them with RES
+21:52:49 disk: mfs#us-ga-2.runpod.net:9421  818T  543T  275T  67% /workspace
+21:52:49 done after 296 s
+21:52:49 AUTO_STOP in 600 s; copy RES and CAPDIR now

@@ -1,0 +1,8 @@
+metrics: prompt 0 done after 5.7 s
+metrics: prompt 1 done after 10.2 s
+metrics: prompt 2 done after 14.9 s
+metrics: prompt 3 done after 19.4 s
+metrics: prompt 4 done after 24.0 s
+metrics: prompt 5 done after 28.6 s
+metrics: prompt 6 done after 43.4 s
+PASS (R1 0.670 and R2 1.131 against CALSTD_JOINT (FP16 0.670 and 1.131); P STOCK 0.0432, CALSTD 0.0271, CALSTD_JOINT 0.0256, TIED 0.0289; per-layer TIED/STOCK 0.362 to 0.944; position 0 exact R1 0.798 and R2 1.134; E5M2 3.25; tie 0.987; C0/STOCK 1.085; largest |q| 20.8; largest engine gap 0.0017; action: the FP8 compact build continues with the tied scales (D-88 week 2); E-55 (the model-level splice) next); kernel arm (secondary): NOT RUN (no kernel.json)

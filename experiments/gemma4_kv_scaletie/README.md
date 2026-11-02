@@ -1,7 +1,8 @@
 # E-54: accuracy of the scale-tied compact FP8 K=V cache on fresh Gemma 4 31B activations (preregistration)
 
 Status: PREDECLARED 2026-11-01; amendment A1 2026-11-02 (R-75, before any E-54 data); amendment A2 2026-11-02 (D-92:
-the S5 rehearsal is waived; a prompt check before the engine start). NOT RUN. S3: 17 tests pass (Section 12). Design review (S2): R-75 AMEND_THEN_RUN (`dossier/REVIEW_E-54_PRERUN_2026-11-01.md`). The R2 baseline
+the S5 rehearsal is waived; a prompt check before the engine start). RUN 2026-11-02 (attempt 2; attempt 1 failed
+before the session): PASS (Section 13). S3: 17 tests pass (Section 12). Design review (S2): R-75 AMEND_THEN_RUN (`dossier/REVIEW_E-54_PRERUN_2026-11-01.md`). The R2 baseline
 is CALSTD_JOINT (R-75 B1; journal D-91: the user chose option (a) on 2026-11-02, "A").
 Idea: I-182. Decision: D-90 option (d), recommended by R-74 (`dossier/REVIEW_E-53_POSTRUN_2026-11-01.md`); the user
 asked for this plan on 2026-11-01 ("Wait for R-74, and then write the E-54?"). D-90 stays open for the spend and the
@@ -436,6 +437,41 @@ needs page_size == tile_n == 64 (vLLM forces 64 for head size 512 on SM90) and i
       `fail_fast` "chat prompt 4: BOS at 0 True, special ids after 0 0", no hook record).
   Not tested on the Mac: vLLM, the engine start with 33,024 tokens, the chat template of the real tokenizer, the hooks
   in a live engine over 4 chunks, the FA4 kernel and the GPU. The S5 rehearsal covers all but the FA4 kernel.
+
+## 13. Results (stages S6 to S8)
+FACT (`results/e54-h100-20261102/`; `e54/summary.json`, `e54/session.log`, `e54/kernel.json`; ledger run
+`e54-h100-20261102`; `experiments/runpod/HARDWARE_LOG.md`):
+- Attempt 1 (Pod 77qg62l1nyezuy, AP-IN-1, 2026-11-02): ssh timed out during the upload, so the session never started;
+  the run script did not stop, and the H100 idled until the main session deleted it. Billed $2.71; no data (L-24).
+- Attempt 2 (Pod ux88cwtt24olfp, US-GA-2; D-93: the US and Europe only, floor $6): created 21:35:38 UTC, SSH port after
+  724 s, session 21:48:08 to 21:52:49 UTC (setup 82 s, capture 225 s, analysis 43 s on the GPU, kernel arm 14 s), 7.7 GB
+  of captures copied in 165 s (71 checksums match), Pod deleted 21:56 UTC. Cost about $1.39 (billing pending).
+- Checks: V1 to V7 pass. V2: 0 problems, 70 capture files with their SHA-256, the frozen scales file (SHA-256
+  `8efe6e90...`), the 2 chat prompts with 9 special ids after BOS, prompt 6 in 4 chunks. V3: largest identity error
+  0.0024. V5: largest engine gap 0.0017. V6: 3.25. V7: 0.987.
+- Pooled errors P: STOCK 0.0432, CALSTD 0.0271, CALSTD_JOINT 0.0256, TIED 0.0289 (FP16: the same to 4 digits).
+- Primary: R1 = 0.670 and R2 = 1.131 against CALSTD_JOINT; R1_fp16 0.670 and R2_fp16 1.131.
+- Guards: per layer, TIED/STOCK is 0.362 to 0.944 (the tied row beats the stock cache in every layer) and
+  TIED/CALSTD_JOINT is 0.977 to 1.417 (layer 17); per prompt, R1 is 0.606 to 0.721 and R2 is 1.083 to 1.251 (prompt 3).
+  No FP16 value is non-finite, and no value saturates.
+- Decision (frozen rule): PASS. Action: the FP8 compact build continues with the tied scales (D-88 week 2); E-55 (the
+  model-level splice) is next. Kernel arm (secondary): MATCH, largest gap 0.0017 in 20 cells (STOCK, CALSTD and TIED):
+  the stock FA4 kernel reads the tied row with k_descale not equal to v_descale, with no kernel change.
+- Mac recompute (FACT; `analyze_e54.py --capture` on the copied captures, the Mac CPU, 2026-11-02): the same decision;
+  R1 and R2 agree to 1e-5; the FP8 arm errors agree to 4.1e-5 relative in all 70 cells; the 70 SHA-256 match. BF16C
+  differs by 1.4e-7 absolute (float32 noise on errors near 2e-7 in layer 29).
+- Reported: per class, R1 and R2 are 0.653 and 1.131 (plain 8K), 0.717 and 1.131 (chat) and 0.618 and 1.106 (32K).
+  R2 against the separable CALSTD is 1.068. With position 0 exact, R1 is 0.798 and R2 is 1.134. One phase step above
+  and below the frozen vs gives R1 0.97 and 1.04, R2 1.64 and 1.75. Calibration alone gives the standard cache 0.628
+  (CALSTD) and 0.593 (CALSTD_JOINT) times the stock error. C0 (the E-53 row at scale 1.0) is 1.085 times the stock
+  error pooled and 2.39 times in layer 41: the E-53 FAIL repeats on fresh prompts. BF16C has a median error of 0 to
+  0.0098 per layer. The largest |q| is 20.75.
+- INTERPRETATION: on 7 fresh prompts (plain, chat and 32K), the tied FP8 row with frozen per-layer scales keeps the
+  attention accuracy at the level of the stock FP8 cache (33% less error) and within 13% of the best calibrated
+  standard FP8 cache, in 640 instead of 1,024 bytes per token and KV head. The gain over STOCK rests on the exact frozen
+  scales: one phase step (2.2% in scale) removes it, so a build must store and use these float32 scales exactly. Part
+  of R1 is the shared BOS vector (R1 0.80 with position 0 exact). This is an attention-level result on one checkpoint;
+  it says nothing yet about model quality (E-55), the cache-write path or decode over a cached FP8 prompt.
 
 ## Amendments
 A1 (2026-11-02, before any E-54 data; R-75 AMEND_THEN_RUN, `dossier/REVIEW_E-54_PRERUN_2026-11-01.md`; journal D-91):
