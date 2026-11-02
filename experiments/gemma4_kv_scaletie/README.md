@@ -1,7 +1,7 @@
 # E-54: accuracy of the scale-tied compact FP8 K=V cache on fresh Gemma 4 31B activations (preregistration)
 
-Status: PREDECLARED 2026-11-01; amendment A1 2026-11-02 (R-75, before any E-54 data). NOT RUN. S3: 17 tests pass
-(Section 12). Design review (S2): R-75 AMEND_THEN_RUN (`dossier/REVIEW_E-54_PRERUN_2026-11-01.md`). The R2 baseline
+Status: PREDECLARED 2026-11-01; amendment A1 2026-11-02 (R-75, before any E-54 data); amendment A2 2026-11-02 (D-92:
+the S5 rehearsal is waived; a prompt check before the engine start). NOT RUN. S3: 17 tests pass (Section 12). Design review (S2): R-75 AMEND_THEN_RUN (`dossier/REVIEW_E-54_PRERUN_2026-11-01.md`). The R2 baseline
 is CALSTD_JOINT (R-75 B1; journal D-91: the user chose option (a) on 2026-11-02, "A").
 Idea: I-182. Decision: D-90 option (d), recommended by R-74 (`dossier/REVIEW_E-53_POSTRUN_2026-11-01.md`); the user
 asked for this plan on 2026-11-01 ("Wait for R-74, and then write the E-54?"). D-90 stays open for the spend and the
@@ -62,7 +62,8 @@ design (D-90 then falls back to the BF16 compact build or the write-up).
 
 ### 4.1 Hardware, software and model
 - 1 x H100 80GB HBM3 (SXM), Secure Cloud, the E-53 image (vLLM 0.33.0rc1.dev229+g3966924d5, torch 2.14.0+cu130,
-  transformers 5.20.2), CUDA floor 12.8. Why the H100: the pinned FA4 FP8 kernel of the kernel arm needs SM90, and the
+  transformers 5.20.2), CUDA floor 13.0 (A2: the image is a CUDA 13 build, and the E-53 create call used 13.0; 12.8
+  before A2). Why the H100: the pinned FA4 FP8 kernel of the kernel arm needs SM90, and the
   31B checkpoint needs 80 GB (E-53).
 - Model: `RedHatAI/gemma-4-31B-it-FP8-dynamic` at revision `d4ab4f579dd3516f97d8a6a4c98d0653480bad15` (E-50 to E-53).
 - FACT (R-74 C5, checked by the author with `gh api`): vLLM 3966924d5 pins flash-attention
@@ -291,7 +292,8 @@ needs page_size == tile_n == 64 (vLLM forces 64 for head size 512 on SM90) and i
   V7.
 
 ## 9. Budget
-- Price: 1 x H100 SXM Secure at $3.99/h (the E-53 live read on 2026-11-01; S4 reads it again). Cost cap: $4.
+- Price: 1 x H100 SXM Secure at $3.99/h (the E-53 live read on 2026-11-01; the S4 read on 2026-11-02 gives $3.99/h,
+  stock LOW in 6 data centers). Cost cap: $4. Balance (A2, D-92): a one-time floor of $9 in place of $35.
 - Time model (INTERPRETATION, from the E-53 record):
 
 | Step | Estimate | Source |
@@ -322,6 +324,11 @@ needs page_size == tile_n == 64 (vLLM forces 64 for head size 512 on SM90) and i
   (E-53 A3), and compares the checksums with `capture_sha.txt`. If the window ends
   first, start the Pod again with 0 GPUs (RUNPOD.md Section 6) and finish the copy. The folder `.gitignore` keeps
   `results/*/capture/` out of git.
+- (A2) The S5 rehearsal below is waived by the user (D-92, 2026-11-02, "Run H100 now"). In the S4 read, no RTX 4090,
+  L4, L40S, RTX 6000 Ada, A40 or RTX A5000 had stock on a CUDA 13 host (the RTX 4090 also not in Community Cloud). In
+  its place, `capture_e54.py` checks the prompt rules of V2 before the engine starts, so a wrong chat template stops
+  the run within minutes (exit 3). The risk that stays: a fault in the 32K prompt, the hooks over 4 chunks, the
+  analysis or the copy makes the run INVALID (about $2 lost); the fail fast after prompt 0 stays.
 - S5 rehearsal (needs the user's approval at S4, or a logged waiver): 1 x RTX 4090 Secure ($0.89/h, the E-53 read;
   S4 reads it again), `google/gemma-4-E2B-it` at revision `3e22461f65e89153144f8adb70e3b8c2cc9845a7` (as E-53),
   `CAP_ARGS="--rehearsal --heads 8 --kv-heads 1 --global-layers 3"`, `POD_LIMIT=1200`, boot watchdog 1,500 s, cap
@@ -388,7 +395,7 @@ needs page_size == tile_n == 64 (vLLM forces 64 for head size 512 on SM90) and i
 ## 12. Verification record (stages S3 and S5)
 - S3 (2026-11-01, Mac, no GPU and no vLLM): `uv run --no-project --with numpy --with torch --with pytest python -m
   pytest -q --rootdir <folder> <folder>/test_e54.py -p no:cacheprovider`: 13 passed in 42 s (torch 2.15.0). After A1
-  (2026-11-02): 17 passed in 47 s. FACT from the tests:
+  (2026-11-02): 17 passed in 47 s. After A2: 17 passed in 65 s. FACT from the tests:
   1. With w = 2^-4 the tied row equals the standard storage with the same scales (1e-5); with the w of layer 41 the
      errors stay within 0.8 to 1.25 of each other.
   2. The kernel form of the tied row (views, descales, the plain permuted query) equals an independent natural-order
@@ -425,6 +432,8 @@ needs page_size == tile_n == 64 (vLLM forces 64 for head size 512 on SM90) and i
       engine, the frozen hash), and each of 10 single faults fails it.
   17. (A1, inside tests 5, 9 and 10) A non-finite R1 gives INVALID (V4), not FAIL; the two chat prompts share fewer
       than 19 first tokens; a 15 min session keeps its whole 600 s copy window before the boot watchdog.
+  18. (A2, inside test 12) A chat template without turn markers stops the capture before the engine start (exit 3,
+      `fail_fast` "chat prompt 4: BOS at 0 True, special ids after 0 0", no hook record).
   Not tested on the Mac: vLLM, the engine start with 33,024 tokens, the chat template of the real tokenizer, the hooks
   in a live engine over 4 chunks, the FA4 kernel and the GPU. The S5 rehearsal covers all but the FA4 kernel.
 
@@ -450,3 +459,10 @@ A1 (2026-11-02, before any E-54 data; R-75 AMEND_THEN_RUN, `dossier/REVIEW_E-54_
 Not taken: O2 (a power-of-2 standard arm without a search: STOCK has the same grid phase for normal values); O4 (an
 offline three-scale tied row: exploratory, after the run); O5 (V2 does not require 4 chunks, because a correct capture
 with another chunk count would fail; the chunks are recorded and reported).
+
+A2 (2026-11-02, before any E-54 data; journal D-92):
+1. The user waived the S5 rehearsal ("Run H100 now"): no rehearsal GPU had stock (Section 9).
+2. `capture_e54.py` checks the V2 prompt rules (chat: BOS at 0 and 2 or more special ids after it; plain: none)
+   before the engine starts, and stops with exit 3 (`--stub-no-markers` tests it). V2 keeps the same rules.
+3. The CUDA floor is 13.0 (Section 4.1), and the balance check uses a one-time floor of $9 (Section 9).
+The decision rule, the scales and the analysis do not change.

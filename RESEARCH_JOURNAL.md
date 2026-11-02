@@ -296,8 +296,9 @@ review (CONFIRM_WITH_CORRECTIONS). The I-182 line (E-49 to E-54) is the active w
   the calibrated standard baseline searched its K and V scales separately; the full joint search (A1, 1,024 pairs
   per layer) lowers its error in 9 of 10 layers (up to 15.4%), so R2 in sample rises from 1.11 to 1.20. D-91 (the
   user, 2026-11-02, "A"): the joint baseline decides R2. A1 also applies F1 to F9 (README corrections, reported
-  metrics with position 0 exact, a 600 s copy window, CLOSE 0.01, two chat asks); 17 tests pass. Next: S4 (the
-  user).
+  metrics with position 0 exact, a 600 s copy window, CLOSE 0.01, two chat asks); 17 tests pass. S4 (2026-11-02):
+  no rehearsal GPU in stock. D-92 (the user, "Run H100 now"): the H100 run without a rehearsal (A2: a prompt check
+  before the engine start), cap $4, a one-time floor of $9. Next: S6 (the run).
   0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
@@ -5223,8 +5224,8 @@ GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not
 **E-54 Accuracy of the scale-tied compact FP8 K=V cache on fresh Gemma 4 31B activations** (predeclared 2026-11-01,
 I-182, D-90 option d after R-74).
 STATUS: PREDECLARED (2026-11-01); amendment A1 (2026-11-02, after R-75 AMEND_THEN_RUN: the joint calibrated
-standard baseline CALSTD_JOINT decides R2 (D-91, the user), a new frozen scales file, fixes F1 to F9), NOT RUN;
-S3 17 tests pass. Package:
+standard baseline CALSTD_JOINT decides R2 (D-91, the user), a new frozen scales file, fixes F1 to F9); amendment A2 (2026-11-02, D-92: the S5 rehearsal is
+waived; a prompt check before the engine start), NOT RUN; S3 17 tests pass. Package:
 `experiments/gemma4_kv_scaletie/` (README is the preregistration). Question: on fresh real 31B activations, does the
 scale-tied compact FP8 row (the codes of [K_rot / ks | V_unrot / vs | V_rot / vs] with ks = w x vs per global layer;
 the stock FA4 kernel reads codes 0 to 511 with k_descale ks and the plain permuted query, codes 128 to 639 with
@@ -5246,7 +5247,9 @@ views): MATCH (gap <= 0.005), CLOSE (<= 0.05), MISMATCH. Not in E-54: the model-
 after a PASS. Budget: 1 x H100 SXM Secure ($3.99/h), about 28 to 36 min, cap $4 (worst case $3.66); an RTX 4090
 rehearsal with Gemma 4 E2B, cap $0.60. A1 (R-75): R2 = P_TIED / P_CALSTD_JOINT (in sample 1.196; 1.113 against
 the separable CALSTD), with R1 and R2 at position 0 exact and the TIED row one phase step up and down reported.
-Next: S4 (the user).
+S4 (2026-11-02): H100 SXM Secure $3.99/h (live), stock LOW; no rehearsal GPU in stock; the live balance is
+below the $35 floor. D-92 (the user, "Run H100 now"): the H100 run without a rehearsal, cap $4, a one-time
+floor of $9, CUDA floor 13.0. Next: S6.
 
 **E-53 Real-activation accuracy of the compact FP8 KV cache of the Gemma 4 31B global layers (gate G3)**
 (predeclared 2026-11-01, I-182, D-88).
@@ -7426,6 +7429,7 @@ proposed it and no acceptance is recorded.
 | D-89 | 2026-11-01 | The E-53 spend (gate G3 of D-88) after amendment A1 (R-73, AMEND_THEN_RUN): an RTX 4090 Secure rehearsal with Gemma 4 E2B ($0.89/h, live read 2026-11-01; about 20 to 25 min; cap $0.60, worst case $0.59), then 1 x H100 SXM Secure with the 31B checkpoint ($3.99/h, live read 2026-11-01; about 18 to 29 min; cap $3, worst case $2.93), with a one-time balance floor of $10 (the live check on 2026-11-01 failed at the $12 floor and passed at $10) | Recommendation (main session), after R-73 and A1: both spends, the rehearsal first, because the hooks inside a live vLLM, the output hook of V5 and the copy of the captures have not run yet. Not a decision | R-73 F1 asks for the rehearsal or a written waiver at S4. The worst case of both runs ($3.52) leaves at least the floor | **Decided by the user (2026-11-01, "Run both")**, after a plain-language explanation of the runs, the costs and the possible results; the live balance check passed at the $10 floor |
 | D-90 | 2026-11-01 | Next step after the E-53 FAIL (gate G3 of D-88: in layer 41 the compact FP8 cache is 2.38 times less accurate than the standard FP8 cache; INTERPRETATION: one shared FP8 rounding of K and V): (a) stop the build, as the frozen rule says, and write up I-182 with E-53 as its accuracy result; (b) narrow the build to the BF16 compact cache (exploratory error 0 to 0.0094 against the BF16 cache), after a preregistered confirmation on fresh captures (a new experiment, about $1 to $2 on an H100); (c) a new FP8 design (a calibrated KV scale or the mirror row [K | V_rot]) as a new experiment; (d, added after R-74) E-54: the scale-tied compact FP8 row (ks = w vs) with frozen per-layer scales, tested on fresh prompts against the stock FP8 cache and a calibrated standard FP8 cache | Recommendation (R-74, and the main session after its own check of the R-74 numbers): (d), with the dtype-neutral build parts in parallel; fall back to (b), then (a), if E-54 does not PASS by the end of week 2. Not a decision | The frozen consequence of E-53 is (a); (b) and (c) are new questions that need their own preregistration and review | **Open.** The user asked for the E-54 plan (2026-11-01, "Wait for R-74, and then write the E-54?"); E-54 is predeclared (2026-11-01; A1 2026-11-02 after R-75; D-91 decided); the E-54 spend and the build path wait on the user |
 | D-91 | 2026-11-02 | The R2 baseline of E-54 (R-75 B1: the separable calibrated standard CALSTD is not the best standard cache): (a) CALSTD_JOINT, the standard cache with the K and V scales searched jointly (the full 1,024-pair search lowers the in-sample error in 9 of 10 layers; in sample R2 1.196; R-75 held out 1.04 to 1.24, so a thin margin to the bound 1.25), or (b) keep CALSTD with corrected text and report CALSTD_JOINT only | Recommendation (main session): (a); a PASS against (b) would not show "within 25% of the best standard cache", and (b) chosen after R-75 found the stronger baseline would look like a choice of the easier test. Not a decision | R-75 B1; E-54 A1 computes both baselines, so the choice sets only `analyze_e54.R2_BASE` and the README text | **Decided by the user (2026-11-02, "A")**: (a), after a plain-language explanation of both options and their risk |
+| D-92 | 2026-11-02 | E-54 spend (S4): the H100 run (1 x H100 SXM Secure, $3.99/h in the live read, stock LOW in 6 data centers; cap $4, worst case $3.66, expected $1.85 to $2.40) after the RTX 4090 rehearsal (cap $0.60). No rehearsal GPU (RTX 4090 Secure and Community, L4, L40S, RTX 6000 Ada, A40, RTX A5000) had stock on a CUDA 13 host, and the live balance (no other spend) is below the $35 floor. Options: (1) the H100 run now without the rehearsal, with a prompt check before the engine start (A2), cap $4, a one-time floor of $9; (2) wait for a rehearsal GPU, then both runs; (3) not now | Recommendation (main session): (1); R-75 checked the chat template and the tokenizer with the pinned files and the chunked prefill path; the A2 check and the fail fast after prompt 0 catch the early faults; the risk that stays (the 32K prompt, the hooks over 4 chunks, the analysis, the copy) costs about $2. Not a decision | PROTOCOL S4 and S5 (a rehearsal waiver needs the user); RUNPOD Sections 2 and 3 | **Decided by the user (2026-11-02, "Run H100 now")**: (1), after a plain-language explanation of the run, the costs, the balance check and the possible results |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7909,3 +7913,4 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   Section 1 line); HARDWARE_LOG rows.
 - 2026-11-02: R-75 (Section 6.2); E-54 amendment A1 (Section 6.1 status, Section 3 row I-182, Section 5.27, Section
   1 header and line, Section 4 entry); D-90 text; D-91 (Section 10); Section 8.1 row 74; L-23 in RESEARCH_OUTPUTS.md.
+- 2026-11-02: E-54 amendment A2 and S4 (Section 6.1 status and S4 line, Section 1 line); D-92 (Section 10).

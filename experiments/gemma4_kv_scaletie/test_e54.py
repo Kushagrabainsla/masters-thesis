@@ -473,6 +473,11 @@ def test_stub_session(tmp_path: Path) -> None:
     session(code, tmp_path / "ff", STUB_ARGS="--stub-no-tensors")
     log = (tmp_path / "ff" / "session.log").read_text()
     assert "capture: exit 3" in log and "decision: STUB INVALID (V2: fail fast" in log, log
+    session(code, tmp_path / "nm", STUB_ARGS="--stub-no-markers")                    # (A2) stop before the engine
+    log = (tmp_path / "nm" / "session.log").read_text()
+    run = json.loads((tmp_path / "nm" / "capture_run.json").read_text())
+    assert "capture: exit 3" in log and run["status"] == "fail_fast" and "hooks" not in run, log
+    assert run["fail_fast"][0].startswith("chat prompt 4: BOS at 0 True, special ids after 0 0"), run["fail_fast"]
 
 
 if __name__ == "__main__":

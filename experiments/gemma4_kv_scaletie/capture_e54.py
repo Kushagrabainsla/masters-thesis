@@ -177,6 +177,7 @@ def main() -> None:
     ap.add_argument("--stub-swap-heads", action="store_true")
     ap.add_argument("--stub-nan", action="store_true")
     ap.add_argument("--stub-no-tensors", action="store_true", help="the first prompt records nothing (fail fast)")
+    ap.add_argument("--stub-no-markers", action="store_true", help="a chat template without turn markers (A2 stop)")
     ap.add_argument("--stub-fail", action="store_true", help="an error after the engine start")
     args = ap.parse_args()
     out, cap_dir = args.out, args.capture
@@ -207,6 +208,8 @@ def main() -> None:
             roots = {"vllm_py": [args.stub_text_root], "torch_py": [args.stub_text_root],
                      "docs": [args.stub_text_root]}
             base, encode, bos, render = args.stub_text_root, toy_encode, TOY_SPECIAL["<bos>"], toy_chat
+            if args.stub_no_markers:
+                render = lambda turns: "<bos>" + "".join(t["content"] for t in turns)   # noqa: E731
             special = frozenset(TOY_SPECIAL.values())
             exclude = load_exclude(args.stub_exclude or E53_FILES)
         else:
@@ -244,6 +247,15 @@ def main() -> None:
         short = [p["id"] for p, s in zip(prompts, plan["prompts"]) if p["n_tokens"] != s["tokens"]]
         if short:
             raise RuntimeError(f"prompts {short} have fewer tokens than the plan")
+        # (A2, D-92: no S5 rehearsal) the prompt rules of V2 before the engine starts, so a wrong chat template stops
+        # the run within minutes: a chat prompt has BOS at 0 and 2 or more special ids after it, a plain prompt none
+        bad = [f"chat prompt {p['id']}: BOS at 0 {p['bos_at_0']}, special ids after 0 {p['special_after_0']}"
+               for p, s in zip(prompts, plan["prompts"])
+               if s["kind"] == "chat" and not (p["bos_at_0"] and p["special_after_0"] >= 2)]
+        bad += [f"plain prompt {p['id']}: {p['special_after_0']} special ids after position 0"
+                for p, s in zip(prompts, plan["prompts"]) if s["kind"] == "plain" and p["special_after_0"]]
+        if bad:
+            stop(bad)
         save()
 
         if args.stub:
