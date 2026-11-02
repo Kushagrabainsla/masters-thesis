@@ -280,7 +280,7 @@ review (CONFIRM_WITH_CORRECTIONS). The I-182 line (E-49 to E-53) is the active w
   rehearsal (cap $0.60), then the H100 run (cap $3), with a one-time $10 balance floor. Rehearsal 1 found a
   transformers 5.20.2 config error in the run record, also present for the 31B (A2 fixes it; 21 tests pass).
   Rehearsal 2: S5 PASS (the hooks work in a live vLLM; engine gap 0.0017); A3 copies with 8 parallel
-  streams. E-53 RUN (H100, about $0.98): frozen decision FAIL (layer 41: the compact FP8
+  streams. E-53 RUN (H100, billed $1.01): frozen decision FAIL (layer 41: the compact FP8
   error is 2.38 times the standard; the layers range from 0.57 to 2.38; all checks pass; the Mac recompute
   agrees). Exploratory: the cause is the shared FP8 rounding grid of K and V (layer 29, w = 2^-4: ratio 1.007);
   the compact BF16 path has an error of 0 to 0.009. D-90 (open, the user decides): stop the build, or a
@@ -5267,7 +5267,7 @@ the hooks on layers 4, 9 and 14 in a live vLLM, 0 prompt problems, q, k, v and o
 largest engine gap (V5) 0.0017, the checksums of the copy, and AUTO_STOP at 300 s. Decision: REHEARSAL INVALID (V1,
 V3), as expected. A3 (before any data): one rsync stream gives 5.8 MB/s to the Mac and 4 streams 21 MB/s, so the H100
 copy uses 8 parallel streams. Next: S6 (the H100 run).
-S6 to S8 (2026-11-01, H100 Pod 8ikp2grsi19ieu, EUR-NO-2, about 15 min, about $0.98): V1 to V5 pass (identity
+S6 to S8 (2026-11-01, H100 Pod 8ikp2grsi19ieu, EUR-NO-2, about 15 min, billed $1.01): V1 to V5 pass (identity
 0.0024, engine gap 0.0017). Frozen decision: FAIL (layer 41: median per-prompt ratio 2.38 above 2; per prompt 2.11 to
 2.69). The median ratios of the 10 global layers are 0.93, 1.23, 1.19, 0.57, 1.01, 1.19, 2.38, 1.33, 0.98 and 0.82;
 |q'| at most 19.2; no saturation; the FP16 ratios equal the float32 ratios. The Mac recompute (CPU) gives the same
@@ -7859,3 +7859,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   L-22; E-53 README Sections 7, 10 and 13; the E-53 small result files (C7).
 - 2026-11-01: E-54 predeclared (Section 6.1 E-54, Section 3 row I-182, Section 5.27, D-90 text, Section 1 line,
   Section 4 entry); package `experiments/gemma4_kv_scaletie/` with the frozen calibration `scales_e54.json`.
+- 2026-11-01: E-53 billing (list-pod-billing): rehearsal 1 $0.07, rehearsal 2 $0.14, H100 run $1.01 (E-53 entry,
+  Section 1 line); HARDWARE_LOG rows.

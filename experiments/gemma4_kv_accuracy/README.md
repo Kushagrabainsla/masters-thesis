@@ -447,8 +447,8 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
   after the create (the image was on the host). The session took 420 s: setup with the 33.3 GB download 280 s (cap
   420 s), the capture 117 s (engine 93.5 s, eager; the 4 prefills with the saves about 15 s), the analysis 14 s on
   CUDA (metrics 12.5 s). The copy of RES (29 files) and of the captures (41 files, 3.1 GB) to the Mac took 136 s with
-  8 streams (A3); every checksum matches. The main session deleted the Pod in the AUTO_STOP delay. Cost about $0.98
-  (estimate; billing pending). Results: `results/e53-h100-20261101/`; ledger `e53-h100-20261101`.
+  8 streams (A3); every checksum matches. The main session deleted the Pod in the AUTO_STOP delay. Cost $1.01
+  (billed; list-pod-billing read 2026-11-01: GPU $1.006, disk $0.007). Results: `results/e53-h100-20261101/`; ledger `e53-h100-20261101`.
 - Validity (FACT): V1 to V5 pass. V1: H100 80GB HBM3. V2: all 10 global layers (5, 11, ..., 59) in every prompt, with
   the planned shapes; the route "LLM.apply_model"; modes "NONE"; a BF16 cache; vLLM 0.33.0rc1.dev229+g3966924d5; 41
   capture files with their SHA-256. V3: the largest identity error 0.0024 (the BF16 level), the module form "weight"
