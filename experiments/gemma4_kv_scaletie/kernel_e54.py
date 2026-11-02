@@ -12,8 +12,9 @@ vLLM FlashAttentionImpl.forward, as E-52 (`kbench_e52.stock_call`, `views`).
 The gap of a cell is ||o_kernel - o_emu|| / ||o_emu||, where o_emu is the FP16 emulation of the same arm
 (`analyze_e54`). The kernel writes BF16, so a correct read gives about 0.002 (the E-53 engine gap was 0.0017); a lost
 or swapped descale gives a gap near 1 (the tests). Outcome: MATCH (every gap at most 0.005), CLOSE (every gap at most
-0.05), MISMATCH (a gap above 0.05), NOT RUN (no SM90 GPU or no FA4 module; the reason is recorded), ERROR (an
-exception; the reason is recorded). The outcome does not change the primary decision (README Section 7).
+0.01; A1, R-75 F5a: the FP8 errors are 0.02 to 0.07, so a wider band is as large as the effect), MISMATCH (a gap above
+0.01), NOT RUN (no SM90 GPU or no FA4 module; the reason is recorded), ERROR (an exception; the reason is recorded).
+The outcome does not change the primary decision (README Section 7).
 --standin replaces FA4 with a float32 CPU paged attention (the Mac tests: the same caches, views, block table and
 descales).
 
@@ -39,7 +40,7 @@ import analyze_e54 as a54  # noqa: E402
 from analyze_e54 import an, ca  # noqa: E402
 
 BS = 64                                 # the block size of E-52 (kbench_e52.BS)
-MATCH_TOL, CLOSE_TOL = 0.005, 0.05
+MATCH_TOL, CLOSE_TOL = 0.005, 0.01   # (A1, R-75 F5a) CLOSE was 0.05
 FP8 = torch.float8_e4m3fn
 ARMS = ("STOCK", "CALSTD", "TIED")
 

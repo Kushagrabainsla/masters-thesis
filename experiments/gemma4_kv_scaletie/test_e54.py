@@ -109,6 +109,24 @@ def test_calibration_finds_a_planted_phase_and_breaks_ties_low() -> None:
     assert sc["tied"]["ks"] == a54.f32(0.0625 * sc["tied"]["vs"])
 
 
+def test_joint_calibration_matches_the_exact_path() -> None:
+    """(A1, R-75 B1) The fast joint curve equals the exact standard-cache error (std_arm, an.rel) at every pair of
+    phases; the joint pair is the exact argmin (lowest pair on a tie) and is at least as good as the separable pair."""
+    caps = [case(length=192, q_rows=12, w=0.0625, seed=s)[2] for s in (5, 6)]
+    refs = [an.attend(q, k, v, qpos) for q, k, v, qpos in caps]
+    b_k, b_v = (cal.base_scale(max(float(c[i].abs().max()) for c in caps)) for i in (1, 2))
+    e = cal.joint_curve(caps, refs, b_k, b_v, phases=4)
+    exact = [[sum(an.rel(a54.std_arm(*c, cal.phase_scale(b_k, a, 4), cal.phase_scale(b_v, b, 4)), r)
+                  for c, r in zip(caps, refs)) for b in range(4)] for a in range(4)]
+    assert all(abs(e[a][b] - exact[a][b]) <= 1e-9 * exact[a][b] for a in range(4) for b in range(4))
+    sc = cal.layer_calibration(caps, 0.0625, phases=4)
+    j = sc["calstd_joint"]
+    assert len(j["recheck"]) == 8
+    assert (j["phase_k"], j["phase_v"]) == min(((a, b) for a in range(4) for b in range(4)),
+                                               key=lambda p: (exact[p[0]][p[1]], p))
+    assert sum(sc["in_sample_err"]["CALSTD_JOINT"]) <= sum(sc["in_sample_err"]["CALSTD"]) + 1e-12
+
+
 def test_v5_negative_controls_of_r74() -> None:
     """(R-74 C8) The reference against a BF16 engine output passes 0.005; a wrong head mapping, no causal mask, the
     scale 1/sqrt(512) or query positions that hide the current key fail it (R-74: 0.22 to 1.17 on real data)."""
@@ -158,6 +176,11 @@ def test_prompts_exclude_e53_files_and_hold_chat_markers(tmp_path: Path) -> None
     assert [p["special_after_0"] for p in ps if p["kind"] == "plain"] == [0, 0, 0]
     chat = ps[2]
     assert chat["special_after_0"] >= 2 and chat["turns"] >= 2 and chat["token_ids"][1] == 1
+    two = dict(small_plan(), prompts=[{"id": 4, "kind": "chat", "family": "mixed", "tokens": 300},
+                                      {"id": 5, "kind": "chat", "family": "mixed", "tokens": 300}])
+    a, b = (p["token_ids"] for p in cap.build_prompts(src, cap.toy_encode, 2, tmp_path / "t", special, cap.toy_chat,
+                                                       ex, two, chat_chars=120))
+    assert next(i for i, (x, y) in enumerate(zip(a, b)) if x != y) < 19     # (A1, R-75 F7) the two asks differ
     assert [p["token_sha256"] for p in build()] == [p["token_sha256"] for p in ps]
     one = dict(small_plan(), prompts=[{"id": 0, "kind": "plain", "family": "vllm_py", "tokens": 70000}])
     p = cap.build_prompts(src, cap.toy_encode, 2, tmp_path / "t", special, cap.toy_chat, ex, one)[0]
@@ -249,7 +272,7 @@ def test_decision_paths(stub_res: Path, tmp_path: Path) -> None:
     def one_layer(m):                                     # layer 5 small and 2.5 times worse; layer 11 decides P
         for layers in m["prompts"].values():
             c = layers["5"]["err"]
-            c.update(STOCK=1e-3, CALSTD=1e-3, TIED=2.5e-3, TIEDSTD=2.5e-3, TIED_E5M2=6e-3)
+            c.update(STOCK=1e-3, CALSTD=1e-3, CALSTD_JOINT=1e-3, TIED=2.5e-3, TIEDSTD=2.5e-3, TIED_E5M2=6e-3)
     s = variant(stub_res, tmp_path, one_layer)
     assert "layer 5: median TIED/STOCK 2.500 above 2.0" in s["decision"] and "INCONCLUSIVE" in s["decision"]
     shutil.rmtree(tmp_path / "v")
@@ -282,6 +305,64 @@ def test_invalid_paths(stub_res: Path, tmp_path: Path) -> None:
     shutil.rmtree(tmp_path / "v")
     s = variant(stub_res, tmp_path, fn_prompts=lambda p: p["prompts"][1].update(special_after_0=2))
     assert "prompt 1 has 2 special ids" in s["decision"]
+    shutil.rmtree(tmp_path / "v")
+    s = variant(stub_res, tmp_path, lambda m: m["prompts"]["0"]["5"]["err"].update(STOCK=float("nan")))
+    assert s["decision"].startswith("STUB INVALID (V4: R1 not finite"), s["decision"]   # (A1, R-75 F6)
+
+
+def test_kernel_line_names_a_timeout() -> None:
+    """(A1, R-75 F5b) A kernel.json without an outcome (the step cap ended the arm) prints TIMEOUT, not NOT RUN."""
+    line = a54.kernel_line({"started_at": "x", "cells": {"0": {}}})
+    assert line == ("TIMEOUT", "kernel.json has no outcome (1 cells done)")
+    assert a54.kernel_line({})[0] == "NOT RUN" and a54.kernel_line({"outcome": "MATCH", "max_gap": {}})[0] == "MATCH"
+    assert a54.ACTION["other"].startswith("no FP8 compact claim")                       # (A1, R-75 F1e)
+
+
+def test_frozen_scales_file_matches_its_hash_and_holds_both_baselines() -> None:
+    """(A1, R-75 F3a) The scales file has the SHA-256 that V2 compares; every global layer has the tied, the separable
+    and the joint calibrated scales, with ks = w x vs for the tied row."""
+    assert a54.sha_file(a54.SCALES) == a54.SCALES_SHA256
+    d = json.loads(a54.SCALES.read_text())
+    assert sorted(int(x) for x in d["layers"]) == [5, 11, 17, 23, 29, 35, 41, 47, 53, 59]
+    for sc in d["layers"].values():
+        assert {"tied", "calstd", "calstd_joint"} <= set(sc) and sc["tied"]["ks"] == a54.f32(sc["w"] * sc["tied"]["vs"])
+
+
+def test_v2_real_branch_passes_a_real_shaped_record_and_catches_faults(stub_res: Path) -> None:
+    """(A1, R-75 F3b) The V2 branch of a real run (no stub and no rehearsal flag): a record with the frozen plan, 7
+    prompts, the 10 global layers, the E-53 engine and the frozen scales hash passes; each single fault fails it."""
+    cell = next(iter(json.loads((stub_res / "metrics.json").read_text())["prompts"]["0"].values()))
+    layers = [5, 11, 17, 23, 29, 35, 41, 47, 53, 59]
+    run = {"status": "ok", "plan": json.loads(json.dumps(a54.PLAN)), "vllm": an.VLLM_VERSION,
+           "engine": {"compilation_mode": an.EAGER, "cudagraph_mode": an.EAGER, "cache_dtype": "auto"},
+           "config": {"global_layers": layers}, "hooks": {"hooked": [{"layer": x} for x in layers]},
+           "prompts": [{"id": i, "problems": []} for i in range(7)]}
+    prompts = {"prompts": [{"id": sp["id"], "n_tokens": sp["tokens"], "bos_at_0": True,
+                            "special_after_0": 9 if sp["kind"] == "chat" else 0,
+                            "files": [{"path": f"x/{sp['id']}_{j}.py", "sha256": f"{sp['id']}-{j}"} for j in range(3)]}
+                           for sp in a54.PLAN["prompts"]]}
+    met = {"status": "ok", "sha_mismatch": [], "errors": [], "scales_sha256": a54.SCALES_SHA256, "prompts": {}}
+    for sp in a54.PLAN["prompts"]:
+        n = sp["tokens"]
+        shapes = {"q": [256, 32, 512], "k": [n, 4, 512], "v": [n, 4, 512], "o": [256, 32, 512]}
+        met["prompts"][str(sp["id"])] = {str(x): dict(cell, shapes=shapes, qpos_first=n - 256, qpos_last=n - 1,
+                                                      kpos_ok=True) for x in layers}
+    e53 = json.loads((HERE / "e53_files.json").read_text())
+    assert a54.v2_problems(run, met, prompts, e53) == []
+    faults = {"plan": lambda r, m, p: r["plan"].update(seed=53),
+              "compile mode": lambda r, m, p: r["engine"].update(compilation_mode="3"),
+              "FP8 cache": lambda r, m, p: r["engine"].update(cache_dtype="fp8"),
+              "vLLM version": lambda r, m, p: r.update(vllm="0.33.0"),
+              "scales hash": lambda r, m, p: m.update(scales_sha256="0" * 64),
+              "E-53 file": lambda r, m, p: p["prompts"][3]["files"].append(dict(e53["files"][0])),
+              "chat markers": lambda r, m, p: p["prompts"][5].update(special_after_0=1),
+              "plain special id": lambda r, m, p: p["prompts"][2].update(special_after_0=1),
+              "short prompt": lambda r, m, p: p["prompts"][6].update(n_tokens=32000),
+              "missing layer": lambda r, m, p: m["prompts"]["6"].pop("41")}
+    for name, fn in faults.items():
+        r, m, p = (json.loads(json.dumps(x)) for x in (run, met, prompts))
+        fn(r, m, p)
+        assert a54.v2_problems(r, m, p, e53), name
 
 
 def test_kernel_arm_with_the_cpu_standin(stub_res: Path, tmp_path: Path) -> None:
@@ -335,19 +416,22 @@ def test_session_caps_keep_the_watchdog_order_and_the_cost_cap() -> None:
     $3.99/h, and the S5 rehearsal inside its $0.60 cap (RTX 4090 at $0.89/h; POD_LIMIT 1,200 s, boot cap 1,500 s)."""
     d = session_defaults()
     assert (d["DL_TIMEOUT"], d["CAP_TIMEOUT"], d["AN_TIMEOUT"], d["KER_TIMEOUT"], d["POD_LIMIT"],
-            d["AUTO_STOP_DELAY"]) == (420, 720, 360, 300, 1920, 450)
+            d["AUTO_STOP_DELAY"]) == (420, 720, 360, 300, 1920, 600)
     boot, start, setup, gpu_wait = 2400, 140, 60, 60
     assert d["DL_TIMEOUT"] + d["CAP_TIMEOUT"] + d["AN_TIMEOUT"] + d["KER_TIMEOUT"] + setup + gpu_wait <= d["POD_LIMIT"]
     assert start + d["POD_LIMIT"] < boot
+    assert start + 900 + d["AUTO_STOP_DELAY"] < boot     # (A1, R-75 F4a) a 15 min session keeps its whole copy window
+    assert 7.85e3 / 16 <= d["AUTO_STOP_DELAY"]            # 7.85 GB at the slowest E-53 copy rate (16 MB/s): 490 s
     assert (15 * 60 + boot) / 3600 * 3.99 <= 4.00                        # 55 min, $3.66
     assert (15 * 60 + 1500) / 3600 * 0.89 <= 0.60 and start + 1200 < 1500
 
 
 def test_timing_at_the_real_size() -> None:
-    """S3 (E-38): one prompt and layer at 8,192 tokens and 256 queries with every arm of README Section 5 (16 attention
-    passes) on the Mac CPU. The H100 runs 60 such cells and one 32K prompt (about 4 times the work per layer)."""
+    """S3 (E-38): one prompt and layer at 8,192 tokens and 256 queries with every arm of README Section 5 (22 attention
+    passes after A1) on the Mac CPU. The H100 runs 60 such cells and one 32K prompt (about 4 times the work per layer)."""
     w, c, _ = case(8192, 256, w=0.06494140625, seed=7)
-    sc = {"w": w, "calstd": {"ks": 2.0 ** -6, "vs": 0.125}, "tied": {"ks": a54.f32(w * 0.125), "vs": 0.125}}
+    sc = {"w": w, "calstd": {"ks": 2.0 ** -6, "vs": 0.125}, "calstd_joint": {"ks": 2.0 ** -7, "vs": 0.15},
+          "tied": {"ks": a54.f32(w * 0.125), "vs": 0.125}}
     t = time.time()
     m = a54.layer_metrics(c, torch.full((512,), w), sc, "cpu")
     dt = time.time() - t

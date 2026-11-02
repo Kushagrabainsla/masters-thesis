@@ -10,13 +10,17 @@ E-54 data existed.
 
 Arms, per test prompt and global layer (float32 causal GQA attention, scale 1.0, no soft-cap, as E-53):
   STOCK      the standard FP8 cache with ks = vs = 1.0 (vLLM's choice for this checkpoint: `kv_cache_scheme` null)
-  CALSTD     the standard FP8 cache with the frozen calibrated ks and vs of the layer
+  CALSTD     the standard FP8 cache with the frozen separable calibrated ks and vs of the layer
+  CALSTD_JOINT  (A1, R-75 B1) the standard FP8 cache with the frozen jointly calibrated ks and vs of the layer
   TIED       the scale-tied compact row with the frozen vs of the layer and ks = w x vs
   TIEDSTD    the standard FP8 cache with the TIED scales (the algebra control, V7)
   TIED_E5M2  the TIED row with E5M2 codes (the sensitivity control, V6)
+  TIED_UP, TIED_DN  (A1, R-75 O1) the TIED row one phase step above and below the frozen vs (reported)
   C0         the E-53 compact row at scale 1.0 with the BF16 views query (the E-53 replication; reported)
   BF16C      the compact row in BF16 with the BF16 views query (D-90 option b; reported)
-STOCK, CALSTD and TIED also run in the FP16 emulation of the pinned FA4 kernel (q and P in FP16; README Section 10).
+STOCK, CALSTD, CALSTD_JOINT and TIED also run in the FP16 emulation of the pinned FA4 kernel (q and P in FP16; README
+Section 10), and with position 0 (the BOS vector of every prompt) kept exact (A1, R-75 F2; reported). R2 uses the
+decision baseline R2_BASE (A1, R-75 B1; journal D-91).
 
 Two steps, as E-53: (1) metrics.json from the capture files (on the Pod GPU, or on the Mac from the copied captures);
 (2) the validity checks V1 to V7 and the frozen rule (README Sections 6 and 7) from metrics.json, with the kernel arm
@@ -49,7 +53,7 @@ import compact_attn as ca  # noqa: E402  (ROT, UNROT, pack_views, views_of, view
 D = ca.HEAD
 NROT = len(ca.ROT)
 SCALES = HERE / "scales_e54.json"
-SCALES_SHA256 = "202738b9fe8b18cd594aca27b744984ecdcf6c4cfa3044660446e33a9914fdb1"   # README Section 4.6; V2 compares
+SCALES_SHA256 = "8efe6e9076e28e011ff560106665998434b9403a1ddd9f653bdd98e5c718bd43"   # README Section 4.6 (A1); V2
 PROMPTS = (  # the frozen test prompts (README Section 4.4): id, kind, family, tokens
     (0, "plain", "vllm_py", 8192), (1, "plain", "torch_py", 8192), (2, "plain", "docs", 8192),
     (3, "plain", "mixed", 8192), (4, "chat", "mixed", 8192), (5, "chat", "mixed", 8192),
@@ -64,12 +68,17 @@ POOL_PASS = 1.25                       # PASS: R1 and R2 at most 1.25 (float32 a
 POOL_FAIL = 1.5                        # FAIL: R1 or R2 above 1.5 (float32)
 LAYER_PASS = 2.0                       # PASS: every per-layer median ratio at most 2 (R-74 M2)
 PROMPT_PASS = 1.5                      # PASS: every test prompt's pooled ratio at most 1.5 (coverage, R-74 R2)
-ARMS = ("STOCK", "CALSTD", "TIED", "TIEDSTD", "TIED_E5M2", "C0", "BF16C")
-ARMS16 = ("STOCK", "CALSTD", "TIED")
+R2_BASE = "CALSTD_JOINT"               # (A1, R-75 B1) the decision baseline of R2 (D-91: the user chose option a)
+STEP = 2.0 ** (1 / 32)                 # (A1, R-75 O1) one phase step of the calibration grid
+ARMS = ("STOCK", "CALSTD", "CALSTD_JOINT", "TIED", "TIEDSTD", "TIED_E5M2", "TIED_UP", "TIED_DN", "C0", "BF16C")
+ARMS16 = ("STOCK", "CALSTD", "CALSTD_JOINT", "TIED")
+ARMS_X0 = ("STOCK", "CALSTD", "CALSTD_JOINT", "TIED")
 ACTION = {  # the consequence of each outcome (README Section 7); the user confirms each step
     "PASS": "the FP8 compact build continues with the tied scales (D-88 week 2); E-55 (the model-level splice) next",
     "FAIL": "stop the FP8 compact design; D-90 falls back to (b) the BF16 compact build or (a) the write-up",
-    "other": "the user decides; the report names the conditions; no rerun without a new S4",
+    "other": "no FP8 compact claim; if one prompt class or one layer causes it, recalibrate offline on the saved "
+             "captures and test the new scales on new prompts under a new S4; else the user chooses (b) or (a) of "
+             "D-90 (A1, R-75 F1e)",
     "fail_fast": "fix the cause, then one rerun under a new S4 with a stated cost cap",
     "V5": "the reference does not model the engine: fix the reference and analyze the copied captures again on the "
           "Mac; no new Pod",
@@ -103,25 +112,35 @@ def q8(x: torch.Tensor, s: float, cast=an.fp8) -> torch.Tensor:
     return cast(x / s) * s
 
 
-def std_arm(q, k, v, qpos, ks: float, vs: float, cast=an.fp8, fp16: bool = False) -> torch.Tensor:
-    """The standard cache: K and V each cast with its own scale. fp16: q and P in FP16 (the pinned FA4 kernel)."""
+def std_arm(q, k, v, qpos, ks: float, vs: float, cast=an.fp8, fp16: bool = False,
+            exact0: bool = False) -> torch.Tensor:
+    """The standard cache: K and V each cast with its own scale. fp16: q and P in FP16 (the pinned FA4 kernel).
+    exact0: position 0 (the BOS vector, the same in every prompt) without the cast (A1, R-75 F2; reported)."""
+    kq, vq = q8(k, ks, cast), q8(v, vs, cast)
+    if exact0:
+        kq[0], vq[0] = k[0], v[0]
     if fp16:
-        return an.attend(an.fp16(q), q8(k, ks, cast), q8(v, vs, cast), qpos, torch.float16)
-    return an.attend(q, q8(k, ks, cast), q8(v, vs, cast), qpos)
+        return an.attend(an.fp16(q), kq, vq, qpos, torch.float16)
+    return an.attend(q, kq, vq, qpos)
 
 
-def tied_codes(k, v, ks: float, vs: float, cast=an.fp8) -> torch.Tensor:
-    """The 640 codes of the tied row: cast([K_rot / ks | V_unrot / vs | V_rot / vs])."""
+def tied_codes(k, v, ks: float, vs: float, cast=an.fp8, exact0: bool = False) -> torch.Tensor:
+    """The 640 codes of the tied row: cast([K_rot / ks | V_unrot / vs | V_rot / vs]); exact0: row 0 without the cast."""
     s = torch.full((NROT + D,), vs, device=k.device)
     s[:NROT] = ks
-    return cast(ca.pack_views(k, v) / s)
+    x = ca.pack_views(k, v) / s
+    c = cast(x)
+    if exact0:
+        c[0] = x[0]
+    return c
 
 
-def tied_arm(q, k, v, qpos, ks: float, vs: float, cast=an.fp8, fp16: bool = False, v_exact: bool = False):
+def tied_arm(q, k, v, qpos, ks: float, vs: float, cast=an.fp8, fp16: bool = False, v_exact: bool = False,
+             exact0: bool = False):
     """The tied row as the stock kernel reads it: the K view (codes 0 to 511) with k_descale ks and the plain permuted
     query [q_rot | q_unrot], the V view (codes 128 to 639) with v_descale vs; the output in the natural dim order.
-    v_exact: the V view without the cast (the score path alone, reported)."""
-    kc, vc = ca.views_of(tied_codes(k, v, ks, vs, cast))
+    v_exact: the V view without the cast (the score path alone, reported). exact0: as std_arm."""
+    kc, vc = ca.views_of(tied_codes(k, v, ks, vs, cast, exact0))
     vv = ca.views_of(ca.pack_views(k, v))[1] if v_exact else vc * vs
     qp = ca.views_query(q, torch.ones(D, device=q.device))
     if fp16:
@@ -160,25 +179,30 @@ def layer_metrics(cap: dict, w_mod: torch.Tensor | None, sc: dict, device) -> di
     out["ref_finite"] = bool(torch.isfinite(ref).all())
     o_eng = cap["o"].to(device).float() if "o" in cap else None
     out["engine_gap"] = None if o_eng is None else (an.rel(ref, o_eng) if o_eng.shape == ref.shape else math.inf)
-    ks_s, vs_s = sc["calstd"]["ks"], sc["calstd"]["vs"]
+    std = {"STOCK": (1.0, 1.0), "CALSTD": (sc["calstd"]["ks"], sc["calstd"]["vs"]),
+           "CALSTD_JOINT": (sc["calstd_joint"]["ks"], sc["calstd_joint"]["vs"])}
     ks_t, vs_t = sc["tied"]["ks"], sc["tied"]["vs"]
-    o = {"STOCK": std_arm(q, k, v, qpos, 1.0, 1.0), "CALSTD": std_arm(q, k, v, qpos, ks_s, vs_s),
-         "TIED": tied_arm(q, k, v, qpos, ks_t, vs_t), "TIEDSTD": std_arm(q, k, v, qpos, ks_t, vs_t),
-         "TIED_E5M2": tied_arm(q, k, v, qpos, ks_t, vs_t, cast=an.e5m2), "C0": e53_compact_arm(q, k, v, qpos, w),
-         "BF16C": e53_compact_arm(q, k, v, qpos, w, cast=None)}
-    o16 = {"STOCK": std_arm(q, k, v, qpos, 1.0, 1.0, fp16=True),
-           "CALSTD": std_arm(q, k, v, qpos, ks_s, vs_s, fp16=True),
-           "TIED": tied_arm(q, k, v, qpos, ks_t, vs_t, fp16=True)}
+    vs_up, vs_dn = f32(vs_t * STEP), f32(vs_t / STEP)
+    o = {a: std_arm(q, k, v, qpos, *s) for a, s in std.items()}
+    o |= {"TIED": tied_arm(q, k, v, qpos, ks_t, vs_t), "TIEDSTD": std_arm(q, k, v, qpos, ks_t, vs_t),
+          "TIED_E5M2": tied_arm(q, k, v, qpos, ks_t, vs_t, cast=an.e5m2),
+          "TIED_UP": tied_arm(q, k, v, qpos, f32(sc["w"] * vs_up), vs_up),
+          "TIED_DN": tied_arm(q, k, v, qpos, f32(sc["w"] * vs_dn), vs_dn),
+          "C0": e53_compact_arm(q, k, v, qpos, w), "BF16C": e53_compact_arm(q, k, v, qpos, w, cast=None)}
+    o16 = {a: std_arm(q, k, v, qpos, *s, fp16=True) for a, s in std.items()}
+    o16["TIED"] = tied_arm(q, k, v, qpos, ks_t, vs_t, fp16=True)
     out["err"] = {a: an.rel(x, ref) for a, x in o.items()}
     out["err16"] = {a: an.rel(x, ref) for a, x in o16.items()}
     out["nonfinite_fp16"] = sum(int((~torch.isfinite(x)).sum()) for x in o16.values())
     out["head_err_max"] = {a: an.head_err(o[a], ref) for a in ARMS16}
-    # reported: the score path alone (V exact) of TIED and CALSTD; the saturated values of each FP8 arm
-    out["err_score"] = {"CALSTD": an.rel(an.attend(q, q8(k, ks_s), v, qpos), ref),
-                        "TIED": an.rel(tied_arm(q, k, v, qpos, ks_t, vs_t, v_exact=True), ref)}
+    # reported: position 0 exact (A1, R-75 F2); the score path alone (V exact); the saturated values of each FP8 arm
+    out["err_x0"] = {a: an.rel(std_arm(q, k, v, qpos, *s, exact0=True), ref) for a, s in std.items()}
+    out["err_x0"]["TIED"] = an.rel(tied_arm(q, k, v, qpos, ks_t, vs_t, exact0=True), ref)
+    out["err_score"] = {a: an.rel(an.attend(q, q8(k, std[a][0]), v, qpos), ref) for a in ("CALSTD", "CALSTD_JOINT")}
+    out["err_score"]["TIED"] = an.rel(tied_arm(q, k, v, qpos, ks_t, vs_t, v_exact=True), ref)
     row = ca.pack_views(k, v)
-    out["sat"] = {"STOCK": sat_count(k, 1.0) + sat_count(v, 1.0), "CALSTD": sat_count(k, ks_s) + sat_count(v, vs_s),
-                  "TIED": sat_count(row[..., :NROT], ks_t) + sat_count(row[..., NROT:], vs_t)}
+    out["sat"] = {a: sat_count(k, s[0]) + sat_count(v, s[1]) for a, s in std.items()}
+    out["sat"]["TIED"] = sat_count(row[..., :NROT], ks_t) + sat_count(row[..., NROT:], vs_t)
     out["q_max"] = float(q.abs().max())
     return out
 
@@ -205,7 +229,8 @@ def data_scales(cap_dir: Path, layers: list[int], knorm: dict) -> dict:
         wm = knorm.get(layer)
         w = float(an.bf16(wm.float())[ca.UNROT[0]]) if wm is not None else 1.0
         bk, bv = (2.0 ** math.ceil(math.log2(max(2 * m / an.FP8_MAX, 2.0 ** -40))) for m in (mk, mv))
-        out[str(layer)] = {"w": w, "calstd": {"ks": bk, "vs": bv}, "tied": {"ks": f32(w * bv), "vs": bv}}
+        out[str(layer)] = {"w": w, "calstd": {"ks": bk, "vs": bv}, "calstd_joint": {"ks": bk, "vs": bv},
+                           "tied": {"ks": f32(w * bv), "vs": bv}}
     return out
 
 
@@ -299,17 +324,23 @@ def stats(rows: dict[str, list[dict]], pids: list[str]) -> dict:
     """The decision statistics and the reported numbers (README Sections 5 and 7)."""
     P = {a: pooled(rows, "err", a) for a in ARMS}
     P16 = {a: pooled(rows, "err16", a) for a in ARMS16}
+    Px0 = {a: pooled(rows, "err_x0", a) for a in ARMS_X0}
     g = lambda arm, base: {layer: med([ratio(r["err"][arm], r["err"][base]) for r in rs])   # noqa: E731
                            for layer, rs in rows.items()}
-    out = {"P": P, "P16": P16,
-           "R1": ratio(P["TIED"], P["STOCK"]), "R2": ratio(P["TIED"], P["CALSTD"]),
-           "R1_fp16": ratio(P16["TIED"], P16["STOCK"]), "R2_fp16": ratio(P16["TIED"], P16["CALSTD"]),
-           "g1": g("TIED", "STOCK"), "g2": g("TIED", "CALSTD"),
+    out = {"P": P, "P16": P16, "P_x0": Px0, "r2_base": R2_BASE,
+           "R1": ratio(P["TIED"], P["STOCK"]), "R2": ratio(P["TIED"], P[R2_BASE]),
+           "R1_fp16": ratio(P16["TIED"], P16["STOCK"]), "R2_fp16": ratio(P16["TIED"], P16[R2_BASE]),
+           "g1": g("TIED", "STOCK"), "g2": g("TIED", R2_BASE),
            "R1_prompt": prompt_pooled(rows, pids, "TIED", "STOCK"),
-           "R2_prompt": prompt_pooled(rows, pids, "TIED", "CALSTD"),
+           "R2_prompt": prompt_pooled(rows, pids, "TIED", R2_BASE),
            "e5m2": ratio(P["TIED_E5M2"], P["TIED"]), "tie": ratio(P["TIED"], P["TIEDSTD"]),
            # reported only
-           "calstd_vs_stock": ratio(P["CALSTD"], P["STOCK"]), "c0_vs_stock": ratio(P["C0"], P["STOCK"]),
+           "R2_sep": ratio(P["TIED"], P["CALSTD"]), "R2_joint": ratio(P["TIED"], P["CALSTD_JOINT"]),
+           "R1_x0": ratio(Px0["TIED"], Px0["STOCK"]), "R2_x0": ratio(Px0["TIED"], Px0[R2_BASE]),
+           "step": {d: {"R1": ratio(P[a], P["STOCK"]), "R2": ratio(P[a], P[R2_BASE])}
+                    for d, a in (("up", "TIED_UP"), ("down", "TIED_DN"))},
+           "calstd_vs_stock": ratio(P["CALSTD"], P["STOCK"]), "joint_vs_stock": ratio(P["CALSTD_JOINT"], P["STOCK"]),
+           "c0_vs_stock": ratio(P["C0"], P["STOCK"]),
            "g_c0": g("C0", "STOCK"), "bf16c_median": {layer: med([r["err"]["BF16C"] for r in rs])
                                                      for layer, rs in rows.items()},
            "per_layer_median": {a: {layer: med([r["err"][a] for r in rs]) for layer, rs in rows.items()}
@@ -323,7 +354,7 @@ def stats(rows: dict[str, list[dict]], pids: list[str]) -> dict:
         if idx:
             sub = {layer: [rs[i] for i in idx] for layer, rs in rows.items()}
             cls[name] = {"R1": ratio(pooled(sub, "err", "TIED"), pooled(sub, "err", "STOCK")),
-                         "R2": ratio(pooled(sub, "err", "TIED"), pooled(sub, "err", "CALSTD"))}
+                         "R2": ratio(pooled(sub, "err", "TIED"), pooled(sub, "err", R2_BASE))}
     out["classes"] = cls
     return out
 
@@ -415,6 +446,8 @@ def kernel_line(k: dict) -> tuple[str, str]:
     """The secondary outcome of the kernel arm (README Sections 7 and 8)."""
     if not k:
         return "NOT RUN", "no kernel.json"
+    if "outcome" not in k:  # (A1, R-75 F5b) the step cap or a crash ended the arm before its last record
+        return "TIMEOUT", f"kernel.json has no outcome ({len(k.get('cells') or {})} cells done)"
     gaps = k.get("max_gap") or {}
     if k.get("outcome") in ("NOT RUN", "ERROR"):
         return k["outcome"], str(k.get("reason", ""))[:200]
@@ -461,7 +494,8 @@ def summarize(res: Path) -> dict:
               "_scales_source": met.get("scales_source"), "_scales_sha256": met.get("scales_sha256")}
     ledger = {"R1": [st["R1"]] if st else [], "R2": [st["R2"]] if st else [],
               "err_TIED": [m["err"]["TIED"] for m in flat], "err_STOCK": [m["err"]["STOCK"] for m in flat],
-              "err_CALSTD": [m["err"]["CALSTD"] for m in flat]}
+              "err_CALSTD": [m["err"]["CALSTD"] for m in flat],
+              "err_CALSTD_JOINT": [m["err"]["CALSTD_JOINT"] for m in flat]}
     return {"capture_status": run.get("status", "missing"), "fail_fast": run.get("fail_fast"), "stub": run.get("stub"),
             "rehearsal": run.get("rehearsal"), "plan": run.get("plan"), "gpu": run.get("gpu"),
             "versions": {k: run.get(k) for k in ("vllm", "torch")}, "engine": run.get("engine"),
@@ -469,6 +503,7 @@ def summarize(res: Path) -> dict:
             "prompts": [{k: p.get(k) for k in ("id", "kind", "family", "n_tokens", "token_sha256", "special_after_0",
                                                "bos_at_0", "skipped_special", "excluded")}
                         for p in prompts.get("prompts", [])],
+            "chunks": {str(e.get("id")): e.get("chunks") for e in run.get("prompts", [])},   # (A1, R-75 F8)
             "metrics_device": met.get("device"), "metrics_gpu": met.get("gpu"), "metrics_seconds": met.get("seconds"),
             "checks": checks, "stats": st, "kernel": load(res / "kernel.json", {}),
             "ledger_metrics": {k: {"values": [x for x in v if math.isfinite(x)],
@@ -503,17 +538,21 @@ def verdict(s: dict) -> str:
         act = ACTION["V5"] if bad == ["V5"] else ACTION["invalid"]
         return f"INVALID ({', '.join(bad)}: " + "; ".join(f"{k} {why[k]}" for k in bad) + f"; action: {act})"
     st = s["stats"]
-    tag = (f"R1 {st['R1']:.3f} and R2 {st['R2']:.3f} (FP16 {st['R1_fp16']:.3f} and {st['R2_fp16']:.3f}); "
-           f"P STOCK {st['P']['STOCK']:.4f}, CALSTD {st['P']['CALSTD']:.4f}, TIED {st['P']['TIED']:.4f}; per-layer "
-           f"TIED/STOCK {min(st['g1'].values()):.3f} to {max(st['g1'].values()):.3f}; E5M2 {st['e5m2']:.2f}; tie "
-           f"{st['tie']:.3f}; C0/STOCK {st['c0_vs_stock']:.3f}; largest |q| {st['q_max']:.1f}; largest engine gap "
-           f"{c.get('_engine_gap_max') or 0:.4f}")
+    tag = (f"R1 {st['R1']:.3f} and R2 {st['R2']:.3f} against {R2_BASE} (FP16 {st['R1_fp16']:.3f} and "
+           f"{st['R2_fp16']:.3f}); P STOCK {st['P']['STOCK']:.4f}, CALSTD {st['P']['CALSTD']:.4f}, CALSTD_JOINT "
+           f"{st['P']['CALSTD_JOINT']:.4f}, TIED {st['P']['TIED']:.4f}; per-layer TIED/STOCK "
+           f"{min(st['g1'].values()):.3f} to {max(st['g1'].values()):.3f}; position 0 exact R1 {st['R1_x0']:.3f} and "
+           f"R2 {st['R2_x0']:.3f}; E5M2 {st['e5m2']:.2f}; tie {st['tie']:.3f}; C0/STOCK {st['c0_vs_stock']:.3f}; "
+           f"largest |q| {st['q_max']:.1f}; largest engine gap {c.get('_engine_gap_max') or 0:.4f}")
+    nonfinite = [n for n in ("R1", "R2") if not math.isfinite(st[n])]   # (A1, R-75 F6): not a FAIL
+    if nonfinite:
+        return f"INVALID (V4: {' and '.join(nonfinite)} not finite; action: {ACTION['invalid']}; {tag})"
     fail = [f"{n} {st[n]:.3f} above {POOL_FAIL}" for n in ("R1", "R2") if not st[n] <= POOL_FAIL]
     if fail:
         return "FAIL (" + "; ".join(fail) + f"; action: {ACTION['FAIL']}; {tag})"
     other = [f"{n} {st[n]:.3f} above {POOL_PASS}" for n in ("R1", "R2", "R1_fp16", "R2_fp16")
              if not st[n] <= POOL_PASS]
-    for name, key in (("TIED/STOCK", "g1"), ("TIED/CALSTD", "g2")):
+    for name, key in (("TIED/STOCK", "g1"), (f"TIED/{R2_BASE}", "g2")):
         other += [f"layer {layer}: median {name} {x:.3f} above {LAYER_PASS}" for layer, x in st[key].items()
                   if not x <= LAYER_PASS]
     for name, key in (("R1", "R1_prompt"), ("R2", "R2_prompt")):

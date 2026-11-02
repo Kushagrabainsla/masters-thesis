@@ -19,6 +19,9 @@ Rule (frozen; project heuristics):
 - TIED: vs = b_V x 2^(j*/32), where E uses the tied row with ks = w x vs; then ks = w x vs. One free scale.
 - CALSTD: ks = b_K x 2^(jK/32) with jK from the score-path error (K cast, V exact), and vs = b_V x 2^(jV/32) with jV
   from the value-path error (K exact, V cast). Two free scales, each on its own path.
+- CALSTD_JOINT (amendment A1, R-75 B1): the pair (jK, jV) of the argmin of E over all 32 x 32 pairs with both casts.
+  A fast form ranks the pairs (one softmax per K phase); the exact path of the analysis decides among the best 8; on
+  a tie, the lowest (jK, jV).
 - Every scale is rounded to float32 (the engine holds the KV scales as float32 tensors).
 Writes the scales, the chosen phases, the curves, the in-sample errors of every arm (information only, not a test),
 w, and the SHA-256 of every input file. The tie needs one w value per layer: the script stops if a layer has more.
@@ -64,6 +67,31 @@ def phase_scale(base: float, j: int, phases: int = PHASES) -> float:
     return f32(base * 2.0 ** (j / phases))
 
 
+def joint_curve(caps: list[tuple], refs: list[torch.Tensor], b_k: float, b_v: float,
+                phases: int = PHASES) -> list[list[float]]:
+    """E[jK][jV]: the summed relative error of the standard cache with both casts, for every pair of phases (A1, R-75
+    B1). The same quantity as std_arm and an.rel: one softmax per K phase, and one product with the stacked V casts."""
+    e = [[0.0] * phases for _ in range(phases)]
+    for (q, k, v, qpos), ref in zip(caps, refs):
+        nq, hq, length, hk = q.shape[0], q.shape[1], k.shape[0], k.shape[1]
+        g, dv = hq // hk, v.shape[-1]
+        future = torch.arange(length, device=q.device)[None, :] > qpos[:, None]
+        vst = [torch.stack([q8(v[:, h], phase_scale(b_v, j, phases)) for j in range(phases)], dim=1)
+               .reshape(length, phases * dv) for h in range(hk)]
+        norm = float(torch.linalg.vector_norm(ref.double()))
+        for jk in range(phases):
+            kq = q8(k, phase_scale(b_k, jk, phases))
+            err2 = torch.zeros(phases, dtype=torch.float64)
+            for h in range(hk):
+                s = torch.einsum("qgd,ld->qgl", q[:, h * g:(h + 1) * g], kq[:, h])
+                p = torch.softmax(s.masked_fill(future[:, None, :], float("-inf")), dim=-1)
+                o = (p.reshape(nq * g, length) @ vst[h]).view(nq, g, phases, dv)
+                err2 += ((o - ref[:, h * g:(h + 1) * g, None, :]).double() ** 2).sum(dim=(0, 1, 3)).cpu()
+            for jv in range(phases):
+                e[jk][jv] += math.sqrt(float(err2[jv])) / norm
+    return e
+
+
 def layer_calibration(caps: list[tuple], w: float, phases: int = PHASES) -> dict:
     """The TIED and CALSTD scales of one layer from its calibration captures [(q, k, v, qpos), ...]."""
     amax_k = max(float(c[1].abs().max()) for c in caps)
@@ -78,15 +106,26 @@ def layer_calibration(caps: list[tuple], w: float, phases: int = PHASES) -> dict
                                       phase_scale(b_v, j, phases)))
     e_k = curve(lambda c, j: an.attend(c[0], q8(c[1], phase_scale(b_k, j, phases)), c[2], c[3]))
     e_v = curve(lambda c, j: an.attend(c[0], c[1], q8(c[2], phase_scale(b_v, j, phases)), c[3]))
+    e_j = joint_curve(caps, refs, b_k, b_v, phases)
     jt, jk, jv = pick(e_t), pick(e_k), pick(e_v)
+    recheck = [{"phase_k": a, "phase_v": b, "fast": x,
+                "exact": sum(an.rel(std_arm(*c, phase_scale(b_k, a, phases), phase_scale(b_v, b, phases)), r)
+                             for c, r in zip(caps, refs))}
+               for x, a, b in sorted((e_j[a][b], a, b) for a in range(phases) for b in range(phases))[:8]]
+    best = min(recheck, key=lambda r: (r["exact"], r["phase_k"], r["phase_v"]))
     vs_t = phase_scale(b_v, jt, phases)
     sc = {"w": w, "amax_k": amax_k, "amax_v": amax_v, "base_k": b_k, "base_v": b_v,
           "tied": {"phase": jt, "vs": vs_t, "ks": f32(w * vs_t)},
           "calstd": {"phase_k": jk, "phase_v": jv, "ks": phase_scale(b_k, jk, phases),
                      "vs": phase_scale(b_v, jv, phases)},
-          "curves": {"tied": e_t, "calstd_score": e_k, "calstd_value": e_v}}
+          "calstd_joint": {"phase_k": best["phase_k"], "phase_v": best["phase_v"],
+                           "ks": phase_scale(b_k, best["phase_k"], phases),
+                           "vs": phase_scale(b_v, best["phase_v"], phases), "recheck": recheck},
+          "curves": {"tied": e_t, "calstd_score": e_k, "calstd_value": e_v, "calstd_joint": e_j}}
     ks_s, vs_s, ks_t = sc["calstd"]["ks"], sc["calstd"]["vs"], sc["tied"]["ks"]
+    ks_j, vs_j = sc["calstd_joint"]["ks"], sc["calstd_joint"]["vs"]
     arms = {"STOCK": lambda c: std_arm(*c, 1.0, 1.0), "CALSTD": lambda c: std_arm(*c, ks_s, vs_s),
+            "CALSTD_JOINT": lambda c: std_arm(*c, ks_j, vs_j),
             "TIED": lambda c: tied_arm(*c, ks_t, vs_t), "TIEDSTD": lambda c: std_arm(*c, ks_t, vs_t),
             "TIED_E5M2": lambda c: tied_arm(*c, ks_t, vs_t, cast=an.e5m2)}
     sc["in_sample_err"] = {a: [an.rel(fn(c), r) for c, r in zip(caps, refs)] for a, fn in arms.items()}
@@ -113,7 +152,10 @@ def main() -> None:
         layers = [int(x) for x in args.layers.split(",")]
     out = {"created_at": a54.now(), "rule": {"phases": args.phases, "headroom": HEADROOM, "base": "power of 2",
                                              "objective": "sum over the calibration prompts of the relative L2 error",
-                                             "tie_break": "lowest phase"},
+                                             "tie_break": "lowest phase",
+                                             "calstd": "separable: K phase with V exact, V phase with K exact",
+                                             "calstd_joint": "A1: argmin over all phase pairs with both casts; the "
+                                                             "exact path decides among the best 8 of the fast form"},
            "inputs": {"capture_run": str(args.run), "capture_run_sha256": a54.sha_file(args.run),
                       "k_norm_sha256": a54.sha_file(kn_path), "prompts": pids, "files": {}},
            "torch": torch.__version__, "device": args.device, "layers": {}}
@@ -139,15 +181,17 @@ def main() -> None:
         out["layers"][str(layer)] = layer_calibration(caps, float(wu[0]), args.phases)
         s = out["layers"][str(layer)]
         print(f"layer {layer}: tied phase {s['tied']['phase']} (vs {s['tied']['vs']:.6g}), calstd phases "
-              f"{s['calstd']['phase_k']}/{s['calstd']['phase_v']}, after {time.time() - t0:.0f} s", flush=True)
+              f"{s['calstd']['phase_k']}/{s['calstd']['phase_v']}, joint {s['calstd_joint']['phase_k']}/"
+              f"{s['calstd_joint']['phase_v']}, after {time.time() - t0:.0f} s", flush=True)
         args.out.write_text(json.dumps(out, indent=1) + "\n")
     # in-sample summary (information only): the same pooled statistics as the decision, on the calibration prompts
     rows = {layer: [{"err": {a: s["in_sample_err"][a][i] for a in s["in_sample_err"]}} for i in range(len(pids))]
             for layer, s in out["layers"].items()}
-    P = {a: a54.pooled(rows, "err", a) for a in ("STOCK", "CALSTD", "TIED", "TIEDSTD", "TIED_E5M2")}
+    P = {a: a54.pooled(rows, "err", a) for a in ("STOCK", "CALSTD", "CALSTD_JOINT", "TIED", "TIEDSTD", "TIED_E5M2")}
     out["in_sample"] = {"P": P, "R1": a54.ratio(P["TIED"], P["STOCK"]), "R2": a54.ratio(P["TIED"], P["CALSTD"]),
+                        "R2_joint": a54.ratio(P["TIED"], P["CALSTD_JOINT"]),
                         "e5m2": a54.ratio(P["TIED_E5M2"], P["TIED"]), "tie": a54.ratio(P["TIED"], P["TIEDSTD"]),
-                        "note": "in-sample (the calibration prompts): optimistic; not a test"}
+                        "note": "in-sample (the calibration prompts): not a test; R2 is pessimistic (R-75 F1a)"}
     out["seconds"] = round(time.time() - t0, 1)
     args.out.write_text(json.dumps(out, indent=1) + "\n")
     print(json.dumps(out["in_sample"]), flush=True)

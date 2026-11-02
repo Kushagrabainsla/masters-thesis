@@ -19,6 +19,7 @@ Older entries in the journal, the dossiers and other snapshots name the original
 | `ideas/02-collective-engine-arbitration.md` | `archive/ideas/02-collective-engine-arbitration.md` | 2026-09-24 | Brief for I-18. Mostly accurate, but review R-05 found a flaw in its test design and new facts | Journal Section 5.5 |
 | `dossier/RESEARCH_STATUS.md` | `archive/dossier/RESEARCH_STATUS.md` | 2026-09-24 | Recommended I-19 as the thesis, superseded by review R-05 | Journal Section 1 and decision D-11 |
 | `HANDOFF_2026-10-07.md` | `archive/HANDOFF_2026-10-07.md` | 2026-10-08 | Describes D-32 as open and I-80 as unreviewed | `HANDOFF_2026-10-08.md` and journal Section 1 |
+| `experiments/gemma4_kv_scaletie/scales_e54.json` (design commit 05cc73e, SHA-256 `202738b9...`) | `archive/experiments/gemma4_kv_scaletie/scales_e54_pre-A1.json` | 2026-11-02 | E-54 amendment A1 (R-75 B1) added the joint calibrated standard baseline; the TIED and CALSTD fields are unchanged | `experiments/gemma4_kv_scaletie/scales_e54.json` (A1, SHA-256 `8efe6e90...`) |
 
 ## Deliberately not archived
 

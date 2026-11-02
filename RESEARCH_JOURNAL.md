@@ -184,8 +184,9 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-11-01, after the E-53 H100 run (gate G3 of D-88; frozen decision FAIL) and its R-74 post-run
-review (CONFIRM_WITH_CORRECTIONS). The I-182 line (E-49 to E-53) is the active work.** Rewrite this section every session.
+**As of 2026-11-02, after the R-75 pre-run review of E-54 (AMEND_THEN_RUN), its amendment A1 and the user's
+D-91; before that, the E-53 H100 run (gate G3 of D-88; frozen decision FAIL) and its R-74 post-run
+review (CONFIRM_WITH_CORRECTIONS). The I-182 line (E-49 to E-54) is the active work.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
 - Outputs register (2026-10-29, user request): `RESEARCH_OUTPUTS.md` lists every finding, upstream report, tool and
@@ -291,7 +292,12 @@ review (CONFIRM_WITH_CORRECTIONS). The I-182 line (E-49 to E-53) is the active w
   run and the build. E-54 predeclared (`experiments/gemma4_kv_scaletie/`): the tied row with per-layer scales
   frozen from the E-53 captures (in sample: 0.66 times the stock error, 1.11 times a calibrated standard cache;
   layer 41 1.00), tested on 7 fresh prompts (2 chat, 1 of 32K) against both, plus a kernel arm on the pinned FA4
-  kernel; 13 tests pass; cap $4 plus a $0.60 rehearsal. R-75 (pre-run review) is next, then S4 (the user).
+  kernel; 13 tests pass; cap $4 plus a $0.60 rehearsal. R-75 (Sonnet pre-run review): AMEND_THEN_RUN. Blocker B1:
+  the calibrated standard baseline searched its K and V scales separately; the full joint search (A1, 1,024 pairs
+  per layer) lowers its error in 9 of 10 layers (up to 15.4%), so R2 in sample rises from 1.11 to 1.20. D-91 (the
+  user, 2026-11-02, "A"): the joint baseline decides R2. A1 also applies F1 to F9 (README corrections, reported
+  metrics with position 0 exact, a 600 s copy window, CLOSE 0.01, two chat asks); 17 tests pass. Next: S4 (the
+  user).
   0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
@@ -1205,7 +1211,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin; R-70 (2026-11-01): CONFIRM_WITH_CORRECTIONS: the oracle bounds the byte route only (at most about 10% of dt), not the layout; the compact FP8 kernel has an FP8-only defect; the speed claim is untested; D-85 decided by the user: fix the compact kernel (E-52); E-52 predeclared 2026-11-01 (FP16 compute and the views layout); E-52 RUN 2026-11-01: INVALID (V4); exploratory KILL of the byte route (about 80% on-chip work, e_h 0.22 to 0.24); the stock FA4 kernel reads the compact rows through two views, exactly and 7% to 10% faster; R-72 (2026-11-01): CONFIRM_WITH_CORRECTIONS (a co-limit; the page-size risk); D-88 decided by the user (the write-up and a gated build); gates G1 and G2 PASS; E-53 (gate G3) predeclared; R-73 AMEND_THEN_RUN, A1 applied; E-53 RUN: FAIL (FP8, layer 41 ratio 2.38); R-74 (2026-11-01): CONFIRM_WITH_CORRECTIONS (the FAIL is weak evidence against the layout; the standard FP8 error depends on the grid phase of the scale); D-90 open; the user asked for the E-54 plan; E-54 predeclared 2026-11-01 (the scale-tied row with frozen calibrated scales; in sample R1 0.66, R2 1.11; R-75 next) | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin; R-70 (2026-11-01): CONFIRM_WITH_CORRECTIONS: the oracle bounds the byte route only (at most about 10% of dt), not the layout; the compact FP8 kernel has an FP8-only defect; the speed claim is untested; D-85 decided by the user: fix the compact kernel (E-52); E-52 predeclared 2026-11-01 (FP16 compute and the views layout); E-52 RUN 2026-11-01: INVALID (V4); exploratory KILL of the byte route (about 80% on-chip work, e_h 0.22 to 0.24); the stock FA4 kernel reads the compact rows through two views, exactly and 7% to 10% faster; R-72 (2026-11-01): CONFIRM_WITH_CORRECTIONS (a co-limit; the page-size risk); D-88 decided by the user (the write-up and a gated build); gates G1 and G2 PASS; E-53 (gate G3) predeclared; R-73 AMEND_THEN_RUN, A1 applied; E-53 RUN: FAIL (FP8, layer 41 ratio 2.38); R-74 (2026-11-01): CONFIRM_WITH_CORRECTIONS (the FAIL is weak evidence against the layout; the standard FP8 error depends on the grid phase of the scale); D-90 open; the user asked for the E-54 plan; E-54 predeclared 2026-11-01 (the scale-tied row with frozen calibrated scales; in sample R1 0.66, R2 1.11); R-75 AMEND_THEN_RUN; A1 2026-11-02: the joint calibrated baseline decides R2 (D-91, the user; in sample 1.20) | `experiments/gemma4_kv_audit/README.md` |
 | I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
@@ -1809,6 +1815,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   FP8 cache, on 7 fresh prompts (2 chat, 1 of 32K), with a kernel arm on the pinned FA4 kernel.
                   In sample: 0.66 times the stock error, 1.11 times the calibrated standard. 13 tests pass.
                   R-75 is next. Source: experiments/gemma4_kv_scaletie/README.md. Ideas: I-182. Experiments: E-54.
+2026-11-02  [P10] R-75 pre-run review of E-54 (Sonnet): AMEND_THEN_RUN. Blocker B1: the calibrated standard
+                  baseline searched its K and V scales separately. A1: the full joint search (1,024 pairs per
+                  layer, 4,000 s on the Mac) lowers its error in 9 of 10 layers (up to 15.4%); in sample R2
+                  1.20. D-91 (the user): the joint baseline decides R2. F1 to F9 applied; 17 tests pass.
+                  Source: dossier/REVIEW_E-54_PRERUN_2026-11-01.md. Ideas: I-182. Experiments: E-54.
 ```
 
 ---
@@ -3860,7 +3871,8 @@ kernel microbenchmark; amended A1 after R-69; RUN 2026-11-01: INVALID; explorato
 chip; R-70: CONFIRM_WITH_CORRECTIONS, the oracle bounds the byte route only); E-52 (predeclared 2026-11-01: FP16 compute and the views layout; RUN 2026-11-01: INVALID (V4); exploratory
 KILL of the byte route; the stock kernel reads the compact rows through two views); E-53 (predeclared
 2026-11-01: gate G3, real-activation accuracy; R-73 AMEND_THEN_RUN; amendment A1; RUN 2026-11-01: FAIL; R-74
-CONFIRM_WITH_CORRECTIONS); E-54 (predeclared 2026-11-01: the scale-tied row on fresh prompts).
+CONFIRM_WITH_CORRECTIONS); E-54 (predeclared 2026-11-01: the scale-tied row on fresh prompts; R-75
+AMEND_THEN_RUN; amendment A1 2026-11-02).
 Reviews: R-67 (E-50 pre-run, Sonnet, 2026-10-30): AMEND_THEN_RUN; the fixes are E-50 A1.
 Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1. R-65
 (post-run, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS.
@@ -3891,6 +3903,10 @@ FA4 kernel takes separate K and V descales.
 2026-11-01 (E-54 calibration, in sample on the E-53 captures): with a frozen per-layer phase search (32 phases,
 power-of-2 base), the tied row is 0.66 times the stock error and 1.11 times a calibrated standard cache
 (two free scales); layer 41 is 1.00 times stock. E-54 tests this on fresh prompts.
+2026-11-02 (R-75, E-54 A1): the separable calibrated standard is not the best standard cache. A full joint search
+over the 1,024 phase pairs lowers its in-sample error in 9 of 10 layers (up to 15.4%); against it the tied row has
+1.20 times the error in sample (1.04 to 1.24 held out in R-75's partial search). The user chose the joint
+baseline (D-91).
 Verdict history: 2026-10-29: MEASURE-FIRST (main session, before R-64). 2026-10-30: MEASURE-FIRST kept (R-64:
 novelty low, the engine gap and its measured effect are the open item; likely outcome PIVOT or GO).
 2026-10-30: E-49 PIVOT by the frozen rule (one model or one cell only). The 31B result is clean: the compact
@@ -3930,6 +3946,8 @@ for the row at scale 1.0. INTERPRETATION (R-74): it is weak evidence against the
 FP8 error also changes up to 2.4 times with the grid phase of the scale. A scale-tied row with per-layer scales (ks =
 w vs) gives 0.72 times the stock error (POST-HOC, the same prompts). Next: the E-54 plan; the build stays stopped
 until D-90.
+2026-11-02: R-75 (Sonnet pre-run review of E-54): AMEND_THEN_RUN (B1: the separable calibrated baseline is not the
+best standard cache; F1 to F9). A1 adds the joint baseline; D-91 (the user): it decides R2. Status unchanged.
 Next step and kill rule: E-49 (Section 6.1). KILL if S < 2% in every deciding cell. A GO allows only a prototype plan.
 After E-49: D-76 (Section 10). The stacked ceiling on FP8 KV decides: a prototype only if it stays at or above 5% at
 the pool-limit batch (R-65).
@@ -5204,7 +5222,9 @@ GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not
 
 **E-54 Accuracy of the scale-tied compact FP8 K=V cache on fresh Gemma 4 31B activations** (predeclared 2026-11-01,
 I-182, D-90 option d after R-74).
-STATUS: PREDECLARED (2026-11-01), NOT RUN; S3 13 tests pass; R-75 (pre-run review) pending. Package:
+STATUS: PREDECLARED (2026-11-01); amendment A1 (2026-11-02, after R-75 AMEND_THEN_RUN: the joint calibrated
+standard baseline CALSTD_JOINT decides R2 (D-91, the user), a new frozen scales file, fixes F1 to F9), NOT RUN;
+S3 17 tests pass. Package:
 `experiments/gemma4_kv_scaletie/` (README is the preregistration). Question: on fresh real 31B activations, does the
 scale-tied compact FP8 row (the codes of [K_rot / ks | V_unrot / vs | V_rot / vs] with ks = w x vs per global layer;
 the stock FA4 kernel reads codes 0 to 511 with k_descale ks and the plain permuted query, codes 128 to 639 with
@@ -5224,7 +5244,9 @@ V5 engine gap <= 0.005 (R-74 C8); V6 E5M2 sensitivity >= 1.5; V7 tie control 0.9
 the pinned FA4 kernel (prompts 0 and 6, 256 decode sequences on shared pages, k_descale not equal to v_descale on two
 views): MATCH (gap <= 0.005), CLOSE (<= 0.05), MISMATCH. Not in E-54: the model-level splice (R-74 M6), which is E-55
 after a PASS. Budget: 1 x H100 SXM Secure ($3.99/h), about 28 to 36 min, cap $4 (worst case $3.66); an RTX 4090
-rehearsal with Gemma 4 E2B, cap $0.60. Next: R-75, then S4 (the user).
+rehearsal with Gemma 4 E2B, cap $0.60. A1 (R-75): R2 = P_TIED / P_CALSTD_JOINT (in sample 1.196; 1.113 against
+the separable CALSTD), with R1 and R2 at position 0 exact and the TIED row one phase step up and down reported.
+Next: S4 (the user).
 
 **E-53 Real-activation accuracy of the compact FP8 KV cache of the Gemma 4 31B global layers (gate G3)**
 (predeclared 2026-11-01, I-182, D-88).
@@ -6285,6 +6307,28 @@ too small in our measured regime, or not testable without fleet data. Our teleme
 this serving regime: removing the cap gains at most 0.65% (E-44) to 2.4% (E-46). Both passes: D-70 options A and B
 remain the best use of the time. Write-up: `dossier/FRONTIER_R-62_2026-10-29.md`.
 
+**R-75 Pre-run review of E-54 (accuracy of the scale-tied compact FP8 K=V cache on fresh Gemma 4 31B activations;
+I-182)** (2026-11-01 to 2026-11-02, Sonnet, a different model from the author; an independent rebuild with its own E4M3
+and E5M2 tables, matrix-form attention and an explicit 640-code row; read-only `gh api` reads of vllm-project/vllm at
+3966924d5 and vllm-project/flash-attention at b273a02, and three public files of the 31B checkpoint at d4ab4f57; no
+GPU, vLLM, Runpod or `.env` access). AMEND_THEN_RUN (one blocker). FACT: the rebuild reproduces all 200 in-sample
+cells of `scales_e54.json` to 1.4e-5 relative and the frozen TIED and CALSTD phases of all 10 layers (curves within
+2.9e-5); the real analysis code on the E-53 captures gives the README statistics (R1 0.6575, R2 1.1127, V6 3.035, V7
+0.9709); the V2 branch of a real run works, and ten single faults each fail it; the pinned FA4 source folds the K
+descale into the score scale and the V descale into the final normalization, as the emulation assumes; the chat
+template gives one BOS and 9 and 11 special ids after it; the 32K prompt fits the engine (concurrency 1.27 or more).
+POST-HOC: the frozen rule gives PASS in 10 of 10 held-out reconstructions on the E-53 prompts (R1 0.61 to 0.72, R2
+0.92 to 1.17); with no transfer of the calibrated phases it gives PASS 30%, INCONCLUSIVE 66% and FAIL 3.7%; position
+0 (the BOS vector of every prompt) carries part of R1 (in sample 0.82 and 1.15 with position 0 exact). B1: CALSTD is
+not the best standard cache, because its two scales come from separate paths; a top-40 joint search lowers its
+in-sample error by up to 15.4% in 8 of 10 layers, and the held-out R2 against the joint baseline is 1.04 to 1.24
+(mean 1.15). The author's full 1,024-pair search (E-54 A1, 4,000 s on the Mac; the fast form equals the exact path to
+6e-13) confirms B1: 9 of 10 layers improve (0% to 15.4%), 7 layers give R-75's pair, and in sample R2 is 1.196 against
+the joint baseline. Fixes F1 to F9: README corrections (Section 8.1 row 74); reported metrics with position 0 exact;
+two tests; a 600 s copy window; CLOSE 0.01 and a TIMEOUT line; a non-finite ratio is INVALID; two chat asks; disk
+records; the kernel interface source. Of the options, O1 is taken (the TIED row one phase step up and down, reported).
+D-91 (the user): the joint baseline decides R2. Write-up: `dossier/REVIEW_E-54_PRERUN_2026-11-01.md`.
+
 **R-74 Post-run review of E-53 (real-activation accuracy of the compact FP8 KV cache, gate G3 of D-88; I-182)**
 (2026-11-01, Sonnet, a different model from the author; an independent recompute with its own E4M3 table and float64
 attention, a 16-phase scan of the KV scale on the copied captures, read-only `gh api` reads of public vllm-project
@@ -7156,6 +7200,7 @@ Check levels use the 0.4 meanings with the date 2026-10-29.
 | 71 | 2026-11-01 | E-51 record (README Section 13 "What this means", the E-51 entry S6, Section 1, Section 4, the Section 3 row I-182, Section 5.27, O-13, the first D-85 text): "both FP8 dequant kernels are bound mostly on chip, so a byte-only saving of 37.5% gives about 7.5% of dt, below the kill lines" and "a byte-only layout cannot reach S = 5% with the current kernels" | CORRECTED (R-70 C1, C2): the K = V oracle removes DRAM bytes only and keeps the casts, the MMA and the staged tiles. E-51 bounds the byte route (at most about 10% of dt), not the layout: the real layout also casts 640 values per token instead of 1,024 and can stage fewer bytes, which E-51 did not measure. "Bound on chip" is an INTERPRETATION (candidates: the cast, the MMA with M padded from 8 to 64, the one-stage staging chain). README Section 13 and O-13 carry the corrected text | Before an oracle bounds a mechanism, write down what the oracle removes and what it keeps |
 | 72 | 2026-11-01 | E-52 record (the E-52 entry S6 to S8, Section 1, Section 4, Section 5.27, README Section 13, RESEARCH_OUTPUTS O-13 to O-15 and L-19): "about 80% of the time is on-chip work"; "H4 partly true"; "H5 false"; "24% to 25% faster than the stock kernel"; A2 "the SASS parser counted 0 opcodes"; L-19 "E-51 and E-52 are both INVALID for this reason" | CORRECTED (R-72 C1 to C7, C12): about 80% of dt does not depend on DRAM bytes, and the DRAM time is also 87% to 90% of dt (a co-limit; the cause of the floor is open); H4 is false as preregistered (e_h 0.22 and 0.24 against 0.6; the cast is 12% to 14% of dt); H5 is untested (stage 3 added no buffer); 19% to 25% by baseline; the SASS counts are 0 because `nvdisasm` is missing; E-51 failed V3 and V4 on heavy stock rows | Name what a probe removes and what is left before calling a floor "on-chip work"; read a tool error before blaming a parser |
 | 73 | 2026-11-01 | E-53 record (README Section 13 items 1, 2, 4, 5 and 6 and its INTERPRETATION lines, the E-53 entry S6 to S8, Section 1, Section 4, Section 5.27, O-16): "a power-of-2 scale does not move a value on the FP8 grid"; the tie "gives the standard FP8 codes up to the BF16 mismatch", read as equal accuracy; "the E-53 FAIL is an effect of the scale ratio"; the screen rows MA/SA as support for a tied compact row; "HYPOTHESIS: large channels in layer 41"; the sink shares "13% to 19%" | CORRECTED (R-74 C1 to C4, C6 and C9; the FAIL stands): normal values only (layer 29: 14.35% of the unrotated values differ, all of them K subnormals); 1.6% to 4.7% of the unrotated codes flip, so the errors are equal in the median but not per cell (noise about 6%, range 0.77 to 1.54); the stock scale 1.0 is a lucky phase in layer 41 (the standard with the K scale w is as bad as the compact row); MA/SA tests the mirror row, not the compact row; the 4 channels (70, 113, 219, 506) are FACT; the probes had no causal mask (the shares are 1 to 2 points low) | Compare a layout against the null of its statistic (a scan of the scale phase), not against one baseline draw; apply the causal mask in every probe (L-22) |
+| 74 | 2026-11-02 | E-54 preregistration (README Sections 2, 4.6, 5, 7, 8 and 10, before any E-54 data): CALSTD as "the best standard per-tensor scales by the same calibration data and grid"; the in-sample R1 and R2 "are optimistic"; the R-74 null as the reason for the pooled bound 1.25 ("passes an equivalent storage at a random phase in about 99% of draws"); the headroom threat as open | CORRECTED by E-54 A1 (R-75 B1, F1a to F1c): the separable CALSTD is not the best standard cache (the full joint search lowers its in-sample error in 9 of 10 layers, up to 15.4%); the in-sample R1 is not optimistic, and the in-sample R2 is pessimistic; the R-74 null randomizes only the K phase against one fixed STOCK cache, so it does not apply to R2; |V| is at most 22.63 and |K| at most 1.48, so no value saturates | Calibrate a baseline with the same objective and the same search as the candidate; check what a null randomizes before it justifies a bound |
 
 ### 8.2 Do not cite
 
@@ -7379,7 +7424,8 @@ proposed it and no acceptance is recorded.
 | D-87 | 2026-11-01 | Confirm the E-52 spend after amendment A1 (R-71 changed the plan: the rule, the controls, the compile check; the caps are the same): an RTX 4090 Secure rehearsal ($0.89/h, about 25 min, cap $0.60), then 1 x H100 SXM Secure ($3.99/h, about 25 to 35 min, cap $3), with the one-time $12 balance floor of D-86 | Recommendation (main session), after R-71 and A1. Not a decision | D-86 was given only if R-71 changed neither the plan nor the cap | **Decided by the user (2026-11-01, "Run it")**, after a plain-language explanation of the run and its possible results; the live balance check passed at the $12 floor |
 | D-88 | 2026-11-01 | Next step for I-182 after E-52 (INVALID by V4 under the power cap) and R-72 (CONFIRM_WITH_CORRECTIONS): the byte route to speed is closed on the H100 FP8 kernel classes (about 3% of the step time), the memory saving is exact and the stock FA4 kernel reads the compact rows through two views at the same error and 7% to 10% faster. Options: (a) write up I-182 as an exact memory mechanism plus the measurement findings O-13 to O-15 (1 to 2 weeks, $0); (b) the engine prototype in vLLM (the compact cache write, the views read, the query preparation, the o_proj fold; then an end-to-end capacity and throughput test near the KV pool limit, BF16 and FP8 KV), gated: week-1 gates G1 the page-size plan (vLLM pads the compact page, ratio 3.2), G2 an upstream re-scan and the o_proj weight format, G3 accuracy on real activations (about $2); a hard stop at the end of week 6; GPU about $20 to $40; (c) the FP8 MMA kernel test (R-70 option b) | R-72 and the main session: (a) now and (b) as the gated build in parallel; not (c) (HYPOTHESIS: KILL again, and it adds no capacity). Not a decision | (a) is the thesis floor; (b) is the only route to an end-to-end capacity and throughput result (R-72: 40% to 55% to reach it by week 6); weeks 7 to 9 stay for thesis assembly | **Decided by the user (2026-11-01, "Write-up and try build")**, after a plain-language explanation: (a) now and (b) as the gated build; G3 needs its own spend approval |
 | D-89 | 2026-11-01 | The E-53 spend (gate G3 of D-88) after amendment A1 (R-73, AMEND_THEN_RUN): an RTX 4090 Secure rehearsal with Gemma 4 E2B ($0.89/h, live read 2026-11-01; about 20 to 25 min; cap $0.60, worst case $0.59), then 1 x H100 SXM Secure with the 31B checkpoint ($3.99/h, live read 2026-11-01; about 18 to 29 min; cap $3, worst case $2.93), with a one-time balance floor of $10 (the live check on 2026-11-01 failed at the $12 floor and passed at $10) | Recommendation (main session), after R-73 and A1: both spends, the rehearsal first, because the hooks inside a live vLLM, the output hook of V5 and the copy of the captures have not run yet. Not a decision | R-73 F1 asks for the rehearsal or a written waiver at S4. The worst case of both runs ($3.52) leaves at least the floor | **Decided by the user (2026-11-01, "Run both")**, after a plain-language explanation of the runs, the costs and the possible results; the live balance check passed at the $10 floor |
-| D-90 | 2026-11-01 | Next step after the E-53 FAIL (gate G3 of D-88: in layer 41 the compact FP8 cache is 2.38 times less accurate than the standard FP8 cache; INTERPRETATION: one shared FP8 rounding of K and V): (a) stop the build, as the frozen rule says, and write up I-182 with E-53 as its accuracy result; (b) narrow the build to the BF16 compact cache (exploratory error 0 to 0.0094 against the BF16 cache), after a preregistered confirmation on fresh captures (a new experiment, about $1 to $2 on an H100); (c) a new FP8 design (a calibrated KV scale or the mirror row [K | V_rot]) as a new experiment; (d, added after R-74) E-54: the scale-tied compact FP8 row (ks = w vs) with frozen per-layer scales, tested on fresh prompts against the stock FP8 cache and a calibrated standard FP8 cache | Recommendation (R-74, and the main session after its own check of the R-74 numbers): (d), with the dtype-neutral build parts in parallel; fall back to (b), then (a), if E-54 does not PASS by the end of week 2. Not a decision | The frozen consequence of E-53 is (a); (b) and (c) are new questions that need their own preregistration and review | **Open.** The user asked for the E-54 plan (2026-11-01, "Wait for R-74, and then write the E-54?"); E-54 is predeclared (2026-11-01; R-75 pending); the E-54 spend and the build path wait on the user |
+| D-90 | 2026-11-01 | Next step after the E-53 FAIL (gate G3 of D-88: in layer 41 the compact FP8 cache is 2.38 times less accurate than the standard FP8 cache; INTERPRETATION: one shared FP8 rounding of K and V): (a) stop the build, as the frozen rule says, and write up I-182 with E-53 as its accuracy result; (b) narrow the build to the BF16 compact cache (exploratory error 0 to 0.0094 against the BF16 cache), after a preregistered confirmation on fresh captures (a new experiment, about $1 to $2 on an H100); (c) a new FP8 design (a calibrated KV scale or the mirror row [K | V_rot]) as a new experiment; (d, added after R-74) E-54: the scale-tied compact FP8 row (ks = w vs) with frozen per-layer scales, tested on fresh prompts against the stock FP8 cache and a calibrated standard FP8 cache | Recommendation (R-74, and the main session after its own check of the R-74 numbers): (d), with the dtype-neutral build parts in parallel; fall back to (b), then (a), if E-54 does not PASS by the end of week 2. Not a decision | The frozen consequence of E-53 is (a); (b) and (c) are new questions that need their own preregistration and review | **Open.** The user asked for the E-54 plan (2026-11-01, "Wait for R-74, and then write the E-54?"); E-54 is predeclared (2026-11-01; A1 2026-11-02 after R-75; D-91 decided); the E-54 spend and the build path wait on the user |
+| D-91 | 2026-11-02 | The R2 baseline of E-54 (R-75 B1: the separable calibrated standard CALSTD is not the best standard cache): (a) CALSTD_JOINT, the standard cache with the K and V scales searched jointly (the full 1,024-pair search lowers the in-sample error in 9 of 10 layers; in sample R2 1.196; R-75 held out 1.04 to 1.24, so a thin margin to the bound 1.25), or (b) keep CALSTD with corrected text and report CALSTD_JOINT only | Recommendation (main session): (a); a PASS against (b) would not show "within 25% of the best standard cache", and (b) chosen after R-75 found the stronger baseline would look like a choice of the easier test. Not a decision | R-75 B1; E-54 A1 computes both baselines, so the choice sets only `analyze_e54.R2_BASE` and the README text | **Decided by the user (2026-11-02, "A")**: (a), after a plain-language explanation of both options and their risk |
 | D-13 | pending | Choose the thesis direction | User | After the Test A gate, or earlier | **Open** |
 | D-14 | pending | Commit the repo to git | User | 4 months of untracked history | **Open** |
 | D-15 | 2026-09-23 | Pursue a compute grant. No GPU access yet | User | Every live idea except the killed ones needs an NVIDIA GPU | Active. Program, deadline, decision date unknown |
@@ -7861,3 +7907,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
   Section 4 entry); package `experiments/gemma4_kv_scaletie/` with the frozen calibration `scales_e54.json`.
 - 2026-11-01: E-53 billing (list-pod-billing): rehearsal 1 $0.07, rehearsal 2 $0.14, H100 run $1.01 (E-53 entry,
   Section 1 line); HARDWARE_LOG rows.
+- 2026-11-02: R-75 (Section 6.2); E-54 amendment A1 (Section 6.1 status, Section 3 row I-182, Section 5.27, Section
+  1 header and line, Section 4 entry); D-90 text; D-91 (Section 10); Section 8.1 row 74; L-23 in RESEARCH_OUTPUTS.md.

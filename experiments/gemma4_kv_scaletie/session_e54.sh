@@ -24,7 +24,7 @@ CAP_TIMEOUT=${CAP_TIMEOUT:-720}         # E-53: 117 s (engine 93.5 s, 4 prefills
 AN_TIMEOUT=${AN_TIMEOUT:-360}           # E-53: 14 s for 40 cells and 11 passes; now 70 cells (one at 32K), 16 passes
 KER_TIMEOUT=${KER_TIMEOUT:-300}         # the FA4 JIT and 60 decode calls
 POD_LIMIT=${POD_LIMIT:-1920}            # session watchdog at 32 min: about 2,060 s after boot, before 2,400 s
-AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-450} # the copy window for RES and CAPDIR (E-53: 3.1 GB in 129 s with 8 streams)
+AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-600} # the copy window for RES and CAPDIR (A1, R-75 F4a: 7.85 GB at 16 to 24 MB/s)
 AUTO_STOP=${AUTO_STOP:-0}
 export VLLM_ENABLE_V1_MULTIPROCESSING=0  # the engine core and the worker in this process (E-53 README Section 4)
 if [ -n "${VLLM_CACHE_ROOT:-}" ]; then
@@ -93,6 +93,7 @@ for m, r in zip(sys.argv[1::2], sys.argv[2::2]):
     SNAP=$(awk -v m="$M31" '$1 == m {print $3}' "$ENV/models.txt" | tail -1)
 fi
 log "setup done after $(elapsed) s; versions: $(tr '\n' ' ' < "$RES/versions.txt")"
+log "disk: $(df -h "$RES" 2>/dev/null | tail -1)"   # (A1, R-75 F8)
 
 if [ -f "$RES/capture_run.json" ] && grep -q '"status": "ok"' "$RES/capture_run.json"; then
     log "capture: ok before, skip"
@@ -130,4 +131,5 @@ python3 "$E54/analyze_e54.py" --res "$RES" --out "$RES/summary.json" > "$RES/dec
 log "decision: $(tail -1 "$RES/decision.txt" | cut -c1-600)"
 sha_list "$CAPDIR" > "$RES/capture_sha.txt" 2>/dev/null
 log "captures: $(wc -l < "$RES/capture_sha.txt" | tr -d ' ') files, $(du -sk "$CAPDIR" | cut -f1) KB in $CAPDIR; copy them with RES"
+log "disk: $(df -h "$RES" 2>/dev/null | tail -1)"
 log "done after $(elapsed) s"

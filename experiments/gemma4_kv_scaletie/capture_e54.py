@@ -37,7 +37,8 @@ from analyze_e54 import PLAN  # noqa: E402
 
 ENGINE = dict(c53.ENGINE, max_model_len=33024)   # 32,768 + 256; 8,448 batched tokens per step (E-53)
 CHAT_CHARS = 6000                                  # at most this many characters of one file in a chat turn
-CHAT_ASK = "Here is a file. Explain what it does and how it works.\n\n"
+CHAT_ASKS = ("Here is a file. Explain what it does and how it works.\n\n",   # the ask of each chat prompt in turn
+             "Read this file. Describe its purpose and its main parts.\n\n")  # (A1, R-75 F7: no shared prefix)
 TOY_SPECIAL = {"<bos>": 2, "<start_of_turn>": 1, "<end_of_turn>": 0}   # the stub tokenizer's special strings
 E53_FILES = HERE / "e53_files.json"
 
@@ -73,11 +74,11 @@ def build_prompts(src: dict[str, list[Path]], encode, bos: int, base: Path, spec
                   exclude: dict, plan: dict = PLAN, seed: int | None = None, chat_chars: int = CHAT_CHARS) -> list[dict]:
     """The test prompts of the plan, in order. A plain prompt is built as in E-53: BOS, then the tokens of text files in
     a seeded order (at most c53.FILE_TOKENS per file), each followed by a blank line, cut to the planned length. A chat
-    prompt alternates a user turn (CHAT_ASK and at most chat_chars characters of a file) and an assistant turn (at most
-    chat_chars characters of the next file), renders the turns with the chat template, encodes the text (the template
-    strings become special ids) and cuts the ids to the planned length; BOS stays at position 0. Every prompt skips a
-    file of `exclude` (by path or SHA-256), a file that an earlier prompt used, and (R-73 F4) a file whose ids hold a
-    special id."""
+    prompt alternates a user turn (its ask of CHAT_ASKS and at most chat_chars characters of a file) and an assistant
+    turn (at most chat_chars characters of the next file), renders the turns with the chat template, encodes the text
+    (the template strings become special ids) and cuts the ids to the planned length; BOS stays at position 0. Every
+    prompt skips a file of `exclude` (by path or SHA-256), a file that an earlier prompt used, and (R-73 F4) a file
+    whose ids hold a special id."""
     seed = plan["seed"] if seed is None else seed
     sep = list(encode("\n\n"))
     taken: set[str] = set()
@@ -93,6 +94,7 @@ def build_prompts(src: dict[str, list[Path]], encode, bos: int, base: Path, spec
         used, n_skip, n_excl = [], 0, 0
         ids: list[int] = [bos]
         turns: list[dict] = []
+        ask = CHAT_ASKS[sum(1 for o in out if o["kind"] == "chat") % len(CHAT_ASKS)]
         for f in order + rest:
             if len(ids) >= tokens:
                 break
@@ -125,7 +127,7 @@ def build_prompts(src: dict[str, list[Path]], encode, bos: int, base: Path, spec
             else:
                 user = len(turns) % 2 == 0
                 turns.append({"role": "user" if user else "assistant",
-                              "content": (CHAT_ASK if user else "") + text[:chat_chars]})
+                              "content": (ask if user else "") + text[:chat_chars]})
                 ids = list(encode(render_chat(turns)))
                 if ids[:1] != [bos]:
                     ids = [bos] + ids

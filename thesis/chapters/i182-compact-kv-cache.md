@@ -1,7 +1,7 @@
 # Chapter draft: Does storing the Gemma 4 K=V cache once make decode faster? An exact memory mechanism and a closed byte route (I-182)
 
-Status: DRAFT 1, 2026-11-01; accuracy update after E-53 and R-74 (2026-11-01). Source of truth: `RESEARCH_JOURNAL.md`
-(I-182, E-49 to E-54, R-64 to R-74, D-73 to D-90, Section 7.30). Every number comes from a repository file, and each list or paragraph names its source; "R-72 C4" is
+Status: DRAFT 1, 2026-11-01; accuracy update after E-53 and R-74 (2026-11-01); E-54 amendment after R-75
+(2026-11-02). Source of truth: `RESEARCH_JOURNAL.md` (I-182, E-49 to E-54, R-64 to R-75, D-73 to D-91, Section 7.30). Every number comes from a repository file, and each list or paragraph names its source; "R-72 C4" is
 correction C4 of review R-72. Labels: FACT (measured or read from a source), INTERPRETATION (our reading), HYPOTHESIS
 (not tested). A label before a list or a table covers each item that has no label of its own. Thresholds are project
 heuristics, not literature standards.
@@ -32,7 +32,9 @@ FACT (E-53 README Section 13; R-74): gate G3 ran on real 31B activations on 2026
 FP8 row has 0.57 to 2.38 times the attention error of the standard FP8 cache per global layer, and layer 41 fails
 the preregistered bound (FAIL). INTERPRETATION (R-74): the standard FP8 error itself changes up to 2.4 times with the
 grid phase of the KV scale. With tied per-layer scales (ks = w x vs) the compact row has 0.72 times the stock error
-(POST-HOC, on the same prompts). E-54 (predeclared, not run) tests the tied row on fresh prompts.
+(POST-HOC, on the same prompts). E-54 (predeclared, not run) tests the tied row on fresh prompts, against the stock
+FP8 cache and the best standard FP8 cache of the same scale search (amendment A1 after R-75: the K and V scales are
+searched jointly; in sample the tied row has 1.20 times its error).
 
 ## 2. The mechanism
 
@@ -345,7 +347,8 @@ G2 and G3 (FACT, D-88 and R-72):
 - G3 extracts real K and V of the global layers in one short Pod session (about $2). An offline test then compares the
   compact path with the standard FP8 path, with the FP16 range.
 - FACT (E-53, billed $1.01): G3 ran on 2026-11-01 and gave FAIL for the row at KV scale 1.0. D-90 is open: the user
-  asked for E-54, the scale-tied row with frozen calibrated scales (R-74 recommendation).
+  asked for E-54, the scale-tied row with frozen calibrated scales (R-74 recommendation). R-75 (pre-run review) made
+  its calibrated baseline stronger, and the user chose that baseline (D-91, 2026-11-02).
 
 HYPOTHESIS (R-72): (b) needs about $20 to $40 of GPU time. It gives an end-to-end capacity result by week 6 with a
 probability of 40% to 55%. FACT (R-72): if a gate fails, the fallback is this chapter plus free items.
