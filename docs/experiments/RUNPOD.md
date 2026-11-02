@@ -84,6 +84,7 @@ Terminate the rehearsal Pod, then book the real one.
 |---|---|---|
 | Create returned | Register the id (`pods.py add`) before anything else |  |
 | Pod RUNNING | Save the Pod record JSON; note the start time (UTC) | Wait; do not create a second Pod while the image pulls |
+| Upload and session start | The run script checks each upload, the frozen files and the session process, and exits at once if one fails (E-54 attempt 1: a failed upload left an H100 idle for 30 min) | Delete the Pod; fix the cause before a new create |
 | After setup | `setup done` in the log; telemetry grows; the GPU in `gpu.csv` is the planned GPU | Abort rule 1 (`PROTOCOL.md`) |
 | After the first run | `run.json` ok; no kernel-selection WARNING; the profile table exists | Read `log.txt`; fix only with an amendment |
 | Every hour | Elapsed cost against the cap; balance | Abort rules 2 and 5 |

@@ -298,7 +298,9 @@ review (CONFIRM_WITH_CORRECTIONS). The I-182 line (E-49 to E-54) is the active w
   user, 2026-11-02, "A"): the joint baseline decides R2. A1 also applies F1 to F9 (README corrections, reported
   metrics with position 0 exact, a 600 s copy window, CLOSE 0.01, two chat asks); 17 tests pass. S4 (2026-11-02):
   no rehearsal GPU in stock. D-92 (the user, "Run H100 now"): the H100 run without a rehearsal (A2: a prompt check
-  before the engine start), cap $4, a one-time floor of $9. Next: S6 (the run).
+  before the engine start), cap $4, a one-time floor of $9. S6 attempt 1 (Pod 77qg62l1nyezuy, AP-IN-1) failed
+  before the session: ssh timed out during the upload, and the H100 idled about 30 min (about $2.70, no data)
+  until the main session deleted it. Next: a new attempt (the user; the balance now needs a lower floor).
   0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
@@ -1821,6 +1823,11 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   layer, 4,000 s on the Mac) lowers its error in 9 of 10 layers (up to 15.4%); in sample R2
                   1.20. D-91 (the user): the joint baseline decides R2. F1 to F9 applied; 17 tests pass.
                   Source: dossier/REVIEW_E-54_PRERUN_2026-11-01.md. Ideas: I-182. Experiments: E-54.
+2026-11-02  [P10] E-54 S6 attempt 1 FAILED before the session (D-92): no H100 had capacity for 4 creates; the
+                  5th started Pod 77qg62l1nyezuy in AP-IN-1. ssh timed out during the upload, the run script
+                  did not stop, and the H100 idled about 30 min (about $2.70, no data) until the main session
+                  deleted it. Fix: the run script stops on a failed upload or start (L-24).
+                  Source: experiments/runpod/HARDWARE_LOG.md. Ideas: I-182. Experiments: E-54.
 ```
 
 ---
@@ -5249,7 +5256,11 @@ rehearsal with Gemma 4 E2B, cap $0.60. A1 (R-75): R2 = P_TIED / P_CALSTD_JOINT (
 the separable CALSTD), with R1 and R2 at position 0 exact and the TIED row one phase step up and down reported.
 S4 (2026-11-02): H100 SXM Secure $3.99/h (live), stock LOW; no rehearsal GPU in stock; the live balance is
 below the $35 floor. D-92 (the user, "Run H100 now"): the H100 run without a rehearsal, cap $4, a one-time
-floor of $9, CUDA floor 13.0. Next: S6.
+floor of $9, CUDA floor 13.0. S6 attempt 1 (2026-11-02): after 4 create calls failed for capacity, Pod
+77qg62l1nyezuy (AP-IN-1, $3.99/h) started at 19:44:47 UTC; ssh timed out during the upload, so the session never
+started, and the run script did not stop: the H100 idled until the main session deleted it at 20:25 UTC (about
+$2.70 estimated; no data). The run script now stops on a failed upload or start (L-24). Next: a new attempt (the
+user).
 
 **E-53 Real-activation accuracy of the compact FP8 KV cache of the Gemma 4 31B global layers (gate G3)**
 (predeclared 2026-11-01, I-182, D-88).
@@ -7914,3 +7925,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-11-02: R-75 (Section 6.2); E-54 amendment A1 (Section 6.1 status, Section 3 row I-182, Section 5.27, Section
   1 header and line, Section 4 entry); D-90 text; D-91 (Section 10); Section 8.1 row 74; L-23 in RESEARCH_OUTPUTS.md.
 - 2026-11-02: E-54 amendment A2 and S4 (Section 6.1 status and S4 line, Section 1 line); D-92 (Section 10).
+- 2026-11-02: E-54 S6 attempt 1, failed before the session (Section 6.1 S6 line, Section 1 line, Section 4 entry);
+  L-24 in RESEARCH_OUTPUTS.md; RUNPOD.md Section 5 row; HARDWARE_LOG row.
