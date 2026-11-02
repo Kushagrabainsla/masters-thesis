@@ -478,6 +478,18 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
      view is fp8(K) in another order, so its scores equal the standard storage; V_unrot = fp8(K_unrot) / w) gives
      median ratios 1.00 to 1.30 and largest ratios 1.00 to 1.39. Under the frozen rule this is INCONCLUSIVE (3 layers
      above 1.25), not FAIL.
+  6. FACT (`e53_layout_screen.py`; the layouts and scales were chosen after the FAIL): with a power-of-2 K scale (K
+     stored as 16 K) the standard storage changes by 1% at most (S4/S0 0.99 to 1.01), and the compact and mirror rows
+     keep their scale-1.0 ratios. With per-tensor amax scales (ks = amax|K| / 448, vs = amax|V| / 448) the standard
+     storage itself changes by 0.35 to 1.58 times per layer (SA/S0), and the mirror row with the same scales has 0.97
+     to 1.02 times its error in all 10 layers (MA/SA; the largest prompt 1.03). With these amax scales, ks / vs equals
+     w within 0.5% in every layer (0.9952 to 1.0033).
+  INTERPRETATION (item 6): when ks / vs = w x 2^n, the K view of the compact row, [K_rot / ks | V_unrot / vs], equals
+  the permuted K / ks, so the one stored copy is on the K grid and on the V grid at the same time, and the compact row
+  gives the standard FP8 codes up to the BF16 mismatch of K and w x V. With ks = vs = 1.0 this holds only where w is
+  a power of 2 (layer 29). So the E-53 FAIL is an effect of the scale ratio. A scale-tied row needs no change in the
+  stock kernel (k_descale = ks, v_descale = vs, and the permuted query without w). It needs a preregistered test on
+  fresh captures.
   INTERPRETATION: the compact row rounds the unrotated part of K on the FP8 grid of V, and the standard storage rounds
   K on its own grid. If w is not a power of 2, the two roundings differ, and a few dominant values (the sink token in
   the early layers; HYPOTHESIS: large channels in layer 41) decide which grid wins in each layer. The FAIL is a
