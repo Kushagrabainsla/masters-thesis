@@ -1,0 +1,74 @@
+{
+ "source": "experiments/gemma4_kv_accuracy/results/e53-h100-20261101/e53/prompts.json",
+ "note": "The files of the 4 E-53 prompts (the E-54 calibration set). E-54 test prompts use none of them (V2).",
+ "files": [
+  {
+   "path": "fastapi/.agents/skills/fastapi/references/dependencies.md",
+   "sha256": "2a23535c0554e80022af1ea4234885e967f6eb986352f0c632222544fbe37157"
+  },
+  {
+   "path": "flashinfer/moe_ep/kernel_src/sm100/cutedsl_megamoe/TUNING.md",
+   "sha256": "6ec47db8e09631dd59edb1bc901965d467d31f6d03371362a1ee644aaac82918"
+  },
+  {
+   "path": "flashinfer/moe_ep/kernel_src/sm100/cutedsl_megamoe/VENDOR.md",
+   "sha256": "45b0b0bd38f01e3b85f75f7e71734f94db3e4bf52a040a64e1d8907a69822656"
+  },
+  {
+   "path": "pip/_vendor/README.rst",
+   "sha256": "b7b2229e36a2bb0521f35d9799502940725bf294f0df753c03d511ab2e86945e"
+  },
+  {
+   "path": "torch/_dynamo/repro/after_dynamo.py",
+   "sha256": "875730b18971e774d5d8d210017b6259f0cadd7ddaa5c5453f15c0f27bb569b8"
+  },
+  {
+   "path": "torch/_inductor/codegen/common.py",
+   "sha256": "3b244262921b936fc156ce394a2ae48e068b81bc621656e523f80a3d946f4466"
+  },
+  {
+   "path": "torch/_inductor/fx_passes/serialized_patterns/_sfdp_pattern_30.py",
+   "sha256": "358a44cc2985684d58c136cb3e0bc34030a45ca9cd23a17a5ed9255707256019"
+  },
+  {
+   "path": "torch/distributions/kumaraswamy.py",
+   "sha256": "5757871f08c825e24727988dab74030df577c68a6d3ad448f91f274e58328c99"
+  },
+  {
+   "path": "torch/profiler/_chrome_trace_export.py",
+   "sha256": "2b094256e2e48f513b7d1f7bfcb82b699644140e535ab948131bac2e4ac3c0af"
+  },
+  {
+   "path": "torch/testing/_internal/dynamo_test_failures.py",
+   "sha256": "4473118402f4a8a9557c77ed6a2b1c9306c40ffebad1c607cf2c423f800d1d52"
+  },
+  {
+   "path": "typer/.agents/skills/typer/SKILL.md",
+   "sha256": "9009daf749d0830e86e61f3ec1b4671666835a77e59fb3d5973bbc5f3ccac146"
+  },
+  {
+   "path": "vllm/config/reasoning.py",
+   "sha256": "2c4f7bdee48a9fb3d93787c4c32361c2411417cce452cfde86808d8759977861"
+  },
+  {
+   "path": "vllm/distributed/kv_transfer/kv_connector/v1/nixl/base_worker.py",
+   "sha256": "d9e7acb96d8ed1378b53aa651c211f9e41d26ab5fedd46d2378aaa50d31568e6"
+  },
+  {
+   "path": "vllm/model_executor/layers/fused_moe/prepare_finalize/mori.py",
+   "sha256": "b38ba6a94ee2adfdf153585f6427f353718cc03a2c55818a74066f8927704fb6"
+  },
+  {
+   "path": "vllm/models/deepseek_v32/nvidia/ops/fused_q_cutedsl.py",
+   "sha256": "807f3de51ea063f0a91d199f930cbf0ab9536736f72c49f7c792d5d30234c038"
+  },
+  {
+   "path": "vllm/third_party/fmha_sm100/prefill_q8kv4/interface.py",
+   "sha256": "69628649f14c839f28d7dc2a3c06bdecedc3b3c3a72ccfe4fa4b960ee75e5f5c"
+  },
+  {
+   "path": "vllm/tokenizers/registry.py",
+   "sha256": "66b226a537dd8bf1f5922a440b4352df7a756b8537fbfdf4cc5743d37bcd6472"
+  }
+ ]
+}
