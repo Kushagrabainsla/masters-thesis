@@ -1,0 +1,371 @@
+{
+ "args": {
+  "out": "/workspace/results/e53",
+  "capture": "/workspace/capture_e53",
+  "snapshot": "/workspace/cache/hf/hub/models--google--gemma-4-E2B-it/snapshots/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+  "model_id": "google/gemma-4-E2B-it",
+  "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+  "prompts": "4",
+  "tokens": "8192",
+  "q_rows": "256",
+  "seed": "53",
+  "heads": "8",
+  "kv_heads": "1",
+  "head_dim": "512",
+  "global_layers": "3",
+  "rehearsal": "True",
+  "stub": "False",
+  "stub_gpu": "STUB NVIDIA H100 80GB HBM3",
+  "stub_layers": "2",
+  "stub_tokens": "640",
+  "stub_q_rows": "32",
+  "stub_prompts": "2",
+  "stub_seed": "0",
+  "stub_text_root": "/workspace/code",
+  "stub_w_form": "weight",
+  "stub_q_scale": "2.0",
+  "stub_q_max": "0.0",
+  "stub_big_k": "0.0",
+  "stub_big_k_dim": "0",
+  "stub_break_identity": "False",
+  "stub_swap_heads": "False",
+  "stub_nan": "False",
+  "stub_no_tensors": "False",
+  "stub_fail": "False"
+ },
+ "started_at": "2026-11-01T22:55:01Z",
+ "status": "ok",
+ "stub": false,
+ "rehearsal": true,
+ "model_id": "google/gemma-4-E2B-it",
+ "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+ "plan": {
+  "prompts": 4,
+  "tokens": 8192,
+  "q_rows": 256,
+  "seed": 53,
+  "heads": 8,
+  "kv_heads": 1,
+  "head_dim": 512,
+  "global_layers": 3
+ },
+ "engine_kwargs": {
+  "seed": 0,
+  "enforce_eager": true,
+  "kv_cache_dtype": "auto",
+  "max_model_len": 8448,
+  "max_num_batched_tokens": 8448,
+  "max_num_seqs": 4,
+  "gpu_memory_utilization": 0.85,
+  "enable_prefix_caching": false,
+  "limit_mm_per_prompt": {
+   "image": 0,
+   "audio": 0,
+   "video": 0
+  }
+ },
+ "prompts": [
+  {
+   "id": 0,
+   "seconds": 5.93,
+   "first_token": [
+    236764
+   ],
+   "problems": [],
+   "files": {
+    "4": {
+     "sha256": "570d4218c9dd9e0c4d4f28f7dfdd539734717e535fd97ffc4733cac67bf45f74",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    },
+    "9": {
+     "sha256": "2805ff78e9855cc3a9280d1442469cfa69f1f5e78872cb136ac14ae5c9a250d8",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    },
+    "14": {
+     "sha256": "fbbefdb25819326925d467a090e30b111c10c34190276cde04f8a82da4b7d76f",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    }
+   },
+   "seconds_with_save": 6.25
+  },
+  {
+   "id": 1,
+   "seconds": 0.36,
+   "first_token": [
+    107
+   ],
+   "problems": [],
+   "files": {
+    "4": {
+     "sha256": "94d8355572b23177d6e733dc26138c15974c6a37b2af2cefb496bbd3eaa57c8a",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    },
+    "9": {
+     "sha256": "04fd19799a2249b9e93942e1c88bd926c0e4b701a41736884125c8a7381d09a1",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    },
+    "14": {
+     "sha256": "41e1b473511d08341ffb328ee29e96150408611264607a89b54b0216544260e9",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    }
+   },
+   "seconds_with_save": 0.82
+  },
+  {
+   "id": 2,
+   "seconds": 0.34,
+   "first_token": [
+    236771
+   ],
+   "problems": [],
+   "files": {
+    "4": {
+     "sha256": "aab92d73a4399167c9fcff67969d0180e38f58de883dc35a00e8731813d0761d",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    },
+    "9": {
+     "sha256": "b5d167ddf95377a97f8ca7883e9c19a45b56883ac2b0e72a5db3f6bff82ce1a4",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    },
+    "14": {
+     "sha256": "ef694ab33a51eb7bf584c61cd15511693dece15a7408c470c04e0553ddea9125",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    }
+   },
+   "seconds_with_save": 0.69
+  },
+  {
+   "id": 3,
+   "seconds": 0.34,
+   "first_token": [
+    1201
+   ],
+   "problems": [],
+   "files": {
+    "4": {
+     "sha256": "910219551ec941e57b7fbda05172c2caabf4566c847ecb4792c06b1ef6bb22b5",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    },
+    "9": {
+     "sha256": "7c75f2d926683b04dd337a210f8d471d51a032cc59355af489f6484762064d9d",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    },
+    "14": {
+     "sha256": "237dd7f3e52af516b47a4707303eeaaab558073d302d77f296120b6d784525d6",
+     "bytes": 21041749,
+     "positions_from": [
+      "positions"
+     ]
+    }
+   },
+   "seconds_with_save": 0.69
+  }
+ ],
+ "fail_fast": null,
+ "gpu": {
+  "name": "NVIDIA GeForce RTX 4090",
+  "capability": "8.9",
+  "uuid": "4ff9acf6-4f5b-94a8-0cff-11d3d5939965"
+ },
+ "torch": "2.14.0+cu130",
+ "tokenizer": {
+  "class": "GemmaTokenizer",
+  "bos_token_id": 2,
+  "special_ids": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   98,
+   100,
+   101,
+   105,
+   106,
+   255999,
+   256000,
+   258880,
+   258881,
+   258882,
+   258883,
+   258884
+  ]
+ },
+ "source_files": {
+  "vllm_py": 2559,
+  "torch_py": 1647,
+  "docs": 69,
+  "mixed": 4275
+ },
+ "prompts_built": [
+  {
+   "id": 0,
+   "family": "vllm_py",
+   "n_tokens": 8192,
+   "token_sha256": "91202c8ca5675cf1b3985cf4fbbd9adf50a42ebf161ea4b80dbef02ad7540fca",
+   "special_after_0": 0,
+   "skipped_special": 0,
+   "files": 4
+  },
+  {
+   "id": 1,
+   "family": "torch_py",
+   "n_tokens": 8192,
+   "token_sha256": "32325a18c66b1dbd4e9a6eeaa2f8886f85142fb854b572f945da70cf08d07f37",
+   "special_after_0": 0,
+   "skipped_special": 0,
+   "files": 4
+  },
+  {
+   "id": 2,
+   "family": "docs",
+   "n_tokens": 8192,
+   "token_sha256": "e56621a3a3c5fea68f89ec66e23ad9ea47cbc460295ffe550d98e5eeefe9cd3a",
+   "special_after_0": 0,
+   "skipped_special": 0,
+   "files": 5
+  },
+  {
+   "id": 3,
+   "family": "mixed",
+   "n_tokens": 8192,
+   "token_sha256": "47d53f95e38c1b515f93b8347bff213a87c0f6591f41b21173d088be0b1dd193",
+   "special_after_0": 0,
+   "skipped_special": 0,
+   "files": 4
+  }
+ ],
+ "phases": {
+  "prompts": 4.9,
+  "engine": 31.2,
+  "total": 46.6
+ },
+ "vllm": "0.33.0rc1.dev229+g3966924d5",
+ "engine": {
+  "compilation_mode": "NONE",
+  "cudagraph_mode": "NONE",
+  "cache_dtype": "auto",
+  "block_size": 16,
+  "model_dtype": "torch.bfloat16",
+  "max_model_len": 8448,
+  "max_num_batched_tokens": 8448,
+  "quantization": "None",
+  "architectures": [
+   "Gemma4ForConditionalGeneration"
+  ],
+  "multiprocessing_env": "0"
+ },
+ "config": {
+  "global_layers": [
+   4,
+   9,
+   14
+  ],
+  "layer_types_count": 35,
+  "num_attention_heads": "8",
+  "num_key_value_heads": "1",
+  "num_global_key_value_heads": "None",
+  "head_dim": "per-layer ['512']",
+  "global_head_dim": "None",
+  "attention_k_eq_v": "False",
+  "num_kv_shared_layers": "20",
+  "rms_norm_eps": "1e-06",
+  "rope_parameters": "{'full_attention': {'partial_rotary_factor': 0.25, 'rope_theta': 1000000.0, 'rope_type': 'proportional'}, 'sliding_attention': {'rope_theta': 10000.0, 'rope_type': 'default'}}"
+ },
+ "hooks": {
+  "route": "LLM.apply_model",
+  "hooked": [
+   {
+    "layer": 4,
+    "name": "language_model.model.layers.4.self_attn.attn",
+    "num_heads": 8,
+    "num_kv_heads": 1,
+    "head_size": 512,
+    "head_size_v": 512,
+    "sliding_window": null,
+    "kv_cache_dtype": "auto",
+    "k_norm": {
+     "class": "RMSNorm",
+     "has_weight": true,
+     "eps": 1e-06
+    }
+   },
+   {
+    "layer": 9,
+    "name": "language_model.model.layers.9.self_attn.attn",
+    "num_heads": 8,
+    "num_kv_heads": 1,
+    "head_size": 512,
+    "head_size_v": 512,
+    "sliding_window": null,
+    "kv_cache_dtype": "auto",
+    "k_norm": {
+     "class": "RMSNorm",
+     "has_weight": true,
+     "eps": 1e-06
+    }
+   },
+   {
+    "layer": 14,
+    "name": "language_model.model.layers.14.self_attn.attn",
+    "num_heads": 8,
+    "num_kv_heads": 1,
+    "head_size": 512,
+    "head_size_v": 512,
+    "sliding_window": null,
+    "kv_cache_dtype": "auto",
+    "k_norm": {
+     "class": "RMSNorm",
+     "has_weight": true,
+     "eps": 1e-06
+    }
+   }
+  ]
+ },
+ "k_norm_layers": [
+  4,
+  9,
+  14
+ ],
+ "finished_at": "2026-11-01T22:55:47Z"
+}

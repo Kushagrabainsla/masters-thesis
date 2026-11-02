@@ -1,0 +1,171 @@
+{
+ "args": {
+  "out": "/workspace/results/e53",
+  "capture": "/workspace/capture_e53",
+  "snapshot": "/workspace/cache/hf/hub/models--google--gemma-4-E2B-it/snapshots/3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+  "model_id": "google/gemma-4-E2B-it",
+  "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+  "prompts": "4",
+  "tokens": "8192",
+  "q_rows": "256",
+  "seed": "53",
+  "heads": "8",
+  "kv_heads": "1",
+  "head_dim": "512",
+  "global_layers": "3",
+  "rehearsal": "True",
+  "stub": "False",
+  "stub_gpu": "STUB NVIDIA H100 80GB HBM3",
+  "stub_layers": "2",
+  "stub_tokens": "640",
+  "stub_q_rows": "32",
+  "stub_prompts": "2",
+  "stub_seed": "0",
+  "stub_text_root": "/workspace/code",
+  "stub_w_form": "weight",
+  "stub_q_scale": "2.0",
+  "stub_q_max": "0.0",
+  "stub_big_k": "0.0",
+  "stub_big_k_dim": "0",
+  "stub_break_identity": "False",
+  "stub_swap_heads": "False",
+  "stub_nan": "False",
+  "stub_no_tensors": "False",
+  "stub_fail": "False"
+ },
+ "started_at": "2026-11-01T22:34:02Z",
+ "status": "error",
+ "stub": false,
+ "rehearsal": true,
+ "model_id": "google/gemma-4-E2B-it",
+ "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7",
+ "plan": {
+  "prompts": 4,
+  "tokens": 8192,
+  "q_rows": 256,
+  "seed": 53,
+  "heads": 8,
+  "kv_heads": 1,
+  "head_dim": 512,
+  "global_layers": 3
+ },
+ "engine_kwargs": {
+  "seed": 0,
+  "enforce_eager": true,
+  "kv_cache_dtype": "auto",
+  "max_model_len": 8448,
+  "max_num_batched_tokens": 8448,
+  "max_num_seqs": 4,
+  "gpu_memory_utilization": 0.85,
+  "enable_prefix_caching": false,
+  "limit_mm_per_prompt": {
+   "image": 0,
+   "audio": 0,
+   "video": 0
+  }
+ },
+ "prompts": [],
+ "fail_fast": null,
+ "gpu": {
+  "name": "NVIDIA GeForce RTX 4090",
+  "capability": "8.9",
+  "uuid": "43e3121b-505b-7d90-a8bc-e2102f7ebe43"
+ },
+ "torch": "2.14.0+cu130",
+ "tokenizer": {
+  "class": "GemmaTokenizer",
+  "bos_token_id": 2,
+  "special_ids": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   98,
+   100,
+   101,
+   105,
+   106,
+   255999,
+   256000,
+   258880,
+   258881,
+   258882,
+   258883,
+   258884
+  ]
+ },
+ "source_files": {
+  "vllm_py": 2559,
+  "torch_py": 1647,
+  "docs": 69,
+  "mixed": 4275
+ },
+ "prompts_built": [
+  {
+   "id": 0,
+   "family": "vllm_py",
+   "n_tokens": 8192,
+   "token_sha256": "91202c8ca5675cf1b3985cf4fbbd9adf50a42ebf161ea4b80dbef02ad7540fca",
+   "special_after_0": 0,
+   "skipped_special": 0,
+   "files": 4
+  },
+  {
+   "id": 1,
+   "family": "torch_py",
+   "n_tokens": 8192,
+   "token_sha256": "32325a18c66b1dbd4e9a6eeaa2f8886f85142fb854b572f945da70cf08d07f37",
+   "special_after_0": 0,
+   "skipped_special": 0,
+   "files": 4
+  },
+  {
+   "id": 2,
+   "family": "docs",
+   "n_tokens": 8192,
+   "token_sha256": "e56621a3a3c5fea68f89ec66e23ad9ea47cbc460295ffe550d98e5eeefe9cd3a",
+   "special_after_0": 0,
+   "skipped_special": 0,
+   "files": 5
+  },
+  {
+   "id": 3,
+   "family": "mixed",
+   "n_tokens": 8192,
+   "token_sha256": "47d53f95e38c1b515f93b8347bff213a87c0f6591f41b21173d088be0b1dd193",
+   "special_after_0": 0,
+   "skipped_special": 0,
+   "files": 4
+  }
+ ],
+ "phases": {
+  "prompts": 3.5,
+  "engine": 29.2
+ },
+ "vllm": "0.33.0rc1.dev229+g3966924d5",
+ "engine": {
+  "compilation_mode": "NONE",
+  "cudagraph_mode": "NONE",
+  "cache_dtype": "auto",
+  "block_size": 16,
+  "model_dtype": "torch.bfloat16",
+  "max_model_len": 8448,
+  "max_num_batched_tokens": 8448,
+  "quantization": "None",
+  "architectures": [
+   "Gemma4ForConditionalGeneration"
+  ],
+  "multiprocessing_env": "0"
+ },
+ "error": "AmbiguousGlobalPerLayerAttributeError: 'head_dim' is a per-layer attribute and may vary across layers. Access it via the individual layer configs instead (e.g. config.per_layer_config[i].head_dim). To read the global config value from config.head_dim anyway, set `allow_global_per_layer_attribute_access` to `True` on the config. Warning: only do this if the caller can safely handle heterogeneous configs; code that assumes a homogeneous model may use the global value incorrectly.",
+ "traceback": "Traceback (most recent call last):\n  File \"/workspace/code/gemma4_kv_accuracy/capture_e53.py\", line 560, in main\n    k: str(getattr(cfg, k, None)) for k in (\"num_attention_heads\", \"num_key_value_heads\",\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/transformers/configuration_utils.py\", line 652, in __getattribute__\n    return super().__getattribute__(key)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/usr/local/lib/python3.12/dist-packages/transformers/integrations/heterogeneity/configuration_utils.py\", line 298, in __getattribute__\n    raise AmbiguousGlobalPerLayerAttributeError(\ntransformers.integrations.heterogeneity.configuration_utils.AmbiguousGlobalPerLayerAttributeError: 'head_dim' is a per-layer attribute and may vary across layers. Access it via the individual layer configs instead (e.g. config.per_layer_config[i].head_dim). To read the global config value from config.head_dim anyway, set `allow_global_per_layer_attribute_access` to `True` on the config. Warning: only do this if the caller can safely handle heterogeneous configs; code that assumes a homogeneous model may use the global value incorrectly.\n",
+ "finished_at": "2026-11-01T22:34:36Z"
+}

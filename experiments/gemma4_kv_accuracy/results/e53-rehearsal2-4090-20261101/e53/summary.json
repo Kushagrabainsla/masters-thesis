@@ -1,0 +1,552 @@
+{
+ "capture_status": "ok",
+ "fail_fast": null,
+ "stub": false,
+ "rehearsal": true,
+ "plan": {
+  "prompts": 4,
+  "tokens": 8192,
+  "q_rows": 256,
+  "seed": 53,
+  "heads": 8,
+  "kv_heads": 1,
+  "head_dim": 512,
+  "global_layers": 3
+ },
+ "gpu": {
+  "name": "NVIDIA GeForce RTX 4090",
+  "capability": "8.9",
+  "uuid": "4ff9acf6-4f5b-94a8-0cff-11d3d5939965"
+ },
+ "versions": {
+  "vllm": "0.33.0rc1.dev229+g3966924d5",
+  "torch": "2.14.0+cu130"
+ },
+ "engine": {
+  "compilation_mode": "NONE",
+  "cudagraph_mode": "NONE",
+  "cache_dtype": "auto",
+  "block_size": 16,
+  "model_dtype": "torch.bfloat16",
+  "max_model_len": 8448,
+  "max_num_batched_tokens": 8448,
+  "quantization": "None",
+  "architectures": [
+   "Gemma4ForConditionalGeneration"
+  ],
+  "multiprocessing_env": "0"
+ },
+ "config": {
+  "global_layers": [
+   4,
+   9,
+   14
+  ],
+  "layer_types_count": 35,
+  "num_attention_heads": "8",
+  "num_key_value_heads": "1",
+  "num_global_key_value_heads": "None",
+  "head_dim": "per-layer ['512']",
+  "global_head_dim": "None",
+  "attention_k_eq_v": "False",
+  "num_kv_shared_layers": "20",
+  "rms_norm_eps": "1e-06",
+  "rope_parameters": "{'full_attention': {'partial_rotary_factor': 0.25, 'rope_theta': 1000000.0, 'rope_type': 'proportional'}, 'sliding_attention': {'rope_theta': 10000.0, 'rope_type': 'default'}}"
+ },
+ "hooks": {
+  "route": "LLM.apply_model"
+ },
+ "prompts": [
+  {
+   "id": 0,
+   "family": "vllm_py",
+   "n_tokens": 8192,
+   "token_sha256": "91202c8ca5675cf1b3985cf4fbbd9adf50a42ebf161ea4b80dbef02ad7540fca",
+   "special_after_0": 0,
+   "skipped_special": 0
+  },
+  {
+   "id": 1,
+   "family": "torch_py",
+   "n_tokens": 8192,
+   "token_sha256": "32325a18c66b1dbd4e9a6eeaa2f8886f85142fb854b572f945da70cf08d07f37",
+   "special_after_0": 0,
+   "skipped_special": 0
+  },
+  {
+   "id": 2,
+   "family": "docs",
+   "n_tokens": 8192,
+   "token_sha256": "e56621a3a3c5fea68f89ec66e23ad9ea47cbc460295ffe550d98e5eeefe9cd3a",
+   "special_after_0": 0,
+   "skipped_special": 0
+  },
+  {
+   "id": 3,
+   "family": "mixed",
+   "n_tokens": 8192,
+   "token_sha256": "47d53f95e38c1b515f93b8347bff213a87c0f6591f41b21173d088be0b1dd193",
+   "special_after_0": 0,
+   "skipped_special": 0
+  }
+ ],
+ "metrics_device": "cuda",
+ "metrics_gpu": "NVIDIA GeForce RTX 4090",
+ "metrics_seconds": 3.1,
+ "checks": {
+  "V1": false,
+  "V2": true,
+  "V3": false,
+  "V4": true,
+  "V5": true,
+  "_gpu": "NVIDIA GeForce RTX 4090",
+  "_v2_problems": [],
+  "_v2_count": 0,
+  "_identity_max": 1.3939733559218483,
+  "_identity_failures": [
+   [
+    "0",
+    "4",
+    1.3915070047052052
+   ],
+   [
+    "0",
+    "9",
+    1.316993395749077
+   ],
+   [
+    "0",
+    "14",
+    1.322116062172132
+   ],
+   [
+    "1",
+    "4",
+    1.3916352326015953
+   ],
+   [
+    "1",
+    "9",
+    1.3179699385867554
+   ],
+   [
+    "1",
+    "14",
+    1.3210430441475682
+   ],
+   [
+    "2",
+    "4",
+    1.3939733559218483
+   ],
+   [
+    "2",
+    "9",
+    1.320783432945745
+   ],
+   [
+    "2",
+    "14",
+    1.3119984967420524
+   ],
+   [
+    "3",
+    "4",
+    1.3909247754734537
+   ],
+   [
+    "3",
+    "9",
+    1.3178748795464112
+   ],
+   [
+    "3",
+    "14",
+    1.320345734815855
+   ]
+  ],
+  "_w_failures": [
+   [
+    "0",
+    "4"
+   ],
+   [
+    "0",
+    "9"
+   ],
+   [
+    "0",
+    "14"
+   ],
+   [
+    "1",
+    "4"
+   ],
+   [
+    "1",
+    "9"
+   ],
+   [
+    "1",
+    "14"
+   ],
+   [
+    "2",
+    "4"
+   ],
+   [
+    "2",
+    "9"
+   ],
+   [
+    "2",
+    "14"
+   ],
+   [
+    "3",
+    "4"
+   ],
+   [
+    "3",
+    "9"
+   ],
+   [
+    "3",
+    "14"
+   ]
+  ],
+  "_ref_nonfinite": [],
+  "_engine_gap_max": 0.0017090025480505895,
+  "_engine_failures": [],
+  "_metrics_status": "ok",
+  "_metrics_errors": [],
+  "_sha_checked": 12
+ },
+ "layers": {
+  "4": {
+   "prompts": 4,
+   "err_std": [
+    0.01747483282523814,
+    0.018316010175046745,
+    0.016029338503282423,
+    0.01771338536993129
+   ],
+   "err_cmp": [
+    0.7312426821274024,
+    0.7183106619311364,
+    0.6840419949646467,
+    0.6643373352210293
+   ],
+   "ratio": [
+    41.84547511500656,
+    39.217638288372655,
+    42.67437454294021,
+    37.50482030096578
+   ],
+   "ratio_fp16": [
+    41.83679759815746,
+    39.219228897235766,
+    42.67518309406337,
+    37.51009112148143
+   ],
+   "ratio_used": [
+    41.84547511500656,
+    39.219228897235766,
+    42.67518309406337,
+    37.51009112148143
+   ],
+   "finite": true,
+   "med_ratio": 40.53155670168961,
+   "med_ratio_used": 40.53235200612116,
+   "max_ratio_used": 42.67518309406337,
+   "med_std": 0.017594109097584715,
+   "med_cmp": 0.7011763284478916,
+   "ratio_of_medians": 39.8529032961463,
+   "ratio_of_maxima": 39.92368835455379,
+   "q_max": 13.6875,
+   "nonfinite_fp16": 0,
+   "sat_std_count": 0,
+   "sat_cmp_count": 0,
+   "sat_std_kunrot_count": 0,
+   "sat_share_krot_std": 0.0,
+   "sat_share_krot_cmp": 0.0,
+   "sat_std": 0.0,
+   "sat_cmp": 0.0,
+   "sub_std": 0.09239727258682251,
+   "sub_cmp": 0.04770183563232422,
+   "flush_std": 0.006855487823486328,
+   "flush_cmp": 0.0036981582641601564,
+   "identity_max": 1.3939733559218483,
+   "identity_token_max": 1.5848048748958963,
+   "w_forms": [
+    "weight"
+   ],
+   "w_match": false,
+   "w_module": true,
+   "engine_gap_max": 0.001690668856219069,
+   "rope_after": false,
+   "rope_resid_max": 0.9890395392718334,
+   "rope_resid_no_rope_min": 0.9998743695485891,
+   "exploratory": {
+    "err_cmp_wdata": 0.669683982630086,
+    "err_std_fp16": 0.017594678692407672,
+    "err_cmp_fp16": 0.7011762934941492,
+    "err_std_head_max": 0.021775629408261596,
+    "err_cmp_head_max": 0.8529995060788585,
+    "err_std_score": 0.0124820830748881,
+    "err_std_value": 0.012653565851385388,
+    "err_cmp_score": 0.7012752347192606,
+    "err_cmp_value": 0.7011761258433364,
+    "err_cmp_e5m2": 0.7009239998217097,
+    "ratio_e5m2": 40.49970747504713,
+    "ratio_score": 57.29502249225217,
+    "kview_max_pre": 22.0,
+    "vview_max_pre": 22.0,
+    "q_max_raw": 13.6875
+   },
+   "pass": {
+    "median": false,
+    "largest": false,
+    "q": true,
+    "fp16": true,
+    "sat": true
+   }
+  },
+  "9": {
+   "prompts": 4,
+   "err_std": [
+    0.022423286653802315,
+    0.03098544427889387,
+    0.024436044475917892,
+    0.021680600027853818
+   ],
+   "err_cmp": [
+    0.8725777450316582,
+    1.0015816404667202,
+    0.9598994037323788,
+    0.8309541422853373
+   ],
+   "ratio": [
+    38.91390938819824,
+    32.324262690948736,
+    39.28211068196307,
+    38.32708233248995
+   ],
+   "ratio_fp16": [
+    38.912955532237596,
+    32.3240863014941,
+    39.283085157601555,
+    38.32577934912067
+   ],
+   "ratio_used": [
+    38.91390938819824,
+    32.324262690948736,
+    39.283085157601555,
+    38.32708233248995
+   ],
+   "finite": true,
+   "med_ratio": 38.62049586034409,
+   "med_ratio_used": 38.62049586034409,
+   "max_ratio_used": 39.283085157601555,
+   "med_std": 0.023429665564860105,
+   "med_cmp": 0.9162385743820185,
+   "ratio_of_medians": 39.105917745415724,
+   "ratio_of_maxima": 32.324262690948736,
+   "q_max": 16.625,
+   "nonfinite_fp16": 0,
+   "sat_std_count": 0,
+   "sat_cmp_count": 0,
+   "sat_std_kunrot_count": 0,
+   "sat_share_krot_std": 0.0,
+   "sat_share_krot_cmp": 0.0,
+   "sat_std": 0.0,
+   "sat_cmp": 0.0,
+   "sub_std": 0.13167649507522583,
+   "sub_cmp": 0.09183731079101562,
+   "flush_std": 0.011808574199676514,
+   "flush_cmp": 0.010164690017700196,
+   "identity_max": 1.320783432945745,
+   "identity_token_max": 1.4900201631841066,
+   "w_forms": [
+    "weight"
+   ],
+   "w_match": false,
+   "w_module": true,
+   "engine_gap_max": 0.0017054084527455171,
+   "rope_after": false,
+   "rope_resid_max": 0.987674578450092,
+   "rope_resid_no_rope_min": 0.9998932061126256,
+   "exploratory": {
+    "err_cmp_wdata": 0.8312555069523642,
+    "err_std_fp16": 0.023429636117677732,
+    "err_cmp_fp16": 0.9162385279015235,
+    "err_std_head_max": 0.03356855397256721,
+    "err_cmp_head_max": 0.9998280240851309,
+    "err_std_score": 0.017718065800808102,
+    "err_std_value": 0.012228200290197257,
+    "err_cmp_score": 0.9162695877227771,
+    "err_cmp_value": 0.9163159234830177,
+    "err_cmp_e5m2": 0.9164193647092485,
+    "ratio_e5m2": 38.61057195717349,
+    "ratio_score": 50.454844805539054,
+    "kview_max_pre": 14.3125,
+    "vview_max_pre": 21.375,
+    "q_max_raw": 16.625
+   },
+   "pass": {
+    "median": false,
+    "largest": false,
+    "q": true,
+    "fp16": true,
+    "sat": true
+   }
+  },
+  "14": {
+   "prompts": 4,
+   "err_std": [
+    0.015559347289577252,
+    0.01916316987204387,
+    0.019168892206809326,
+    0.01940672088032518
+   ],
+   "err_cmp": [
+    0.6673569300338077,
+    0.7344817558454302,
+    0.7753212753974603,
+    0.7170997097545967
+   ],
+   "ratio": [
+    42.89106204865357,
+    38.32777983755843,
+    40.446848311977284,
+    36.95110133116837
+   ],
+   "ratio_fp16": [
+    42.901340403477754,
+    38.337124859314095,
+    40.449145254260706,
+    36.949500550581845
+   ],
+   "ratio_used": [
+    42.901340403477754,
+    38.337124859314095,
+    40.449145254260706,
+    36.95110133116837
+   ],
+   "finite": true,
+   "med_ratio": 39.38731407476786,
+   "med_ratio_used": 39.3931350567874,
+   "max_ratio_used": 42.901340403477754,
+   "med_std": 0.019166031039426597,
+   "med_cmp": 0.7257907328000135,
+   "ratio_of_medians": 37.86859842327206,
+   "ratio_of_maxima": 39.951173625807776,
+   "q_max": 11.875,
+   "nonfinite_fp16": 0,
+   "sat_std_count": 0,
+   "sat_cmp_count": 0,
+   "sat_std_kunrot_count": 0,
+   "sat_share_krot_std": 0.0,
+   "sat_share_krot_cmp": 0.0,
+   "sat_std": 0.0,
+   "sat_cmp": 0.0,
+   "sub_std": 0.15006449818611145,
+   "sub_cmp": 0.14513177871704103,
+   "flush_std": 0.02177530527114868,
+   "flush_cmp": 0.027958059310913087,
+   "identity_max": 1.322116062172132,
+   "identity_token_max": 1.4663420445568454,
+   "w_forms": [
+    "weight"
+   ],
+   "w_match": false,
+   "w_module": true,
+   "engine_gap_max": 0.0017090025480505895,
+   "rope_after": false,
+   "rope_resid_max": 0.9974036144318237,
+   "rope_resid_no_rope_min": 0.9998879242042972,
+   "exploratory": {
+    "err_cmp_wdata": 0.7053167745031904,
+    "err_std_fp16": 0.019163151855274646,
+    "err_cmp_fp16": 0.725790773748723,
+    "err_std_head_max": 0.02719928349493484,
+    "err_cmp_head_max": 0.8632149507744573,
+    "err_std_score": 0.014453153882047768,
+    "err_std_value": 0.011323746769760785,
+    "err_cmp_score": 0.7258507755273758,
+    "err_cmp_value": 0.7258466420553649,
+    "err_cmp_e5m2": 0.7254575849972702,
+    "ratio_e5m2": 39.36809503318736,
+    "ratio_score": 52.23658706920824,
+    "kview_max_pre": 17.0,
+    "vview_max_pre": 22.125,
+    "q_max_raw": 11.875
+   },
+   "pass": {
+    "median": false,
+    "largest": false,
+    "q": true,
+    "fp16": true,
+    "sat": true
+   }
+  }
+ },
+ "q_max": 16.625,
+ "ledger_metrics": {
+  "err_std": {
+   "values": [
+    0.01747483282523814,
+    0.018316010175046745,
+    0.016029338503282423,
+    0.01771338536993129,
+    0.022423286653802315,
+    0.03098544427889387,
+    0.024436044475917892,
+    0.021680600027853818,
+    0.015559347289577252,
+    0.01916316987204387,
+    0.019168892206809326,
+    0.01940672088032518
+   ],
+   "unit": "relative L2 error",
+   "higher_is_better": false
+  },
+  "err_cmp": {
+   "values": [
+    0.7312426821274024,
+    0.7183106619311364,
+    0.6840419949646467,
+    0.6643373352210293,
+    0.8725777450316582,
+    1.0015816404667202,
+    0.9598994037323788,
+    0.8309541422853373,
+    0.6673569300338077,
+    0.7344817558454302,
+    0.7753212753974603,
+    0.7170997097545967
+   ],
+   "unit": "relative L2 error",
+   "higher_is_better": false
+  },
+  "ratio": {
+   "values": [
+    41.84547511500656,
+    39.217638288372655,
+    42.67437454294021,
+    37.50482030096578,
+    38.91390938819824,
+    32.324262690948736,
+    39.28211068196307,
+    38.32708233248995,
+    42.89106204865357,
+    38.32777983755843,
+    40.446848311977284,
+    36.95110133116837
+   ],
+   "unit": "err_cmp / err_std",
+   "higher_is_better": false
+  }
+ },
+ "decision": "REHEARSAL INVALID (V1, V3: V1 GPU 'NVIDIA GeForce RTX 4090'; V3 largest identity error 1.3939733559218483, layers without a module w or a match [('0', '4'), ('0', '9'), ('0', '14'), ('1', '4'), ('1', '9'), ('1', '14'), ('2', '4'), ('2', '9'), ('2', '14'), ('3', '4'), ('3', '9'), ('3', '14')]; action: fix the cause; a rerun needs a new S4)"
+}

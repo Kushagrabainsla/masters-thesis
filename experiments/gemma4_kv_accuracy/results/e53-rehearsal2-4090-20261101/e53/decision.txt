@@ -1,0 +1,1 @@
+REHEARSAL INVALID (V1, V3: V1 GPU 'NVIDIA GeForce RTX 4090'; V3 largest identity error 1.3939733559218483, layers without a module w or a match [('0', '4'), ('0', '9'), ('0', '14'), ('1', '4'), ('1', '9'), ('1', '14'), ('2', '4'), ('2', '9'), ('2', '14'), ('3', '4'), ('3', '9'), ('3', '14')]; action: fix the cause; a rerun needs a new S4)

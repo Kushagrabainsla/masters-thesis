@@ -4,8 +4,9 @@ Status: PREDECLARED 2026-11-01. (A1) AMENDED A1 2026-11-01 after the S2 review R
 `dossier/REVIEW_E-53_PRERUN_2026-11-01.md`), before any data. (A2) AMENDED A2 2026-11-01 after S5 rehearsal 1 (a bug
 in the run record), before any data. (A3) AMENDED A3 2026-11-01 after S5 rehearsal 2 (the copy). S5 PASS (rehearsal
 2). RUN 2026-11-01 on the H100: frozen decision FAIL (layer 41: median per-prompt ratio 2.38; Section 13). Post-run
-review R-74 pending. S4: D-89 (the user approved the rehearsal and the H100 run
-on 2026-11-01, "Run both", with a one-time $10 balance floor).
+review R-74 (2026-11-01, Sonnet): CONFIRM_WITH_CORRECTIONS (`dossier/REVIEW_E-53_POSTRUN_2026-11-01.md`); the FAIL
+stands; its corrections C1 to C9 are marked "(R-74 Cn)" in Sections 10 and 13. S4: D-89 (the user approved the
+rehearsal and the H100 run on 2026-11-01, "Run both", with a one-time $10 balance floor).
 Idea: I-182. Gate: G3 of D-88 (after G1 PASS and G2 PASS, `dossier/GATE_G1_PAGESIZE_I-182_2026-11-01.md` and
 `dossier/GATE_G2_UPSTREAM_I-182_2026-11-01.md`). Journal entry: Section 6.1 E-53 (the main session adds it).
 Labels: FACT (a source, a log or a computation was read), INTERPRETATION (reasoning), HYPOTHESIS (not tested).
@@ -235,6 +236,9 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
   (`softmax_scale=self.scale`, `flash_attn.py` 1413, 1500, 1590, 1622 and 1698). HYPOTHESIS: the FA4 FP8 path accepts
   a scale other than 1.0 (not tested; week 2 tests it).
   The decision text names the action.
+- (R-74, POST-HOC; the rule above is unchanged) The null of this rule is wide. For an equivalent storage (a standard
+  FP8 cache at another K grid phase), the rule gives FAIL in 25% of draws, and its PASS median condition holds in 8%
+  (Section 13, post-run review).
 
 ## 8. Controls and baselines
 - Baseline: the standard FP8 storage (the engine's FP8 KV path with scale 1.0) on the same tensors.
@@ -321,6 +325,11 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
 - The engine compute dtype: the decision compares the storages with float32 compute and (A1) with the FP16 emulation.
   The stock FA4 FP8 path computes in FP16, and the FA3 path quantizes Q to FP8 (flash_attn.py 1276 to 1296). The FA3
   path is not emulated.
+  (R-74 C5) FACT: vLLM 3966924d5 pins flash-attention b273a02 (`cmake/external_projects/vllm_flash_attn.cmake`,
+  checked by the author). Its SM90 FP8 path converts the FP8 values to FP16 without a scale and computes in FP16. The
+  q and k descales fold into the score scale, and the v descale into the final normalization. So the E-53 FP16
+  emulation models the pinned kernel. The `main` branch of flash-attention changed this path to FP8 tensor-core
+  products (Q split into two E4M3 terms at scale 1). E-53 does not model that kernel.
 - Prefill queries at 8,192 tokens, not decode at 32K to 64K. HYPOTHESIS: the FP8 error per key does not depend on the
   context length, so the relative output error changes little with more keys. Longer contexts are not tested ((A1) R-73
   O1 is not adopted; Amendments).
@@ -333,6 +342,9 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
   not tested here.
 - (A1) The V5 bound (0.05) is an estimate: nobody checked the rounding inside the FA4 BF16 kernel (R-73). The
   rehearsal gives a Triton value, not an FA4 value.
+  (R-74 C8) The run gave at most 0.0017, 29 times below the bound. The wrong setups that R-74 tried (interleaved
+  heads, rolled KV heads, no mask, the scale 1/sqrt(512), query positions shifted by one) give 0.22 to 1.17. A next
+  experiment uses 0.005.
 - (A1) The copy of 3.1 GB can take longer than the 300 s window on a slow link; then a 0-GPU start finishes it
   (Section 9). Its price is not read here.
 - Not in E-53: the condition C2 of G1 (the P3 flag log lines and the sliding block-16 timing). It needs another engine
@@ -463,38 +475,97 @@ that are not finite; sat_cmp(l) and sat_std(l) are the counts of saturated value
   1. FACT: the k_norm weight is one constant in each global layer (0.0600 to 0.0654 on all 512 dims). In layer 29 it
      is 0.0625 = 2^-4 exactly. A power-of-2 scale does not move a value on the FP8 grid, so in layer 29 the two
      storages round the same values: the identity error is 0 and the ratio is 1.007.
+     (R-74 C9) Correction: this holds for normal values only. In layer 29, 14.35% of the unrotated values still
+     differ between fp8(K) and w x fp8(V) (prompt 0). All of them have |K| below 2^-6, the K subnormal range. The
+     ratio is 1.007 because these small values carry little error. FACT (checked by the author): 16 w is 0.961 to
+     1.047 in the 10 layers, so the K grid sits at most 0.066 octave from the V grid.
   2. FACT: the score path carries the difference. In layer 41 the score-path error is 0.050 (compact) against 0.026
      (standard); the value-path errors are 0.015 and 0.014. The rotated dims give the same score error in both
      storages. The unrotated dims give almost all of the score error (probability-weighted RMS 0.05 to 0.16, against
      0.004 to 0.024 on the rotated dims): in layer 41, 0.138 (compact) against 0.096 (standard); in layer 23, 0.090
      against 0.164 (`e53_score_probe.py`).
+     (R-74 C6) The probe applies no causal mask (`p = softmax(s_ref)`). With the mask (prompt 0, layers 5, 23 and
+     41), the values change by 0.3% to 14%, and no ranking changes.
   3. FACT: the BF16 mismatch of K and w * V is small: the compact path without FP8 has an error of 0 to 0.0094
      against the BF16 reference (0 in layer 29).
   4. FACT: the attention-sink token at position 0 has the same K in all 4 prompts and takes 13% to 19% of the
      attention in layers 5 to 23 (2% to 8% in the others). With position 0 kept in BF16 in both storages, the
      score-path ratio of layer 5 moves from 0.71 to 1.03, of layer 59 from 0.61 to 0.96; in layer 41 (3%) it stays
      at 1.84 (`e53_sink_probe.py`).
+     (R-74 C6) The sink probe applies no causal mask either, so its shares are about 1 to 2 points low. With the
+     mask (prompt 0), the shares are 20% to 21% in layer 5, 14% to 15% in layer 23 and 3% to 4% in layer 41.
+     (R-74 C2) FACT, POST-HOC: in layers 5 and 23 the sink token holds most of the standard error. With token 0
+     exact, the standard error falls from 0.0438 to 0.0149 in layer 5 and from 0.0731 to 0.0202 in layer 23. The
+     layer 23 ratio then goes from 0.56 to 1.62 (prompt 0) and from 0.43 to 1.32 (prompt 1). So the ratios below 1
+     come from one vector that all 4 prompts share.
   5. FACT (`e53_kfirst_probe.py`; a layout chosen after the FAIL): the mirror row [K | V_rot] (also 640 values; the K
      view is fp8(K) in another order, so its scores equal the standard storage; V_unrot = fp8(K_unrot) / w) gives
      median ratios 1.00 to 1.30 and largest ratios 1.00 to 1.39. Under the frozen rule this is INCONCLUSIVE (3 layers
      above 1.25), not FAIL.
+     (R-74 C3) The mirror row at scale 1.0 is not a stock-kernel layout. Its V view needs two V scales (1/w for
+     V_unrot and 1 for V_rot), and one v_descale cannot give both.
   6. FACT (`e53_layout_screen.py`; the layouts and scales were chosen after the FAIL): with a power-of-2 K scale (K
      stored as 16 K) the standard storage changes by 1% at most (S4/S0 0.99 to 1.01), and the compact and mirror rows
      keep their scale-1.0 ratios. With per-tensor amax scales (ks = amax|K| / 448, vs = amax|V| / 448) the standard
      storage itself changes by 0.35 to 1.58 times per layer (SA/S0), and the mirror row with the same scales has 0.97
      to 1.02 times its error in all 10 layers (MA/SA; the largest prompt 1.03). With these amax scales, ks / vs equals
      w within 0.5% in every layer (0.9952 to 1.0033).
+     (R-74 C3) MA/SA tests the mirror row, not the compact row: the mirror scores equal the standard scores by
+     construction. The screen has no scale-tied compact row. The R-74 phase scan (the post-run review below) is the
+     direct test.
   INTERPRETATION (item 6): when ks / vs = w x 2^n, the K view of the compact row, [K_rot / ks | V_unrot / vs], equals
   the permuted K / ks, so the one stored copy is on the K grid and on the V grid at the same time, and the compact row
   gives the standard FP8 codes up to the BF16 mismatch of K and w x V. With ks = vs = 1.0 this holds only where w is
   a power of 2 (layer 29). So the E-53 FAIL is an effect of the scale ratio. A scale-tied row needs no change in the
   stock kernel (k_descale = ks, v_descale = vs, and the permuted query without w). It needs a preregistered test on
   fresh captures.
+  (R-74 C1) Correction: per value, the codes are equal up to the BF16 mismatch, but the mismatch flips 1.6% to 4.7%
+  of the unrotated codes (0% in layer 29; prompt 0; checked by the author). The errors are equal in the median, not
+  per cell. The tied compact over the tied standard has per-layer medians of 0.996 to 1.010 at vs = 1, a per-cell
+  log standard deviation of 0.064 and a range of 0.77 to 1.54 over 640 cells. (R-74 C4) "The FAIL is an effect of
+  the scale ratio" is one-sided: in layer 41 the stock scale 1.0 is also a lucky grid phase. The standard storage
+  with the K scale w is as bad as the compact row (prompt 0: 0.0814 tied standard, 0.0752 tied compact, 0.0282
+  stock; checked by the author).
   INTERPRETATION: the compact row rounds the unrotated part of K on the FP8 grid of V, and the standard storage rounds
   K on its own grid. If w is not a power of 2, the two roundings differ, and a few dominant values (the sink token in
   the early layers; HYPOTHESIS: large channels in layer 41) decide which grid wins in each layer. The FAIL is a
   property of the shared rounding with the KV scale 1.0, not a code error. Both storages also leave K (RMS about
   0.065) partly in the FP8 subnormal range; a calibrated KV scale was not tested.
+  (R-74 C2) FACT, POST-HOC (checked by the author): 4 unrotated dims decide layer 41: 70, 113, 219 and 506. With K
+  exact on these 4 dims in both storages, the ratio falls from 2.66 to 1.01 (prompt 0) and from 2.09 to 1.02 (prompt
+  1). 4 other dims (3, 200, 333 and 480) change nothing. The 4 dims have an RMS |q| of 2.1 to 2.8 and an RMS V of 1.9
+  to 3.2 (layer means 1.07 and 1.0).
+- Post-run review (S9; R-74, 2026-11-01, Sonnet, a different model from the author;
+  `dossier/REVIEW_E-53_POSTRUN_2026-11-01.md`): CONFIRM_WITH_CORRECTIONS. The frozen computation and the FAIL are
+  correct. C1 to C9 change the reading and the record, not the decision.
+  1. FACT (R-74): an independent recompute (its own E4M3 table, float64, an explicit 640-value row) matches all 40
+     cells to 4e-6 relative, with FAIL by layer 41 only. The SHA-256 of the 41 copied files match, the code did not
+     change after A2 (61e4d37), and the 21 tests pass. All 4 layer-41 prompts are above 2. The row-bootstrap interval
+     of each is within 0.06 of its value.
+  2. FACT, POST-HOC (R-74; the author re-ran layer 41, prompts 0 and 1, with the E-53 code and the same digits): the
+     standard FP8 error depends on the grid phase of the K scale. One step of 1/16 octave (4%) changes the layer-41
+     standard error by 2.44 times (the median over the prompts; 2.93 in prompt 0). The stock scale 1.0 is the second
+     best of 16 phases in layer 41. Over all layers, one step changes the error by 1.29 times in the median.
+  3. FACT, POST-HOC (R-74): take an equivalent storage, a standard FP8 cache at a random K grid phase in each layer.
+     The frozen rule gives FAIL in 25% of the draws, and its PASS median condition holds in 8%. The pooled RMS ratio
+     over the 10 layers has a null median of 1.02 and a 95th percentile of 1.19. E-53 gives 1.105 (the 79th
+     percentile). The E5M2 control gives 3.34.
+  4. FACT, POST-HOC, optimistic (R-74; the same 4 prompts): choose the tied scale of each layer on 3 prompts and test
+     it on the 4th. The tied compact row then has per-layer medians of 0.35 to 1.12 times the stock error (0.72
+     pooled). A standard cache with a calibrated K scale gives 0.68 pooled. The tied compact over the calibrated
+     standard is 1.06 pooled (0.88 to 1.43 per layer).
+  5. INTERPRETATION (R-74): the FAIL is weak evidence that the layout stores less than the standard storage. It is
+     firm evidence that the compact row at scale 1.0 is worse than the stock cache in layer 41. The R-73 synthetic
+     estimate (0.90 to 1.07) was too narrow because the real w is one scalar per layer: one grid phase acts on all
+     384 unrotated dims, and a few channels or one token decide a layer.
+  6. (R-74 C7) The small result files of the run and of the two rehearsals are now in git (every file except
+     `capture/`).
+  7. Not checked by R-74: a vLLM or GPU run, the checkpoint's `kv_cache_scheme`, chat prompts, a 32K context, decode
+     queries, another checkpoint and any model-level effect. R-74 re-ran 8 of the 640 phase-scan cells. Why 4
+     channels decide layer 41 is not explained.
+  8. D-90: R-74 recommends E-54, a scale-tied compact row with calibrated scales, tested against the stock cache and
+     a calibrated standard cache on fresh prompts. It recommends a fallback to the BF16 compact build, then to the
+     write-up, if E-54 does not PASS by the end of week 2. This is not a decision (journal D-90).
 
 ## Amendments
 - A1 (2026-11-01, before any data; from R-73, verdict AMEND_THEN_RUN, `dossier/REVIEW_E-53_PRERUN_2026-11-01.md`):

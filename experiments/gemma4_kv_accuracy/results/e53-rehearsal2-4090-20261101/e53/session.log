@@ -1,0 +1,8 @@
+22:55:00 setup done after 20 s; versions: vllm 0.33.0rc1.dev229+g3966924d5 torch 2.14.0+cu130 transformers 5.20.2 VLLM_BUILD_COMMIT=unset 
+22:55:50 capture: exit 0 after 70 s; {"status": "ok", "prompts": 4}
+22:55:50 GPU memory in use before the analysis: 1 MiB
+22:55:55 analysis: exit 0 after 75 s
+22:55:56 decision: REHEARSAL INVALID (V1, V3: V1 GPU 'NVIDIA GeForce RTX 4090'; V3 largest identity error 1.3939733559218483, layers without a module w or a match [('0', '4'), ('0', '9'), ('0', '14'), ('1', '4'), ('1', '9'), ('1', '14'), ('2', '4'), ('2', '9'), ('2', '14'), ('3', '4'), ('3', '9'), ('3', '14')]; action: fix the cause; a rerun needs a new S4)
+22:55:57 captures: 13 files, 256411 KB in /workspace/capture_e53; copy them with RES
+22:55:57 done after 77 s
+22:55:57 AUTO_STOP in 300 s; copy RES and CAPDIR now

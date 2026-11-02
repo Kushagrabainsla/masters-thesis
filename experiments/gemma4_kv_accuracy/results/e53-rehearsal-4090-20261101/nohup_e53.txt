@@ -1,0 +1,8 @@
+22:34:01 setup done after 20 s; versions: vllm 0.33.0rc1.dev229+g3966924d5 torch 2.14.0+cu130 transformers 5.20.2 VLLM_BUILD_COMMIT=unset 
+22:34:39 capture: exit 1 after 58 s; [rank0]: transformers.integrations.heterogeneity.configuration_utils.AmbiguousGlobalPerLayerAttributeError: 'head_dim' is a per-layer attribute and may vary across layers. Access it via the individual layer configs instead (e.g. config.per_layer_config[i].head_dim). To read the global config value f
+22:34:39 GPU memory in use before the analysis: 1 MiB
+22:34:40 analysis: exit 0 after 59 s
+22:34:42 decision: REHEARSAL INVALID (V1, V2, V3, V4, V5: V1 GPU 'NVIDIA GeForce RTX 4090'; V2 the capture status is 'error': AmbiguousGlobalPerLayerAttributeError: 'head_dim' is a per-layer attribute and may vary across layers. Access it via the individual layer configs instead (e.g. config.per_layer_config[i].head_dim). To read the global config value from config.head_dim anyway, set `allow; V3 largest identity error None, layers without a module w or a match []; V4 reference not finite in []; V5 engine gap above 0.05 in []; action: fix the cause; a rerun needs a new S4)
+22:34:42 captures: 0 files, 1 KB in /workspace/capture_e53; copy them with RES
+22:34:42 done after 61 s
+22:34:42 AUTO_STOP in 300 s; copy RES and CAPDIR now

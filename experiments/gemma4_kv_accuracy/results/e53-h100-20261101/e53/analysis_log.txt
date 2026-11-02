@@ -1,0 +1,5 @@
+metrics: prompt 0 done after 3.6 s
+metrics: prompt 1 done after 6.7 s
+metrics: prompt 2 done after 9.6 s
+metrics: prompt 3 done after 12.5 s
+FAIL (layer 41: median per-prompt ratio 2.38 above 2.0; action: stop the build (D-88); I-182 keeps its exact capacity result; 10 global layers; median err_standard 0.0259 to 0.0736; median per-prompt ratio 0.566 to 2.384 (bound 1.25); largest per-prompt ratio 0.574 to 2.685 (bound 2.0); largest |q'| 19.2 (bound 6,550.0); FP16 values not finite 0; saturated values compact 0 against standard 0; largest engine gap 0.0017)

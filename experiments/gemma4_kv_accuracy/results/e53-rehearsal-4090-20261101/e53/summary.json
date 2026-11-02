@@ -1,0 +1,120 @@
+{
+ "capture_status": "error",
+ "fail_fast": null,
+ "stub": false,
+ "rehearsal": true,
+ "plan": {
+  "prompts": 4,
+  "tokens": 8192,
+  "q_rows": 256,
+  "seed": 53,
+  "heads": 8,
+  "kv_heads": 1,
+  "head_dim": 512,
+  "global_layers": 3
+ },
+ "gpu": {
+  "name": "NVIDIA GeForce RTX 4090",
+  "capability": "8.9",
+  "uuid": "43e3121b-505b-7d90-a8bc-e2102f7ebe43"
+ },
+ "versions": {
+  "vllm": "0.33.0rc1.dev229+g3966924d5",
+  "torch": "2.14.0+cu130"
+ },
+ "engine": {
+  "compilation_mode": "NONE",
+  "cudagraph_mode": "NONE",
+  "cache_dtype": "auto",
+  "block_size": 16,
+  "model_dtype": "torch.bfloat16",
+  "max_model_len": 8448,
+  "max_num_batched_tokens": 8448,
+  "quantization": "None",
+  "architectures": [
+   "Gemma4ForConditionalGeneration"
+  ],
+  "multiprocessing_env": "0"
+ },
+ "config": null,
+ "hooks": {},
+ "prompts": [
+  {
+   "id": 0,
+   "family": "vllm_py",
+   "n_tokens": 8192,
+   "token_sha256": "91202c8ca5675cf1b3985cf4fbbd9adf50a42ebf161ea4b80dbef02ad7540fca",
+   "special_after_0": 0,
+   "skipped_special": 0
+  },
+  {
+   "id": 1,
+   "family": "torch_py",
+   "n_tokens": 8192,
+   "token_sha256": "32325a18c66b1dbd4e9a6eeaa2f8886f85142fb854b572f945da70cf08d07f37",
+   "special_after_0": 0,
+   "skipped_special": 0
+  },
+  {
+   "id": 2,
+   "family": "docs",
+   "n_tokens": 8192,
+   "token_sha256": "e56621a3a3c5fea68f89ec66e23ad9ea47cbc460295ffe550d98e5eeefe9cd3a",
+   "special_after_0": 0,
+   "skipped_special": 0
+  },
+  {
+   "id": 3,
+   "family": "mixed",
+   "n_tokens": 8192,
+   "token_sha256": "47d53f95e38c1b515f93b8347bff213a87c0f6591f41b21173d088be0b1dd193",
+   "special_after_0": 0,
+   "skipped_special": 0
+  }
+ ],
+ "metrics_device": "cuda",
+ "metrics_gpu": "NVIDIA GeForce RTX 4090",
+ "metrics_seconds": 0.0,
+ "checks": {
+  "V1": false,
+  "V2": false,
+  "V3": false,
+  "V4": false,
+  "V5": false,
+  "_gpu": "NVIDIA GeForce RTX 4090",
+  "_v2_problems": [
+   "the capture status is 'error': AmbiguousGlobalPerLayerAttributeError: 'head_dim' is a per-layer attribute and may vary across layers. Access it via the individual layer configs instead (e.g. config.per_layer_config[i].head_dim). To read the global config value from config.head_dim anyway, set `allow",
+   "the config names no global layer"
+  ],
+  "_v2_count": 2,
+  "_identity_max": null,
+  "_identity_failures": [],
+  "_w_failures": [],
+  "_ref_nonfinite": [],
+  "_engine_gap_max": null,
+  "_engine_failures": [],
+  "_metrics_status": "ok",
+  "_metrics_errors": [],
+  "_sha_checked": 0
+ },
+ "layers": {},
+ "q_max": null,
+ "ledger_metrics": {
+  "err_std": {
+   "values": [],
+   "unit": "relative L2 error",
+   "higher_is_better": false
+  },
+  "err_cmp": {
+   "values": [],
+   "unit": "relative L2 error",
+   "higher_is_better": false
+  },
+  "ratio": {
+   "values": [],
+   "unit": "err_cmp / err_std",
+   "higher_is_better": false
+  }
+ },
+ "decision": "REHEARSAL INVALID (V1, V2, V3, V4, V5: V1 GPU 'NVIDIA GeForce RTX 4090'; V2 the capture status is 'error': AmbiguousGlobalPerLayerAttributeError: 'head_dim' is a per-layer attribute and may vary across layers. Access it via the individual layer configs instead (e.g. config.per_layer_config[i].head_dim). To read the global config value from config.head_dim anyway, set `allow; V3 largest identity error None, layers without a module w or a match []; V4 reference not finite in []; V5 engine gap above 0.05 in []; action: fix the cause; a rerun needs a new S4)"
+}

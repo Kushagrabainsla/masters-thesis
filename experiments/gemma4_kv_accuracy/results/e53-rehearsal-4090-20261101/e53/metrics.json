@@ -1,0 +1,14 @@
+{
+ "started_at": "2026-11-01T22:34:40Z",
+ "device": "cuda",
+ "torch": "2.14.0+cu130",
+ "status": "ok",
+ "prompts": {},
+ "errors": [],
+ "sha_checked": 0,
+ "sha_mismatch": [],
+ "gpu": "NVIDIA GeForce RTX 4090",
+ "k_norm_layers": [],
+ "finished_at": "2026-11-01T22:34:40Z",
+ "seconds": 0.0
+}

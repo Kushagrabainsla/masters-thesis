@@ -1,0 +1,2 @@
+GPU 0: NVIDIA GeForce RTX 4090 (UUID: GPU-43e3121b-505b-7d90-a8bc-e2102f7ebe43)
+Device does not have or support Nvlink

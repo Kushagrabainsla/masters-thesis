@@ -1,0 +1,8 @@
+23:16:16 setup done after 280 s; versions: vllm 0.33.0rc1.dev229+g3966924d5 torch 2.14.0+cu130 transformers 5.20.2 VLLM_BUILD_COMMIT=unset 
+23:18:18 capture: exit 0 after 402 s; {"status": "ok", "prompts": 4}
+23:18:18 GPU memory in use before the analysis: 0 MiB
+23:18:32 analysis: exit 0 after 416 s
+23:18:34 decision: FAIL (layer 41: median per-prompt ratio 2.38 above 2.0; action: stop the build (D-88); I-182 keeps its exact capacity result; 10 global layers; median err_standard 0.0259 to 0.0736; median per-prompt ratio 0.566 to 2.384 (bound 1.25); largest per-prompt ratio 0.574 to 2.685 (bound 2.0); largest |q'| 19.2 (bound 6,550.0); FP16 values not finite 0; saturated values compact 0 against standard 0; largest engine gap 0.0017)
+23:18:36 captures: 41 files, 3279584 KB in /workspace/capture_e53; copy them with RES
+23:18:36 done after 420 s
+23:18:36 AUTO_STOP in 300 s; copy RES and CAPDIR now

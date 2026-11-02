@@ -1,0 +1,115 @@
+{
+ "run_id": "e53-rehearsal2-4090-20261101",
+ "experiment": "E-53",
+ "idea": "I-182",
+ "status": "ok",
+ "label": "e53-rehearsal2-4090-20261101",
+ "design_commit": "61e4d37",
+ "config": {
+  "plan": {
+   "prompts": 4,
+   "tokens": 8192,
+   "q_rows": 256,
+   "seed": 53,
+   "heads": 8,
+   "kv_heads": 1,
+   "head_dim": 512,
+   "global_layers": 3
+  },
+  "engine": {
+   "seed": 0,
+   "enforce_eager": true,
+   "kv_cache_dtype": "auto",
+   "max_model_len": 8448,
+   "max_num_batched_tokens": 8448,
+   "max_num_seqs": 4,
+   "gpu_memory_utilization": 0.85,
+   "enable_prefix_caching": false,
+   "limit_mm_per_prompt": {
+    "image": 0,
+    "audio": 0,
+    "video": 0
+   }
+  },
+  "rehearsal": true,
+  "model_id": "google/gemma-4-E2B-it",
+  "revision": "3e22461f65e89153144f8adb70e3b8c2cc9845a7"
+ },
+ "started_at": "2026-11-01T22:55:01Z",
+ "finished_at": "2026-11-01T22:55:55Z",
+ "hardware": {
+  "gpu_name": "NVIDIA GeForce RTX 4090",
+  "gpu_count": 1,
+  "driver": "595.91.07",
+  "cuda": "13.2",
+  "capability": "8.9",
+  "gpu_uuid": "4ff9acf6-4f5b-94a8-0cff-11d3d5939965",
+  "pod_id": "y0p9vr8jhy39n1",
+  "data_center": "EU-RO-1",
+  "price_per_hour": 0.89
+ },
+ "software": {
+  "vllm": "0.33.0rc1.dev229+g3966924d5",
+  "torch": "2.14.0+cu130",
+  "transformers": "5.20.2",
+  "image": "vllm/vllm-openai@sha256:f255c4fad2f30ff5ee80db14d3a03afe9ae0f10d3470339864ff04745fe44cb3"
+ },
+ "metrics": {
+  "err_std": {
+   "values": [
+    0.01747483282523814,
+    0.018316010175046745,
+    0.016029338503282423,
+    0.01771338536993129,
+    0.022423286653802315,
+    0.03098544427889387,
+    0.024436044475917892,
+    0.021680600027853818,
+    0.015559347289577252,
+    0.01916316987204387,
+    0.019168892206809326,
+    0.01940672088032518
+   ],
+   "unit": "relative L2 error",
+   "higher_is_better": false
+  },
+  "err_cmp": {
+   "values": [
+    0.7312426821274024,
+    0.7183106619311364,
+    0.6840419949646467,
+    0.6643373352210293,
+    0.8725777450316582,
+    1.0015816404667202,
+    0.9598994037323788,
+    0.8309541422853373,
+    0.6673569300338077,
+    0.7344817558454302,
+    0.7753212753974603,
+    0.7170997097545967
+   ],
+   "unit": "relative L2 error",
+   "higher_is_better": false
+  },
+  "ratio": {
+   "values": [
+    41.84547511500656,
+    39.217638288372655,
+    42.67437454294021,
+    37.50482030096578,
+    38.91390938819824,
+    32.324262690948736,
+    39.28211068196307,
+    38.32708233248995,
+    42.89106204865357,
+    38.32777983755843,
+    40.446848311977284,
+    36.95110133116837
+   ],
+   "unit": "err_cmp / err_std",
+   "higher_is_better": false
+  }
+ },
+ "results_path": "experiments/gemma4_kv_accuracy/results/e53-rehearsal2-4090-20261101/",
+ "notes": "S5 rehearsal 2 (E2B; not a decision run): S5 PASS, 10 VERIFY items decision=REHEARSAL INVALID (V1, V3: V1 GPU 'NVIDIA GeForce RTX 4090'; V3 largest identity error 1.3939733559218483, layers without a module w or a match [('0', '4'), ('0', '9'), ('0', '14'), ('1', '4'), ('1', '9'), ('1', '14'), ('2', '4'), ('2', '9'), ('2', '14'), ('3', '4'), ('3', '9'), ('3', '14')]; action: fix the cause; a rerun needs a new S4)"
+}
