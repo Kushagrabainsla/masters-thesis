@@ -23,7 +23,8 @@ them.
 5. **Change one thing at a time.** Each comparison changes one factor. Everything else is the same
    config, the same Pod and the same software.
 6. **Make every run reproducible.** Record the code commit, image tag, model revisions, seeds, config,
-   hardware fingerprint and price. A run without its manifest does not count.
+   hardware fingerprint and price. On the Pod, record the SHA-256 of every code file that runs, and compare
+   them with the design commit (R-76 C7). A run without its manifest does not count.
 7. **Never lose or edit raw data.** Results are append-only. A correction is a new ledger line that
    supersedes the old one, and a retraction goes in the journal Section 8.
 8. **Control the money.** Every run has a time cap, a cost cap, a watchdog and the user's approval.

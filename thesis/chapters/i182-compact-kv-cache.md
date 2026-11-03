@@ -1,7 +1,7 @@
 # Chapter draft: Does storing the Gemma 4 K=V cache once make decode faster? An exact memory mechanism and a closed byte route (I-182)
 
-Status: DRAFT 1, 2026-11-01; accuracy update after E-53 and R-74 (2026-11-01); E-54 result (PASS) after R-75
-(2026-11-02). Source of truth: `RESEARCH_JOURNAL.md` (I-182, E-49 to E-54, R-64 to R-75, D-73 to D-93, Section 7.30). Every number comes from a repository file, and each list or paragraph names its source; "R-72 C4" is
+Status: DRAFT 1, 2026-11-01; accuracy update after E-53 and R-74 (2026-11-01); E-54 result (PASS) after R-75, and
+the R-76 corrections (2026-11-02). Source of truth: `RESEARCH_JOURNAL.md` (I-182, E-49 to E-54, R-64 to R-76, D-73 to D-94, Section 7.30). Every number comes from a repository file, and each list or paragraph names its source; "R-72 C4" is
 correction C4 of review R-72. Labels: FACT (measured or read from a source), INTERPRETATION (our reading), HYPOTHESIS
 (not tested). A label before a list or a table covers each item that has no label of its own. Thresholds are project
 heuristics, not literature standards.
@@ -34,9 +34,11 @@ the preregistered bound (FAIL). INTERPRETATION (R-74): the standard FP8 error it
 grid phase of the KV scale. With tied per-layer scales (ks = w x vs) the compact row has 0.72 times the stock error
 (POST-HOC, on the same prompts). FACT (E-54 README Section 13; 2026-11-02): E-54 tested the tied row on 7 fresh
 prompts against the stock FP8 cache and the best standard FP8 cache of the same scale search (amendment A1 after
-R-75: the K and V scales searched jointly). The frozen decision is PASS: R1 0.670 and R2 1.131 (bound 1.25), with the
-tied row better than the stock cache in all 10 layers, and the stock FA4 kernel reads it (MATCH). R-76 (post-run
-review) is pending.
+R-75: the K and V scales searched jointly). The frozen decision is PASS: R1 0.670 and R2 1.131 (bound 1.25). The
+tied row is better than the stock cache in every layer by the median over prompts (66 of 70 prompt-layer cells), and
+the stock FA4 kernel reads it in decode calls (MATCH). R-76 (post-run review, CONFIRM_WITH_CORRECTIONS) recomputed all
+70 cells to 2.4e-4 with its own code. It limits the claim: the tied row costs 13% against the best calibrated
+standard cache, the scales must be reproduced to 0.1% to 0.25%, and the sample is 7 prompts of technical text.
 
 ## 2. The mechanism
 
@@ -254,18 +256,22 @@ Supported, with scope:
   (E-51, E-52).
 - FACT (exploratory): the stock FA4 FP8 kernel reads the compact rows through views, at the same error and with no
   loss of speed (E-52).
-- FACT (E-54, preregistered PASS; R-76 pending): on 7 fresh prompts (4 plain of 8K, 2 chat, 1 of 32K), the scale-tied
-  compact FP8 row with frozen per-layer scales has 0.67 times the attention error of the stock FP8 cache and 1.13
-  times the error of the best jointly calibrated standard FP8 cache; it beats the stock cache in all 10 global layers.
-  The stock FA4 kernel reads it with separate K and V descales (gap 0.0017). The gain needs the exact frozen scales:
-  one phase step (2.2% in scale) removes it.
+- FACT (E-54, preregistered PASS; R-76 CONFIRM_WITH_CORRECTIONS): on 7 fresh prompts of technical text and code (4
+  plain of 8K, 2 chat of 8K, 1 plain of 32K), the scale-tied compact FP8 row with frozen per-layer scales has 0.67
+  times the attention error of the stock FP8 cache and 1.13 times the error of the best jointly calibrated standard
+  FP8 cache (0.98 to 1.42 by layer). It beats the stock cache in every global layer by the median over prompts, and in
+  66 of 70 prompt-layer cells. The stock FA4 kernel reads it in decode calls with separate K and V descales (gap
+  0.0017); the prefill form is not tested. POST-HOC (R-76): the gain needs the scales to 0.1% to 0.25%; a 1% offset
+  costs 19% to 24% more error, one phase step (2.2% in scale) removes the gain, and BF16 storage of the scales costs
+  about 1%. Part of the gain is the BOS vector, which is the same in every prompt.
 - INTERPRETATION: on the H100, the value of I-182 is capacity, not speed.
 
 Not supported, or not tested:
 - FACT: no engine run of the compact cache and no throughput number exist. The capacity gain is arithmetic.
 - FACT (E-53): on real activations (4 texts of 8K tokens), the compact FP8 row at KV scale 1.0 fails the accuracy
   gate: up to 2.38 times the standard FP8 error (layer 41). The compact row in BF16 has an error of 0 to 0.0105
-  against the BF16 cache (exploratory). On fresh prompts (E-54) the row at scale 1.0 fails layer 41 again (2.39).
+  against the BF16 cache (exploratory). On fresh prompts (E-54) the row at scale 1.0 fails layer 41 again (2.39):
+  in the six 8K prompts (2.2 to 2.6), not in the 32K prompt (1.08; R-76 C5).
 - FACT: no model-level quality test exists. E-53 and E-54 measure the attention error of each layer alone (E-55 is
   the planned model-level test).
 - FACT: each experiment used one H100 in one session. The image has no `ncu` and no `nvdisasm`, so no DRAM counter
@@ -356,7 +362,9 @@ G2 and G3 (FACT, D-88 and R-72):
   compact path with the standard FP8 path, with the FP16 range.
 - FACT (E-53, billed $1.01): G3 ran on 2026-11-01 and gave FAIL for the row at KV scale 1.0. D-90 is open: the user
   asked for E-54, the scale-tied row with frozen calibrated scales (R-74 recommendation). R-75 (pre-run review) made
-  its calibrated baseline stronger, and the user chose that baseline (D-91, 2026-11-02).
+  its calibrated baseline stronger, and the user chose that baseline (D-91, 2026-11-02). E-54 passed (2026-11-02),
+  and R-76 confirmed it with corrections. D-94 (open) decides the next step: E-55 (the model-level test) or the
+  write-up.
 
 HYPOTHESIS (R-72): (b) needs about $20 to $40 of GPU time. It gives an end-to-end capacity result by week 6 with a
 probability of 40% to 55%. FACT (R-72): if a gate fails, the fallback is this chapter plus free items.
@@ -366,8 +374,10 @@ probability of 40% to 55%. FACT (R-72): if a gate fails, the fallback is this ch
 FACT (R-64, R-71; E-52 README Section 13): the compact K=V cache is exact in real arithmetic. The stock FA4 FP8
 kernel reads it through two views. INTERPRETATION: on the H100 it is a memory mechanism, not a speed mechanism. The
 gated D-88 build tests the open parts: the engine path, the page size and the accuracy on real activations. E-53
-showed that an FP8 compact row needs tied, calibrated KV scales (R-74). E-54 tested them on fresh prompts and passed:
-the tied row keeps FP8 accuracy at the attention level in 640 instead of 1,024 bytes per token and KV head.
+showed that an FP8 compact row needs tied, calibrated KV scales (R-74). E-54 tested them on fresh prompts and passed,
+and R-76 confirmed the result with corrections. At the attention level, the tied row has 0.67 times the error of the
+stock FP8 cache and 1.13 times the error of the best calibrated standard FP8 cache, in 640 instead of 1,024 bytes per
+token and KV head. The scales must be reproduced to 0.1% to 0.25%. The model-level effect is not tested (E-55, D-94).
 
 ## Appendix A. Artifact map
 

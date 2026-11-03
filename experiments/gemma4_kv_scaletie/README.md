@@ -2,7 +2,9 @@
 
 Status: PREDECLARED 2026-11-01; amendment A1 2026-11-02 (R-75, before any E-54 data); amendment A2 2026-11-02 (D-92:
 the S5 rehearsal is waived; a prompt check before the engine start). RUN 2026-11-02 (attempt 2; attempt 1 failed
-before the session): PASS (Section 13). S3: 17 tests pass (Section 12). Design review (S2): R-75 AMEND_THEN_RUN (`dossier/REVIEW_E-54_PRERUN_2026-11-01.md`). The R2 baseline
+before the session): PASS (Section 13). Post-run review (S9): R-76 (2026-11-02, Sonnet): CONFIRM_WITH_CORRECTIONS
+(`dossier/REVIEW_E-54_POSTRUN_2026-11-02.md`); the PASS stands; its corrections C1 to C8 are marked "(R-76 Cn)" in
+Sections 7 and 13. S3: 17 tests pass (Section 12). Design review (S2): R-75 AMEND_THEN_RUN (`dossier/REVIEW_E-54_PRERUN_2026-11-01.md`). The R2 baseline
 is CALSTD_JOINT (R-75 B1; journal D-91: the user chose option (a) on 2026-11-02, "A").
 Idea: I-182. Decision: D-90 option (d), recommended by R-74 (`dossier/REVIEW_E-53_POSTRUN_2026-11-01.md`); the user
 asked for this plan on 2026-11-01 ("Wait for R-74, and then write the E-54?"). D-90 stays open for the spend and the
@@ -255,6 +257,11 @@ needs page_size == tile_n == 64 (vLLM forces 64 for head size 512 on SM90) and i
   rule gives PASS in 30%, INCONCLUSIVE in 66% and FAIL in 3.7% of draws; if 80% of the layers transfer, it gives 76%,
   22% and 2%. So a PASS needs transfer, and a FAIL is a structural alarm. The FAIL bound 1.5 is far below the 3.34 of a
   lost mantissa bit. A per-layer limit of 1.25 is not used: the null passes it in only 8% of draws (R-74 M2).
+- (R-76 C6, POST-HOC; the rule above is unchanged) Correction: "So a PASS needs transfer" does not follow. The null
+  above gives PASS in 30% of the draws with no transfer, and R2 compares two calibrated arms, so a loss of transfer
+  moves both. In the R-76 null from the frozen curves, the E-54 R2 (1.131) is at the 49th percentile of the
+  no-transfer draws. The evidence of transfer is R1 (0.670, below all 100,000 null draws; null 0.99 to 1.41),
+  CALSTD_JOINT/STOCK (0.593) and the phase checks in Section 13.
 - Deviation from R-74 M7 (A1, R-75 F1d): M7 stops above 1.25 against the calibrated standard. E-54 stops only above
   1.5 and calls 1.25 to 1.5 INCONCLUSIVE, because a loss of transfer (not a design fault) puts values there. A FAIL
   must not come from a calibration set that does not transfer.
@@ -445,7 +452,10 @@ FACT (`results/e54-h100-20261102/`; `e54/summary.json`, `e54/session.log`, `e54/
   the run script did not stop, and the H100 idled until the main session deleted it. Billed $2.71; no data (L-24).
 - Attempt 2 (Pod ux88cwtt24olfp, US-GA-2; D-93: the US and Europe only, floor $6): created 21:35:38 UTC, SSH port after
   724 s, session 21:48:08 to 21:52:49 UTC (setup 82 s, capture 225 s, analysis 43 s on the GPU, kernel arm 14 s), 7.7 GB
-  of captures copied in 165 s (71 checksums match), Pod deleted 21:56 UTC. Cost about $1.39 (billing pending).
+  of captures copied in 165 s (71 checksums match), Pod deleted 21:56 UTC. Billed $1.38 (GPU $1.370, disk $0.009;
+  the estimate was $1.39). E-54 total: $4.09 billed with attempt 1.
+  (R-76 C8) Correction: the session started at 21:47:53 UTC (the folder `env-20261102T214753Z`; the setup line at
+  21:49:15 says 82 s).
 - Checks: V1 to V7 pass. V2: 0 problems, 70 capture files with their SHA-256, the frozen scales file (SHA-256
   `8efe6e90...`), the 2 chat prompts with 9 special ids after BOS, prompt 6 in 4 chunks. V3: largest identity error
   0.0024. V5: largest engine gap 0.0017. V6: 3.25. V7: 0.987.
@@ -454,9 +464,17 @@ FACT (`results/e54-h100-20261102/`; `e54/summary.json`, `e54/session.log`, `e54/
 - Guards: per layer, TIED/STOCK is 0.362 to 0.944 (the tied row beats the stock cache in every layer) and
   TIED/CALSTD_JOINT is 0.977 to 1.417 (layer 17); per prompt, R1 is 0.606 to 0.721 and R2 is 1.083 to 1.251 (prompt 3).
   No FP16 value is non-finite, and no value saturates.
+  (R-76 C2) Correction: "every layer" holds for the median over prompts. Per cell, the tied row beats the stock cache
+  in 66 of 70 cells; it is worse in prompt 1 layer 41 (1.003), prompt 4 layer 35 (1.107) and prompt 6 layers 11
+  (1.490) and 29 (1.097). It beats CALSTD_JOINT in 15 of 70 cells, and 3 cells are above 1.5 (largest 1.577, prompt 6
+  layer 17).
 - Decision (frozen rule): PASS. Action: the FP8 compact build continues with the tied scales (D-88 week 2); E-55 (the
   model-level splice) is next. Kernel arm (secondary): MATCH, largest gap 0.0017 in 20 cells (STOCK, CALSTD and TIED):
   the stock FA4 kernel reads the tied row with k_descale not equal to v_descale, with no kernel change.
+  (R-76 C3) Scope: the arm covers 20 cells (prompts 0 and 6). Each cell is 256 decode calls of query length 1 on
+  shared pages, with one descale pair for all sequences and heads, on caches that the test script builds. The engine
+  prefill calls the same FA4 function with query length above 1; that form and the engine write path are not
+  tested. The gap 0.0017 is the BF16 floor of the kernel output.
 - Mac recompute (FACT; `analyze_e54.py --capture` on the copied captures, the Mac CPU, 2026-11-02): the same decision;
   R1 and R2 agree to 1e-5; the FP8 arm errors agree to 4.1e-5 relative in all 70 cells; the 70 SHA-256 match. BF16C
   differs by 1.4e-7 absolute (float32 noise on errors near 2e-7 in layer 29).
@@ -466,12 +484,64 @@ FACT (`results/e54-h100-20261102/`; `e54/summary.json`, `e54/session.log`, `e54/
   (CALSTD) and 0.593 (CALSTD_JOINT) times the stock error. C0 (the E-53 row at scale 1.0) is 1.085 times the stock
   error pooled and 2.39 times in layer 41: the E-53 FAIL repeats on fresh prompts. BF16C has a median error of 0 to
   0.0098 per layer. The largest |q| is 20.75.
+  (R-76 C5) Correction: the C0 failure in layer 41 repeats in the six 8K prompts (2.2 to 2.6), not in the 32K prompt
+  (1.08).
 - INTERPRETATION: on 7 fresh prompts (plain, chat and 32K), the tied FP8 row with frozen per-layer scales keeps the
   attention accuracy at the level of the stock FP8 cache (33% less error) and within 13% of the best calibrated
   standard FP8 cache, in 640 instead of 1,024 bytes per token and KV head. The gain over STOCK rests on the exact frozen
   scales: one phase step (2.2% in scale) removes it, so a build must store and use these float32 scales exactly. Part
   of R1 is the shared BOS vector (R1 0.80 with position 0 exact). This is an attention-level result on one checkpoint;
   it says nothing yet about model quality (E-55), the cache-write path or decode over a cached FP8 prompt.
+  (R-76 C1) Correction: the tied row is not neutral. It has 0.67 times the stock error, 1.13 times the error of the
+  best calibrated standard (0.98 to 1.42 by layer, up to 1.58 in one cell) and a pooled error of 0.029 against the
+  BF16 cache. (R-76 C4) Correction: "exactly" is too strong. POST-HOC: reproduce vs and ks to 0.1% (0.25% at most);
+  BF16 storage of the scales costs about 1% of the pooled error (item 5 below). (R-76 C5) The 7 prompts are
+  technical text and code of 8K to 32K tokens: 4 plain of 8K, 2 chat of 8K and 1 plain of 32K.
+- Post-run review (S9; R-76, 2026-11-02, Sonnet, a different model from the author;
+  `dossier/REVIEW_E-54_POSTRUN_2026-11-02.md`): CONFIRM_WITH_CORRECTIONS. The PASS stands.
+  1. FACT (R-76): an independent recompute (its own E4M3 and E5M2 tables with uint8 codes, 0 mismatches against torch
+     on 2.47M values; float32 GQA attention; an explicit 640-code row) covers all 70 cells and 14 arms and forms. The
+     largest difference to `metrics.json` is 2.4e-4 relative (median 3.7e-6; the five largest are in the 32K prompt).
+     Its own statistics give R1 0.6705, R2 1.1308 and PASS.
+  2. FACT (R-76): V1 to V7 hold, and no check passes by mistake: a wrong head map gives a V5 gap of 1.0017, and the
+     softmax scale 1/sqrt(512) gives 1.146. All 71 capture files match the Pod SHA-256 list. The code, the
+     calibration, the kernel arm, the session script, the E-53 list and the scales file are byte-identical at A2
+     (54814ca), at HEAD (2ba042c) and in the working tree.
+  3. FACT (R-76): K[0] and V[0] (the BOS vector) are bit-identical in all prompts and layers. With position 0 exact in
+     every arm, R1 is 0.80 and R2 is 1.13, and the tied row is no better than stock in layers 5, 11 and 23 (1.00,
+     1.36, 1.13).
+  4. POST-HOC (R-76): the prompt bootstrap (20,000 draws) gives R1 0.611 to 0.713 and R2 1.083 to 1.177 (95%), and
+     P(R2 above 1.25) is 1.1%. Leave-one-prompt-out gives R2 1.114 to 1.140.
+  5. POST-HOC (R-76, prompts 0, 2, 4 and 5; on these prompts R1 is 0.686 and R2 is 1.116): the scale tolerance.
+
+     | Offset of vs (ks = w vs) | Pooled error against the frozen scales | R2 on these prompts |
+     |---|---|---|
+     | -1% and +1% | +23.9% and +18.6% | 1.38 and 1.32 |
+     | -0.5% and +0.5% | +5.8% and +11.5% | 1.18 and 1.24 |
+     | -0.25% and +0.25% | +5.2% and +6.4% | 1.17 and 1.19 |
+     | -0.1% and +0.1% | +3.9% and -0.5% | 1.16 and 1.11 |
+     | vs and ks rounded to BF16 | +0.9% | 1.127 |
+     | vs and ks rounded to FP16 | +1.2% | 1.130 |
+
+  6. POST-HOC (R-76): the calibration transfers. On prompt 0 the frozen phase is the best of 32 in 9 of 10 layers (3
+     of 10 on prompt 4; in the best 5 in every layer). FACT (the author, from the frozen GPU numbers): the frozen phase
+     beats both neighbour phases (TIED_UP and TIED_DN) in 58 of 70 cells.
+  7. FACT (R-76 C7): the session records the SHA-256 of the captures and of the scales file, not of the code that ran.
+     The Pod-side code rests on git and on the recompute. The protocol now asks for the code hashes (PROTOCOL
+     principle 6; RESEARCH_OUTPUTS L-25).
+  8. INTERPRETATION (R-76): the PASS does not support a model-quality claim (each layer saw BF16 attention before it;
+     E-55 tests the sum over layers), an engine-ready claim (prefill, the write path, CUDA graphs and prefix caching
+     are not tested), or text outside 8K to 32K technical prompts. The gain partly comes from one vector (the BOS
+     key), and it needs the scales to 0.1% to 0.25%.
+  9. Checks by the author (FACT, 2026-11-02; `exploratory/r76_checks.py`, output `exploratory/r76_checks.json`):
+     the cell counts (66 and 15 of 70, the four cells, the three cells above
+     1.5), the C0 ratios per prompt and the position-0 ratios per layer from `metrics.json`; the scale offsets on
+     prompt 0 with the E-54 analysis code (`tied_arm`), which give the reviewer's numbers to 8.9e-6 (prompt 0 alone:
+     -1% +30%, +1% +22%, -0.25% +6.5%, +0.25% +6.8%, BF16 scales +0.4%); C7 (`session_e54.sh` lists no code) and C8.
+     One slip in C1: the per-layer TIED/CALSTD_JOINT range is 0.98 to 1.42 (layer 23 is below 1), not 1.02 to 1.42.
+  10. Inputs for E-55 and for an engine build: the dossier, Section 5 (arms with two controls that must degrade, a
+     splice in prefill and decode, NLL and KL at 2K to 64K, new files with prose, the scales to 0.1%, prefill and
+     CUDA-graph tests). Next step: journal D-94 (open, the user decides).
 
 ## Amendments
 A1 (2026-11-02, before any E-54 data; R-75 AMEND_THEN_RUN, `dossier/REVIEW_E-54_PRERUN_2026-11-01.md`; journal D-91):
