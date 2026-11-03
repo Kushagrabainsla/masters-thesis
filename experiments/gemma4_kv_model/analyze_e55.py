@@ -325,7 +325,8 @@ def validity(res: Path, data: dict, main: dict, arrays: dict, rehearsal: bool) -
         e = main.get("engine", {})
         if str(e.get("kv_cache_dtype")) != "auto" or e.get("prefix_caching") not in (False, "False"):
             v["V2"].append("the cache is not BF16 auto, or prefix caching is on")
-        if "NONE" not in str(e.get("compilation_mode")) or "NONE" not in str(e.get("cudagraph_mode")):
+        mode = str(e.get("compilation_mode"))   # (A2, S5) this build records CompilationMode.NONE as "0" (an IntEnum)
+        if not (mode == "0" or "NONE" in mode) or "NONE" not in str(e.get("cudagraph_mode")):
             v["V2"].append("the engine is not eager")
         if e.get("max_num_batched_tokens") != ENGINE_TOKENS and not rehearsal:
             v["V2"].append(f"{e.get('max_num_batched_tokens')} batched tokens, not {ENGINE_TOKENS}")
@@ -504,7 +505,8 @@ def summarize(res: Path, data_path: Path) -> dict:
                       "D": block_interval(base, arrays["TIED8"], ids, doms, minus=arrays["STOCK8"])}
     st["gen"] = gen_metrics(load(res / "gen_outputs.json"))
     out["stats"] = st
-    v["V6"] = [] if st["ci"]["E5M2"][0] > 0 else [f"E5M2 95% interval {st['ci']['E5M2']} does not exclude 0"]
+    lo, hi = st["ci"]["E5M2"]   # (A2, D-96) two-sided: in S5, E5M2 lowered the NLL of Gemma 4 E2B
+    v["V6"] = [] if lo > 0 or hi < 0 else [f"E5M2 95% interval {st['ci']['E5M2']} does not exclude 0"]
     if v["V6"] and not rehearsal:
         out["decision"] = "INVALID"
         out["failed"] = ["V6"]

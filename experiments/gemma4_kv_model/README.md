@@ -1,8 +1,10 @@
 # E-55: model-level accuracy of the compact K=V cache (BF16 and FP8) in the Gemma 4 31B global layers (preregistration)
 
-Status: PREDECLARED 2026-11-02; amendment A1 2026-11-03 (R-77, before any E-55 data). NOT RUN. S3: 26 tests pass
-(Section 12). Design review (S2): R-77 AMEND_THEN_RUN (`dossier/REVIEW_E-55_PRERUN_2026-11-02.md`); every finding is
-fixed or answered in the A1 list at the end. Next: S4 (the user's spend approval and a live balance check).
+Status: PREDECLARED 2026-11-02; amendment A1 2026-11-03 (R-77, before any E-55 data); amendment A2 2026-11-03
+(after the S5 rehearsal, before any 31B data; D-96). NOT RUN on the 31B. S3: 27 tests pass in 541 s (Section 12).
+S4: D-95 (the user). S5: rehearsal 2 passed the 10 VERIFY items and found two problems, both fixed in A2 (Section 9).
+Design review (S2): R-77 AMEND_THEN_RUN (`dossier/REVIEW_E-55_PRERUN_2026-11-02.md`); every finding is fixed or
+answered in the A1 list at the end. Next: S6 (the H100 run).
 Idea: I-182. Decision: D-94 (the user chose option (1) on 2026-11-02, "Yes, plan E-55": the model-level test with a
 16-bit arm and an 8-bit arm). Journal entry: Section 6.1 E-55.
 Labels: FACT (a source, a log or a computation was read), INTERPRETATION (reasoning), HYPOTHESIS (not tested).
@@ -206,7 +208,9 @@ the vLLM cache cast (saturate, round to nearest even).
   chunk of the first document of each arm, the engine's attention output equals a float32 reference of the arm (16
   query rows) within 0.01 in every layer (E-54: 0.0017; a kernel that ignored the K descale gives about 1); no hook
   error.
-- V6: the E5M2 control changes the NLL: the lower bound of its interval is above 0.
+- V6: the E5M2 control changes the NLL: (A2, D-96) its 95% interval excludes 0, with either sign (before A2: the
+  lower bound above 0). S5 showed that the sign depends on the model and the text (Section 9); a splice that does
+  nothing gives no change, and both forms catch it.
 - V7 (A1, R-77 F8): in each layer where the arm's float32 reference and the reference of the unchanged q, k and v
   differ by more than 0.001, the engine output is nearer the arm's reference; BF16C decides in 5 layers or more. Why:
   V5 cannot tell a hooked BF16C from one that the engine ignored (R-77: the two gaps are 0.0034 and 0.0063, both below
@@ -280,6 +284,29 @@ the vLLM cache cast (saturate, round to nearest even).
   validity problems (A1). The rehearsal backend is not FA4 (SM89), so the H100 pre-flight (Section 4.5) is the check of
   item 7 for FA4. (A1) If no rehearsal GPU is in stock (E-54 A2), the pre-flight limits the loss of a failed FA4 route
   to about $0.7; the user decides on a waiver in S4.
+- S5 record (2026-11-03, D-95). Attempt 1 (RTX 4090 Pod `n9c39lsykrmxty`, Secure, no data center shown): no SSH
+  port 15 min after the create (the host was still fetching the image at 22:45:58 UTC); deleted with no data, about
+  $0.21. The first run script was killed at the end of a Claude session during its SSH wait; the run script now runs
+  in its own process session (L-27). Attempt 2 (RTX 4090 Pod `paog5toj98cj38`, EU-RO-1, about 8 min, about $0.12;
+  an SSH limit of 600 s and a boot watchdog of 900 s, to stay inside the $0.60 cap): the SSH port 207 s after the
+  create; setup 17 s; engine 26.2 s; pre-flight 1.9 s; 12.2 to 12.4 s per arm for 196,608 tokens; GEN 23.4 s;
+  session 187 s; no cut. Results: `results/e55-rehearsal2-4090-20261103/`.
+  VERIFY: (1) vLLM 0.33.0rc1.dev229+g3966924d5, torch 2.14.0+cu130, transformers 5.20.2: PASS. (2) The engine: max
+  model length 65,664, BF16 auto cache, no prefix caching, 4,096 batched tokens, compilation mode "0" (NONE), CUDA
+  graphs NONE, the V2 model runner: PASS, but V2 read the mode "0" as compiled (problem 1). (3) The parser: 288 of
+  288 token counts equal the document lengths: PASS. (4) The hooks fire on the 3 E2B global layers that own a KV
+  cache (4, 9 and 14; the Triton backend): PASS. (5) DET equals BF16 bit for bit in the pre-flight and the main phase:
+  PASS. (6) E5M2 changes the log-probabilities (top-1 agreement 0.962), and the hooks in identity mode do not: PASS.
+  (7) V5 gaps 0.0016 to 0.0023 for every arm, the scaled arms included (the K and V descale route works on Triton);
+  V7 passes: PASS. (8) Peak memory 19.2 of 24.6 GB: PASS. (9) GEN returns 128 tokens for all 16 prompts in BF16 and
+  STOCK8: PASS. (10) The session files, 6 of 6 code hashes and the REHEARSAL line with its problems: PASS.
+  Problem 1 (a bug, fixed in A2): `str()` of the vLLM CompilationMode (an IntEnum) gives "0", and V2 needed "NONE" in
+  the text, so every H100 run would have been INVALID; the stub wrote "CompilationMode.NONE", so the Mac tests passed
+  (L-28). Problem 2 (a rule, changed in A2 by the user's decision D-96): E5M2 lowered the E2B NLL, Delta -0.0104
+  [-0.0155, -0.0054] (books -0.0195, prose -0.0169, code +0.0050), so a working splice failed the one-sided V6.
+  Expected in E2B and not a fault: BF16C, TIED8 and TIED8_UP at about +2.3 nats (E2B has no K = w V, so the rebuilt K
+  is wrong; separations 0.58 to 0.85) and JOINT8 at +1.11 (synthetic scales). BF16R -0.00028 [-0.00096, +0.00040],
+  top-1 agreement 0.985.
 - (A1, R-77 O5) A second run if a result is INCONCLUSIVE for noise: four times the tokens (48 documents, 16 per domain;
   the first 12 are this run's) halves the interval. About 62 min of decision arms, so about 85 to 95 min of H100, $5.5
   to $6.5. The user decides it in a new S4.
@@ -325,7 +352,7 @@ the vLLM cache cast (saturate, round to nearest even).
 | `analyze_e55.py` | the statistics (t interval), V1 to V7, the pre-flight checks, the frozen rule, the ledger manifest | rule, t, coverage, far-repeat, V2 and manifest tests |
 | `session_e55.sh` | the Pod session (watchdogs, code hashes, the main phase, analysis) | stub-session and limit tests |
 | `make_manifest.py` (A1) | `code_manifest.json` from the design commit in git (L-25) | manifest test |
-| `test_e55.py` | 26 tests | |
+| `test_e55.py` | 27 tests (A2) | |
 
 ## 12. Verification record (stage S3)
 2026-11-02, the Mac (`uv run --no-project --with numpy --with torch --with pytest`): 15 tests pass in 258 s.
@@ -366,7 +393,22 @@ the vLLM cache cast (saturate, round to nearest even).
 - The rule gives each of the 10 outcomes, CHECK16 and KILL8 on E included; the worst case fits the cap; the stub
   session ends in about 25 s at the real data size.
 
+2026-11-03, amendment A2, the Mac (same command): 27 tests pass in 541 s.
+- The V2 eager check reads the engine record of this vLLM build: "0" and "NONE" pass, a compiled engine ("3", or CUDA
+  graphs FULL_AND_PIECEWISE) fails. The stub records the S5 engine values.
+- V6 two-sided: a planted E5M2 effect of -0.01 passes V6 (GO16 GO8); no E5M2 effect still gives INVALID.
+- The rehearsal 2 record, analysed again on the Mac with A2: the only problem is V1 (the RTX 4090, expected).
+
 ## Amendments
+A2 (2026-11-03, after the S5 rehearsal 2 and before any 31B data; D-96, the user). Both items come from the
+rehearsal (PROTOCOL: a fix that the rehearsal required; Section 9, S5 record).
+1. The V2 eager check accepts the compilation mode "0", the text that this vLLM build records for CompilationMode.NONE;
+   a compiled engine still fails; the stub records the S5 engine values (Sections 6 and 12; L-28).
+2. V6 is two-sided: the E5M2 interval must exclude 0, with either sign. The user chose it (D-96, "Go ahead with your
+   recommendation") after a plain-language explanation; the decision rules H16 and H8 do not change (Section 6).
+Code: `analyze_e55.py`, `run_e55.py` (the stub record only) and `test_e55.py`; V2 compares the Pod code with the A2
+commit.
+
 A1 (2026-11-03, before any E-55 data; R-77 AMEND_THEN_RUN, `dossier/REVIEW_E-55_PRERUN_2026-11-02.md`). The author
 checked every finding against the code and the vLLM source before the fix.
 1. B1: `Splice.reset_evidence` after the warm-up and after the pre-flight; the stub engine carries the real hooks in

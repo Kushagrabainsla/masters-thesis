@@ -1,0 +1,7 @@
+22:52:19 setup done after 17 s; versions: vllm 0.33.0rc1.dev229+g3966924d5 torch 2.14.0+cu130 transformers 5.20.2 VLLM_BUILD_COMMIT=unset 
+22:52:19 disk: mfs#euro.runpod.net:9421  2.3P  1.8P  465T  80% /workspace
+22:55:08 main: exit 0 after 186 s; {"status": "ok", "arms": ["BF16", "DET", "BF16C", "E5M2", "STOCK8", "TIED8", "BF16R", "JOINT8", "GEN", "TIED8_UP"], "cut": [], "step_errors": [], "errors": []}
+22:55:09 decision: REHEARSAL KILL16 KILL8: Delta_BF16C +2.32754 [+2.08849, +2.56659] (margin 0.00100; 0.1 x E5M2 -0.00104); D +2.31380 [+2.08242, +2.54518] (tolerance 0.00020); E +2.31382 [+2.08288, +2.54475]; STOCK8 -0.00004 [-0.00261, +0.00254]; TIED8 +2.31376 [+2.08148, +2.54604]; E5M2 -0.01044 [-0.01553, -0.00536]; BF16R -0.00028 [-0.00096, +0.00040]; JOINT8 +1.11128 [+0.94973, +1.27284]; TIED8_UP +2.31245 [+2.07869, +2.54622]; top-1 agreement BF16C 0.2627, BF16R 0.9854; cut []; validity problems: V1: ["the GPU is 'NVIDIA GeForce RTX 4090', not an H100 80GB"]; V2: ['the engine is not eager']; V6: ['E5M2 95% interval (-0.015527576428555893, -0.005359977079286361) does not exclude 0']
+22:55:09 results: 15648 KB in /workspace/results/e55; disk: mfs#euro.runpod.net:9421  2.3P  1.8P  465T  80% /workspace
+22:55:09 done after 187 s
+22:55:09 AUTO_STOP in 300 s; copy RES now

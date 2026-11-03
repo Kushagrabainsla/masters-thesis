@@ -338,8 +338,8 @@ def main() -> None:
                                "head_size": STUB_HEADS[2], "w": w_file[layer], "impl": "StubImpl", "impl_scale": 1.0})
             rec["hooks"] = {"hooked": hooked, "problems": []}
             rec["engine"] = {"vllm": "STUB", "max_model_len": ENGINE["max_model_len"], "kv_cache_dtype": "auto",
-                             "prefix_caching": False, "compilation_mode": "CompilationMode.NONE",
-                             "cudagraph_mode": "CUDAGraphMode.NONE", "use_v2_model_runner": True,
+                             "prefix_caching": False, "compilation_mode": "0",   # (A2) the S5 engine's values
+                             "cudagraph_mode": "NONE", "use_v2_model_runner": True,
                              "max_num_batched_tokens": ENGINE["max_num_batched_tokens"]}
             rec["tok_check"] = {"ok": True, "stub": True}
             rec["gpu"] = "STUB"

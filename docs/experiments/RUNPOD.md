@@ -69,6 +69,10 @@ key is missing, stop and ask the user to add it to `.env`; do not ask for it in 
   The session watchdog (POD_LIMIT) starts only with the session, so it does not cover the time before.
 - Do the steps from create to session start in one tool call, with a wait loop inside the call. Do not
   wait for a background timer or a notification while a GPU Pod bills and no session runs.
+- Start the run script in its own process session, for example
+  `nohup python3 -c 'import os, sys; os.setsid(); os.execvp(sys.argv[1], sys.argv[1:])' bash run.sh ... &`,
+  and wait for its process in a background task (L-27). The end of an agent session can kill its child
+  processes.
 
 ## 4. Rehearsal (stage S5)
 

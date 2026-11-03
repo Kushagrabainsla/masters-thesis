@@ -400,6 +400,8 @@ def test_stub_session_finds_planted_failures(tmp_path):
     assert run_stub(tmp_path / "a", "--stub-effect BF16C=0.02")["H16"] == "KILL16"
     assert run_stub(tmp_path / "b", "--stub-effect TIED8=0.003")["H8"] == "KILL8"
     assert run_stub(tmp_path / "c", "--stub-effect E5M2=0")["decision"] == "INVALID"     # V6
+    s = run_stub(tmp_path / "f", "--stub-effect E5M2=-0.01")                             # (A2, D-96) V6 two-sided
+    assert not s["validity"]["V6"] and s["decision"] == "GO16 GO8"
     s = run_stub(tmp_path / "d", "--stub-effect DET=0.001")                              # the pre-flight stops it
     assert s["decision"] == "INVALID" and any("DET" in p for p in s["preflight"])
     s = run_stub(tmp_path / "e", "--stub-effect DET=0.00005")                            # not bit-identical, tiny
@@ -474,6 +476,20 @@ def test_v2_compares_the_pod_code_hashes_with_the_design(tmp_path):
     (tmp_path / "code_sha.txt").write_text("".join(f"{'b' * 64}  {n}\n" for n in an55.CODE_FILES))
     v, _ = an55.validity(tmp_path, data, main, {}, rehearsal=True)
     assert sum("code hash" in p for p in v["V2"]) == len(an55.CODE_FILES)
+
+
+def test_v2_eager_check_reads_the_engine_record_of_this_vllm_build(tmp_path):
+    """A2 (S5 rehearsal 2): vLLM 3966924d5 records CompilationMode.NONE as "0" and CUDAGraphMode.NONE as "NONE"; the
+    check before A2 read that eager engine as compiled. A compiled engine must still fail."""
+    data = json.loads(DATA.read_text())
+    base = {"stub": False, "gpu": "NVIDIA H100 80GB HBM3", "status": "ok", "docs": [], "doc_lengths": {},
+            "tok_check": {"ok": True}, "hooks": {"hooked": []}}
+    eng = {"kv_cache_dtype": "auto", "prefix_caching": False, "max_num_batched_tokens": an55.ENGINE_TOKENS}
+    for mode, graphs, eager in (("0", "NONE", True), ("CompilationMode.NONE", "CUDAGraphMode.NONE", True),
+                                ("3", "NONE", False), ("0", "FULL_AND_PIECEWISE", False)):
+        main = dict(base, engine=dict(eng, compilation_mode=mode, cudagraph_mode=graphs))
+        v, _ = an55.validity(tmp_path, data, main, {}, rehearsal=True)
+        assert ("the engine is not eager" not in v["V2"]) == eager, (mode, graphs)
 
 
 def test_make_manifest_hashes_the_committed_files():
