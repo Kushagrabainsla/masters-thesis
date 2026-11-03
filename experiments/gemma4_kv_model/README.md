@@ -1,17 +1,19 @@
 # E-55: model-level accuracy of the compact K=V cache (BF16 and FP8) in the Gemma 4 31B global layers (preregistration)
 
-Status: PREDECLARED 2026-11-02. NOT RUN. S3: 15 tests pass (Section 12). Design review (S2): R-77 pending.
+Status: PREDECLARED 2026-11-02; amendment A1 2026-11-03 (R-77, before any E-55 data). NOT RUN. S3: 26 tests pass
+(Section 12). Design review (S2): R-77 AMEND_THEN_RUN (`dossier/REVIEW_E-55_PRERUN_2026-11-02.md`); every finding is
+fixed or answered in the A1 list at the end. Next: S4 (the user's spend approval and a live balance check).
 Idea: I-182. Decision: D-94 (the user chose option (1) on 2026-11-02, "Yes, plan E-55": the model-level test with a
 16-bit arm and an 8-bit arm). Journal entry: Section 6.1 E-55.
 Labels: FACT (a source, a log or a computation was read), INTERPRETATION (reasoning), HYPOTHESIS (not tested).
-All thresholds are project heuristics unless a source is given.
+All thresholds are project heuristics unless a source is given. "(A1)" marks text that amendment A1 changed.
 
 ## 1. Question
 At the model level, does the compact K=V cache of the 10 Gemma 4 31B global layers keep the model's next-token
 predictions on long documents?
 - H16 (primary, 16-bit): with the compact row in BF16, is the change of the per-token negative log-likelihood (NLL)
-  inside a margin of min(0.001, 0.1 x the E5M2 effect) nats per token? "No": the change is outside the margin
-  (PIVOT16 or KILL16, Section 7).
+  inside a margin of 0.001 nats per token (0.1% of perplexity)? (A1: a fixed margin, R-77 F4; 0.1 x the E5M2 effect
+  is reported.) "No": the change is outside the margin (PIVOT16 or KILL16, Section 7).
 - H8 (secondary, 8-bit): with the frozen E-54 tied scales, is the compact FP8 row no worse than the stock FP8 cache?
   "No": the tied row is measurably worse (PIVOT8 or KILL8).
 
@@ -25,8 +27,8 @@ predictions on long documents?
   60 layers and 64K positions. No model-level test exists (R-76 C1, "what the PASS does not support"). The user wants
   the 16-bit claim for the paper and chose a test with both arms (D-94).
 - What would kill it early. (1) The compact BF16 cache changes NLL by more than 0.01 nats per token: a fault, because
-  the layout is exact. (2) The splice does not reach the attention reads (V6, the E5M2 control). (3) The tied FP8 row
-  is worse than the stock FP8 cache at the model level.
+  the layout is exact. (2) The splice does not reach the attention reads (V5, V6, V7). (3) The tied FP8 row is worse
+  than the stock FP8 cache at the model level.
 - Why a splice and not the engine build (D-88, weeks). Hooks on the 10 global Attention modules of the real engine
   change q, k and v before the cache write. The BF16C splice gives the stock kernel the same q and K values that the
   two views of the compact row give it (E-52, E-54 BF16C), so its result is the result of a correct build, up to the
@@ -40,13 +42,18 @@ predictions on long documents?
   no task data and sees small changes. A greedy-generation set gives a check that a reader can see (identical text).
 - Why the frozen E-54 scales. They are the validated ones (E-54 PASS on fresh prompts). New scales (R-76 item 7) would
   need their own attention-level test first; that offline work stays optional and outside E-55.
-- Order of work: the BF16 reference first, the BF16C arm (H16) second, the positive control third (validity), then
-  STOCK8 and TIED8 (H8), then the reported steps while the time allows.
+- (A1) Resolution (R-77 finding 9). The checkpoint quantizes the input of each linear layer to FP8 per token, so a
+  change of 0.3% in an attention output flips FP8 codes downstream: every arm is also a new realization of the
+  model's quantization noise. BF16R (one more BF16 rounding of the query, no other change) measures that floor.
+- Order of work: the warm-up and a one-chunk pre-flight of every arm (A1), the BF16 reference, the BF16C arm (H16),
+  the positive control (validity), then STOCK8 and TIED8 (H8), then the reported steps while the time allows.
 - Predictions (HYPOTHESIS, written before any E-55 data; checked after the run, not used by the rule):
   |Delta_BF16C| below 1e-4; Delta_STOCK8 0.0002 to 0.005; Delta_TIED8 / Delta_STOCK8 0.4 to 0.8 (E-54 R1 0.67; an NLL
   change that grows with the square of the error gives 0.45); Delta_TIED8 / Delta_JOINT8 1.0 to 1.5; Delta_E5M2 3 to 10
-  times Delta_STOCK8; Delta_TIED8_UP above Delta_TIED8; BF16_B within 1e-4 of BF16 and a top-1 agreement of 99% or
-  more; the BF16C top-1 agreement at most 0.5 points below that of BF16_B.
+  times Delta_STOCK8; Delta_TIED8_UP above Delta_TIED8. (A1, replacing the BF16_B predictions, R-77 F7 and F9):
+  |Delta_BF16R| below 2e-4 and |Delta_BF16C - Delta_BF16R| below 2e-4; the top-1 agreement of BF16R 95% or more (ties
+  and near ties of the BF16 logits can flip the top-1 token); the BF16C top-1 agreement at most 0.5 points below that
+  of BF16R; the per-token SD of the BF16C change 0.02 to 0.11 nats.
 
 ## 3. Hypotheses
 - H16 (primary): the compact BF16 cache changes the mean per-token NLL by less than the margin (Section 7).
@@ -67,19 +74,21 @@ predictions on long documents?
   context 262,144, final logit soft-cap 30, no `kv_cache_scheme`.
 
 ### 4.2 Engine (`run_e55.ENGINE`)
-- Engine 1 (main phase): eager (`enforce_eager`), BF16 cache ("auto"), `max_model_len` 65,664, 4,096 batched tokens
-  per step (chunked prefill), 8 sequences, utilization 0.70, no prefix caching (else an arm could read the KV of the
-  arm before it), text only, seed 0, TF32 off. The utilization leaves about 24 GB for the prompt log-probabilities:
-  per chunk the engine makes the logits of every prompt token (4,096 x 262,144 in BF16, then float32 log-probabilities).
-- Engine 2 (noise phase): the same with 2,048 batched tokens (BF16_B, Section 8).
-- FACT (vLLM 3966924d5, `gpu_model_runner.py` 5245 to 5352, `logprobs.py` 165 to 209, `sampling_params.py` 350 to
-  383): prompt log-probabilities work with chunked prefill, chunk by chunk; with `prompt_logprobs=1` and
-  `flat_logprobs` each position after the first holds [the prompt token with its rank, the top-1 token]. One request
-  per document (`max_tokens` 1, `detokenize` False).
+- One engine: eager (`enforce_eager`), BF16 cache ("auto"), `max_model_len` 65,664, 4,096 batched tokens per step
+  (chunked prefill), 8 sequences, utilization 0.70, no prefix caching (else an arm could read the KV of the arm before
+  it), text only, seed 0, TF32 off. (A1: no second engine; BF16R replaces BF16_B, R-77 F7.)
+- (A1, R-77 finding 3 and F6) FACT (vLLM 3966924d5; E-54 log line 24, "Using V2 Model Runner"; `config/vllm.py` 746 to
+  783): the engine runs the V2 model runner. It computes the prompt log-probabilities in chunks of 1,024 rows
+  (`v1/worker/gpu/sample/prompt_logprob.py`) with a float32 log-softmax of the BF16 logits; the engine side adds one
+  empty position 0 and 2 entries per later position (`logprobs.py` 165 to 209, `sampling_params.py` 350 to 383): [the
+  prompt token with its rank, the top-1 token]. One request per document (`max_tokens` 1, `detokenize` False).
+  INTERPRETATION (R-77): about 1 to 3 GB per call outside the KV pool; utilization 0.70 leaves about 24 GB. The
+  engine record holds `use_v2_model_runner` (reported, not a validity condition: both runners compute the same
+  float32 log-softmax, and all arms share the runner).
 - FACT (flash-attention b273a02, `flash_attn/cute/interface.py` 1421 to 1500 and 1895 to 1905): the FA4 compile key
   holds no softmax scale; the scale is a run-time argument, so a new scale per layer does not compile a new kernel.
   FACT (E-54 capture log): the engine uses the FLASH_ATTN backend (`FlashAttentionImpl`, `self.scale`, flash_attn.py
-  1077; every call passes `softmax_scale=self.scale`, 1413 to 1698).
+  1077; every call passes `softmax_scale=self.scale`, 1413 to 1698). R-77 confirmed the route by source (answer 2).
 
 ### 4.3 Data (`prepare_e55.py` on the Mac; `data_e55.json`, SHA-256 `8f2e2ecd96402b51...`)
 Twelve scored documents in three domains, token ids of the pinned tokenizer (transformers 5.20.2, `tokenizer.json`
@@ -103,20 +112,24 @@ SHA-256 `cc8d3a0ce364...`), frozen before any E-55 run. Each document is BOS and
 - `tok_check`: three strings and their Mac ids; the engine tokenizer must give the same ids (V2).
 - Scored tokens: the tokens at index 1,025 or more (their context holds more than the 1,024-token sliding window, so
   only the global layers carry the long context): 64,511 per book, 31,743 per prose or code document, 511,988 in all.
+- (A1, R-77 O2) Far-repeat subset (reported): the scored tokens whose 12-gram that ends at the token last occurred
+  1,025 or more tokens before, so that the copy source is outside the sliding window. FACT (`far_repeat_mask` on the
+  frozen data): 3,971 of the 511,988 scored tokens (0.78%).
 
 ### 4.4 Splice (`splice_e55.py`)
 Forward pre-hooks on the Attention modules of the 10 global layers replace q, k and v before the module writes k and v
-to the paged cache. The engine reads K and V from the paged cache in prefill and in decode (R-76, `flash_attn.py`), so
-every read sees the arm's values. The 50 sliding layers keep the BF16 cache in every arm. c() is the vLLM cache cast
-(saturate, round to nearest even).
+to the paged cache. The engine reads K and V from the paged cache in prefill and in decode (R-76, `flash_attn.py`;
+R-77 answer 1), so every read sees the arm's values. The 50 sliding layers keep the BF16 cache in every arm. c() is
+the vLLM cache cast (saturate, round to nearest even).
 
-| Arm | q | Cache K | Cache V | K descale (impl scale) | V descale (output) |
+| Arm | q | Cache K | Cache V | Score factor (impl scale) | V descale (output) |
 |---|---|---|---|---|---|
 | BF16 | q | K | V | 1 | 1 |
 | BF16C | [q_rot, bf16(q_unrot w)] | [K_rot, V_unrot] | V | 1 | 1 |
 | E5M2 | q | c_E5M2(K) | c_E5M2(V) | 1 | 1 |
 | STOCK8 | q | c(K) | c(V) | 1 | 1 |
 | TIED8 | q | [c(K_rot / ks), c(V_unrot / vs)] | c(V / vs) | ks | vs |
+| BF16R (A1) | bf16(q R_C), R_C = 1 + 2^-7 | K | V | f32(1 / R_C) | 1 |
 | JOINT8 | q | c(K / ks_j) | c(V / vs_j) | ks_j | vs_j |
 | TIED8_UP | q | as TIED8 with vs' = f32(vs 2^(1/32)), ks' = f32(w vs') | | ks' | vs' |
 
@@ -124,67 +137,107 @@ every read sees the arm's values. The 50 sliding layers keep the BF16 cache in e
   the k_norm weight on the unrotated dims; it must be one value and equal the scales file (V3).
 - The FP8 codes are exact in BF16, so the cache holds exactly the codes. The kernel multiplies the scores by the impl
   scale after the dot product, as the FP8 kernel multiplies by the K descale (R-74). The output hook multiplies the
-  BF16 output by the V descale (one more BF16 rounding of the output).
+  BF16 output by the V descale (one more BF16 rounding of the output; A1, R-77 answer 3: on the captures this moves
+  the TIED8 error from 0.02312 to 0.02327 in layer 5; INTERPRETATION: below 1e-5 nats on D).
+- (A1, R-77 F7) BF16R has a true effect of one BF16 rounding of the query (relative 2^-9 at most per value) and no
+  other change, as BF16C has a rounding of q_unrot w. Its NLL change is the noise floor of a rounding of this size.
 
 ### 4.5 Order of work (`run_e55.py`, `session_e55.sh`)
 1. Setup: versions, telemetry (with memory), the SHA-256 of the code that runs (L-25), the checkpoint download.
-2. Engine 1; the tokenizer check; the hooks (V3); one warm-up prompt of 512 tokens (not scored).
-3. Decision arms, 12 documents each: BF16; DET (P1 and C1 again with the hooks removed); BF16C; E5M2; STOCK8; TIED8.
-4. Reported steps, each only if its estimate (the mean arm time times its share of tokens) ends 60 s before the soft
-   deadline: JOINT8; GEN (greedy, 128 tokens, `ignore_eos`, for BF16, BF16C, STOCK8 and TIED8; fixed batch); TIED8_UP.
-5. Engine 2 (BF16_B), only if 540 s or more remain before the session watchdog.
-6. The analysis and the frozen decision on the Pod (`analyze_e55.py`); the main session copies RES (about 60 MB).
+2. The engine; the tokenizer check; the hooks (V3); one warm-up prompt of 512 tokens (not scored). (A1, R-77 B1) Then
+   the hook evidence starts again: the warm-up used the first check of each layer, so before A1 the BF16 arm recorded
+   no V5 gap and every run would have ended INVALID.
+3. (A1, R-77 F3) Pre-flight: every arm and DET on the first 4,096 tokens of B1 (one chunk, about 30 s). The run stops
+   at once (exit 3, INVALID, about $0.7 spent) if a transform check fails, a V5 gap is above 0.01, a V7 check fails, a
+   layer misses tokens, a value is not finite, DET is not bit-identical and differs by more than 0.0001 nats per token,
+   E5M2 or STOCK8 gives the BF16 log-probabilities bit for bit, or BF16C does while DET is bit-identical. The evidence
+   starts again after it, so the arms record their own V5 and V7 evidence.
+4. Decision arms, 12 documents each: BF16; DET (P1 and C1 again with the hooks removed); BF16C; E5M2; STOCK8; TIED8.
+   Then the record holds `decision_arms_done` (A1).
+5. Reported steps, each only if 1.5 times its estimate (the mean arm time times its share of tokens) ends 60 s before
+   the soft deadline (A1, R-77 F2): BF16R (A1); JOINT8; GEN (greedy, up to 128 tokens, stopped at the end token (A1,
+   R-77 F10; `ignore_eos` before A1), for BF16, BF16C, STOCK8 and TIED8; fixed batch); TIED8_UP. A failed reported
+   step is recorded and the run goes on. The record and the hook evidence are written at each step, and SIGTERM (the
+   session timeout) saves the record before the exit.
+6. The analysis and the frozen decision on the Pod (`analyze_e55.py`); the main session copies RES (about 60 MB) and
+   recomputes the decision on the Mac from the copied raw files (S8; A1, R-77 answer 8).
 
 ## 5. Metrics
 - Per arm X: Delta_X = sum over documents of S_X(d) / sum of n(d), where S_X(d) is the sum over the scored tokens of
   (BF16 log-probability - arm log-probability), the NLL change, and n(d) the number of scored tokens. Unit: nats per
   token; lower is better.
-- Interval: a paired bootstrap over documents, stratified by domain (4 per domain), 10,000 draws, seed 55, the 2.5%
-  and 97.5% percentiles. D = Delta_TIED8 - Delta_STOCK8 uses the same draws.
-- Primary of H16: Delta_BF16C and its interval. Margin m16 = min(0.001, 0.1 x Delta_E5M2): 0.1% of perplexity at most,
-  and at most a tenth of the effect of a known lossy storage of the same layers.
-- Primary of H8: D and its interval. Tolerance tol8 = max(0.0002, 0.25 x Delta_STOCK8).
+- Interval (A1, R-77 F5): a stratified t interval over documents. The variance of the linearized ratio comes from the
+  spread of the residuals S_X(d) - Delta_X n(d) inside each domain (4 documents per domain), with Satterthwaite degrees
+  of freedom. FACT (the A1 simulation on the Mac: the plan's token counts, normal document effects, 4,000 runs per
+  case): the t interval covers 95.1% to 95.9% with equal or unequal spreads and 93.8% when the books dominate; the
+  percentile bootstrap (the rule before A1) covers 85%; a t interval with 9 fixed degrees of freedom covers 89.9% to
+  94.2%. The t interval is about 1.5 times wider than the bootstrap. D = Delta_TIED8 - Delta_STOCK8 and E =
+  Delta_TIED8 - 1.5 Delta_STOCK8 use the same method on the paired document sums. The percentile bootstrap (10,000
+  draws, seed 55) and a bootstrap over 2,048-token blocks are reported.
+- Primary of H16: Delta_BF16C and its interval. Margin m16 = 0.001 nats per token: 0.1% of perplexity (A1, R-77 F4:
+  before A1, min(0.001, 0.1 x Delta_E5M2), which depends on the data and can fall below the resolution). 0.1 x
+  Delta_E5M2 is reported as a second margin.
+- Primary of H8: D and its interval; tolerance tol8 = max(0.0002, 0.25 x Delta_STOCK8), also reported in percent of
+  Delta_STOCK8 (A1); E and its interval (KILL8, Section 7).
 - Secondary (reported): the top-1 agreement of each arm with BF16; Delta by domain and by context bin (1,025 to 8,191,
-  8,192 to 32,767, 32,768 to 65,535); Delta over all tokens (index 1 or more); M1 = Delta_TIED8 / Delta_STOCK8 and M2 =
-  Delta_TIED8 / Delta_JOINT8; Delta_TIED8_UP; BF16_B (the noise floor of the engine); a bootstrap over 2,048-token blocks
-  for Delta_BF16C and D; for GEN, the exact matches of the 128 tokens (Wilson 95%), the median first divergence and
-  the token agreement.
+  8,192 to 32,767, 32,768 to 65,535); Delta over all tokens (index 1 or more; A1 fixes the code, which started at index
+  2, R-77 F9); M1 = Delta_TIED8 / Delta_STOCK8 and M2 = Delta_TIED8 / Delta_JOINT8; Delta_TIED8_UP; (A1) BF16R:
+  Delta_BF16R and Delta_BF16C - Delta_BF16R with its interval; (A1) the per-token SD of each arm's change (the size of
+  a second run, Section 9); (A1) Delta on the far-repeat subset (Section 4.3) with its interval; for GEN, the exact
+  matches (Wilson 95%), the median first divergence, the token agreement and the stop reasons.
 - Repeats: one per arm. The computation is deterministic (V3 checks it); the unit of replication is the document.
 
 ## 6. Validity checks (a failed check makes the run INVALID)
 - V1: the GPU is an H100 80GB.
 - V2: `data_e55.json` and `scales_e54.json` have the frozen hashes; the documents and lengths are the plan; the engine
-  tokenizer gives the `tok_check` ids; both engines are eager with the BF16 cache, no prefix caching and the planned
-  batched tokens; the model revision is the pinned one; the SHA-256 of `splice_e55.py`, `run_e55.py`, `analyze_e55.py`,
-  `session_e55.sh`, `data_e55.json` and `scales_e54.json` on the Pod equal the design commit (L-25, `code_manifest.json`
-  from the Mac).
+  tokenizer gives the `tok_check` ids; the engine is eager with the BF16 cache, no prefix caching and 4,096 batched
+  tokens; the model snapshot folder is the pinned revision (A1, R-77 F9: before A1 the code compared the command-line
+  value with itself); the SHA-256 of `splice_e55.py`, `run_e55.py`, `analyze_e55.py`, `session_e55.sh`,
+  `data_e55.json` and `scales_e54.json` on the Pod equal the design commit (L-25, `code_manifest.json` from
+  `make_manifest.py` on the Mac; A1).
 - V3: the hooks sit on the 10 global layers (32 query heads, 4 KV heads, head size 512); w per layer is one value and
   equals the scales file; in every arm each layer saw every token of every document; DET equals BF16 bit for bit (the
   identity hooks change nothing, and the engine is deterministic), or, if not bit for bit, DET differs from BF16 by
-  at most 0.0001 nats per token on its two documents (a tenth of the largest margin; the difference is reported).
-- V4: every decision arm ran; every array has the planned length and only finite values; run_main status ok.
+  at most 0.0001 nats per token on its two documents (a tenth of the margin; the difference is reported).
+- V4: every decision arm ran; every array has the planned length and only finite values; run_main status ok, or the
+  decision arms finished before a later error or timeout (`decision_arms_done`; A1, R-77 F2).
 - V5: the first call of each arm in each layer passes the transform check (`check_transform`: for example the K codes
-  on the unrotated dims equal the V codes for the tied arms, and the impl scale is the K descale); on the first chunk
-  of the first document of each arm, the engine's attention output equals a float32 reference of the arm (16 query
-  rows) within 0.01 in every layer (E-54: 0.0017; a kernel that ignored the K descale gives about 1); no hook error.
+  on the unrotated dims equal the V codes for the tied arms, and the impl scale is the score factor); on the first
+  chunk of the first document of each arm, the engine's attention output equals a float32 reference of the arm (16
+  query rows) within 0.01 in every layer (E-54: 0.0017; a kernel that ignored the K descale gives about 1); no hook
+  error.
 - V6: the E5M2 control changes the NLL: the lower bound of its interval is above 0.
+- V7 (A1, R-77 F8): in each layer where the arm's float32 reference and the reference of the unchanged q, k and v
+  differ by more than 0.001, the engine output is nearer the arm's reference; BF16C decides in 5 layers or more. Why:
+  V5 cannot tell a hooked BF16C from one that the engine ignored (R-77: the two gaps are 0.0034 and 0.0063, both below
+  0.01). FACT (E-54): the BF16C error is 0.0025 to 0.0098 in 9 layers; layer 29 has w = 2^-4, so BF16C is exact there.
+  INTERPRETATION: the engine's own error (0.0017) and the arm's change come from different roundings, so the gap to
+  the unchanged reference is about the root of the sum of their squares; the A1 toy tests confirm the separation.
+- (A1, R-77 F2) A V3, V4, V5 or V7 problem of a reported arm (BF16R, JOINT8, TIED8_UP) drops that arm from the
+  report; it does not make the run INVALID.
 
-## 7. Decision rule (frozen; project heuristics)
-- INVALID: any of V1 to V6 (the result names them).
-- H16, in this order: KILL16 if Delta_BF16C > 0.01; GO16 if its interval lies inside [-m16, +m16]; PIVOT16 if the lower
-  bound of its interval is above m16 (and Delta_BF16C <= 0.01); otherwise INCONCLUSIVE16, with the condition named.
-- H8, in this order: GO8 if the upper bound of the interval of D is at most tol8; KILL8 if the lower bound of that
-  interval is above 0 and Delta_TIED8 > 1.5 x Delta_STOCK8; PIVOT8 if the lower bound is above 0; otherwise
-  INCONCLUSIVE8.
+## 7. Decision rule (frozen in A1, before any data; project heuristics)
+- INVALID: any of V1 to V7 (the result names them).
+- H16, in this order: KILL16 if Delta_BF16C > 0.01; GO16 if its interval lies inside [-0.001, +0.001]; PIVOT16 if the
+  lower bound of its interval is above 0.001 (and Delta_BF16C <= 0.01); CHECK16 if the upper bound is below -0.001
+  (A1, R-77 F9: rounding cannot improve the NLL by that much, so it is an artifact); otherwise INCONCLUSIVE16, with the
+  condition named.
+- H8, in this order: GO8 if the upper bound of the interval of D is at most tol8; KILL8 if the lower bound of the
+  interval of E = Delta_TIED8 - 1.5 Delta_STOCK8 is above 0 (A1, R-77 F5: TIED8 is worse than 1.5 times STOCK8 with
+  95% confidence; before A1 the rule compared the point ratio); PIVOT8 if the lower bound of the interval of D is
+  above 0; otherwise INCONCLUSIVE8.
+- (A1, R-77 F5) GO8 means "not worse than STOCK8 by more than tol8 nats per token". If Delta_STOCK8 is below 0.0008,
+  tol8 is the floor 0.0002, which is more than 25% of Delta_STOCK8; the report gives tol8 in percent of Delta_STOCK8.
 - FACT (algebra): within each hypothesis the outcomes cannot overlap, because the rule checks them in order.
 - Consequences (the user confirms each step; written before any data):
 
 | Outcome | Action |
 |---|---|
-| GO16 | the thesis and the paper claim that the compact BF16 cache keeps the model's next-token predictions (model level, 3 domains, 32K to 64K tokens); the BF16 compact build (D-88) can start, then the engine capacity test |
+| GO16 | the thesis and the paper claim that the compact BF16 cache keeps the model's next-token predictions within 0.001 nats per token (model level, 3 domains, 32K to 64K tokens); the BF16 compact build (D-88) can start, then the engine capacity test |
 | PIVOT16 | the compact BF16 cache has a small measured cost: report it; the user decides on the build |
 | KILL16 | stop the 16-bit claim and find the cause (a fault is likely, because the layout is exact) before any new run |
-| INCONCLUSIVE16 | report; the user decides on more documents or another metric (a new S4) |
+| CHECK16 (A1) | a significant improvement cannot come from rounding: treat it as an artifact, find the cause, no claim |
+| INCONCLUSIVE16 | report; the user decides on a second run with more documents (Section 9) or another metric (a new S4) |
 | GO8 | the compact FP8 row stays a build option after the BF16 build |
 | PIVOT8 | the compact FP8 row is measurably worse than the stock FP8 cache: it needs new scales (R-76 offline work) and a new test |
 | KILL8 | no compact FP8 claim above the attention level; the build uses the BF16 compact cache only |
@@ -193,8 +246,10 @@ every read sees the arm's values. The 50 sliding layers keep the BF16 cache in e
 
 ## 8. Controls and baselines
 - Baseline: BF16, the BF16 cache with identity hooks.
-- A/A: DET (two documents again without hooks, bit-identical expected, V3) and BF16_B (engine 2 with 2,048 batched
-  tokens: the noise floor of a routine engine setting, reported).
+- A/A: DET (two documents again without hooks, bit-identical expected, V3) and BF16R (one more BF16 rounding of the
+  query: the noise floor of a rounding of the BF16C size, reported). (A1, R-77 F7) BF16R replaces BF16_B (a second
+  engine with 2,048 batched tokens): BF16_B changed only the chunk size, so a per-row kernel could give the BF16 values
+  bit for bit and measure nothing, and it needed a second engine start.
 - Positive controls: E5M2 (must change the NLL, V6) and TIED8_UP (expected above TIED8; reported, the scale tolerance
   of R-76 C4 at the model level).
 - Negative control: the identity hooks of BF16 (must change nothing, V3).
@@ -202,25 +257,32 @@ every read sees the arm's values. The 50 sliding layers keep the BF16 cache in e
 ## 9. Budget
 - Hardware and price: 1 x H100 80GB HBM3 SXM, Secure, on demand; $3.99/h at the last read (E-54, 2026-11-02). S4 reads
   the price and the balance live.
-- Caps: cost cap $4.00; the boot watchdog at 2,820 s after the container starts (`pod_cmd.py --cap 2820`); the session
-  watchdog at 2,580 s; AUTO_STOP 300 s after the session ends. Worst case: about 12 min of image pull plus 47 min, about
-  59 min or $3.92.
+- Caps (A1, R-77 F9): cost cap $4.00; the boot watchdog at 2,640 s after the container starts (`pod_cmd.py --cap
+  2640`; 2,820 s before A1); the session watchdog at 2,400 s (2,580 s before A1); AUTO_STOP 300 s after the session
+  ends. Worst case: 15 min to SSH (the run script deletes the Pod after 15 min without SSH, as E-54) plus the boot
+  watchdog: 59 min, $3.92 at $3.99/h. Before A1 the worst case was 62 min, $4.12.
 - Time per step (estimates from E-54: the capture prefill took 1.7 to 2.6 s for 8K tokens and 10.1 s for 32K; the
-  model t = 2.24e-4 L + 2.5e-9 L^2 s gives about 25 s for 64K, so about 3 min per arm of 524,288 tokens):
-  create to SSH 12 min (E-54: 724 s); upload 1 min; setup 1.5 min; engine 1 min; decision arms with DET 15 to 16 min;
-  JOINT8 3 min; GEN 1.5 min; TIED8_UP 3 min; engine 2 and BF16_B 4 min; analysis 1 min. Session about 31 min; Pod about
-  44 min, about $2.95.
-- What the time cap cuts first: BF16_B, then TIED8_UP, then GEN, then JOINT8 (the order of work runs them last to
+  model t = 2.24e-4 L + 2.5e-9 L^2 s gives about 25 s for 64K, so about 3 min per arm of 524,288 tokens; the
+  prompt log-probabilities add a few seconds per arm, INTERPRETATION): create to SSH 12 min (E-54: 724 s); upload 1
+  min; setup 1.5 min; engine 1 min; warm-up and pre-flight 1 min; decision arms with DET 15 to 16 min; BF16R 3 min;
+  JOINT8 3 min; GEN 1.5 min; TIED8_UP 3 min; analysis 1 min. Session about 31 min; Pod about 45 min, about $3.0.
+- What the time cap cuts first (A1): TIED8_UP, then GEN, then JOINT8, then BF16R (the order of work runs them last to
   first). The decision arms always run; if they cannot finish, the result is INVALID (V4).
 - S5 rehearsal (as E-53): 1 x RTX 4090 (or L4), the same image, `google/gemma-4-E2B-it` at revision
   `3e22461f65e89153144f8adb70e3b8c2cc9845a7`, `REH=1` (documents cut to 16,384 tokens; no w and shape checks, because
-  E2B has no K=V), about 20 min, cap $0.60. VERIFY: (1) the image and the vLLM version; (2) the engine starts with the
-  E-55 arguments; (3) `prompt_logprobs` with `flat_logprobs` passes the parser; (4) the hooks fire on every global
-  layer that owns a KV cache, with full token counts; (5) DET equals BF16; (6) E5M2 changes the log-probabilities and
-  the identity does not; (7) the engine-output gap of V5 and the impl scale work on the rehearsal backend; (8) the time
-  per document and the memory headroom; (9) GEN returns 128 tokens per prompt; (10) the session files, the code hashes
-  and the REHEARSAL decision line. The rehearsal backend is not FA4 (SM89), so V5 on the H100 is the check of item 7
-  for FA4.
+  E2B has no K=V; (A1, R-77 B2) synthetic scales: vs 0.125, ks = f32(w vs), joint ks 0.05 and vs 0.125; the pre-flight
+  records its problems and does not stop), about 20 min, cap $0.60. VERIFY: (1) the image and the vLLM version; (2) the
+  engine starts with the E-55 arguments; (3) `prompt_logprobs` with `flat_logprobs` passes the parser; (4) the hooks
+  fire on every global layer that owns a KV cache, with full token counts; (5) DET equals BF16 in the pre-flight and
+  the main phase; (6) E5M2 changes the log-probabilities and the identity does not; (7) the V5 gap, V7 and the impl
+  scale work on the rehearsal backend for every arm (A1); (8) the time per document and the memory headroom; (9) GEN
+  returns up to 128 tokens per prompt; (10) the session files, the code hashes and the REHEARSAL line, which shows the
+  validity problems (A1). The rehearsal backend is not FA4 (SM89), so the H100 pre-flight (Section 4.5) is the check of
+  item 7 for FA4. (A1) If no rehearsal GPU is in stock (E-54 A2), the pre-flight limits the loss of a failed FA4 route
+  to about $0.7; the user decides on a waiver in S4.
+- (A1, R-77 O5) A second run if a result is INCONCLUSIVE for noise: four times the tokens (48 documents, 16 per domain;
+  the first 12 are this run's) halves the interval. About 62 min of decision arms, so about 85 to 95 min of H100, $5.5
+  to $6.5. The user decides it in a new S4.
 - Balance floor: the protocol rule is the cap plus $35 (abort rule 5). If the live balance is lower, the user decides
   (as D-92 and D-93).
 
@@ -228,32 +290,42 @@ every read sees the arm's values. The 50 sliding layers keep the BF16 cache in e
 1. The splice is not the build. BF16C is the exact compact numerics; the FP8 arms use the BF16 kernel with exact codes
    and the descales in the kernel scale and the output. The FP8 kernel (P in FP16) and the write kernel are not run.
    The E-54 kernel arm matched the FP8 kernel to the BF16 floor in decode. Stays open for the FP8 kernel in prefill.
+   (A1) The output hook rounds twice (the BF16 output, then vs); the FP8 kernel rounds once (Section 4.4).
 2. Global layers only. The FP8 arms keep the sliding layers in BF16, so Delta_STOCK8 is the effect of FP8 in the 10
    global layers, not of a full FP8 cache. This isolates the I-182 format; a full-cache test is out of scope.
 3. Contamination. The PG-19 books may be in the training data; the prose and code are not. Results by domain.
-4. Few documents: 12, 4 per domain. A bootstrap with 4 documents per stratum gives intervals that are a little too
-   narrow (about 13% in width); the block bootstrap is reported as a second view.
-5. NLL is not task accuracy. GEN shows identical text or not; no task score is measured (no GSM8K, no retrieval).
+4. Few documents: 12, 4 per domain. (A1, R-77 F5) The percentile bootstrap covers about 85% with 4 documents per
+   domain; the decision uses the stratified t interval (about 95% in the A1 simulation), which is about 1.5 times wider.
+5. NLL is not task accuracy. GEN shows identical text or not; no task score is measured (no GSM8K, no retrieval). The
+   far-repeat subset (0.78% of the scored tokens) is the part that needs the global layers most.
 6. One checkpoint (FP8-dynamic weights), one engine version. "BF16" here is the KV cache, not the weights.
 7. The scales come from 4 prompts of 8K tokens (E-53 captures). The 64K books are another regime (R-76 C5: the C0 row
    behaves differently at 32K). Results by context bin.
 8. Scored tokens start at index 1,025. The first 1,024 tokens (inside the sliding window) are in the all-token Delta.
 9. The time cap can cut reported steps; the result names them.
-10. The prompt log-probabilities need about 6 to 11 GB per 4,096-token chunk outside the KV pool (BF16 logits of 2.1
-    GB, float32 log-probabilities of 4.3 GB, and maybe a float32 copy); utilization 0.70 leaves about 24 GB; the first
-    document fails fast if not.
-11. The impl scale is changed at run time. V5 checks that the engine output follows it in every layer and arm.
+10. (A1, R-77 F6) The prompt log-probabilities: the V2 runner scores 1,024 rows per call (about 1 to 3 GB outside the
+    KV pool, INTERPRETATION); utilization 0.70 leaves about 24 GB. The pre-flight scores one 4,096-token chunk first.
+11. The impl scale is changed at run time. V5 and V7 check that the engine output follows the arm in every layer.
+12. (A1, R-77 finding 9 and F4) Resolution. Each arm is also a new realization of the FP8 activation noise of the
+    checkpoint. HYPOTHESIS (R-77 model): a per-token SD of 0.05 to 0.11 nats gives a half-width of 3e-4 to 7e-4 nats
+    per token for the t interval (design effect 3). Then GO16 needs |Delta_BF16C| below about 0.0003 to 0.0007, and
+    INCONCLUSIVE16 is possible for a noise reason. BF16R and the per-token SD show which case holds.
+13. (A1, R-77 F9) KL is not measured (D-94 option 1 named it). The signed NLL change is the metric; a truncated KL needs
+    a second pass with fixed token ids (R-77 O3) and fits a later S4.
+14. (A1, R-77 answer 8) The analysis checks the hashes of its own file, so it cannot prove its own integrity. The Mac
+    recomputes the decision from the copied raw files (S8).
 
 ## 11. Files
 | File | What it does | Tests |
 |---|---|---|
 | `prepare_e55.py` | builds `data_e55.json` on the Mac (downloads go to `data/`, which git ignores) | data plan test |
 | `data_e55.json` | the 12 documents, 16 generation prompts and the tokenizer check (frozen) | data plan test |
-| `splice_e55.py` | the arm transforms, the V5 checks and the hooks | capture, toy-module, gap and fault tests |
-| `run_e55.py` | the engine, the hooks, the arms, GEN, the time cuts; `--stub` for the Mac | parser and stub-session tests |
-| `analyze_e55.py` | the statistics, V1 to V6, the frozen rule, the ledger manifest | rule, bootstrap, V2 and manifest tests |
-| `session_e55.sh` | the Pod session (watchdogs, code hashes, phases, analysis) | stub-session and limit tests |
-| `test_e55.py` | 15 tests | |
+| `splice_e55.py` | the arm transforms, the V5 checks and the hooks with their evidence | capture, toy-module, gap, V7 and fault tests |
+| `run_e55.py` | the engine, the hooks, the pre-flight, the arms, GEN, the time cuts; `--stub` with stub Attention modules | parser, engine-order and stub-session tests |
+| `analyze_e55.py` | the statistics (t interval), V1 to V7, the pre-flight checks, the frozen rule, the ledger manifest | rule, t, coverage, far-repeat, V2 and manifest tests |
+| `session_e55.sh` | the Pod session (watchdogs, code hashes, the main phase, analysis) | stub-session and limit tests |
+| `make_manifest.py` (A1) | `code_manifest.json` from the design commit in git (L-25) | manifest test |
+| `test_e55.py` | 26 tests | |
 
 ## 12. Verification record (stage S3)
 2026-11-02, the Mac (`uv run --no-project --with numpy --with torch --with pytest`): 15 tests pass in 258 s.
@@ -274,5 +346,53 @@ every read sees the arm's values. The 50 sliding layers keep the BF16 cache in e
   JOINT errors by 2% to 6% on the captures (Section 2); the arms now store the codes.
 - Not run on the Mac: vLLM, the FA4 kernel and the 31B model (S5 and V5 cover them).
 
+2026-11-03, amendment A1, the Mac (same command): 26 tests pass in 297 s.
+- (B1) The stub engine has 10 small Attention modules with the real hooks and sends every token in the engine order
+  (the warm-up without a document, the pre-flight, the arms, DET with the hooks removed, GEN). Every arm records its V5
+  gap in every layer. Without the reset after the warm-up, BF16 records none: the R-77 failure, reproduced and fixed.
+- (F8) V7: a toy engine that uses the inputs from before the hook passes V5 for BF16C (gap below 0.01) and fails V7;
+  the scaled arms fail V5. With the correct engine, V5 and V7 pass for every arm. In the stub session BF16C decides V7
+  in the 9 layers whose w is not a power of 2, and layer 29 (w = 2^-4) has a separation of exactly 0.
+- (F3) The pre-flight stops a kernel that ignores the impl scale (V5) and an engine that ignores the hook (V7), and a
+  DET rerun 0.001 away, before any arm of the 12 documents (exit 3; the session log says PREFLIGHT STOP).
+- (F2) A failed reported step (GEN) does not stop TIED8_UP or change the decision. SIGTERM after the decision arms
+  saves the record with the hook evidence, and the decision is GO16 GO8.
+- (B2) The rehearsal stub runs every arm, GEN and DET with synthetic scales; the REHEARSAL line shows the validity
+  problems.
+- (F5) The t quantile matches the table (5 values to 1e-5). The coverage test (1,500 simulated runs) passes its
+  bounds: the t interval covers 93% to 97.5%, and the bootstrap at least 3 points less (Section 5: 4,000 runs a case).
+- (O2) The far-repeat mask finds a copy beyond the window and not one inside it.
+- (F9) `make_manifest.py` hashes the committed files: `data_e55.json` and `scales_e54.json` give the frozen hashes.
+- The rule gives each of the 10 outcomes, CHECK16 and KILL8 on E included; the worst case fits the cap; the stub
+  session ends in about 25 s at the real data size.
+
 ## Amendments
-None.
+A1 (2026-11-03, before any E-55 data; R-77 AMEND_THEN_RUN, `dossier/REVIEW_E-55_PRERUN_2026-11-02.md`). The author
+checked every finding against the code and the vLLM source before the fix.
+1. B1: `Splice.reset_evidence` after the warm-up and after the pre-flight; the stub engine carries the real hooks in
+   the engine order, and a test replays the order (Sections 4.5 and 12).
+2. B2: synthetic scales in the rehearsal; the REHEARSAL line shows the validity problems (Section 9).
+3. F1: no noise phase (BF16_B is replaced by BF16R, F7), so a failed second engine cannot invalidate the run.
+4. F2: the record and the hook evidence at every step; `decision_arms_done`; a reported arm with a problem is dropped,
+   not the run; 1.5 times the estimate for each reported step; a SIGTERM handler (Sections 4.5 and 6).
+5. F3: the pre-flight with fail-fast checks (Section 4.5).
+6. F4: the fixed margin 0.001; 0.1 x Delta_E5M2 reported (Sections 1, 5 and 7).
+7. F5: the stratified t interval with Satterthwaite degrees of freedom; KILL8 on the interval of E; the meaning of
+   GO8 and tol8 in percent of Delta_STOCK8 (Sections 5 and 7). The author chose Satterthwaite over 9 fixed degrees of
+   freedom (R-77's t interval) because the fixed form covers 89.9% when the books dominate (Section 5).
+8. F6: the V2 runner facts and `use_v2_model_runner` in the engine record (Section 4.2); reported, not a V2 condition.
+9. F7: BF16R in the same engine, as the A/A (Sections 4.4 and 8).
+10. F8: V7, a per-layer check of the engine output against the arm's reference and the unchanged reference, with 5
+    deciding BF16C layers; and the pre-flight stop if BF16C gives the BF16 values bit for bit while DET is
+    bit-identical.
+    Not as R-77 proposed (50% of the tokens must differ): a share of equal tokens depends on the noise and on
+    determinism, and a nondeterministic engine would hide an ignored hook in it.
+11. F9: the all-token Delta from index 1; the snapshot folder as the revision; new predictions; the watchdogs 2,400 s
+    and 2,640 s for a worst case inside the cap; CHECK16; `make_manifest.py`; the KL omission (Sections 2, 5, 6, 7, 9
+    and 10).
+12. F10: GEN stops at the end token, and the stop reasons are recorded (Sections 4.5 and 5).
+13. O2: the far-repeat subset, reported (Sections 4.3 and 5). O5: the size of a second run (Section 9).
+Not taken: O1 (a real stock FP8 reference: a third engine start, about $0.35 and 5 min, and a new engine setting; both
+FP8 arms of H8 use the same emulation, so their comparison is consistent; the real FP8 kernel stays threat 1); O3 (a
+truncated KL: a second pass with fixed ids, a later S4; threat 13); O4 (an FP32 lm_head: it changes the engine from
+stock and needs a check of the unquantized head; BF16R measures the noise instead).

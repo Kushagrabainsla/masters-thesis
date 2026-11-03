@@ -1,12 +1,14 @@
 #!/bin/sh
-# E-55 session (README Sections 4 and 9): the version and hardware record, telemetry, the SHA-256 of the code that runs
-# (L-25, R-76 C7), the pinned checkpoint download, the main phase (engine 1: the decision arms, then the reported steps
-# while the time allows), the noise phase (engine 2: BF16_B) if the time allows, and the frozen decision. The same
-# safety as E-54: a session watchdog, a timeout for each step and AUTO_STOP. The Pod start command adds the boot
-# watchdog (experiments/runpod/pod_cmd.py --cap 2820). The session starts about 2 min after the boot watchdog, so
-# POD_LIMIT 2,580 s fires at about 2,700 s after boot, before the boot watchdog. The results are small (about 60 MB).
-# STUB=1 runs the same flow on a Mac with synthetic log-probabilities (no GPU, no vLLM, no download); STUB_ARGS passes
-# stub flags to run_e55.py. REH=1 is the S5 rehearsal on a small Gemma 4 model (M31 and R31 name it).
+# E-55 session (README Sections 4 and 9, amendment A1): the version and hardware record, telemetry, the SHA-256 of the
+# code that runs (L-25, R-76 C7), the pinned checkpoint download, the main phase (the warm-up, the pre-flight, the
+# decision arms, then the reported steps while the time allows) and the frozen decision. The same safety as E-54: a
+# session watchdog, a timeout for the main phase and AUTO_STOP (the run script sets AUTO_STOP=1 on the Pod). The Pod
+# start command adds the boot watchdog (experiments/runpod/pod_cmd.py --cap BOOT_CAP). The session starts about 2 min
+# after the container, so POD_LIMIT 2,400 s fires at about 2,520 s after boot, before the boot watchdog at 2,640 s.
+# A1 (R-77 F7, F1): no noise phase; BF16R in the main phase is the A/A. Exit 3 of run_e55.py is a pre-flight stop.
+# STUB=1 runs the same flow on a Mac with synthetic log-probabilities and stub Attention modules (no GPU, no vLLM, no
+# download); STUB_ARGS passes stub flags to run_e55.py. REH=1 is the S5 rehearsal on a small Gemma 4 model (M31 and R31
+# name it).
 set -u
 CODE=${CODE:-/workspace/code}
 E55=$CODE/gemma4_kv_model
@@ -18,9 +20,9 @@ REH=${REH:-0}
 M31=${M31:-RedHatAI/gemma-4-31B-it-FP8-dynamic}
 R31=${R31:-d4ab4f579dd3516f97d8a6a4c98d0653480bad15}
 DL_TIMEOUT=${DL_TIMEOUT:-420}           # E-54: the setup with this checkpoint took 82 s
-POD_LIMIT=${POD_LIMIT:-2580}            # session watchdog at 43 min: about 2,700 s after boot, before 2,820 s
-NOISE_NEED=${NOISE_NEED:-420}           # the noise phase starts only with this many seconds left (engine and 1 arm)
-AN_RESERVE=${AN_RESERVE:-120}           # seconds kept for the analysis after the last phase
+POD_LIMIT=${POD_LIMIT:-2400}            # session watchdog at 40 min: about 2,520 s after boot
+BOOT_CAP=${BOOT_CAP:-2640}              # the boot watchdog that the run script gives pod_cmd.py (information here)
+AN_RESERVE=${AN_RESERVE:-120}           # seconds kept for the analysis after the main phase
 AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-300} # the copy window for RES
 AUTO_STOP=${AUTO_STOP:-0}
 export VLLM_ENABLE_V1_MULTIPROCESSING=0  # the engine core and the worker in this process (E-53 README Section 4)
@@ -70,7 +72,7 @@ trap finish EXIT; trap 'exit 130' INT TERM
 [ "$AUTO_STOP" = 1 ] && { ( sleep "$POD_LIMIT"; log "watchdog"; stop_pod watchdog ) & WD=$!; }
 
 # The code that runs (L-25): the hashes of the uploaded package and of the scales file, and the design hashes that
-# the main session computed from the design commit (code_manifest.json).
+# make_manifest.py computed on the Mac from the design commit (code_manifest.json).
 { sha_list "$E55"; s=$(sha_list "$(dirname "$SCALES")" | awk '$2 == "scales_e54.json"'); echo "$s"; } > "$RES/code_sha.txt"
 [ -f "$E55/code_manifest.json" ] && cp "$E55/code_manifest.json" "$RES/code_manifest.json"
 ENV="$RES/env-$STAMP"; mkdir -p "$ENV"
@@ -95,47 +97,25 @@ fi
 log "setup done after $(elapsed) s; versions: $(tr '\n' ' ' < "$RES/versions.txt")"
 log "disk: $(df -h "$RES" 2>/dev/null | tail -1)"
 
-common() {  # the flags of both phases; the main phase keeps 60 s, so its reported steps come before the noise phase
-    echo "--data $E55/data_e55.json --scales $SCALES --out $RES --model-id $M31 --revision $R31 --start $START --deadline $((DEADLINE - AN_RESERVE)) --reserve 60 $RUN_FLAGS"
-}
+FLAGS="--data $E55/data_e55.json --scales $SCALES --out $RES --model-id $M31 --revision $R31 --start $START"
+FLAGS="$FLAGS --deadline $((DEADLINE - AN_RESERVE)) --reserve 60 $RUN_FLAGS"
 if [ -f "$RES/run_main.json" ] && grep -q '"status": "ok"' "$RES/run_main.json"; then
     log "main: ok before, skip"
 else
     [ -e "$RES/run_main.json" ] && mv "$RES/run_main.json" "$RES/run_main.failed.$(date -u +%Y%m%dT%H%M%SZ).json"
     if [ "$STUB" = 1 ]; then
-        python3 "$E55/run_e55.py" --phase main $(common) --stub $STUB_ARGS > "$RES/main_log.txt" 2>&1; rc=$?
+        python3 "$E55/run_e55.py" $FLAGS --stub $STUB_ARGS > "$RES/main_log.txt" 2>&1; rc=$?
     elif [ -n "$SNAP" ] && [ -d "$SNAP" ]; then
-        run_to $(( $(left) - AN_RESERVE )) python3 "$E55/run_e55.py" --phase main $(common) --snapshot "$SNAP" \
+        run_to $(( $(left) - AN_RESERVE )) python3 "$E55/run_e55.py" $FLAGS --snapshot "$SNAP" \
             > "$RES/main_log.txt" 2>&1; rc=$?
     else
         rc=2; echo "no snapshot folder after the download" > "$RES/main_log.txt"
     fi
+    [ "$rc" = 3 ] && log "PREFLIGHT STOP: a pre-flight check failed; the paid arms did not run"
     log "main: exit $rc after $(elapsed) s; $(tail -1 "$RES/main_log.txt" | cut -c1-300)"
-fi
-if [ "$STUB" != 1 ]; then  # wait up to 60 s until the GPU has less than 2 GiB in use (as E-53)
-    i=0
-    while [ $i -lt 12 ]; do
-        used=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits 2>/dev/null | head -1 | tr -d ' ')
-        [ -n "$used" ] && [ "$used" -lt 2048 ] && break
-        sleep 5; i=$((i + 1))
-    done
-    log "GPU memory in use before the noise phase: ${used:-?} MiB"
-fi
-if [ "$(left)" -gt $((NOISE_NEED + AN_RESERVE)) ]; then
-    if [ "$STUB" = 1 ]; then
-        python3 "$E55/run_e55.py" --phase noise $(common) --stub $STUB_ARGS > "$RES/noise_log.txt" 2>&1; rc=$?
-    elif [ -n "$SNAP" ] && [ -d "$SNAP" ]; then
-        run_to $(( $(left) - AN_RESERVE )) python3 "$E55/run_e55.py" --phase noise $(common) --snapshot "$SNAP" \
-            > "$RES/noise_log.txt" 2>&1; rc=$?
-    else
-        rc=2
-    fi
-    log "noise: exit $rc after $(elapsed) s; $(tail -1 "$RES/noise_log.txt" 2>/dev/null | cut -c1-300)"
-else
-    log "noise: cut ($(left) s left, $((NOISE_NEED + AN_RESERVE)) s needed)"
 fi
 [ -n "$TEL" ] && kill "$TEL" 2>/dev/null
 python3 "$E55/analyze_e55.py" --res "$RES" --data "$E55/data_e55.json" > "$RES/decision.txt" 2>&1 || true
-log "decision: $(tail -1 "$RES/decision.txt" | cut -c1-700)"
+log "decision: $(tail -1 "$RES/decision.txt" | cut -c1-900)"
 log "results: $(du -sk "$RES" | cut -f1) KB in $RES; disk: $(df -h "$RES" 2>/dev/null | tail -1)"
 log "done after $(elapsed) s"

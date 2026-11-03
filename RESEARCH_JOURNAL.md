@@ -184,8 +184,9 @@ maps every file to what it contains.
 
 ## 1. Current state
 
-**As of 2026-11-02, after the E-55 preregistration (the model-level test; D-94, the user), the R-76 post-run
-review of E-54 (CONFIRM_WITH_CORRECTIONS; the PASS stands), the E-54 H100 run, its pre-run review R-75 and amendments A1 and A2; before that, the E-53 H100 run (gate G3 of D-88; frozen decision FAIL) and its R-74 post-run
+**As of 2026-11-03, after the R-77 pre-run review of E-55 (AMEND_THEN_RUN) and its amendment A1, the E-55
+preregistration (the model-level test; D-94, the user), the R-76 post-run review of E-54 (CONFIRM_WITH_CORRECTIONS;
+the PASS stands), the E-54 H100 run, its pre-run review R-75 and amendments A1 and A2; before that, the E-53 H100 run (gate G3 of D-88; frozen decision FAIL) and its R-74 post-run
 review (CONFIRM_WITH_CORRECTIONS). The I-182 line (E-49 to E-54) is the active work.** Rewrite this section every session.
 
 **RESUME POINT (read this first).**
@@ -312,7 +313,14 @@ review (CONFIRM_WITH_CORRECTIONS). The I-182 line (E-49 to E-54) is the active w
   (`experiments/gemma4_kv_model/`): hooks in the real engine change the K and V of the 10 global layers; the
   teacher-forced NLL of 12 documents of 32K to 64K tokens decides. H16: the BF16 compact cache within min(0.001,
   0.1 x E5M2) nats per token; H8: the tied FP8 row no worse than the stock FP8 cache. 15 tests pass; cap $4.00.
-  Next: R-77 (pre-run review), then S4 (the user's spend approval and a live balance check).
+  R-77 (Sonnet pre-run review, 2026-11-03): AMEND_THEN_RUN. B1: the warm-up call used the first check of each
+  layer, so the BF16 arm recorded no V5 gap and every real run would have ended INVALID; B2: the rehearsal could not
+  run the scaled arms. Amendment A1 (2026-11-03, before any data) fixes both and F1 to F10: a one-chunk pre-flight
+  that stops a broken run for about $0.7; BF16R (one more BF16 rounding of the query) replaces BF16_B as the A/A;
+  V7 (the engine output must be nearer the arm's reference than the unchanged one); the fixed margin 0.001; a
+  stratified t interval (the bootstrap covered 85%, the t interval 95%); KILL8 on Delta_TIED8 - 1.5 Delta_STOCK8;
+  watchdogs 2,400 s and 2,640 s (worst case $3.92). The stub now drives the real hooks in the engine order; 26
+  tests pass. Next: S4 (the user's spend approval and a live balance check).
   0 thesis Pods, 0 volumes.
 - Latest (2026-10-28, local session): user: continue experiments and look for gaps or optimizations to contribute
   (no advisor summary). New lead I-172 from the E-36 H100 kernel profiles (FACT): Qwen3-8B-FP8 with the default
@@ -1226,7 +1234,7 @@ history in Section 5.
 | I-179 | Thermal and wear-aware GPU placement for longevity (wear leveling) | KILL for this thesis (R-62: no lifetime ground truth without fleet data; only patents) | R-62 |
 | I-180 | Blackwell hardware decompression engine for KV offload | KILL (R-62: LZ4 1.00x on incompressible data, about 200 GB/s ceiling, 2512.02189; offload crowded) | R-62 |
 | I-181 | Exact LM head with a low-precision screen: an FP8 copy of the head screens all tokens, a rigorous per-row error bound picks the few rows to re-read in BF16, greedy is certified and sampling stays exact with one rejection step (vector-search re-ranking plus speculative-sampling rejection, moved to the decode LM head) | KILL (2026-10-29, R-63): vLLM PR #60566 "Screened lm_head" (open since 2026-10-08) is the same design, gains +8% on DGX Spark and about 0 or less on GB200 and GB300; also verified-progress, sparkpipe PR 744, knlp, CSV-Decode 2511.21702. E-48 screen had passed for FP8 | `experiments/lmhead_screen/README.md` |
-| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin; R-70 (2026-11-01): CONFIRM_WITH_CORRECTIONS: the oracle bounds the byte route only (at most about 10% of dt), not the layout; the compact FP8 kernel has an FP8-only defect; the speed claim is untested; D-85 decided by the user: fix the compact kernel (E-52); E-52 predeclared 2026-11-01 (FP16 compute and the views layout); E-52 RUN 2026-11-01: INVALID (V4); exploratory KILL of the byte route (about 80% on-chip work, e_h 0.22 to 0.24); the stock FA4 kernel reads the compact rows through two views, exactly and 7% to 10% faster; R-72 (2026-11-01): CONFIRM_WITH_CORRECTIONS (a co-limit; the page-size risk); D-88 decided by the user (the write-up and a gated build); gates G1 and G2 PASS; E-53 (gate G3) predeclared; R-73 AMEND_THEN_RUN, A1 applied; E-53 RUN: FAIL (FP8, layer 41 ratio 2.38); R-74 (2026-11-01): CONFIRM_WITH_CORRECTIONS (the FAIL is weak evidence against the layout; the standard FP8 error depends on the grid phase of the scale); D-90 open; the user asked for the E-54 plan; E-54 predeclared 2026-11-01 (the scale-tied row with frozen calibrated scales; in sample R1 0.66, R2 1.11); R-75 AMEND_THEN_RUN; A1 2026-11-02: the joint calibrated baseline decides R2 (D-91, the user; in sample 1.20); E-54 RUN 2026-11-02: PASS (R1 0.670, R2 1.131; kernel MATCH); R-76 (2026-11-02): CONFIRM_WITH_CORRECTIONS (not accuracy-neutral: 0.67 times stock, 1.13 times the best calibrated standard; the scales need 0.1% to 0.25%; attention level only); D-94 decided by the user (plan E-55); E-55 predeclared 2026-11-02 (the model-level NLL test, BF16 and FP8 arms) | `experiments/gemma4_kv_audit/README.md` |
+| I-182 | Compact K=V cache for Gemma 4 global layers: store [V (512) | K on the 128 rotated dims] per head and token (640 values instead of 1,024; the MLA cache shape), absorb the k_norm weight into the query; exact; 37.5% fewer global KV bytes (the saving the Gemma 4 report states) and 1.6 times the global KV capacity. Found by free source reading after the D-73 pass-1 check showed the hybrid recurrent class is crowded | MEASURE-FIRST (2026-10-29): byte model 6.5% to 14% of decode bytes at 32K to 64K; no engine found that stores it once (vLLM, SGLang, TensorRT-LLM, llama.cpp); E-49 predeclared; R-64 pass 2 (2026-10-30) found no engine or paper that stores it once (closest: GTA 2505.21487, an architecture); E-49 amended A1; E-49 RUN 2026-10-30: PIVOT (31B ceiling S 6.65% at 32K and 11.33% at 64K, lower bounds 6.53% and 11.14%, all controls pass; 26B 64K cells lost to a probe fault, 32K bound 4.6%); R-65 (2026-10-30): CONFIRM_WITH_SCOPE_LIMITS; the stacked ceiling on FP8 KV (estimate 3.8% to 7.0% at batch 4) is the next deciding number; E-50 predeclared 2026-10-30 (the stack near the KV pool limit); E-50 RUN 2026-10-31: GO (the FP8 KV stack 12.1% at 32K, B 19, and 15.0% at 64K, B 11; the stock FP8 path is slower than BF16 at batch 4 below 40K); R-68 (2026-10-31): CONFIRM_WITH_SCOPE_LIMITS; the stock FP8 kernel's time elasticity to bytes is 0.49, so the real saving is plausibly 4% to 8%; E-51 predeclared 2026-10-31 (the compact kernel microbenchmark); R-69 (2026-10-31): AMEND_THEN_RUN, amendment A1; E-51 RUN 2026-11-01: INVALID (V3, V4); exploratory: the FP8 dequant kernels are bound on chip on the H100 (K = V elasticity 0.17 to 0.20), and the compact Triton FP8 kernel was 29% slower than its twin; R-70 (2026-11-01): CONFIRM_WITH_CORRECTIONS: the oracle bounds the byte route only (at most about 10% of dt), not the layout; the compact FP8 kernel has an FP8-only defect; the speed claim is untested; D-85 decided by the user: fix the compact kernel (E-52); E-52 predeclared 2026-11-01 (FP16 compute and the views layout); E-52 RUN 2026-11-01: INVALID (V4); exploratory KILL of the byte route (about 80% on-chip work, e_h 0.22 to 0.24); the stock FA4 kernel reads the compact rows through two views, exactly and 7% to 10% faster; R-72 (2026-11-01): CONFIRM_WITH_CORRECTIONS (a co-limit; the page-size risk); D-88 decided by the user (the write-up and a gated build); gates G1 and G2 PASS; E-53 (gate G3) predeclared; R-73 AMEND_THEN_RUN, A1 applied; E-53 RUN: FAIL (FP8, layer 41 ratio 2.38); R-74 (2026-11-01): CONFIRM_WITH_CORRECTIONS (the FAIL is weak evidence against the layout; the standard FP8 error depends on the grid phase of the scale); D-90 open; the user asked for the E-54 plan; E-54 predeclared 2026-11-01 (the scale-tied row with frozen calibrated scales; in sample R1 0.66, R2 1.11); R-75 AMEND_THEN_RUN; A1 2026-11-02: the joint calibrated baseline decides R2 (D-91, the user; in sample 1.20); E-54 RUN 2026-11-02: PASS (R1 0.670, R2 1.131; kernel MATCH); R-76 (2026-11-02): CONFIRM_WITH_CORRECTIONS (not accuracy-neutral: 0.67 times stock, 1.13 times the best calibrated standard; the scales need 0.1% to 0.25%; attention level only); D-94 decided by the user (plan E-55); E-55 predeclared 2026-11-02 (the model-level NLL test, BF16 and FP8 arms); R-77 (2026-11-03): AMEND_THEN_RUN (two blockers: no BF16 V5 gap after the warm-up; the rehearsal could not run the scaled arms); E-55 A1 2026-11-03 | `experiments/gemma4_kv_audit/README.md` |
 | I-183 | Sliding-window decode attention on the Triton backend loses speed at long context: on an RTX 4090 (Gemma 4 E2B, window 512, 1 KV head) the sliding layers take 0.39 ms per step at 2K and 1.09 ms at 32K and 64K. GPUs without FA4 (SM8x: A100, L4, RTX) run Gemma 4 on TRITON_ATTN | MEASURE-FIRST (2026-10-30): one exploratory measurement from the E-49 rehearsal; cause not checked (HYPOTHESIS: the split-KV segments follow the full sequence length, so the window falls into one segment) | `experiments/gemma4_kv_audit/README.md` Section 12 |
 
 ---
@@ -1857,6 +1865,12 @@ undated (file 2026-09-16 17:51)  [P1]  stateful_elastic_inference_thesis_dossier
                   the NLL within min(0.001, 0.1 x E5M2) nats per token; H8: the tied FP8 row is no worse than the
                   stock FP8 cache. 15 tests pass. Cap $4.00. Next: R-77, then S4.
                   Source: experiments/gemma4_kv_model/README.md. Ideas: I-182. Experiments: E-55.
+2026-11-03  [P10] R-77 (Sonnet) pre-run review of E-55: AMEND_THEN_RUN. B1: the warm-up used the first V5 check
+                  of each layer, so every real run would have ended INVALID; B2: the rehearsal could not run the
+                  scaled arms. A1 fixes both and F1 to F10: a one-chunk pre-flight, BF16R as the A/A, V7, the fixed
+                  margin 0.001, a stratified t interval, KILL8 on Delta_TIED8 - 1.5 Delta_STOCK8, and watchdogs for a
+                  worst case of $3.92. 26 tests pass. Next: S4.
+                  Source: dossier/REVIEW_E-55_PRERUN_2026-11-02.md. Ideas: I-182. Experiments: E-55.
 ```
 
 ---
@@ -3910,7 +3924,8 @@ KILL of the byte route; the stock kernel reads the compact rows through two view
 2026-11-01: gate G3, real-activation accuracy; R-73 AMEND_THEN_RUN; amendment A1; RUN 2026-11-01: FAIL; R-74
 CONFIRM_WITH_CORRECTIONS); E-54 (predeclared 2026-11-01: the scale-tied row on fresh prompts; R-75
 AMEND_THEN_RUN; amendments A1 and A2 2026-11-02; RUN 2026-11-02: PASS); E-55 (predeclared 2026-11-02: the
-model-level NLL test of the compact cache, BF16 and FP8 arms).
+model-level NLL test of the compact cache, BF16 and FP8 arms; R-77 AMEND_THEN_RUN; amendment A1
+2026-11-03).
 Reviews: R-67 (E-50 pre-run, Sonnet, 2026-10-30): AMEND_THEN_RUN; the fixes are E-50 A1.
 Reviews: R-64 (pre-run, Sonnet, 2026-10-29 to 30): AMEND_THEN_RUN; the fixes are E-49 amendment A1. R-65
 (post-run, Sonnet, 2026-10-30): CONFIRM_WITH_SCOPE_LIMITS.
@@ -3956,6 +3971,11 @@ tied row is no better than stock in layers 5, 11 and 23. The gain needs the scal
 2026-11-02 (E-55 design, on the E-54 captures): a splice that stores the FP8 codes and applies the descales to the
 scores and the output gives the E-54 errors to 1e-4; storing bf16(scale x code) instead moves them by 2% to 6%,
 because the BF16 rounding acts like a small scale change on each code value (the scales need 0.1% to 0.25%).
+2026-11-03 (R-77, E-55 A1): the checkpoint quantizes each linear input to FP8 per token, so a 0.3% change in
+attention flips FP8 codes downstream; each arm is also a new noise realization (HYPOTHESIS: a per-token SD of 0.05
+to 0.11 nats). BF16R (one more BF16 rounding of the query) measures that floor in E-55. With 4 documents per domain
+the percentile bootstrap covers 85%; a stratified t interval with Satterthwaite degrees of freedom covers 94% to
+96% (Mac simulation).
 Verdict history: 2026-10-29: MEASURE-FIRST (main session, before R-64). 2026-10-30: MEASURE-FIRST kept (R-64:
 novelty low, the engine gap and its measured effect are the open item; likely outcome PIVOT or GO).
 2026-10-30: E-49 PIVOT by the frozen rule (one model or one cell only). The 31B result is clean: the compact
@@ -5277,7 +5297,8 @@ GSM8K unchanged; `vllm bench latency` agrees (4.6%); the default engine does not
 
 **E-55 Model-level accuracy of the compact K=V cache (BF16 and FP8) in the Gemma 4 31B global layers** (predeclared
 2026-11-02, I-182, D-94 option 1, decided by the user).
-STATUS: PREDECLARED (2026-11-02), NOT RUN; S3 15 tests pass; S2 review R-77 pending. Package:
+STATUS: PREDECLARED (2026-11-02); amendment A1 (2026-11-03, after R-77 AMEND_THEN_RUN: two blockers and F1 to
+F10 fixed); NOT RUN; S3 26 tests pass. Package:
 `experiments/gemma4_kv_model/` (README is the preregistration). Question: at the model level, does the compact cache
 keep the next-token predictions on long documents? H16 (primary): with the compact row in BF16 (q_unrot = bf16(q w),
 K_unrot = V_unrot), the per-token NLL change Delta_BF16C lies inside a margin m16 = min(0.001, 0.1 x Delta_E5M2) nats
@@ -5301,6 +5322,18 @@ KILL8 (worse and above 1.5 x stock), PIVOT8, INCONCLUSIVE8. Budget: 1 x H100 SXM
 about 44 min (about $2.95), cap $4.00, boot watchdog 2,820 s, session watchdog 2,580 s; the cuts drop BF16_B, then
 TIED8_UP, GEN and JOINT8; an RTX 4090 rehearsal with Gemma 4 E2B (mechanics only), cap $0.60. Next: R-77 (pre-run
 review), then S4 (the user's spend approval and a live balance check).
+A1 (R-77, 2026-11-03, before any E-55 data): the hook evidence starts again after the warm-up and after a new
+pre-flight (every arm and DET on the first 4,096 tokens of B1; it stops the run with exit 3 if V5, V7, the token
+counts, DET or the control checks fail); BF16R (q' = bf16(q (1 + 2^-7)), impl scale 1 / (1 + 2^-7)) replaces BF16_B
+and the second engine; V7: in each layer where the arm's reference and the reference of the unchanged q, k and v
+differ by more than 0.001, the engine output must be nearer the arm's reference (BF16C decides in 5 layers or more);
+the margin of H16 is a fixed 0.001 (0.1 x Delta_E5M2 reported); the decision interval is a stratified t interval with
+Satterthwaite degrees of freedom; KILL8 needs the 95% interval of Delta_TIED8 - 1.5 Delta_STOCK8 above 0; CHECK16
+marks a significant improvement as an artifact; a reported arm with a problem is dropped, not the run; the record and
+the evidence are saved at every step and on SIGTERM; GEN stops at the end token; synthetic scales in the rehearsal;
+the far-repeat subset (3,971 scored tokens) and the per-token SD are reported; watchdogs 2,400 s (session) and 2,640 s
+(boot): worst case 59 min, $3.92. Plan about 45 min of Pod, about $3.0; the cuts drop TIED8_UP, GEN, JOINT8, then
+BF16R. The stub engine carries the real hooks in the engine order; 26 tests pass. Next: S4.
 
 **E-54 Accuracy of the scale-tied compact FP8 K=V cache on fresh Gemma 4 31B activations** (predeclared 2026-11-01,
 I-182, D-90 option d after R-74).
@@ -6406,6 +6439,27 @@ I-174 (exact symmetries for power) died in the free screen; I-175 and I-176 died
 too small in our measured regime, or not testable without fleet data. Our telemetry bounds every power-cap idea in
 this serving regime: removing the cap gains at most 0.65% (E-44) to 2.4% (E-46). Both passes: D-70 options A and B
 remain the best use of the time. Write-up: `dossier/FRONTIER_R-62_2026-10-29.md`.
+
+**R-77 Pre-run review of E-55 (model-level accuracy of the compact K=V cache, BF16 and FP8, in the Gemma 4 31B
+global layers; I-182)** (2026-11-02 to 2026-11-03, Sonnet, a different model from the author; replays of the real call
+order on toy modules, the author's tests (15 pass), a noise model, coverage and power simulations of the frozen rule,
+read-only `gh api` reads of vllm-project/vllm at 3966924d5 and flash-attention at b273a02; no GPU, vLLM, Runpod or
+`.env` access). AMEND_THEN_RUN (two blockers). FACT: every read of K and V in this build comes from the paged cache
+that the hooked tensors write (no cascade path); the impl scale is read on every call and the FA4 compile key holds no
+scale, so the K descale route works; the flat log-probability layout and the parser are right; the engine runs the V2
+model runner (README 4.2 cited V1). B1: the warm-up call (arm BF16, no document) used the first check of each layer,
+so the BF16 arm recorded no V5 gap and every real run would have ended INVALID after about $2 of H100 time. B2: with
+REH=1 the scales were None, so the rehearsal stopped at TIED8 and never tested the K descale route. F1 to F10: a failed
+noise phase or a late reported step gave INVALID; no pre-flight; the data-dependent margin can fall below the
+resolution; the percentile bootstrap covers 86% with 4 documents per domain; the point-ratio KILL8 rule is noisy; the
+README runner facts; BF16_B may measure nothing (BF16R proposed); V5 cannot tell a hooked BF16C from an ignored one
+(gaps 0.0034 and 0.0063 against 0.01); small README and code differences (the all-token Delta from index 2, the
+revision from the command line, a worst case of $4.12, no outcome for an improvement, no manifest script, no KL); GEN
+after the end token. HYPOTHESIS (R-77 model): the FP8-dynamic activations give a per-token SD of 0.05 to 0.11 nats and
+a half-width of 2e-4 to 5e-4 for the old interval. The author checked each finding against the code and the source
+and applied all of them as E-55 A1; F8 is taken as a per-layer check (V7) instead of a 50% token share, and F5 as a
+Satterthwaite t interval (9 fixed degrees of freedom cover 89.9% when the books dominate). Options: O2 and O5 taken;
+O1, O3 and O4 not taken. Write-up: `dossier/REVIEW_E-55_PRERUN_2026-11-02.md`.
 
 **R-76 Post-run review of E-54 (accuracy of the scale-tied compact FP8 K=V cache on fresh Gemma 4 31B activations;
 I-182)** (2026-11-02, Sonnet, a different model from the author; an independent recompute with its own E4M3 and E5M2
@@ -8058,3 +8112,5 @@ advisor, so it is gitignored and used for structure only. Names are omitted here
 - 2026-11-02: D-94 decided by the user: plan E-55 (Section 10).
 - 2026-11-02: E-55 predeclared (Section 6.1 E-55, Section 3 row I-182, Section 5.27, Section 1 header and line,
   Section 4 entry); package `experiments/gemma4_kv_model/` with the frozen data `data_e55.json`.
+- 2026-11-03: R-77 pre-run review of E-55 recorded (Section 6.2); E-55 amendment A1 (Section 6.1 E-55, Section 3
+  row I-182, Section 5.27, Section 1 header and line, Section 4 entry).

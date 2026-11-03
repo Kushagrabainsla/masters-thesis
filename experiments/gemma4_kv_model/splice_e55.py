@@ -1,10 +1,10 @@
-"""E-55 splice (README Sections 4.4 and 4.5): the arm transforms of the global-layer attention, and the vLLM hooks that
-apply them.
+"""E-55 splice (README Sections 4.4 and 4.5, amendment A1): the arm transforms of the global-layer attention, and the
+vLLM hooks that apply them.
 
-How the splice reaches the cache (FACT, vLLM 3966924d5; E-53 README Section 4.3): `Gemma4Attention.forward` (models/
-gemma4.py 540 to 575) applies k_norm, RoPE and the weightless v_norm, then calls `self.attn(q, k, v)`. A forward
-pre-hook on that `Attention` module replaces q, k and v before the module writes k and v to the paged cache. The
-engine reads K and V from the paged cache in prefill and in decode (R-76, `flash_attn.py`), so every read sees the
+How the splice reaches the cache (FACT, vLLM 3966924d5; E-53 README Section 4.3; R-77 answer 1): `Gemma4Attention.
+forward` (models/gemma4.py 540 to 575) applies k_norm, RoPE and the weightless v_norm, then calls `self.attn(q, k, v)`.
+A forward pre-hook on that `Attention` module replaces q, k and v before the module writes k and v to the paged cache.
+The engine reads K and V from the paged cache in prefill and in decode (R-76, `flash_attn.py`), so every read sees the
 values of the arm. The cache stays BF16 ("auto").
 
 The FP8 arms store the FP8 codes themselves (each E4M3 or E5M2 value is exact in BF16) and put the two descales where
@@ -22,6 +22,8 @@ Arms (the global layers only; the 50 sliding layers keep the BF16 cache in every
   STOCK8    K and V cast to FP8 E4M3 at scale 1.0 (the stock vLLM FP8 cache)
   TIED8     the tied row with the frozen E-54 scales: K codes [c(K_rot / ks) | c(V_unrot / vs)] with the K descale ks,
             V codes c(V / vs) with the V descale vs, ks = f32(w vs): the two views of E-54
+  BF16R     q' = bf16(q R_C) with the impl scale 1 / R_C: one more BF16 rounding of the query and no other change. Its
+            effect is the effect of a rounding of the size of the BF16C rounding: the A/A of BF16C (A1, R-77 F7)
   JOINT8    the standard cache with the frozen E-54 CALSTD_JOINT scales: c(K / ks) and c(V / vs) with ks and vs
   TIED8_UP  TIED8 with vs one phase step up (vs 2^(1/32), ks = f32(w vs)): the scale control (reported)
 c() is the vLLM cache cast: saturate at the format maximum, round to nearest even.
@@ -33,8 +35,9 @@ import torch
 
 FP8_MAX, E5M2_MAX = 448.0, 57344.0
 STEP = 2.0 ** (1 / 32)                       # one phase step of the E-54 calibration grid
-ARMS = ("BF16", "BF16C", "E5M2", "STOCK8", "TIED8", "JOINT8", "TIED8_UP")
-SCALED = ("TIED8", "JOINT8", "TIED8_UP")     # the arms with descales other than 1.0
+R_C = 1.0 + 2.0 ** -7                        # BF16R: the query factor (the impl scale takes 1 / R_C)
+ARMS = ("BF16", "BF16C", "E5M2", "STOCK8", "TIED8", "BF16R", "JOINT8", "TIED8_UP")
+SCALED = ("TIED8", "JOINT8", "TIED8_UP")     # the arms with FP8 descales (a V descale on the output)
 
 
 def rot_dims(head: int, rotary: float = 0.25) -> tuple[list[int], list[int]]:
@@ -59,13 +62,16 @@ def e5m2(x: torch.Tensor) -> torch.Tensor:
 
 
 def arm_scales(arm: str, sc: dict | None) -> dict:
-    """The descales of one layer for an arm, from the frozen `scales_e54.json` entry sc (w, tied, calstd_joint)."""
+    """The score factor ks (the factor of the impl scale: the K descale, or 1 / R_C for BF16R) and the output factor
+    vs (the V descale) of one layer for an arm, from the frozen `scales_e54.json` entry sc (w, tied, calstd_joint)."""
     if arm in ("TIED8", "TIED8_UP"):
         vs = sc["tied"]["vs"] if arm == "TIED8" else f32(sc["tied"]["vs"] * STEP)
         ks = sc["tied"]["ks"] if arm == "TIED8" else f32(sc["w"] * vs)
         return {"ks": ks, "vs": vs}
     if arm == "JOINT8":
         return {"ks": sc["calstd_joint"]["ks"], "vs": sc["calstd_joint"]["vs"]}
+    if arm == "BF16R":
+        return {"ks": f32(1.0 / R_C), "vs": 1.0}
     return {"ks": 1.0, "vs": 1.0}
 
 
@@ -77,6 +83,8 @@ def transform(arm: str, q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, w: fl
     dt = k.dtype
     if arm == "BF16":
         return q, k, v
+    if arm == "BF16R":
+        return (q.float() * R_C).to(q.dtype), k, v
     ri = torch.tensor(rot, device=k.device)
     ui = torch.tensor(unrot, device=k.device)
     if arm == "BF16C":
@@ -120,11 +128,10 @@ def rel(a: torch.Tensor, b: torch.Tensor) -> float:
 
 
 def emulate(q, k2, v2, qpos, scales: dict, arm: str, attend) -> torch.Tensor:
-    """The attention output of an arm in float32 (the Mac tests): ks on the scores and vs on the output for SCALED
-    arms, as the hooks set them in the engine. attend(q, k, v, qpos) is a float32 causal GQA attention."""
-    if arm in SCALED:
-        return attend(q.float(), k2.float() * scales["ks"], v2.float(), qpos) * scales["vs"]
-    return attend(q.float(), k2.float(), v2.float(), qpos)
+    """The attention output of an arm in float32 (the Mac tests): ks on the scores and vs on the output, as the hooks
+    set them in the engine (both are 1 for BF16, BF16C, E5M2 and STOCK8). attend(q, k, v, qpos) is a float32 causal
+    GQA attention."""
+    return attend(q.float(), k2.float() * scales["ks"], v2.float(), qpos) * scales["vs"]
 
 
 def check_transform(arm: str, q, k, v, q2, k2, v2, w: float, scales: dict, rot: list[int],
@@ -137,6 +144,10 @@ def check_transform(arm: str, q, k, v, q2, k2, v2, w: float, scales: dict, rot: 
     if arm == "BF16":
         if not (q2 is q and k2 is k and v2 is v):
             bad.append("BF16: the identity changed a tensor")
+        return bad
+    if arm == "BF16R":
+        if not same(q2, (q.float() * R_C).to(q.dtype)) or not (k2 is k and v2 is v):
+            bad.append("BF16R: the query is not bf16(q R_C), or K or V changed")
         return bad
     if arm == "BF16C":
         if not same(k2[..., ui], v[..., ui]) or not same(k2[..., ri], k[..., ri]) or not same(v2, v):
@@ -186,15 +197,17 @@ def qkv_of(args: tuple, kwargs: dict):
     return vals[0], vals[1], vals[2], put
 
 
-GAP_ROWS = 16                                # the query rows of the engine-output check (V5)
+GAP_ROWS = 16                                # the query rows of the engine-output check (V5, V7)
 
 
 class Splice:
-    """The hooks of the global layers. `set_arm` selects the transform and sets the K descale on each Attention impl;
-    `counts` records the tokens that each layer saw per document; `checks` holds the V5 results (arm -> problems);
-    `gaps` holds, for the first chunk of the first document of each arm, the relative gap between the engine's
-    attention output and a float32 reference of the arm on its last GAP_ROWS query rows (V5: a kernel that ignored
-    the K descale gives a gap near 1)."""
+    """The hooks of the global layers. `set_arm` selects the transform and sets the score factor on each Attention
+    impl; `counts` records the tokens that each layer saw per document; `checks` holds the transform results (V5: arm
+    -> problems). For the first chunk of the first document of each arm (16 query rows): `gaps` holds the relative gap
+    between the engine's attention output and a float32 reference of the arm (V5: a kernel that ignored the K descale
+    gives a gap near 1), `gaps_id` the gap to the reference of the unchanged q, k and v, and `seps` the gap between the
+    two references (V7: the engine output must be nearer the arm's reference, A1, R-77 F8). `reset_evidence` starts
+    the evidence again; the run calls it after the warm-up and after the pre-flight (R-77 B1)."""
 
     def __init__(self, w: dict[int, float], scales: dict[int, dict] | None, heads: dict[int, tuple[int, int, int]]):
         self.w, self.scales, self.heads = w, scales, heads
@@ -202,13 +215,25 @@ class Splice:
         self.modules: dict[int, object] = {}
         self.handles: dict[int, tuple] = {}
         self.base_scale: dict[int, float] = {}
+        self.fresh: set[int] = set()
+        self.reset_evidence()
+
+    def reset_evidence(self) -> None:
         self.counts: dict[tuple[str, str, int], int] = {}
         self.checks: dict[str, list[str]] = {}
         self.checked: set[tuple[str, int]] = set()
         self.gaps: dict[str, dict[int, float]] = {}
-        self.fresh: set[int] = set()
+        self.gaps_id: dict[str, dict[int, float]] = {}
+        self.seps: dict[str, dict[int, float]] = {}
         self.ref: dict[int, tuple] = {}
-        self.errors: list[str] = []
+        self.errors: dict[str, list[str]] = {}
+
+    def evidence(self) -> dict:
+        """The evidence with the keys of the run record (JSON: string keys)."""
+        js = lambda d: {a: {str(k): x for k, x in g.items()} for a, g in d.items()}  # noqa: E731
+        return {"checks": self.checks, "counts": {f"{a}|{d}|{lay}": n for (a, d, lay), n in self.counts.items()},
+                "gaps": js(self.gaps), "gaps_id": js(self.gaps_id), "seps": js(self.seps),
+                "hook_errors": self.errors}
 
     def new_doc(self, doc: str) -> None:
         """Call before each document: the next call of each layer is the document's first chunk (positions 0 ...)."""
@@ -241,15 +266,14 @@ class Splice:
             self.attach(layer, module)
 
     def set_arm(self, arm: str) -> None:
-        """Select the arm and set the K descale of each layer (the impl scale; restored for the unscaled arms)."""
+        """Select the arm and set the score factor of each layer (the impl scale; the base value for ks = 1)."""
         if arm not in ARMS:
             raise ValueError(f"unknown arm {arm}")
         self.arm = arm
         for layer, module in self.modules.items():
             impl = getattr(module, "impl", None)
             if impl is not None:
-                ks = self.layer_scales(layer)["ks"] if arm in SCALED else 1.0
-                impl.scale = self.base_scale[layer] * ks
+                impl.scale = self.base_scale[layer] * self.layer_scales(layer)["ks"]
 
     def pre_hook(self, layer: int):
         hq, hk, head = self.heads[layer]
@@ -275,18 +299,18 @@ class Splice:
                     self.checked.add((self.arm, layer))
                     bad = check_transform(self.arm, q3, k3, v3, q2, k2, v2, self.w[layer], sc, rot, unrot)
                     impl = getattr(module, "impl", None)
-                    want = self.base_scale[layer] * (sc["ks"] if self.arm in SCALED else 1.0)
+                    want = self.base_scale[layer] * sc["ks"]
                     if impl is not None and float(impl.scale) != want:
                         bad.append(f"{self.arm}: the impl scale is {impl.scale}, not {want}")
                     self.checks.setdefault(self.arm, []).extend(f"layer {layer}: {b}" for b in bad)
-                    if fresh and t >= GAP_ROWS:   # the reference of the post hook: positions 0 .. t-1 of this chunk
-                        self.ref[layer] = (self.arm, q2[-GAP_ROWS:], k2, v2, want,
-                                           sc["vs"] if self.arm in SCALED else 1.0)
+                    if fresh and t >= GAP_ROWS:   # the references of the post hook: positions 0 .. t-1 of this chunk
+                        self.ref[layer] = (self.arm, q2[-GAP_ROWS:].clone(), k2, v2, want, sc["vs"],
+                                           q3[-GAP_ROWS:].clone(), k3, v3, self.base_scale[layer])
                 if self.arm == "BF16":
                     return None
                 return put(q2.reshape(q.shape), k2.reshape(k.shape), v2.reshape(v.shape))
             except Exception as exc:  # recorded; V5 fails
-                self.errors.append(f"layer {layer} {self.arm}: {type(exc).__name__}: {exc}"[:300])
+                self.errors.setdefault(self.arm, []).append(f"layer {layer}: {type(exc).__name__}: {exc}"[:300])
                 raise
         return pre
 
@@ -300,14 +324,22 @@ class Splice:
                 new = (o.float() * self.layer_scales(layer)["vs"]).to(o.dtype)
             ref = self.ref.pop(layer, None)
             if ref is not None:
+                arm, qr, k2, v2, ks, vs, q0, k0, v0, base = ref
                 try:
-                    arm, qr, k2, v2, ks, vs = ref
                     t = k2.shape[0]
-                    want = attend32(qr, k2, v2, torch.arange(t - GAP_ROWS, t, device=k2.device), ks) * vs
-                    got = (o if new is None else new).reshape(t, hq, head)[-GAP_ROWS:]
-                    self.gaps.setdefault(arm, {})[layer] = rel(got.float(), want)
+                    qpos = torch.arange(t - GAP_ROWS, t, device=k2.device)
+                    got = (o if new is None else new).reshape(t, hq, head)[-GAP_ROWS:].float()
+                    want = attend32(qr, k2, v2, qpos, ks) * vs
+                    self.gaps.setdefault(arm, {})[layer] = rel(got, want)
+                    if arm == "BF16":                # the two references are the same tensors
+                        self.gaps_id.setdefault(arm, {})[layer] = self.gaps[arm][layer]
+                        self.seps.setdefault(arm, {})[layer] = 0.0
+                    else:
+                        want0 = attend32(q0, k0, v0, qpos, base)
+                        self.gaps_id.setdefault(arm, {})[layer] = rel(got, want0)
+                        self.seps.setdefault(arm, {})[layer] = rel(want, want0)
                 except Exception as exc:  # recorded; V5 fails
-                    self.errors.append(f"layer {layer} gap: {type(exc).__name__}: {exc}"[:300])
+                    self.errors.setdefault(arm, []).append(f"layer {layer} gap: {type(exc).__name__}: {exc}"[:300])
             if new is None:
                 return None
             return (new,) + tuple(output[1:]) if isinstance(output, (tuple, list)) else new

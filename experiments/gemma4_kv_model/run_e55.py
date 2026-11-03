@@ -1,18 +1,24 @@
-"""E-55 run (README Sections 4 and 9): the model-level test of the compact K=V cache in the Gemma 4 31B global layers.
-One vLLM engine in this process (VLLM_ENABLE_V1_MULTIPROCESSING=0, as E-53 and E-54), hooks on the 10 global-layer
-Attention modules (`splice_e55.Splice`), then for each arm the teacher-forced log-probability of every token of the 12
-documents (prompt_logprobs 1: the token's log-probability, its rank and the top-1 token) and, for 4 arms, greedy
-generation on 16 chat prompts.
+"""E-55 run (README Sections 4 and 9, amendment A1): the model-level test of the compact K=V cache in the Gemma 4 31B
+global layers. One vLLM engine in this process (VLLM_ENABLE_V1_MULTIPROCESSING=0, as E-53 and E-54), hooks on the 10
+global-layer Attention modules (`splice_e55.Splice`), then for each arm the teacher-forced log-probability of every
+token of the 12 documents (prompt_logprobs 1: the token's log-probability, its rank and the top-1 token) and, for 4
+arms, greedy generation on 16 chat prompts.
 
-Phases: `main` (engine 1, 4,096 batched tokens): BF16, the determinism rerun (DET: 2 documents with the hooks
-removed), BF16C, E5M2, STOCK8, TIED8, then the reported steps JOINT8, GEN and TIED8_UP while the time allows.
-`noise` (engine 2, 2,048 batched tokens): BF16_B, the BF16 reference under another chunk size (reported).
-A reported step runs only if its estimate (the mean time of the arms so far, times its share of tokens) ends at least
-`--reserve` seconds before `--deadline`. Each arm writes `arrays/<arm>.npz`; `run_<phase>.json` holds the records.
---stub replaces the engine with synthetic log-probabilities (the Mac tests; no GPU, no vLLM).
+Order: the warm-up (512 tokens, not scored); the pre-flight (every arm and DET on the first 4,096 tokens of the first
+document: one chunk; the run stops at once with exit 3 if a check fails, R-77 F3); the decision arms BF16, DET (P1 and
+C1 with the hooks removed), BF16C, E5M2, STOCK8 and TIED8; then the reported steps BF16R, JOINT8, GEN and TIED8_UP while
+the time allows. The evidence of the hooks starts again after the warm-up and after the pre-flight (R-77 B1). A reported
+step runs only if 1.5 times its estimate (the mean time of the arms so far, times its share of tokens) ends at least
+`--reserve` seconds before `--deadline`; a failed reported step does not stop the run (R-77 F2). Each arm writes
+`arrays/<arm>.npz`; `run_main.json` holds the record and the hook evidence, written at each step (R-77 F2). SIGTERM
+(the session timeout) saves the record before the exit.
 
-Usage: run_e55.py --phase main|noise --data data_e55.json --scales scales_e54.json --out <res> --snapshot <dir>
-                  --model-id <id> --revision <sha> --start <epoch> --deadline <epoch> [--rehearsal] [--stub ...]
+--stub replaces the engine with synthetic log-probabilities and 10 small Attention modules that carry the real hooks
+and see every token in the engine order (the Mac tests; no GPU, no vLLM). --rehearsal (S5, a small Gemma 4 model)
+cuts the documents and uses synthetic scales (R-77 B2).
+
+Usage: run_e55.py --data data_e55.json --scales scales_e54.json --out <res> --snapshot <dir> --model-id <id>
+                  --revision <sha> --start <epoch> --deadline <epoch> [--rehearsal] [--stub ...]
 """
 
 from __future__ import annotations
@@ -20,22 +26,24 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import math
 import os
 import re
+import signal
 import sys
 import time
 import traceback
 from pathlib import Path
 
 import numpy as np
+import torch
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+import analyze_e55 as an  # noqa: E402
 import splice_e55 as sp  # noqa: E402
 
 DECISION_ARMS = ("BF16", "BF16C", "E5M2", "STOCK8", "TIED8")
-REPORTED = ("JOINT8", "GEN", "TIED8_UP")
+REPORTED = ("BF16R", "JOINT8", "GEN", "TIED8_UP")   # in this order while the time allows; cut from the end
 GEN_ARMS = ("BF16", "BF16C", "STOCK8", "TIED8")
 DET_DOCS = ("P1", "C1")                      # the determinism rerun (V3)
 GLOBAL_LAYERS = (5, 11, 17, 23, 29, 35, 41, 47, 53, 59)
@@ -43,8 +51,17 @@ HEADS = (32, 4, 512)                         # query heads, KV heads, head size 
 ENGINE = {"seed": 0, "enforce_eager": True, "kv_cache_dtype": "auto", "max_model_len": 65_664,
           "max_num_batched_tokens": 4_096, "max_num_seqs": 8, "gpu_memory_utilization": 0.70,
           "enable_prefix_caching": False, "limit_mm_per_prompt": {"image": 0, "audio": 0, "video": 0}}
-NOISE_TOKENS = 2_048                         # engine 2: another chunk size (the engine noise floor)
 GEN_MAX_TOKENS = 128
+WARM_TOKENS, PRE_TOKENS = 512, 4_096         # the warm-up prompt; the pre-flight prompt (one chunk)
+STUB_HEADS, STUB_FIRST = (4, 2, 16), 256     # the stub Attention modules; the first chunk of each stub prompt
+
+
+class PreflightError(RuntimeError):
+    """The pre-flight found a problem: the run stops before the paid arms (exit 3)."""
+
+
+class Terminated(BaseException):
+    """SIGTERM from the session timeout: the record is saved before the exit."""
 
 
 def now() -> str:
@@ -77,13 +94,19 @@ def parse_prompt_logprobs(pl, ids: list[int]) -> tuple[np.ndarray, np.ndarray, n
     return lps[:, 0].astype(np.float32), tok[:, 1].astype(np.int32), rk[:, 0].astype(np.int32)
 
 
+def synthetic_scales(w: dict[int, float]) -> dict[int, dict]:
+    """The rehearsal scales (R-77 B2): values other than 1 test the descale route on a model without the E-54 scales."""
+    return {layer: {"w": x, "tied": {"vs": 0.125, "ks": sp.f32(x * 0.125)}, "calstd_joint": {"ks": 0.05, "vs": 0.125}}
+            for layer, x in w.items()}
+
+
 class Stub:
     """Synthetic log-probabilities for the Mac tests: a fixed base per document, an arm effect (nats per token) and
     flips of the top-1 token at a per-arm rate. Effects and rates can be planted with --stub-effect ARM=x."""
 
-    EFFECT = {"BF16": 0.0, "BF16_B": 0.0, "BF16C": 0.0, "E5M2": 0.004, "STOCK8": 0.001, "TIED8": 0.0006,
+    EFFECT = {"BF16": 0.0, "BF16C": 0.0, "BF16R": 0.0, "E5M2": 0.004, "STOCK8": 0.001, "TIED8": 0.0006,
               "JOINT8": 0.0005, "TIED8_UP": 0.0015}
-    FLIP = {"BF16": 0.0, "BF16_B": 0.002, "BF16C": 0.002, "E5M2": 0.03, "STOCK8": 0.01, "TIED8": 0.008,
+    FLIP = {"BF16": 0.0, "BF16C": 0.002, "BF16R": 0.002, "E5M2": 0.03, "STOCK8": 0.01, "TIED8": 0.008,
             "JOINT8": 0.007, "TIED8_UP": 0.012}
 
     def __init__(self, effects: dict[str, float], seconds: float):
@@ -113,6 +136,72 @@ class Stub:
         return out
 
 
+class StubImpl:
+    def __init__(self):
+        self.scale = 1.0
+
+
+class StubAttention(torch.nn.Module):
+    """The stub engine's stand-in of a vLLM Attention module: [T, H x D] in, [T, Hq x D] out in BF16, impl.scale on
+    the scores. A call of at most STUB_FIRST tokens (the first chunk of a prompt, the one that V5 and V7 read) gets
+    causal GQA attention inside the call for its last GAP_ROWS rows; other rows are zeros. plant 'ignore_scale': a
+    kernel that keeps the scale 1.0; plant 'ignore_hook': a kernel that uses the inputs from before the splice hook."""
+
+    def __init__(self, plant: str = ""):
+        super().__init__()
+        self.impl, self.plant, self.orig = StubImpl(), plant, None
+        self.num_heads, self.num_kv_heads, self.head_size = STUB_HEADS
+        self.register_forward_pre_hook(self.keep)       # registered before the splice hooks: it sees the inputs
+
+    def keep(self, module, args):
+        self.orig = args
+
+    def forward(self, query, key, value):
+        if self.plant == "ignore_hook":
+            query, key, value = self.orig[:3]
+        hq, hk, d = STUB_HEADS
+        t = key.shape[0]
+        out = torch.zeros(t, hq * d, dtype=query.dtype)
+        if t <= STUB_FIRST:
+            n = min(t, sp.GAP_ROWS)
+            scale = 1.0 if self.plant == "ignore_scale" else self.impl.scale
+            o = sp.attend32(query.view(t, hq, d)[-n:], key.view(t, hk, d), value.view(t, hk, d),
+                            torch.arange(t - n, t), scale)
+            out[-n:] = o.reshape(n, -1).to(query.dtype)
+        return out
+
+
+class StubEngine:
+    """The --stub engine: one StubAttention module per global layer. A prompt runs as a first chunk of STUB_FIRST
+    tokens and one chunk for the rest, each through the layers in order, as the engine calls them. The first chunk has
+    random q, k and v with K_unrot = bf16(w V_unrot), as the model has."""
+
+    def __init__(self, w: dict[int, float], plant: str):
+        self.w = w
+        self.modules = {layer: StubAttention(plant) for layer in GLOBAL_LAYERS}
+
+    def qkv(self, layer: int, t: int, seed: int):
+        hq, hk, d = STUB_HEADS
+        g = torch.Generator().manual_seed(seed)
+        v = torch.randn(t, hk, d, generator=g).to(torch.bfloat16)
+        k = (v.float() * self.w[layer]).to(torch.bfloat16)
+        rot, _ = sp.rot_dims(d)
+        k[..., rot] = (torch.randn(t, hk, len(rot), generator=g) * 0.5).to(torch.bfloat16)
+        q = (torch.randn(t, hq, d, generator=g) * 8).to(torch.bfloat16)
+        return q.reshape(t, -1), k.reshape(t, -1), v.reshape(t, -1)
+
+    def prompt(self, length: int, seed: int) -> None:
+        hq, hk, d = STUB_HEADS
+        first, rest = min(length, STUB_FIRST), max(0, length - STUB_FIRST)
+        for layer in GLOBAL_LAYERS:
+            self.modules[layer](*self.qkv(layer, first, seed * 100 + layer))
+        if rest:
+            q = torch.zeros(rest, hq * d, dtype=torch.bfloat16)
+            kv = torch.zeros(rest, hk * d, dtype=torch.bfloat16)
+            for layer in GLOBAL_LAYERS:
+                self.modules[layer](q, kv, kv)
+
+
 def find_global(model) -> list[tuple[int, object, object]]:
     """The Attention modules of the global layers (the parent is a Gemma4Attention with is_sliding False and no KV
     sharing; as E-53 `register`), with their parents."""
@@ -134,7 +223,6 @@ def find_global(model) -> list[tuple[int, object, object]]:
 def register(model, splice: sp.Splice, w_file: dict[int, float] | None) -> dict:
     """Hook the global layers. Returns the hooked layers, their shapes, the k_norm weight value on the unrotated dims
     (the w of the compact row) and the problems of V3."""
-    import torch
     rec, problems = [], []
     for layer, m, parent in find_global(model):
         head = m.head_size
@@ -169,6 +257,7 @@ def engine_record(llm) -> dict:
                        lambda: llm.llm_engine.vllm_config.scheduler_config.max_num_batched_tokens),
                       ("compilation_mode", lambda: str(llm.llm_engine.vllm_config.compilation_config.mode)),
                       ("cudagraph_mode", lambda: str(llm.llm_engine.vllm_config.compilation_config.cudagraph_mode)),
+                      ("use_v2_model_runner", lambda: llm.llm_engine.vllm_config.use_v2_model_runner),   # R-77 F6
                       ("multiprocessing_env", lambda: os.environ.get("VLLM_ENABLE_V1_MULTIPROCESSING"))):
         try:
             rec[name] = get()
@@ -179,21 +268,21 @@ def engine_record(llm) -> dict:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--phase", choices=("main", "noise"), required=True)
     ap.add_argument("--data", type=Path, default=HERE / "data_e55.json")
     ap.add_argument("--scales", type=Path, default=HERE.parent / "gemma4_kv_scaletie" / "scales_e54.json")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--snapshot", default="")
     ap.add_argument("--model-id", default="RedHatAI/gemma-4-31B-it-FP8-dynamic")
-    ap.add_argument("--revision", default="d4ab4f579dd3516f97d8a6a4c98d0653480bad15")
+    ap.add_argument("--revision", default=an.REVISION)
     ap.add_argument("--start", type=float, default=time.time())
     ap.add_argument("--deadline", type=float, default=time.time() + 2_400)
-    ap.add_argument("--reserve", type=float, default=420.0, help="seconds kept free before the deadline")
-    ap.add_argument("--rehearsal", action="store_true", help="a small Gemma 4 model: no w check, short documents")
+    ap.add_argument("--reserve", type=float, default=60.0, help="seconds kept free before the deadline")
+    ap.add_argument("--rehearsal", action="store_true", help="a small Gemma 4 model: synthetic scales, short documents")
     ap.add_argument("--rehearsal-tokens", type=int, default=16_384)
     ap.add_argument("--stub", action="store_true")
     ap.add_argument("--stub-effect", action="append", default=[], help="ARM=nats, for the stub")
     ap.add_argument("--stub-seconds", type=float, default=0.0)
+    ap.add_argument("--stub-plant", default="", help="ignore_scale, ignore_hook or gen_error, for the stub")
     args = ap.parse_args()
 
     out, arrays = args.out, args.out / "arrays"
@@ -206,68 +295,86 @@ def main() -> None:
     scales_doc = json.loads(args.scales.read_text())
     scales = {int(k): v for k, v in scales_doc["layers"].items()}
     w_file = {k: v["w"] for k, v in scales.items()}
-    rec = {"phase": args.phase, "started_at": now(), "status": "running", "stub": args.stub,
+    rec = {"phase": "main", "started_at": now(), "status": "running", "stub": args.stub,
            "rehearsal": args.rehearsal, "data_sha256": sha_file(args.data), "scales_sha256": sha_file(args.scales),
-           "model_id": args.model_id, "revision": args.revision, "docs": [d["id"] for d in docs],
-           "doc_lengths": {d["id"]: d["length"] for d in docs}, "arms": {}, "cut": [], "errors": []}
-    run_path = out / f"run_{args.phase}.json"
-    save = lambda: run_path.write_text(json.dumps(rec, indent=1, default=str) + "\n")  # noqa: E731
+           "model_id": args.model_id, "revision_arg": args.revision,
+           "snapshot_revision": Path(args.snapshot).name if args.snapshot else None,   # R-77 F9: the folder name
+           "docs": [d["id"] for d in docs], "doc_lengths": {d["id"]: d["length"] for d in docs}, "arms": {},
+           "cut": [], "step_errors": [], "errors": [], "decision_arms_done": False}
+    run_path = out / "run_main.json"
+    splice = None
+
+    def save() -> None:
+        if splice is not None:
+            rec.update(splice.evidence())
+        run_path.write_text(json.dumps(rec, indent=1, default=str) + "\n")
+
+    def on_term(signum, frame):
+        raise Terminated("SIGTERM (the session timeout)")
+    signal.signal(signal.SIGTERM, on_term)
     total_tokens = sum(d["length"] for d in docs)
     arm_seconds: list[float] = []
 
     def fits(name: str, share: float) -> bool:
         est = (sum(arm_seconds) / len(arm_seconds) if arm_seconds else 0.0) * share
-        ok = time.time() + est <= args.deadline - args.reserve
+        ok = time.time() + 1.5 * est <= args.deadline - args.reserve
         if not ok:
             rec["cut"].append({"step": name, "estimate_s": round(est, 1), "at": now(),
                                "elapsed_s": round(time.time() - args.start, 1)})
             save()
         return ok
 
+    code = 1
     try:
         if args.stub:
             stub = Stub({k: float(v) for k, v in (e.split("=") for e in args.stub_effect)}, args.stub_seconds)
+            engine = StubEngine(w_file, args.stub_plant)
             splice = sp.Splice({}, scales, {})
-            rec["hooks"] = {"hooked": [{"layer": layer, "num_heads": HEADS[0], "num_kv_heads": HEADS[1],
-                                        "head_size": HEADS[2], "w": w_file.get(layer), "impl": "stub",
-                                        "impl_scale": 1.0} for layer in GLOBAL_LAYERS], "problems": []}
+            hooked = []
+            for layer, m in engine.modules.items():
+                splice.w[layer], splice.heads[layer] = w_file[layer], STUB_HEADS
+                splice.attach(layer, m)
+                hooked.append({"layer": layer, "num_heads": STUB_HEADS[0], "num_kv_heads": STUB_HEADS[1],
+                               "head_size": STUB_HEADS[2], "w": w_file[layer], "impl": "StubImpl", "impl_scale": 1.0})
+            rec["hooks"] = {"hooked": hooked, "problems": []}
             rec["engine"] = {"vllm": "STUB", "max_model_len": ENGINE["max_model_len"], "kv_cache_dtype": "auto",
                              "prefix_caching": False, "compilation_mode": "CompilationMode.NONE",
-                             "cudagraph_mode": "CUDAGraphMode.NONE",
-                             "max_num_batched_tokens": ENGINE["max_num_batched_tokens"] if args.phase == "main"
-                             else NOISE_TOKENS}
+                             "cudagraph_mode": "CUDAGraphMode.NONE", "use_v2_model_runner": True,
+                             "max_num_batched_tokens": ENGINE["max_num_batched_tokens"]}
             rec["tok_check"] = {"ok": True, "stub": True}
             rec["gpu"] = "STUB"
+            seed_of = lambda d: int(d["ids_sha256"][:6], 16)  # noqa: E731
 
-            def score(arm, doc):
-                for layer in GLOBAL_LAYERS:
-                    splice.counts[(arm, doc["id"], layer)] = doc["length"]
-                splice.checks.setdefault(splice.arm, [])
-                splice.gaps.setdefault(splice.arm, {layer: 0.002 for layer in GLOBAL_LAYERS})
-                return stub.score(arm, doc)
+            def score(name, doc):
+                engine.prompt(doc["length"], seed_of(doc))
+                return stub.score(name, doc)
 
             def generate(arm):
-                return stub.generate(arm, gen)
+                if args.stub_plant == "gen_error":
+                    raise RuntimeError("planted GEN failure")
+                for g in gen:
+                    engine.prompt(len(g["ids"]), seed_of(g))
+                return stub.generate(arm, gen), ["length"] * len(gen)
+
+            def warm():
+                engine.prompt(WARM_TOKENS, 1)
         else:
             os.environ.setdefault("VLLM_ENABLE_V1_MULTIPROCESSING", "0")
-            import torch
             from vllm import LLM, SamplingParams
             from vllm.inputs import TokensPrompt
             torch.backends.cuda.matmul.allow_tf32 = False
-            eng = dict(ENGINE)
-            if args.phase == "noise":
-                eng["max_num_batched_tokens"] = NOISE_TOKENS
             t0 = time.time()
             llm = LLM(model=args.snapshot or args.model_id, revision=None if args.snapshot else args.revision,
-                      tokenizer=args.snapshot or args.model_id, **eng)
+                      tokenizer=args.snapshot or args.model_id, **ENGINE)
             rec["engine_seconds"] = round(time.time() - t0, 1)
-            rec["engine_kwargs"] = eng
+            signal.signal(signal.SIGTERM, on_term)  # again, in case the engine start replaced it
+            rec["engine_kwargs"] = ENGINE
             rec["gpu"] = torch.cuda.get_device_name(0)
             rec["engine"] = engine_record(llm)
             tok = llm.get_tokenizer()
             got = [tok.encode(c["text"], add_special_tokens=False) for c in data["tok_check"]]
             rec["tok_check"] = {"ok": got == [c["ids"] for c in data["tok_check"]], "got": got}
-            splice = sp.Splice({}, None if args.rehearsal else scales, {})
+            splice = sp.Splice({}, scales, {})
             rec["hooks"] = llm.apply_model(lambda model: register(model, splice,
                                                                   None if args.rehearsal else w_file))[0]
             save()
@@ -275,18 +382,21 @@ def main() -> None:
                 raise RuntimeError("V3 hook problems: " + "; ".join(rec["hooks"]["problems"][:5]))
             sp_nll = SamplingParams(max_tokens=1, temperature=0.0, prompt_logprobs=1, detokenize=False,
                                     flat_logprobs=True)
-            sp_gen = SamplingParams(max_tokens=GEN_MAX_TOKENS, temperature=0.0, ignore_eos=True, detokenize=False)
+            sp_gen = SamplingParams(max_tokens=GEN_MAX_TOKENS, temperature=0.0, detokenize=False)  # R-77 F10
 
-            def score(arm, doc):
+            def score(name, doc):
                 o = llm.generate([TokensPrompt(prompt_token_ids=doc["ids"])], sp_nll, use_tqdm=False)[0]
                 return parse_prompt_logprobs(o.prompt_logprobs, doc["ids"])
 
             def generate(arm):
                 outs = llm.generate([TokensPrompt(prompt_token_ids=g["ids"]) for g in gen], sp_gen, use_tqdm=False)
-                return [list(o.outputs[0].token_ids) for o in outs]
+                return [list(o.outputs[0].token_ids) for o in outs], [o.outputs[0].finish_reason for o in outs]
 
-            warm = docs[0]["ids"][:512]
-            llm.generate([TokensPrompt(prompt_token_ids=warm)], sp_nll, use_tqdm=False)   # warm-up, not scored
+            def warm():
+                llm.generate([TokensPrompt(prompt_token_ids=docs[0]["ids"][:WARM_TOKENS])], sp_nll, use_tqdm=False)
+        if args.rehearsal:                          # R-77 B2: no E-54 scales for this model
+            splice.scales = synthetic_scales(splice.w)
+            rec["synthetic_scales"] = {str(k): v for k, v in splice.scales.items()}
 
         def run_arm(arm: str, subset: list[dict] | None = None, name: str | None = None) -> None:
             name = name or arm
@@ -295,7 +405,7 @@ def main() -> None:
             res, finite = {}, True
             for d in subset or docs:
                 splice.new_doc(d["id"] if name != "DET" else f"DET:{d['id']}")
-                lp, top1, rank = score(name if args.stub else arm, d)
+                lp, top1, rank = score(name, d)
                 finite &= bool(np.isfinite(lp).all())
                 res[f"{d['id']}_lp"], res[f"{d['id']}_top1"], res[f"{d['id']}_rank"] = lp, top1, rank
             np.savez_compressed(arrays / f"{name}.npz", **res)
@@ -306,50 +416,83 @@ def main() -> None:
                 arm_seconds.append(secs)
             save()
 
-        if args.phase == "noise":
-            run_arm("BF16", name="BF16_B")
-        else:
-            run_arm("BF16")
-            det = [d for d in docs if d["id"] in DET_DOCS]
-            if args.stub:
-                run_arm("BF16", subset=det, name="DET")
-            else:
-                saved = splice.detach()
-                run_arm("BF16", subset=det, name="DET")
-                splice.reattach(saved)
-            for arm in DECISION_ARMS[1:]:
-                run_arm(arm)
-            if fits("JOINT8", 1.0):
-                run_arm("JOINT8")
-            gen_share = len(GEN_ARMS) * sum(len(g["ids"]) + GEN_MAX_TOKENS * 8 for g in gen) / total_tokens
-            if fits("GEN", gen_share):
-                t0 = time.time()
-                outs = {}
-                for arm in GEN_ARMS:
-                    splice.set_arm(arm)
-                    splice.new_doc("GEN")
-                    outs[arm] = generate(arm)
-                (out / "gen_outputs.json").write_text(json.dumps({"ids": [g["id"] for g in gen], "outputs": outs}))
-                rec["arms"]["GEN"] = {"seconds": round(time.time() - t0, 1), "arms": list(GEN_ARMS),
-                                      "finished_at": now()}
+        def preflight() -> dict:
+            """Every arm and DET on the first PRE_TOKENS tokens of the first document (one chunk), with the checks of
+            V5, V7 and DET (README Section 6, A1). The evidence is reset before and after."""
+            t0 = time.time()
+            ids = docs[0]["ids"][:PRE_TOKENS]
+            pre = dict(docs[0], id="PRE", ids=ids, length=len(ids), ids_sha256=ids_sha(ids))
+            lps = {}
+            for arm in sp.ARMS:
+                splice.set_arm(arm)
+                splice.new_doc("PRE")
+                lps[arm] = score(arm, pre)[0]
+            saved = splice.detach()
+            splice.new_doc("PRE")
+            lps["DET"] = score("DET", pre)[0]
+            splice.reattach(saved)
+            ev = splice.evidence()
+            problems = an.preflight_problems(lps, ev, len(splice.modules), len(ids))
+            return {"tokens": len(ids), "seconds": round(time.time() - t0, 1), "problems": problems,
+                    "equal_to_bf16": {a: float(np.mean(x == lps["BF16"])) for a, x in lps.items()},
+                    **{k: ev[k] for k in ("checks", "gaps", "gaps_id", "seps", "hook_errors")}}
+
+        def run_gen() -> None:
+            t0 = time.time()
+            outs, finish = {}, {}
+            for arm in GEN_ARMS:
+                splice.set_arm(arm)
+                splice.new_doc("GEN")
+                outs[arm], finish[arm] = generate(arm)
+            (out / "gen_outputs.json").write_text(json.dumps({"ids": [g["id"] for g in gen], "outputs": outs,
+                                                              "finish": finish}))
+            rec["arms"]["GEN"] = {"seconds": round(time.time() - t0, 1), "arms": list(GEN_ARMS),
+                                  "finished_at": now()}
+            save()
+
+        def step(name: str, share: float, fn) -> None:
+            if not fits(name, share):
+                return
+            try:
+                fn()
+            except Exception as exc:  # a reported step does not stop the run (R-77 F2)
+                rec["step_errors"].append({"step": name, "error": f"{type(exc).__name__}: {exc}"[:500],
+                                           "at": now()})
                 save()
-            if fits("TIED8_UP", 1.0):
-                run_arm("TIED8_UP")
+
+        warm()                                       # with the hooks on and the arm BF16; not scored
+        splice.reset_evidence()                      # R-77 B1: the warm-up used the first check of each layer
+        rec["preflight"] = preflight()
+        splice.reset_evidence()
+        save()
+        if rec["preflight"]["problems"] and not args.rehearsal:
+            raise PreflightError("; ".join(rec["preflight"]["problems"][:6]))
+        run_arm("BF16")
+        saved = splice.detach()
+        run_arm("BF16", subset=[d for d in docs if d["id"] in DET_DOCS], name="DET")
+        splice.reattach(saved)
+        for arm in DECISION_ARMS[1:]:
+            run_arm(arm)
+        rec["decision_arms_done"] = True
+        save()
+        gen_share = len(GEN_ARMS) * sum(len(g["ids"]) + GEN_MAX_TOKENS * 8 for g in gen) / total_tokens
+        step("BF16R", 1.0, lambda: run_arm("BF16R"))
+        step("JOINT8", 1.0, lambda: run_arm("JOINT8"))
+        step("GEN", gen_share, run_gen)
+        step("TIED8_UP", 1.0, lambda: run_arm("TIED8_UP"))
         splice.set_arm("BF16")
-        rec["checks"] = splice.checks
-        rec["counts"] = {f"{a}|{d}|{layer}": n for (a, d, layer), n in splice.counts.items()}
-        rec["hook_errors"] = splice.errors
-        rec["gaps"] = {a: {str(k): v for k, v in g.items()} for a, g in splice.gaps.items()}
         rec["status"] = "ok"
-    except Exception as exc:
+        code = 0
+    except BaseException as exc:  # recorded and saved: an error, a pre-flight stop or SIGTERM
         rec["status"] = "error"
         rec["errors"].append(f"{type(exc).__name__}: {exc}"[:500])
         rec["traceback"] = traceback.format_exc()[-3000:]
+        code = 3 if isinstance(exc, PreflightError) else 1
     rec["finished_at"] = now()
     save()
-    print(json.dumps({"phase": args.phase, "status": rec["status"], "arms": list(rec["arms"]), "cut": rec["cut"],
-                      "errors": rec["errors"][:2]}))
-    sys.exit(0 if rec["status"] == "ok" else 1)
+    print(json.dumps({"status": rec["status"], "arms": list(rec["arms"]), "cut": [c["step"] for c in rec["cut"]],
+                      "step_errors": [e["step"] for e in rec["step_errors"]], "errors": rec["errors"][:2]}))
+    sys.exit(code)
 
 
 if __name__ == "__main__":
