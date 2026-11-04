@@ -1,6 +1,7 @@
 # E-56: output correctness of the compact K=V cache with the 16-bit Gemma 4 31B weights (preregistration)
 
-Status: PREDECLARED 2026-11-04; amendment A1 2026-11-04 (R-79 AMEND_THEN_RUN, before any E-56 data). NOT RUN. S3: 15
+Status: PREDECLARED 2026-11-04; amendment A1 2026-11-04 (R-79 AMEND_THEN_RUN, before any E-56 data); A2 2026-11-04
+(after S5). NOT RUN. S3: 15
 tests pass (Section 12). Next: S4 (the user's spend approval and a live balance check).
 Idea: I-182. Decision: D-97 (the user, 2026-11-04, "Go ahead": a model-level test of output correctness on the 16-bit
 weights on one A100 80GB, with a baseline-health gate). Journal entry: Section 6.1 E-56.
@@ -59,7 +60,8 @@ The E-53 to E-55 image `vllm/vllm-openai@sha256:f255c4fad2f30ff5ee80db14d3a03afe
 as the FP8-dynamic checkpoint of E-50 to E-55: 60 layers, the global layers 5 to 59 every 6, head size 512, 4 KV heads,
 sliding window 1,024, final logit softcap 30). Engine: eager, BF16 auto cache, no prefix caching, max model length
 10,240, 2,048 batched tokens, 64 sequences, GPU memory 0.92, no image, audio or video inputs, seed 0. Decoding:
-greedy (temperature 0), 400 tokens for GSM8K ((A1, R-79 F4) 320 before A1) and 24 for the needles, stop at `<turn|>`
+greedy (temperature 0), 640 tokens for GSM8K and 128 for the needles ((A2, S5) 400 and 24 before A2; 320 for GSM8K
+before A1), stop at `<turn|>`
 (id 106; also in the checkpoint's generation config).
 
 ### 4.3 Data (`data_e56.json`, SHA-256 `4f8511c89b77481ee5f2b39927de41c99b6da63680ccd8c5f6bcccd6431db672`)
@@ -173,6 +175,19 @@ once; each generated sequence its prompt and all but its last output token (pree
   reach every hooked layer with the expected tokens; (4) DET reproduces BF16 for the whole workload; (5) V5 and V7 on
   the probe for every arm; (6) V8 is recorded in the REHEARSAL line; (7) the time per arm and the memory headroom;
   (8) the session files and the code hashes.
+- S5 record (2026-11-04, D-98): 1 x A100 SXM 80GB, Pod `r94gd7nus3k1d4`, US-MD-1, about 14 min, about $0.43; the SSH
+  port 248 s after the create; setup 49 s (E2B); engine 37.0 s (TRITON_ATTN); per arm 108 to 121 s, of which GSM8K
+  91 to 102 s; STOCK8 cut by the short watchdog, as planned; results `results/e56-rehearsal-a100-20261104/`.
+  VERIFY: (1) the engine arguments: PASS. (2) FAIL by the rule of this item: E2B ignores the closed thought channel and
+  writes its reasoning in the answer ("The user wants me to find ..."), so 75% of the GSM8K answers stop at the 400-token
+  limit (mean 379 tokens; 25% with '####') and all 32 needle answers stop at 24 tokens before the passphrase; the
+  reference top-1 agreement is 0.700 (the alignment is right); the needle prompt log-probabilities pass the parser.
+  (3) the batched calls reach every hooked layer with the expected tokens: PASS. (4) DET reproduces BF16 for the
+  whole workload (0 answers with other ids): PASS. (5) V5 and V7 on the probe for every arm (Triton): PASS. (6) V8 in
+  the REHEARSAL line (E2B: GSM8K 0.302, needle 0.000, reference NLL 3.09): PASS as a record. (7) the time per arm and
+  the KV pool line in session.log: PASS. (8) the session files and the 7 code hashes: PASS. INTERPRETATION: the 31B
+  answered directly in the E-55 chat-format GEN step, so its answers are shorter, but a short preamble would cut the
+  needle answers at 24 tokens and fail V8; A2 raises both limits (a concise answer still stops at `<turn|>`).
 - Balance floor: the protocol rule is the cap plus $35. If the live balance is lower, the user decides (as D-95).
 
 ## 10. Threats to validity
@@ -259,3 +274,8 @@ author checked each finding against the code and the vLLM source notes before th
 10. Point 9: the text of Sections 1, 2 and 4.4 now matches the code: the K view reads V on the unrotated dims and w
     goes into the query.
 Not taken: O2 (800 GSM8K items: a new data file; R-79 does not recommend it for this run).
+
+A2 (2026-11-04, after the S5 rehearsal, before any 31B data; a fix that the rehearsal required by VERIFY (2)): the
+answer limits 400 -> 640 tokens (GSM8K) and 24 -> 128 tokens (needles). Nothing else changes; no second rehearsal
+(the change has no new code path). If the 31B writes long answers, GSM8K takes up to about 6 min per arm, and the
+watchdog cuts STOCK8 first.

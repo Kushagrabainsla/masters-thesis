@@ -41,7 +41,7 @@ ARMS = an.ARMS
 ENGINE = {"seed": 0, "enforce_eager": True, "kv_cache_dtype": "auto", "max_model_len": 10_240,
           "max_num_batched_tokens": an.ENGINE_TOKENS, "max_num_seqs": 64, "gpu_memory_utilization": 0.92,
           "enable_prefix_caching": False, "limit_mm_per_prompt": {"image": 0, "audio": 0, "video": 0}}
-GSM_MAX_TOKENS, NEEDLE_MAX_TOKENS = 400, 24        # (A1, R-79 F4) 320 -> 400
+GSM_MAX_TOKENS, NEEDLE_MAX_TOKENS = 640, 128       # (A2, S5) 400 and 24 before A2; (A1) 320 before A1
 WARM_TOKENS = 512
 
 
