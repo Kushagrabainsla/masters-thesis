@@ -41,6 +41,7 @@ confirmed it with stated scope limits), PENDING VALIDATION, DRAFT, FILED (posted
 | U-02 | Possible bug report: cuDNN NVFP4 plan build fails under CUDA graph capture (O-05) | vllm-project/vllm or flashinfer-ai/flashinfer | Not started | (not filed) |
 | U-03 | Optional fixes: per-token policy-version records in slime, OpenRLHF, PipelineRL (O-06) | those repositories | Optional career work (D-67) | (not started) |
 | U-04 | Possible data comment on vLLM PR #60372: H100 numbers for the Gemma 4 FP8 KV path at 32K and 64K near the pool limit, the FA3 FP8 sliding-layer cost and the BF16 head-dim-512 split dip (O-12). R-68: do not report the dequant path now, because PR #60372 replaces it; draft a comment only after a post-merge rerun | vllm-project/vllm | Not started; posting needs the user's decision (D-68 precedent) | (not filed) |
+| U-05 | Design proposal (RFC): store the Gemma 4 global-layer KV cache once (the 640-value row read by the stock FA4 kernel through two views; the query and o_proj folds; a page-size plan), with the E-52, E-54 and E-56 evidence (O-14, O-17, O-18) | vllm-project/vllm | KEPT IN REPO, NOT POSTED (D-99, 2026-11-04); posting needs the user's approval and a new search of open PRs | `docs/upstream/U-05_vllm_gemma4_compact_kv_rfc_draft.md` |
 
 ## 3. Reusable methods and tools
 

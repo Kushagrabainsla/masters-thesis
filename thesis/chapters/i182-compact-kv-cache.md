@@ -1,7 +1,9 @@
-# Chapter draft: Does storing the Gemma 4 K=V cache once make decode faster? An exact memory mechanism and a closed byte route (I-182)
+# Chapter draft: Storing the Gemma 4 K=V cache once: an exact memory mechanism, a closed byte route to speed, and unchanged final answers (I-182)
 
-Status: DRAFT 1, 2026-11-01; accuracy update after E-53 and R-74 (2026-11-01); E-54 result (PASS) after R-75, and
-the R-76 corrections (2026-11-02). Source of truth: `RESEARCH_JOURNAL.md` (I-182, E-49 to E-54, R-64 to R-76, D-73 to D-94, Section 7.30). Every number comes from a repository file, and each list or paragraph names its source; "R-72 C4" is
+Status: DRAFT 2, 2026-11-04 (D-99); accuracy update after E-53 and R-74 (2026-11-01); E-54 result (PASS) after R-75,
+and the R-76 corrections (2026-11-02); E-55 (INVALID) after R-77 and R-78 (2026-11-04); E-56 (GO1 GO2 GO3) after R-79
+and R-80 (2026-11-04); the novelty recheck of 2026-11-04. Source of truth: `RESEARCH_JOURNAL.md` (I-182, E-49 to E-56,
+R-64 to R-80, D-73 to D-99, Section 7.30). Every number comes from a repository file, and each list or paragraph names its source; "R-72 C4" is
 correction C4 of review R-72. Labels: FACT (measured or read from a source), INTERPRETATION (our reading), HYPOTHESIS
 (not tested). A label before a list or a table covers each item that has no label of its own. Thresholds are project
 heuristics, not literature standards.
@@ -39,6 +41,23 @@ tied row is better than the stock cache in every layer by the median over prompt
 the stock FA4 kernel reads it in decode calls (MATCH). R-76 (post-run review, CONFIRM_WITH_CORRECTIONS) recomputed all
 70 cells to 2.4e-4 with its own code. It limits the claim: the tied row costs 13% against the best calibrated
 standard cache, the scales must be reproduced to 0.1% to 0.25%, and the sample is 7 prompts of technical text.
+
+FACT (E-55 README Sections 13 and 14; R-78): E-55, the first model-level test (the FP8-dynamic 31B on one H100, the
+NLL of 12 raw-text documents), is INVALID. Every splice check passed, but the BF16 baseline scored the documents worse
+than the 2B Gemma 4 E2B model, with junk top-1 tokens, so every changed arm gave a new noise draw (the rounding-size
+noise arm changed the top-1 token at 20% of the positions). FACT (E-56 README Sections 13 and 14; R-80): E-56 repeated
+the model-level test with the 16-bit weights, chat-format tasks and a baseline-health gate on one A100. The frozen
+decision is GO1 GO2 GO3: the emulated compact BF16 cache keeps the final answers of 400 GSM8K problems and 32 needle
+prompts of 7.7K tokens. The accuracy is 0.9722 against 0.9769 (the change has the 95% interval [-1.24, +0.32]
+points); 2 of 432 final answers change, against 3 for the noise arm; the reference NLL changes by -0.0009 nats per
+token. R-80 limits the claim: the cache is emulated, the positive control did not separate (so "no break found"), the
+GSM8K sequences stay inside the 1,024-token window, the needles are saturated, and amendment A1 decided the validity
+before any data.
+
+FACT (the D-99 recheck, 2026-11-04): no engine that we checked stores the Gemma 4 global KV cache once (Section 3).
+INTERPRETATION (arithmetic, not measured; Section 5): with a BF16 cache, the compact layout saves 0.94 GiB per request
+at 32K tokens (29% of the KV cache), 1.9 GiB at 64K (32%) and 3.8 GiB at 128K (35%). Where KV memory limits the
+batch, 1.4 to 1.5 times the long requests fit on one GPU.
 
 ## 2. The mechanism
 
@@ -94,8 +113,11 @@ FACT (journal Section 7.30; R-64 and R-65 pass 2; R-69):
 | FP8 or NVFP4 KV at head_dim 512 (vLLM PR #60372, #53175; SGLang PR #46965; FlashInfer) | FP8 KV halves all KV bytes; both are lossy | The competitor; it can stack |
 | vLLM, SGLang, TensorRT-LLM, llama.cpp, google-deepmind/gemma, litert-torch | Separate full K and V caches | The engine gap |
 
-- FACT: no search found an engine, PR or paper that stores the Gemma 4 K=V cache once. The last search was R-69 on
-  2026-10-31. INTERPRETATION: absence in a search is not proof. Private serving code is not visible.
+- FACT: no search found an engine, PR or paper that stores the Gemma 4 K=V cache once. R-69 searched on 2026-10-31.
+  The D-99 recheck (2026-11-04) searched the PRs and issues of vLLM, SGLang, llama.cpp and TensorRT-LLM, and read the
+  Gemma 4 code of HF transformers and gemma.cpp: vLLM PR #60674 and SGLang PR #25461 fuse compute for these layers;
+  HF transformers keeps both tensors (`past_key_values.update(key_states, value_states, ...)`); gemma.cpp supports E2B
+  and E4B, which have no K=V. INTERPRETATION: absence in a search is not proof. Private serving code is not visible.
 - FACT (R-72): the vLLM loader already maps the K weights into both the K and the V shards of these layers.
   INTERPRETATION: a duplicate upstream change is possible, so gate G2 searches again (Section 7).
 - INTERPRETATION: the research novelty is low. We do not claim the saving or the cache shape as new. The contribution
@@ -247,6 +269,48 @@ pool share (0.48 and 0.46) is below its preregistered range of 0.5 to 1.0. C6 fi
 `nvdisasm` is missing in the image. C7 adds the row order to L-19, and C8 to C10 and C12 add scope limits to O-13 to
 O-15 and T-11. No correction changes the frozen rule, the code or the decision word.
 
+### 4.6 E-53 and E-54: the compact FP8 row on real activations
+
+FACT (E-53 and E-54 READMEs, Section 13; R-74, R-76): Section 1 gives the results. E-53 (gate G3) captured the q, k
+and v of the 31B global layers in vLLM on one H100 and compared the compact FP8 row at KV scale 1.0 with the standard
+FP8 cache: FAIL (layer 41, a median ratio of 2.38). E-54 tested the scale-tied row (ks = w x vs, frozen per-layer
+scales) on 7 fresh prompts: PASS (0.67 times the stock FP8 error, 1.13 times the best calibrated standard FP8 error).
+Both are attention-level results.
+
+### 4.7 E-55: the first model-level test (INVALID)
+
+FACT (E-55 README Sections 4, 13 and 14; R-77, R-78):
+- Setup: the FP8-dynamic 31B on one H100 (FA4); 12 raw-text documents of 32K to 64K tokens; the arms BF16, BF16C (the
+  compact row in BF16), E5M2, STOCK8, TIED8 and others, emulated by hooks that change q, k and v before the cache
+  write; the decision on the mean NLL per token.
+- Result: INVALID (V6: the E5M2 control interval [-0.038, +0.126] includes 0). The splice checks passed (the engine
+  output follows each arm's reference within 0.0025; DET is bit-identical).
+- Cause (R-78): the BF16 baseline scored the documents at 9 to 10 nats per token on books, 6 to 7 on prose and 4 to 5
+  on code, worse than the 2B E2B model, with junk top-1 tokens. A rounding-size change of the query moved the per-token
+  NLL with an SD of 1.67 nats, so no interval could resolve the 0.001-nat margin.
+- Lessons: L-26 (a stub must drive the real call order), L-27 (run scripts in their own process session), L-28 (test
+  checks against real library records), L-29 (check the baseline health first).
+
+### 4.8 E-56: the model-level test with the 16-bit weights (GO)
+
+FACT (E-56 README Sections 1 to 14; R-79, R-80):
+- Setup: `google/gemma-4-31B-it` in BF16 on one A100 80GB (Triton for all layers); 400 GSM8K test questions and 32
+  needle prompts (a passphrase at 8 depths of 7.7K tokens of book text) in chat format, greedy answers; the GSM8K
+  reference solutions as scoring sequences; the arms BF16, DET (BF16 without hooks), BF16C, BF16R (one more BF16
+  rounding of the query: the noise floor) and STOCK8.
+- Rule: H1 the accuracy change inside +/-3 points (a paired Agresti-Min interval); H2 the final answers change no more
+  than 3 points more often than under BF16R; H3 the reference NLL change inside +/-0.002 nats per token; V8 a
+  baseline-health gate (L-29).
+- Result: GO1 GO2 GO3 (the numbers in Section 1). The baseline is healthy (GSM8K 0.975, needle 1.0, reference NLL
+  1.75). DET is bit-identical. Under a strict '####' grading the BF16C change is -1 item, not -2 (R-80 C1).
+- Limits (R-80): the cache is emulated; the positive control (STOCK8) equals BF16C in answers and mean NLL; the text
+  differs in 21.5% of the items for BF16C and 17.4% for BF16R (the claim covers final answers); the GSM8K sequences
+  are about 240 tokens; the needles are saturated; one checkpoint, one vLLM build; A1 (before any data) decided the
+  validity: under the first V8 bound the run would have stopped (L-31).
+- Side finding (O-19): the BF16 checkpoint on the A100 scores the raw-text slices as poorly as the FP8 checkpoint on
+  the H100 (per-token correlation 0.95 to 0.97, the same junk tokens). So the FP8 checkpoint and FA4 are not the cause
+  of the E-55 degradation; the instruct model itself or a shared vLLM path stays open.
+
 ## 5. What the evidence supports and what it does not
 
 Supported, with scope:
@@ -264,7 +328,15 @@ Supported, with scope:
   0.0017); the prefill form is not tested. POST-HOC (R-76): the gain needs the scales to 0.1% to 0.25%; a 1% offset
   costs 19% to 24% more error, one phase step (2.2% in scale) removes the gain, and BF16 storage of the scales costs
   about 1%. Part of the gain is the BOS vector, which is the same in every prompt.
+- FACT (E-56, preregistered GO1 GO2 GO3; R-80 CONFIRM_WITH_CORRECTIONS): with the 16-bit weights, the emulated compact
+  BF16 cache keeps the final answers of 400 GSM8K problems and 32 needles: the accuracy change -0.46 points [-1.24,
+  +0.32]; the final answers change as often as under a rounding-size change of the query; the reference NLL change is
+  -0.0009 nats per token. The claim covers final answers, not text.
 - INTERPRETATION: on the H100, the value of I-182 is capacity, not speed.
+- INTERPRETATION (arithmetic from the layout, not measured): per request with a BF16 cache, 0.94 GiB saved at 32K tokens
+  (29% of the KV cache), 1.9 GiB at 64K (32%) and 3.8 GiB at 128K (35%); the 50 sliding layers keep a fixed 0.8 GiB.
+  Where KV memory limits the batch, 1.4 to 1.5 times the long requests fit, so about 29% to 33% fewer GPUs serve the
+  same long-context traffic (an H100 at $3.99/h costs about $35K a year).
 
 Not supported, or not tested:
 - FACT: no engine run of the compact cache and no throughput number exist. The capacity gain is arithmetic.
@@ -272,12 +344,13 @@ Not supported, or not tested:
   gate: up to 2.38 times the standard FP8 error (layer 41). The compact row in BF16 has an error of 0 to 0.0105
   against the BF16 cache (exploratory). On fresh prompts (E-54) the row at scale 1.0 fails layer 41 again (2.39):
   in the six 8K prompts (2.2 to 2.6), not in the 32K prompt (1.08; R-76 C5).
-- FACT: no model-level quality test exists. E-53 and E-54 measure the attention error of each layer alone (E-55 is
-  the planned model-level test).
+- FACT: the model-level test (E-56) covers the BF16 compact cache with greedy answers at short context (GSM8K) and one
+  saturated long-context task (needles at 7.7K tokens). The FP8 tied row has no model-level test. No test runs above
+  8K tokens, with sampling or in multi-turn use.
 - FACT: each experiment used one H100 in one session. The image has no `ncu` and no `nvdisasm`, so no DRAM counter
   and no SASS exist.
-- FACT: we did not test the FP8 MMA kernel (FA PR 199), the vLLM Triton backend, other GPUs, mixed lengths, prefix
-  caching or speculative decoding.
+- FACT: for speed, we did not test the FP8 MMA kernel (FA PR 199), the vLLM Triton backend, other GPUs, mixed lengths,
+  prefix caching or speculative decoding (E-56 ran the Triton backend on an A100 for accuracy only).
 - INTERPRETATION (R-72): the speed result is specific to the H100 class. FACT (E-52 README Section 12): on the
   DRAM-bound RTX 4090, every compact variant gave sigma_layout 0.35 to 0.36.
 - FACT (R-70): for Llama-3.1-8B with FA3 on an H100, the vLLM FP8 KV blog gives an FP8 decode slope of 54% of BF16.
@@ -298,6 +371,10 @@ recompute.
 | E-50 | R-67: an untestable pool rule; a short timeout; a weak path check | R-68: the S premise; per-step claims with no batch (row 70) |
 | E-51 | R-69: dt over two configurations; a false KILL from a slow compact kernel | R-70: the oracle bounds the byte route only (row 71) |
 | E-52 | R-71: a false KILL if the views do not share their reads; V4 on the stock row | R-72: the co-limit, H4, H5 and the SASS cause (row 72) |
+| E-53 | R-73: a worst case above the cap; no tie between the analysis reference and the engine output | R-74: the FAIL is weak evidence against the layout; the grid phase of the scale |
+| E-54 | R-75: the calibrated baseline was not the best standard cache (B1) | R-76: the scale precision, the BOS share, attention level only |
+| E-55 | R-77: the warm-up used the first engine check (B1); the rehearsal could not run the scaled arms (B2) | R-78: the degraded baseline; the instrument cannot resolve the margin |
+| E-56 | R-79: an uncalibrated V8 bound (B1); no download retry | R-80: the G299 grading; A1 decided the validity; final answers, not text |
 
 FACT (journal Section 8.1 rows 69 to 72): each post-run review corrected at least one recorded claim. INTERPRETATION:
 without the reviews, this chapter would give a wrong cause for a lost cell and an "on-chip" bound with no support.
@@ -316,7 +393,7 @@ FACT (RESEARCH_OUTPUTS Section 3; the E-51 and E-52 READMEs, Sections 12 and 13;
 INTERPRETATION: the views technique changes the compact cache from a kernel project into a layout and indexing
 project.
 
-### 6.3 Lessons (L-10 to L-19)
+### 6.3 Lessons (L-10 to L-31)
 
 FACT (RESEARCH_OUTPUTS Section 4):
 
@@ -332,6 +409,18 @@ FACT (RESEARCH_OUTPUTS Section 4):
 | L-17 | Count the power cap (0x4), log the SM clock, tie a microbenchmark to the engine on dt |
 | L-18 | A DRAM-bound rehearsal GPU hides on-chip defects; add an L2-resident gate |
 | L-19 | Under the cap, a short row after a heavy row runs slower; bound dt across repeats |
+| L-20 | Rehearse a model-specific run with a small model of the same family on the same image |
+| L-21 | Measure the copy rate; use parallel rsync streams for large results |
+| L-22 | Estimate the null distribution of the frozen statistic before the run |
+| L-23 | Give a calibrated baseline the same objective and search as the candidate |
+| L-24 | A run script must exit at once on a failed upload or start |
+| L-25 | Hash every code file that runs on the Pod and compare it with the design commit |
+| L-26 | A stub must drive the real stateful code in the real call order |
+| L-27 | Start the run script in its own process session |
+| L-28 | Test every check of a recorded library value against a real record |
+| L-29 | Check the baseline health before you measure a small effect |
+| L-30 | A rehearsal model can break a format that the target keeps; size output limits with a margin |
+| L-31 | A validity gate needs a calibrated bound, or it should be a record |
 
 ## 7. Next step: the gated engine prototype (D-88)
 
@@ -360,24 +449,30 @@ G2 and G3 (FACT, D-88 and R-72):
 - G2 repeats the upstream search, and reads the o_proj weight format and the RoPE layout of the checkpoint.
 - G3 extracts real K and V of the global layers in one short Pod session (about $2). An offline test then compares the
   compact path with the standard FP8 path, with the FP16 range.
-- FACT (E-53, billed $1.01): G3 ran on 2026-11-01 and gave FAIL for the row at KV scale 1.0. D-90 is open: the user
-  asked for E-54, the scale-tied row with frozen calibrated scales (R-74 recommendation). R-75 (pre-run review) made
-  its calibrated baseline stronger, and the user chose that baseline (D-91, 2026-11-02). E-54 passed (2026-11-02),
-  and R-76 confirmed it with corrections. D-94 (open) decides the next step: E-55 (the model-level test) or the
-  write-up.
+- FACT (2026-11-04): the accuracy gates are done: E-53 FAIL at scale 1.0, E-54 PASS with tied scales, E-55 INVALID
+  (the instrument), E-56 GO (BF16, final answers). D-99 (the user): the write-up path now; the prototype (weeks 2 to
+  6) has not started and needs GPU credit.
+- FACT (the history): G3 ran on 2026-11-01 and gave FAIL for the row at KV scale 1.0. For D-90 the user asked for
+  E-54, the scale-tied row with frozen calibrated scales (R-74 recommendation). R-75 (pre-run review) made its
+  calibrated baseline stronger, and the user chose that baseline (D-91, 2026-11-02). E-54 passed (2026-11-02), and
+  R-76 confirmed it with corrections. D-94 (the user): plan E-55, the model-level test; E-55 was INVALID (R-78), and
+  D-97 (the user) led to E-56, which passed (R-80).
 
 HYPOTHESIS (R-72): (b) needs about $20 to $40 of GPU time. It gives an end-to-end capacity result by week 6 with a
 probability of 40% to 55%. FACT (R-72): if a gate fails, the fallback is this chapter plus free items.
 
 ## 8. Conclusion
 
-FACT (R-64, R-71; E-52 README Section 13): the compact K=V cache is exact in real arithmetic. The stock FA4 FP8
-kernel reads it through two views. INTERPRETATION: on the H100 it is a memory mechanism, not a speed mechanism. The
-gated D-88 build tests the open parts: the engine path, the page size and the accuracy on real activations. E-53
-showed that an FP8 compact row needs tied, calibrated KV scales (R-74). E-54 tested them on fresh prompts and passed,
-and R-76 confirmed the result with corrections. At the attention level, the tied row has 0.67 times the error of the
-stock FP8 cache and 1.13 times the error of the best calibrated standard FP8 cache, in 640 instead of 1,024 bytes per
-token and KV head. The scales must be reproduced to 0.1% to 0.25%. The model-level effect is not tested (E-55, D-94).
+FACT (R-64, R-71; E-52 README Section 13; E-56 README Section 13): the compact K=V cache is exact in real arithmetic,
+and the stock FA4 kernel reads it through two views with the same error. INTERPRETATION: on the H100 it is a memory
+mechanism, not a speed mechanism; the byte route to speed is closed (E-51, E-52). An FP8 compact row needs tied,
+calibrated KV scales (E-53, E-54: 0.67 times the stock FP8 error at the attention level, with the scales reproduced to
+0.1% to 0.25%). With the 16-bit weights, the emulated compact BF16 cache keeps the final answers of the model (E-56:
+the accuracy change [-1.24, +0.32] points; answer changes at the level of a rounding-size change of the query).
+INTERPRETATION: the evidence supports a 37.5% smaller global KV cache, 29% to 35% of the whole KV cache per request at
+32K to 128K tokens, with no detected change in the final answers. Open: an engine implementation that measures the
+memory and the throughput (Section 7), a model-level test of the FP8 tied row, contexts above 8K, and the cause of the
+raw-text degradation (O-19).
 
 ## Appendix A. Artifact map
 
@@ -387,7 +482,11 @@ token and KV head. The scales must be reproduced to 0.1% to 0.25%. The model-lev
 | E-50 | `experiments/gemma4_kv_headroom/` | `results/e50-h100-20261031/` | R-67, R-68 | $2.92 + $0.24 (billed) |
 | E-51 | `experiments/gemma4_kv_kernel/` | `results/e51-h100-20261101/` | R-69, R-70 | $1.42 + $0.14 (billed) |
 | E-52 | `experiments/gemma4_kv_views/` | `results/e52-h100-20261101/` | R-71, R-72 | About $1.25 + about $0.31 (estimates) |
+| E-53 | `experiments/gemma4_kv_accuracy/` | `results/e53-h100-20261101/` | R-73, R-74 | $1.01 H100 + $0.21 rehearsals (billed) |
+| E-54 | `experiments/gemma4_kv_scaletie/` | `results/e54-h100-20261102/` | R-75, R-76 | $4.09 in two attempts (billed) |
+| E-55 | `experiments/gemma4_kv_model/` | `results/e55-h100-20261103/` | R-77, R-78 | About $1.38 H100 + $0.27 rehearsals |
+| E-56 | `experiments/gemma4_kv_tasks/` | `results/e56-a100-20261104/` | R-79, R-80 | About $0.81 A100 + $0.42 rehearsal |
 
-FACT (the sum of the rows): the four experiments cost about $8.60, and the E-52 billing is pending. Other records:
-`dossier/REVIEW_E-49_*.md` to `dossier/REVIEW_E-52_*.md`, `experiments/runpod/HARDWARE_LOG.md`, `RESEARCH_OUTPUTS.md`
+FACT (the sum of the rows): the eight experiments cost about $16.80 (E-52, E-55 and E-56 partly estimated). Other
+records: `dossier/REVIEW_E-49_*.md` to `dossier/REVIEW_E-56_*.md`, `experiments/runpod/HARDWARE_LOG.md`, `RESEARCH_OUTPUTS.md`
 and journal Sections 7.30, 8.1 (rows 69 to 72) and 10.
