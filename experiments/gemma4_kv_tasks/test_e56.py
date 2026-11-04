@@ -54,6 +54,7 @@ def test_answer_extraction_and_grading():
     assert an.gsm_correct("16.0", "16") and not an.gsm_correct("17", "16") and not an.gsm_correct(None, "16")
     assert an.extract_needle(" The passphrase is Cobalt-4980.") == "cobalt-4980"
     assert an.extract_needle("I do not know.") == "i do not know"
+    assert an.same_answer("18", "18.00") and not an.same_answer("18", "19") and an.same_answer("x-1234", "x-1234")
 
 
 def test_paired_interval_covers_the_true_difference():
@@ -90,6 +91,7 @@ def test_decision_rule_gives_each_outcome():
     assert an.decide(st((-0.04, 0.01), (0.0, 0.05), (-0.001, 0.004))) == ("INCONCLUSIVE1", "INCONCLUSIVE2",
                                                                          "INCONCLUSIVE3")
     assert an.decide(st((-0.01, 0.035), None, (-0.003, 0.0)))[:2] == ("INCONCLUSIVE1", "NA2")
+    assert an.decide(st((-0.02, 0.02), (-0.01, 0.02), (0.0047, 0.0053)))[2] == "SMALL3"      # (A1, R-79 F7)
 
 
 def test_health_gate_stops_a_broken_baseline():
@@ -101,16 +103,32 @@ def test_health_gate_stops_a_broken_baseline():
     assert any("GSM8K accuracy" in p for p in an.health_problems(bad, ref, data)[0])
     ref_bad = {g["id"]: (-9.0 * 100, 100) for g in data["gsm8k"]}       # an E-55-like baseline: 9 nats
     assert any("reference NLL" in p for p in an.health_problems(good, ref_bad, data)[0])
+    ref_style = {g["id"]: (-2.0 * 100, 100) for g in data["gsm8k"]}     # (A1, R-79 B1) a healthy model, other style
+    assert an.health_problems(good, ref_style, data)[0] == []
+
+
+def test_preflight_stops_on_the_decision_arms_and_records_stock8():
+    """(A1, R-79 F2) a STOCK8 problem in the pre-flight is recorded and does not stop the run."""
+    lps = {a: np.full(8, -1.0 - 0.01 * i, np.float32) for i, a in enumerate(an.ARMS)}
+    lps["DET"] = lps["BF16"].copy()
+    ev = {"checks": {a: [] for a in an.ARMS}, "hook_errors": {},
+          "counts": {f"{a}|PRE|{lay}": 8 for a in an.ARMS for lay in range(10)},
+          "gaps": {a: {lay: 0.002 for lay in range(10)} for a in an.ARMS},
+          "gaps_id": {a: {lay: 0.05 for lay in range(10)} for a in an.ARMS},
+          "seps": {a: {lay: (0.0 if a == "BF16" else 0.05) for lay in range(10)} for a in an.ARMS}}
+    ev["gaps"]["STOCK8"][3] = 0.5
+    assert an.preflight_problems(lps, ev, 10, 8) == []
+    assert any("STOCK8" in p for p in an.preflight_problems(lps, ev, 10, 8, arms=("STOCK8",)))
 
 
 def test_session_limits_fit_the_cost_cap():
     """The session watchdog fires before the boot watchdog; the worst case (15 min to SSH, then the boot watchdog)
-    stays inside the cap of $2.50 at $1.79/h (the A100 80GB live price, 2026-11-04)."""
+    stays inside the cap of $2.50 at $1.79/h (the A100 80GB live price, 2026-11-04). (A1) The SSH limit is 600 s."""
     text = (HERE / "session_e56.sh").read_text()
     limit = int(re.search(r"POD_LIMIT:-(\d+)", text).group(1))
     boot = int(re.search(r"BOOT_CAP:-(\d+)", text).group(1))
     assert limit + 150 <= boot
-    assert (900 + boot) / 3600 * 1.79 <= 2.50
+    assert (600 + boot) / 3600 * 1.79 <= 2.50
     assert int(re.search(r"AUTO_STOP_DELAY:-(\d+)", text).group(1)) >= 300
 
 
@@ -135,6 +153,8 @@ def test_stub_session_runs_end_to_end(tmp_path):
     assert {a: len(g) for a, g in rec["gaps"].items()} == {a: 10 for a in an.ARMS}
     assert sum(x > 0.001 for x in rec["seps"]["BF16C"].values()) == 9 and rec["seps"]["BF16C"]["29"] == 0.0
     assert rec["health"]["problems"] == [] and set(s["stats"]["accuracy"]) == set(an.ARMS) | {"DET"}
+    assert set(s["stats"]["nll_long"]) == {"BF16C", "BF16R", "STOCK8"} and s["stats"]["gen"]["BF16"]["hash_marks"] == 1.0
+    assert s["det"]["answer_ids_differ"] == 0.0 and rec["preflight"]["stock8_problems"] == []
     sha = (tmp_path / "res/code_sha.txt").read_text()
     assert all(sha.count(f) == 1 for f in ("splice_e55.py", "run_e55.py", "analyze_e55.py", "run_e56.py"))
 
@@ -154,10 +174,12 @@ def test_stub_session_finds_planted_failures(tmp_path):
     s = run_stub(tmp_path / "d", "--stub-plant det_noise")                        # DET in the pre-flight
     rec = json.loads((tmp_path / "d/res/run_main.json").read_text())
     assert s["decision"] == "INVALID" and any("DET differs" in p for p in rec["preflight"]["problems"])
+    s = run_stub(tmp_path / "e", "--stub-plant det_ids")                          # (A1, R-79 F1) recorded only
+    assert s["decision"] == "GO1 GO2 GO3" and s["det"]["same_ids"] == s["det"]["answers"] - 1
 
 
 def test_time_cap_cuts_stock8_and_keeps_the_decision(tmp_path):
-    s = run_stub(tmp_path, "", {"POD_LIMIT": "80", "AN_RESERVE": "10"})
+    s = run_stub(tmp_path, "", {"POD_LIMIT": "70", "AN_RESERVE": "10"})        # (A1, R-79 F5) a certain cut
     assert [c["step"] for c in s["cut"]] == ["STOCK8"] and s["decision"] == "GO1 GO2 GO3"
 
 

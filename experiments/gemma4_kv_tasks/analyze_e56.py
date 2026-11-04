@@ -34,7 +34,8 @@ ARMS = ("BF16", "BF16C", "BF16R", "STOCK8")          # the hooked arms of E-56 (
 DECISION = ("BF16", "DET", "BF16C", "BF16R")         # must finish (V4); STOCK8 is reported
 ENGINE_TOKENS = 2_048
 GAP_TOL, DET_TOL = an55.GAP_TOL, an55.DET_TOL
-GSM_MIN, NEEDLE_MIN, REF_NLL_MAX = 0.75, 0.75, 1.5   # V8: the baseline health of BF16 (project heuristics)
+GSM_MIN, NEEDLE_MIN, REF_NLL_MAX = 0.75, 0.75, 3.0   # V8: the baseline health of BF16 (A1, R-79 B1: NLL 1.5 -> 3.0)
+LONG_FROM = 1_024                     # (A1, R-79 O1) the needle prompt log-probabilities scored from token 1,025
 M_ACC, M_DIS, M_NLL, KILL_NLL = 0.03, 0.03, 0.002, 0.01
 V_KEYS = ("V1", "V2", "V3", "V4", "V5", "V7", "V8")
 CODE_FILES = ("splice_e55.py", "run_e55.py", "analyze_e55.py", "run_e56.py", "analyze_e56.py", "session_e56.sh",
@@ -69,6 +70,14 @@ def extract_gsm(text: str) -> tuple[str | None, str]:
     return (found[-1].replace(",", "").replace("$", ""), "last") if found else (None, "none")
 
 
+def same_answer(a: str | None, b: str | None) -> bool:
+    """(A1, R-79 F7) two final answers are the same: equal as numbers when both are numbers, else equal as text."""
+    x, y = (_num(a) if a is not None else None), (_num(b) if b is not None else None)
+    if x is not None and y is not None:
+        return abs(x - y) < 1e-6
+    return a == b
+
+
 def gsm_correct(answer: str | None, gold: str) -> bool:
     a, g = (_num(answer) if answer is not None else None), _num(gold)
     return a is not None and g is not None and abs(a - g) < 1e-6
@@ -89,14 +98,15 @@ def grade(data: dict, outputs: dict) -> dict:
         if o is None:
             continue
         ans, how = extract_gsm(o["text"])
-        out[g["id"]] = {"answer": ans, "how": how, "correct": gsm_correct(ans, g["gold"]), "ids": o["ids"]}
+        out[g["id"]] = {"answer": ans, "how": how, "correct": gsm_correct(ans, g["gold"]), "ids": o["ids"],
+                        "finish": o.get("finish")}
     for n in data["needle"]:
         o = outputs.get("needle", {}).get(n["id"])
         if o is None:
             continue
         ans = extract_needle(o["text"])
         out[n["id"]] = {"answer": ans, "how": "phrase", "correct": n["gold"].lower() in o["text"].lower(),
-                        "ids": o["ids"]}
+                        "ids": o["ids"], "finish": o.get("finish")}
     return out
 
 
@@ -133,6 +143,21 @@ def ref_nll(arr: dict, data: dict) -> dict:
     return out
 
 
+def ref_top1(arr: dict, data: dict) -> float:
+    """(A1, R-79 B1 and point 4) the share of reference-answer tokens that are the model's top-1 token: an off-by-one
+    alignment gives a share near chance, a right one 0.4 or more for an instruct model (recorded, not a gate)."""
+    ranks = [np.asarray(arr[f"{g['id']}_rank"]) for g in data["gsm8k"] if f"{g['id']}_rank" in arr]
+    return float(np.mean(np.concatenate(ranks) == 1)) if ranks else float("nan")
+
+
+def gen_stats(graded: dict, data: dict) -> dict:
+    """(A1, R-79 F4) the GSM8K answers: the share cut at the token limit, the share with '####', the mean length."""
+    g = [graded[x["id"]] for x in data["gsm8k"] if x["id"] in graded]
+    return {"cut": float(np.mean([x.get("finish") == "length" for x in g])) if g else float("nan"),
+            "hash_marks": float(np.mean([x["how"] == "####" for x in g])) if g else float("nan"),
+            "mean_tokens": float(np.mean([len(x["ids"]) for x in g])) if g else float("nan")}
+
+
 def health_problems(graded: dict, ref: dict, data: dict) -> tuple[list[str], dict]:
     """V8 (L-29, R-78): the BF16 baseline answers and scores well enough for a comparison to mean something."""
     gsm = [graded[g["id"]]["correct"] for g in data["gsm8k"] if g["id"] in graded]
@@ -154,9 +179,11 @@ def health_problems(graded: dict, ref: dict, data: dict) -> tuple[list[str], dic
     return bad, m
 
 
-def preflight_problems(lps: dict, ev: dict, n_layers: int, length: int, arms=ARMS) -> list[str]:
-    """The pre-flight on the probe (one prompt, one chunk): V5 and V7 for every arm, full token counts, finite values,
-    DET equal to BF16 bit for bit or within DET_TOL, and every changed arm not bit-identical to BF16 when DET is."""
+def preflight_problems(lps: dict, ev: dict, n_layers: int, length: int, arms=("BF16", "BF16C", "BF16R")) -> list[str]:
+    """The pre-flight on the probe (one prompt, one chunk): V5 and V7 for each arm, full token counts, finite values,
+    DET equal to BF16 bit for bit or within DET_TOL, and every changed arm not bit-identical to BF16 when DET is. The
+    run stops on a problem of the decision arms; (A1, R-79 F2) it calls this again with arms=("STOCK8",) only to record
+    STOCK8 problems and to skip STOCK8."""
     bad = [] if n_layers else ["no hooked layer"]
     for arm in arms:
         v5, v7 = an55.engine_problems(arm, n_layers, ev)
@@ -165,7 +192,8 @@ def preflight_problems(lps: dict, ev: dict, n_layers: int, length: int, arms=ARM
         if len(cnt) != n_layers or any(n != length for n in cnt):
             bad.append(f"{arm}: the hooks saw {sorted(set(cnt))} tokens in {len(cnt)} layers, not {length} in "
                        f"{n_layers}")
-    bad += [f"{a}: a log-probability is not finite" for a, x in lps.items() if not np.isfinite(x).all()]
+    bad += [f"{a}: a log-probability is not finite" for a, x in lps.items()
+            if (a in arms or a in ("BF16", "DET")) and not np.isfinite(x).all()]
     det_same = np.array_equal(lps["DET"], lps["BF16"])
     if not det_same:
         d = float(np.mean(np.asarray(lps["BF16"], np.float64) - np.asarray(lps["DET"], np.float64)))
@@ -192,8 +220,9 @@ def expected_tokens(data: dict, outs: dict | None) -> dict:
 
 
 def det_check(outs: dict, arrays: dict) -> dict:
-    """V3: DET (BF16 again with the hooks removed, the same workload in the same order) reproduces BF16: every answer
-    has the same token ids, and the mean absolute log-probability difference is at most DET_TOL."""
+    """V3: DET (BF16 again with the hooks removed, the same workload in the same order) reproduces BF16: the mean
+    absolute log-probability difference of the scored tokens is at most DET_TOL. (A1, R-79 F1) The share of answers with
+    other token ids is recorded (a second noise floor for H2), not a gate."""
     if "DET" not in outs or "BF16" not in outs:
         return {"ok": False, "why": "no DET or no BF16 outputs"}
     same = n = 0
@@ -208,9 +237,10 @@ def det_check(outs: dict, arrays: dict) -> dict:
     diff = [np.abs(np.asarray(a[k], np.float64) - np.asarray(b[k], np.float64)) for k in keys if k not in missing]
     mean_abs = float(np.concatenate(diff).mean()) if diff else float("inf")
     max_abs = float(max(float(x.max()) for x in diff)) if diff else float("inf")
-    ok = n > 0 and same == n and not missing and mean_abs <= DET_TOL
-    return {"ok": ok, "answers": n, "same_ids": same, "missing": missing[:5], "mean_abs_lp": mean_abs,
-            "max_abs_lp": max_abs, "bit_identical": ok and max_abs == 0.0}
+    ok = n > 0 and not missing and mean_abs <= DET_TOL
+    return {"ok": ok, "answers": n, "same_ids": same, "answer_ids_differ": (n - same) / n if n else float("nan"),
+            "missing": missing[:5], "mean_abs_lp": mean_abs, "max_abs_lp": max_abs,
+            "bit_identical": ok and same == n and max_abs == 0.0}
 
 
 def validity(res: Path, data: dict, main: dict, outs: dict, graded: dict, ref: dict, rehearsal: bool,
@@ -296,7 +326,14 @@ def decide(st: dict) -> tuple[str, str, str]:
         dlo, dhi = st["dis_ci"]
         h2 = "GO2" if dhi <= M_DIS else ("WORSE2" if dlo > M_DIS else "INCONCLUSIVE2")
     nlo, nhi = st["nll_ci"]
-    h3 = "KILL3" if nlo > KILL_NLL else ("GO3" if nlo >= -M_NLL and nhi <= M_NLL else "INCONCLUSIVE3")
+    if nlo > KILL_NLL:
+        h3 = "KILL3"
+    elif nlo >= -M_NLL and nhi <= M_NLL:
+        h3 = "GO3"
+    elif nlo > M_NLL and nhi <= KILL_NLL:
+        h3 = "SMALL3"                # (A1, R-79 F7) a measured small increase, not an unknown
+    else:
+        h3 = "INCONCLUSIVE3"
     return h1, h2, h3
 
 
@@ -326,14 +363,14 @@ def summarize(res: Path, data_path: Path) -> dict:
         st["accuracy"][arm] = float(np.mean([gr[i]["correct"] for i in items]))
         st["by_task"][arm] = {t: float(np.mean([gr[x["id"]]["correct"] for x in data[t]])) for t in ("gsm8k", "needle")}
         if arm != "BF16":
-            st["differ"][arm] = float(np.mean([gr[i]["answer"] != base[i]["answer"] for i in items]))
+            st["differ"][arm] = float(np.mean([not same_answer(gr[i]["answer"], base[i]["answer"]) for i in items]))
             st["same_text"][arm] = float(np.mean([gr[i]["ids"] == base[i]["ids"] for i in items]))
     x = [base[i]["correct"] for i in items]
     y = [graded["BF16C"][i]["correct"] for i in items]
     st["acc_diff"], st["acc_ci"] = paired_diff(x, y)
     if "BF16R" in st["accuracy"]:
-        dc = [graded["BF16C"][i]["answer"] != base[i]["answer"] for i in items]
-        dr = [graded["BF16R"][i]["answer"] != base[i]["answer"] for i in items]
+        dc = [not same_answer(graded["BF16C"][i]["answer"], base[i]["answer"]) for i in items]
+        dr = [not same_answer(graded["BF16R"][i]["answer"], base[i]["answer"]) for i in items]
         st["dis_diff"], st["dis_ci"] = paired_diff(dr, dc)
         st["acc_diff_bf16r"], st["acc_ci_bf16r"] = paired_diff(x, [graded["BF16R"][i]["correct"] for i in items])
     else:
@@ -348,6 +385,19 @@ def summarize(res: Path, data_path: Path) -> dict:
         d, ci = ratio_interval(s, n)
         st["nll"][arm] = {"delta": d, "ci": ci}
     st["nll_ci"] = st["nll"]["BF16C"]["ci"]
+    st["nll_long"] = {}                       # (A1, R-79 O1) the needle prompts from token 1,025: reported only
+    lb = arrays.get("BF16", {})
+    for arm, arr in arrays.items():
+        if arm in ("BF16", "DET") or arm in excluded:
+            continue
+        keys = [f"{n['id']}_plp" for n in data["needle"]]
+        if all(k in arr and k in lb and len(arr[k]) == len(lb[k]) for k in keys):
+            s_ = np.array([float(np.sum(np.asarray(lb[k], np.float64) - np.asarray(arr[k], np.float64))) for k in keys])
+            n_ = np.array([float(len(lb[k])) for k in keys])
+            d, ci = ratio_interval(s_, n_)
+            st["nll_long"][arm] = {"delta": d, "ci": ci}
+    st["ref_top1"] = {a: ref_top1(arr, data) for a, arr in arrays.items()}
+    st["gen"] = {a: gen_stats(gr, data) for a, gr in graded.items()}
     st["base_ref_nll"] = health_problems(base, rb, data)[1]["ref_nll"]
     health = {}
     for h in data["health"]:
@@ -373,10 +423,15 @@ def line(s: dict) -> str:
            if st.get("dis_ci") else "")
     pre = "REHEARSAL " if s["rehearsal"] else ""
     tail = f"; validity problems: {probs}" if probs else ""
+    lng = "; ".join(f"{a} {v['delta']:+.5f} [{v['ci'][0]:+.5f}, {v['ci'][1]:+.5f}]" for a, v in st["nll_long"].items())
+    gen = st["gen"].get("BF16", {})
+    det = s.get("det", {})
     return (f"{pre}{s['decision']}: accuracy BF16C - BF16 {st['acc_diff']:+.4f} [{st['acc_ci'][0]:+.4f}, "
             f"{st['acc_ci'][1]:+.4f}] (margin {M_ACC}){dis}; accuracy {acc}; answer differs from BF16: {dif}; "
-            f"reference NLL change {nll} (BF16 {st['base_ref_nll']:.4f}); raw-text NLL {st['health_raw_nll']}; "
-            f"cut {[c['step'] for c in s['cut']]}{tail}")[:3000]
+            f"reference NLL change {nll} (BF16 {st['base_ref_nll']:.4f}, top-1 {st['ref_top1'].get('BF16', 0):.3f}); "
+            f"long-context NLL change {lng}; BF16 GSM8K answers cut {gen.get('cut', 0):.3f}, with #### "
+            f"{gen.get('hash_marks', 0):.3f}; DET answer ids differ {det.get('answer_ids_differ', 0):.4f}; "
+            f"raw-text NLL {st['health_raw_nll']}; cut {[c['step'] for c in s['cut']]}{tail}")[:3500]
 
 
 def manifest(s: dict, res: Path, design_commit: str, run_id: str) -> dict:

@@ -41,7 +41,7 @@ ARMS = an.ARMS
 ENGINE = {"seed": 0, "enforce_eager": True, "kv_cache_dtype": "auto", "max_model_len": 10_240,
           "max_num_batched_tokens": an.ENGINE_TOKENS, "max_num_seqs": 64, "gpu_memory_utilization": 0.92,
           "enable_prefix_caching": False, "limit_mm_per_prompt": {"image": 0, "audio": 0, "video": 0}}
-GSM_MAX_TOKENS, NEEDLE_MAX_TOKENS = 320, 24
+GSM_MAX_TOKENS, NEEDLE_MAX_TOKENS = 400, 24        # (A1, R-79 F4) 320 -> 400
 WARM_TOKENS = 512
 
 
@@ -223,7 +223,11 @@ def main() -> None:
                     raise RuntimeError("planted STOCK8 failure")
                 res = {i["id"]: tasks.answer(arm, i, kind) for i in items}
                 engine.batch([len(i["ids"]) for i in items], [len(r["ids"]) for r in res.values()])
-                return res
+                plp = {i["id"]: tasks.score(arm, i["ids"], 0) for i in items} if kind == "needle" else None
+                if args.stub_plant == "det_ids" and arm == "DET" and kind == "gsm8k":
+                    first = items[0]["id"]
+                    res[first] = dict(res[first], ids=res[first]["ids"][:-1] + [res[first]["ids"][-1] + 1])
+                return res, plp
 
             def warm():
                 engine.prompt(WARM_TOKENS, 1)
@@ -233,11 +237,23 @@ def main() -> None:
             from vllm.inputs import TokensPrompt
             torch.backends.cuda.matmul.allow_tf32 = False
             t0 = time.time()
-            llm = LLM(model=args.snapshot or args.model_id, revision=None if args.snapshot else args.revision,
-                      tokenizer=args.snapshot or args.model_id, **ENGINE)
+            kwargs = dict(ENGINE)
+            try:
+                llm = LLM(model=args.snapshot or args.model_id, revision=None if args.snapshot else args.revision,
+                          tokenizer=args.snapshot or args.model_id, **kwargs)
+            except Exception as exc:  # (A1, R-79 F6) one retry: more KV room, or more room outside the budget
+                msg = f"{type(exc).__name__}: {exc}"
+                kwargs["gpu_memory_utilization"] = 0.88 if "OutOfMemory" in msg else 0.95
+                rec["engine_retry"] = {"error": msg[:500], "gpu_memory_utilization": kwargs["gpu_memory_utilization"]}
+                save()
+                import gc
+                gc.collect()
+                torch.cuda.empty_cache()
+                llm = LLM(model=args.snapshot or args.model_id, revision=None if args.snapshot else args.revision,
+                          tokenizer=args.snapshot or args.model_id, **kwargs)
             rec["engine_seconds"] = round(time.time() - t0, 1)
             signal.signal(signal.SIGTERM, on_term)  # again, in case the engine start replaced it
-            rec["engine_kwargs"] = ENGINE
+            rec["engine_kwargs"] = kwargs
             rec["gpu"] = torch.cuda.get_device_name(0)
             rec["engine"] = r55.engine_record(llm)
             tok = llm.get_tokenizer()
@@ -260,11 +276,15 @@ def main() -> None:
                 return [r55.parse_prompt_logprobs(o.prompt_logprobs, s) for o, s in zip(outs, seqs)]
 
             def gen_batch(arm, items, max_tokens, kind):
+                extra = {"prompt_logprobs": 1, "flat_logprobs": True} if kind == "needle" else {}   # (A1, O1)
                 params = SamplingParams(max_tokens=max_tokens, temperature=0.0, seed=0, detokenize=True,
-                                        stop_token_ids=[data["eot_id"]])   # <turn|>; also in generation_config
+                                        stop_token_ids=[data["eot_id"]], **extra)   # <turn|>; also in the config
                 outs = llm.generate([TokensPrompt(prompt_token_ids=i["ids"]) for i in items], params, use_tqdm=False)
-                return {i["id"]: {"text": o.outputs[0].text, "ids": list(o.outputs[0].token_ids),
-                                  "finish": o.outputs[0].finish_reason} for i, o in zip(items, outs)}
+                res = {i["id"]: {"text": o.outputs[0].text, "ids": list(o.outputs[0].token_ids),
+                                 "finish": o.outputs[0].finish_reason} for i, o in zip(items, outs)}
+                plp = ({i["id"]: r55.parse_prompt_logprobs(o.prompt_logprobs, i["ids"]) for i, o in zip(items, outs)}
+                       if kind == "needle" else None)
+                return res, plp
 
             def warm():
                 llm.generate([TokensPrompt(prompt_token_ids=probe["ids"][:WARM_TOKENS])], sp_nll, use_tqdm=False)
@@ -292,7 +312,10 @@ def main() -> None:
             for task, items, mx in (("gsm8k", gsm, GSM_MAX_TOKENS), ("needle", needle, NEEDLE_MAX_TOKENS)):
                 t1 = time.time()
                 splice.new_doc(task.upper())
-                outs[task] = gen_batch(name, items, mx, task)
+                outs[task], plp = gen_batch(name, items, mx, task)
+                for i, (lp, top1, rank) in (plp or {}).items():   # (A1, O1) the long-context NLL from token 1,025
+                    finite &= bool(np.isfinite(lp[an.LONG_FROM:]).all())
+                    res[f"{i}_plp"], res[f"{i}_prank"] = lp[an.LONG_FROM:], rank[an.LONG_FROM:]
                 times[task] = round(time.time() - t1, 1)
             np.savez(arrays / f"{name}.npz", **res)       # small arrays: no compression (time)
             (out / f"outputs_{name}.json").write_text(json.dumps(outs) + "\n")
@@ -318,7 +341,9 @@ def main() -> None:
             splice.reattach(saved)
             ev = splice.evidence()
             problems = an.preflight_problems(lps, ev, len(splice.modules), len(probe["ids"]))
+            stock8 = an.preflight_problems(lps, ev, len(splice.modules), len(probe["ids"]), arms=("STOCK8",))
             return {"tokens": len(probe["ids"]), "seconds": round(time.time() - t0, 1), "problems": problems,
+                    "stock8_problems": [p for p in stock8 if p not in problems],
                     "equal_to_bf16": {a: float(np.mean(x == lps["BF16"])) for a, x in lps.items()},
                     **{k: ev[k] for k in ("checks", "gaps", "gaps_id", "seps", "hook_errors")}}
 
@@ -342,7 +367,10 @@ def main() -> None:
         run_arm("BF16R")
         rec["decision_arms_done"] = True
         save()
-        if fits("STOCK8"):
+        if rec["preflight"].get("stock8_problems"):
+            rec["step_errors"].append({"step": "STOCK8", "error": "skipped: pre-flight problems", "at": now()})
+            save()
+        elif fits("STOCK8"):
             try:
                 run_arm("STOCK8")
             except Exception as exc:  # a reported arm does not stop the run (E-55 R-77 F2)

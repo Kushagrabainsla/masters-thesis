@@ -4,7 +4,7 @@
 # BF16C, BF16R, then STOCK8 while the time allows) and the frozen decision. The same safety as E-55: a session watchdog,
 # a timeout for the main phase and AUTO_STOP (the run script sets AUTO_STOP=1 on the Pod). The Pod start command adds
 # the boot watchdog (experiments/runpod/pod_cmd.py --cap BOOT_CAP). The session starts about 3 min after the container,
-# so POD_LIMIT 3,900 s fires at about 4,080 s after boot, at the boot watchdog. Exit 3 of run_e56.py is a pre-flight or
+# so POD_LIMIT 4,200 s fires at about 4,380 s after boot, at the boot watchdog (A1, R-79 F3: more time for the download). Exit 3 of run_e56.py is a pre-flight or
 # health stop. STUB=1 runs the same flow on a Mac (no GPU, no vLLM, no download); STUB_ARGS passes stub flags. REH=1 is
 # the S5 rehearsal on a small Gemma 4 model (M31 and R31 name it).
 set -u
@@ -17,9 +17,9 @@ STUB_ARGS=${STUB_ARGS:-}
 REH=${REH:-0}
 M31=${M31:-google/gemma-4-31B-it}
 R31=${R31:-842da3794eaa0b77d5f08bae87a17459d91ff475}
-DL_TIMEOUT=${DL_TIMEOUT:-900}           # 62.6 GB: E-53 read 33 GB at about 120 MB/s, E-54 faster
-POD_LIMIT=${POD_LIMIT:-3900}            # session watchdog at 65 min
-BOOT_CAP=${BOOT_CAP:-4080}              # the boot watchdog that the run script gives pod_cmd.py (information here)
+DL_TIMEOUT=${DL_TIMEOUT:-1500}          # (A1, R-79 F3) 62.6 GB in up to 3 resumed tries; E-53 read about 120 MB/s
+POD_LIMIT=${POD_LIMIT:-4200}            # session watchdog at 70 min
+BOOT_CAP=${BOOT_CAP:-4380}              # the boot watchdog that the run script gives pod_cmd.py (information here)
 AN_RESERVE=${AN_RESERVE:-120}           # seconds kept for the analysis after the main phase
 AUTO_STOP_DELAY=${AUTO_STOP_DELAY:-300} # the copy window for RES
 AUTO_STOP=${AUTO_STOP:-0}
@@ -84,13 +84,18 @@ else
     TEL=$!
     { python3 -c "import vllm, torch, transformers; print('vllm', vllm.__version__); print('torch', torch.__version__); print('transformers', transformers.__version__)"
       echo "VLLM_BUILD_COMMIT=${VLLM_BUILD_COMMIT:-unset}"; } > "$RES/versions.txt" 2>&1
-    run_to "$DL_TIMEOUT" python3 -c "
+    log "disk before the download: $(df -h /workspace 2>/dev/null | tail -1)"
+    DL_END=$(( $(date +%s) + DL_TIMEOUT )); k=0
+    while [ -z "$SNAP" ] && [ $k -lt 3 ] && [ "$(date +%s)" -lt "$DL_END" ]; do   # (A1, R-79 F3) a try resumes
+        k=$((k + 1))
+        run_to $(( DL_END - $(date +%s) )) python3 -c "
 import sys
 from huggingface_hub import snapshot_download
 for m, r in zip(sys.argv[1::2], sys.argv[2::2]):
     print(m, r, snapshot_download(m, revision=r), flush=True)
-" "$M31" "$R31" > "$ENV/models.txt" 2>&1 || log "WARNING: model download failed (exit $?)"
-    SNAP=$(awk -v m="$M31" '$1 == m {print $3}' "$ENV/models.txt" | tail -1)
+" "$M31" "$R31" >> "$ENV/models.txt" 2>&1 || log "WARNING: model download try $k failed (exit $?)"
+        SNAP=$(awk -v m="$M31" '$1 == m {print $3}' "$ENV/models.txt" | tail -1)
+    done
 fi
 log "setup done after $(elapsed) s; versions: $(tr '\n' ' ' < "$RES/versions.txt")"
 log "disk: $(df -h "$RES" 2>/dev/null | tail -1)"
@@ -110,6 +115,9 @@ else
         rc=2; echo "no snapshot folder after the download" > "$RES/main_log.txt"
     fi
     [ "$rc" = 3 ] && log "PREFLIGHT OR HEALTH STOP: a check failed before the compared arms; see run_main.json"
+    grep -E "GPU KV cache size|Maximum concurrency" "$RES/main_log.txt" 2>/dev/null | head -4 | while IFS= read -r l; do
+        log "engine: $(printf '%s' "$l" | cut -c1-200)"                             # (A1, R-79 F6)
+    done
     log "main: exit $rc after $(elapsed) s; $(tail -1 "$RES/main_log.txt" | cut -c1-300)"
 fi
 [ -n "$TEL" ] && kill "$TEL" 2>/dev/null
