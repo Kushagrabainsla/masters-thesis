@@ -1,10 +1,11 @@
 # E-55: model-level accuracy of the compact K=V cache (BF16 and FP8) in the Gemma 4 31B global layers (preregistration)
 
 Status: PREDECLARED 2026-11-02; amendment A1 2026-11-03 (R-77, before any E-55 data); amendment A2 2026-11-03
-(after the S5 rehearsal, before any 31B data; D-96). NOT RUN on the 31B. S3: 27 tests pass in 541 s (Section 12).
+(after the S5 rehearsal, before any 31B data; D-96). RUN on the 31B 2026-11-04. S3: 27 tests pass in 541 s (Section 12).
 S4: D-95 (the user). S5: rehearsal 2 passed the 10 VERIFY items and found two problems, both fixed in A2 (Section 9).
 Design review (S2): R-77 AMEND_THEN_RUN (`dossier/REVIEW_E-55_PRERUN_2026-11-02.md`); every finding is fixed or
-answered in the A1 list at the end. Next: S6 (the H100 run).
+answered in the A1 list at the end. S6 to S8 (2026-11-04): INVALID (V6); the BF16 baseline is degraded (Section
+13). Next: S9 (R-78, the post-run review).
 Idea: I-182. Decision: D-94 (the user chose option (1) on 2026-11-02, "Yes, plan E-55": the model-level test with a
 16-bit arm and an 8-bit arm). Journal entry: Section 6.1 E-55.
 Labels: FACT (a source, a log or a computation was read), INTERPRETATION (reasoning), HYPOTHESIS (not tested).
@@ -398,6 +399,38 @@ the vLLM cache cast (saturate, round to nearest even).
   graphs FULL_AND_PIECEWISE) fails. The stub records the S5 engine values.
 - V6 two-sided: a planted E5M2 effect of -0.01 passes V6 (GO16 GO8); no E5M2 effect still gives INVALID.
 - The rehearsal 2 record, analysed again on the Mac with A2: the only problem is V1 (the RTX 4090, expected).
+
+## 13. Result (S6 to S8)
+Run (S6, 2026-11-03 to 2026-11-04, D-95): 1 x H100 80GB HBM3 SXM, Pod `8ppguohfyhuh9v`, Secure, EU-FR-1, $3.99/h; the
+SSH port 354 s after the create; setup 62 s; engine 94.9 s (FlashAttentionImpl); pre-flight 3.5 s, no problems; 71.5 to
+72.9 s per arm for 524,288 tokens; GEN 67.7 s; session 828 s; no cut; peak memory 60.3 GB; about 21 min of Pod, about
+$1.38 (the first billing read gave $1.00). Results: `results/e55-h100-20261103/` (RES copied, 37 checksums match).
+- Decision (frozen rule, A2): **INVALID (V6)**. The E5M2 interval is [-0.0375, +0.1259]; it includes 0. FACT: the Mac
+  recompute gives the same line to 1e-16. FACT: the A1 form of V6 (the lower bound above 0) also fails, so A2 does not
+  decide the outcome.
+- The other validity checks pass. FACT: V5 gaps 0.0017 to 0.0025 for every arm on FlashAttention (the K and V descale
+  route works); V7 passes in every deciding layer (BF16C 9 of 9; layer 29 has a separation of 0; the other arms 10 of
+  10); 960 of 960 token counts equal the document lengths; DET is bit-identical to BF16; the code hashes match the A2
+  commit; no hook errors.
+- Statistics (reported; no decision can use them). FACT: Delta (nats/token) and the 95% t interval: BF16C +0.0045
+  [-0.0302, +0.0391]; BF16R -0.0039 [-0.0221, +0.0143]; E5M2 +0.0442 [-0.0375, +0.1259]; STOCK8 +0.0026 [-0.0216,
+  +0.0269]; TIED8 -0.0336 [-0.0695, +0.0023]; JOINT8 -0.0029 [-0.0216, +0.0159]; TIED8_UP +0.0455 [+0.0210, +0.0699].
+  The per-token SD of the change is 1.67 to 1.91 nats for every arm; the top-1 agreement with BF16 is 0.76 to 0.80 for
+  every arm, BF16R included. In the pre-flight, only 0.2% to 0.3% of the log-probabilities of any changed arm equal
+  BF16.
+- Predictions (Section 2). FACT: the top-1 agreement of BF16R is 0.80, not 95% or more; the per-token SD is 1.67 nats,
+  not 0.02 to 0.11; |Delta_BF16C| below 1e-4 cannot be tested with an interval of +/-0.035. The resolution (R-77 finding
+  9) is about 100 times worse than the plan.
+- Exploratory (after the data; not part of the rule). FACT: the BF16 baseline of the 31B is poor on these raw-text
+  documents: mean NLL from token 1,025 is 8.6 to 10.5 nats on the books, 5.9 to 7.2 on the prose and 3.9 to 4.7 on the
+  code; the top-1 accuracy is 0.11 to 0.20, 0.31 to 0.39 and 0.52 to 0.57. On the same documents (cut to 16,384 tokens)
+  the 2B rehearsal model Gemma 4 E2B gives 5.3 to 6.5, 4.1 to 4.8 and 1.8 to 2.4 nats, so the 31B is worse than the 2B
+  model on every document. The 31B top-1 predictions collapse onto a few tokens (" same" 1,249 times in P1, "//" 1,268
+  times in C1, " own"); E2B predicts the expected tokens at the same positions. The damage does not depend on the row
+  in the 4,096-token chunk and starts in the first 1,024 tokens. In the chat-format GEN step the 31B writes coherent and
+  correct summaries. INTERPRETATION: the instrument cannot resolve the 0.001-nat margin; the raw-text scoring of this
+  checkpoint in this engine is degraded, and every changed arm gives a new chaotic realization of it. The cause is not
+  known; R-78 lists the candidates (Section 14).
 
 ## Amendments
 A2 (2026-11-03, after the S5 rehearsal 2 and before any 31B data; D-96, the user). Both items come from the

@@ -1,0 +1,7 @@
+00:06:42 setup done after 62 s; versions: vllm 0.33.0rc1.dev229+g3966924d5 torch 2.14.0+cu130 transformers 5.20.2 VLLM_BUILD_COMMIT=unset 
+00:06:42 disk: eu-fr-1-vast.runpod.net:/runpodfs/podvolumes/ve75w9kgn3ac/8ppguohfyhuh9v   94G   27G   67G  29% /workspace
+00:19:27 main: exit 0 after 827 s; {"status": "ok", "arms": ["BF16", "DET", "BF16C", "E5M2", "STOCK8", "TIED8", "BF16R", "JOINT8", "GEN", "TIED8_UP"], "cut": [], "step_errors": [], "errors": []}
+00:19:28 decision: INVALID (V6): V6: ['E5M2 95% interval (-0.03751736932026013, 0.12591916452367347) does not exclude 0']
+00:19:28 results: 26797 KB in /workspace/results/e55; disk: eu-fr-1-vast.runpod.net:/runpodfs/podvolumes/ve75w9kgn3ac/8ppguohfyhuh9v   94G   32G   63G  34% /workspace
+00:19:28 done after 828 s
+00:19:28 AUTO_STOP in 300 s; copy RES now

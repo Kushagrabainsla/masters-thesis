@@ -1,0 +1,34 @@
+recorded 8ppguohfyhuh9v
+/Users/kushagrabainsls/Desktop/mscs/masters-thesis/experiments/gemma4_kv_model/results/e55-h100-20261103/code_manifest.json: 6 files at 1114392
+ssh port 354 s after the create (uptime 11 s)
+sshd up after 1 tries
+2026-11-04T00:04:59Z armed cap 2640
+RUNPOD_API_KEY is set
+RUNPOD_POD_ID is set
+code hashes on the Pod: 6 of 6 match the design commit 
+GPU: NVIDIA H100 80GB HBM3, 595.91.07, 81559 MiB
+session processes: 3; 00:05:57
+--- watch (max 2700 s)
+00:06:42 setup done after 62 s; versions: vllm 0.33.0rc1.dev229+g3966924d5 torch 2.14.0+cu130 transformers 5.20.2 VLLM_BUILD_COMMIT=unset 
+00:06:42 disk: eu-fr-1-vast.runpod.net:/runpodfs/podvolumes/ve75w9kgn3ac/8ppguohfyhuh9v   94G   27G   67G  29% /workspace
+00:08:33 progress running  cut []
+00:10:01 progress running BF16:71.5 DET:7.6 cut []
+00:11:10 progress running BF16:71.5 DET:7.6 BF16C:72.9 cut []
+00:12:19 progress running BF16:71.5 DET:7.6 BF16C:72.9 E5M2:71.5 cut []
+00:13:27 progress running BF16:71.5 DET:7.6 BF16C:72.9 E5M2:71.5 STOCK8:71.6 cut []
+00:14:58 progress running BF16:71.5 DET:7.6 BF16C:72.9 E5M2:71.5 STOCK8:71.6 TIED8:72.6 cut []
+00:16:04 progress running BF16:71.5 DET:7.6 BF16C:72.9 E5M2:71.5 STOCK8:71.6 TIED8:72.6 BF16R:72.1 cut []
+00:17:10 progress running BF16:71.5 DET:7.6 BF16C:72.9 E5M2:71.5 STOCK8:71.6 TIED8:72.6 BF16R:72.1 JOINT8:72.7 cut []
+00:18:17 progress running BF16:71.5 DET:7.6 BF16C:72.9 E5M2:71.5 STOCK8:71.6 TIED8:72.6 BF16R:72.1 JOINT8:72.7 GEN:67.7 cut []
+00:19:23 progress ok BF16:71.5 DET:7.6 BF16C:72.9 E5M2:71.5 STOCK8:71.6 TIED8:72.6 BF16R:72.1 JOINT8:72.7 GEN:67.7 TIED8_UP:72.5 cut []
+00:19:27 main: exit 0 after 827 s; {"status": "ok", "arms": ["BF16", "DET", "BF16C", "E5M2", "STOCK8", "TIED8", "BF16R", "JOINT8", "GEN", "TIED8_UP"], "cut": [], "step_errors": [], "errors": []}
+00:19:28 decision: INVALID (V6): V6: ['E5M2 95% interval (-0.03751736932026013, 0.12591916452367347) does not exclude 0']
+00:19:28 results: 26797 KB in /workspace/results/e55; disk: eu-fr-1-vast.runpod.net:/runpodfs/podvolumes/ve75w9kgn3ac/8ppguohfyhuh9v   94G   32G   63G  34% /workspace
+00:19:28 done after 828 s
+00:19:28 AUTO_STOP in 300 s; copy RES now
+--- watch ended: session ended=1 after 828 s; 00:19:45
+RES copied after 9 s
+RES checksums match (37 files, 26888 KB)
+--- decision.txt (last 3 lines)
+INVALID (V6): V6: ['E5M2 95% interval (-0.03751736932026013, 0.12591916452367347) does not exclude 0']
+run script end 00:19:57: DELETE THE POD (pods.py check, delete-pod, pods.py end)
