@@ -1,8 +1,8 @@
 # E-56: output correctness of the compact K=V cache with the 16-bit Gemma 4 31B weights (preregistration)
 
 Status: PREDECLARED 2026-11-04; amendment A1 2026-11-04 (R-79 AMEND_THEN_RUN, before any E-56 data); A2 2026-11-04
-(after S5). RUN 2026-11-04 (A100): GO1 GO2 GO3 (Section 13). S3: 15
-tests pass (Section 12). Next: S4 (the user's spend approval and a live balance check).
+(after S5). RUN 2026-11-04 (A100): GO1 GO2 GO3 (Section 13); S9 R-80 CONFIRM_WITH_CORRECTIONS (Section 14). S3: 15
+tests pass (Section 12). S4: D-98 (the user). Next: D-99 (the user: the next step for I-182).
 Idea: I-182. Decision: D-97 (the user, 2026-11-04, "Go ahead": a model-level test of output correctness on the 16-bit
 weights on one A100 80GB, with a baseline-health gate). Journal entry: Section 6.1 E-56.
 Labels: FACT (a source, a log or a computation was read), INTERPRETATION (reasoning), HYPOTHESIS (not tested).
@@ -32,9 +32,9 @@ answers rises by more than 0.01 nats per token.
 - Order of work. The warm-up; the pre-flight; BF16 and the gate; DET; BF16C; BF16R; then STOCK8 while the time allows.
 - Predictions (HYPOTHESIS, written before any E-56 data; checked after the run, not used by the rule): BF16 GSM8K
   accuracy 0.85 to 0.95, needle accuracy 0.95 to 1.0, reference NLL 0.5 to 2.5 nats per token (A1, R-79 B1: human
-  GSM8K solutions are not the model's own style; before A1, 0.3 to 0.8) with a top-1 agreement of 0.4 or more; the BF16C accuracy
-  change within +/-1 point; the share of answers that differ from BF16 2% to 10% for BF16C and for BF16R alike (greedy
-  decoding diverges at near-ties); |Delta_BF16C| of the reference NLL below 5e-4; STOCK8 changes more answers and more
+  GSM8K solutions are not the model's own style; before A1, 0.3 to 0.8) with a top-1 agreement of 0.4 or more; the
+  BF16C accuracy change within +/-1 point; the share of answers that differ from BF16 2% to 10% for BF16C and for BF16R
+  alike (greedy decoding diverges at near-ties); |Delta_BF16C| of the reference NLL below 5e-4; STOCK8 changes more answers and more
   NLL than BF16C. If the FP8-dynamic checkpoint caused the E-55 degradation, the raw-text NLL of the BF16 31B on the
   health slices B1, P1 and C1 is below the E2B values on the same tokens (E-55 S5: about 5.5, 4.2 and 2.3).
 
@@ -49,8 +49,8 @@ answers rises by more than 0.01 nats per token.
 ### 4.1 Hardware
 1 x A100 80GB (SXM or PCIe), Secure Cloud, on demand, $1.79/h (FACT: live read 2026-11-04, stock LOW in the US and
 Europe on CUDA 13.2 hosts), CUDA floor 13.0 (the image). Why: 80 GB holds the 62.6 GB of BF16 weights, at less than
-half the H100 price. FA2 has no head size of 512, so on SM80 the global layers run on the Triton backend (FACT: the
-E-55 S5 rehearsal on SM89 used TritonAttentionImpl for the 512-wide layers). If no A100 is in stock, an H100 80GB SXM
+half the H100 price. (R-80 C7) On SM80 vLLM forces TRITON_ATTN for all 60 layers ("FA4 not available"; R-79: FA4 needs
+SM90 or higher). If no A100 is in stock, an H100 80GB SXM
 also passes V1 (the comparison is paired on one GPU); the user approves its price first.
 
 ### 4.2 Software
@@ -196,12 +196,13 @@ once; each generated sequence its prompt and all but its last output token (pree
 2. Greedy near-ties: a tiny change can flip a token and the rest of the answer. BF16R measures how often.
 3. The compact cache is emulated; a real compact layout reads the same values (E-52: the stock FA4 kernel reads the
    compact rows through two views with the same error), but a real write kernel is not tested.
-4. The A100 runs the global layers on Triton, not FA4 (H100). V5 checks the engine output against the reference on
+4. The A100 runs all layers on Triton, not FA4 (H100) (R-80 C7). V5 checks the engine output against the reference on
    the A100 itself.
 5. The answer format: an answer without '####' falls back to the last number. The extraction is the same for every
    arm, so it does not bias the paired difference.
 6. GSM8K may be in the training data. The comparison is paired, so this does not bias the difference.
-7. The GSM8K prompts are short (about 300 tokens), where the global layers matter less; the needles test 7,700
+7. (R-80 C6) The GSM8K prompts are about 97 tokens (at most 226) and the sequences about 240 tokens, inside the
+   1,024-token window, so GSM8K does not test the global layers beyond the sliding window; the needles test 7,700
    tokens. Contexts beyond 8K are not tested here (E-54 tested up to 32K at the attention level).
 8. One checkpoint and one model family.
 9. The tied 8-bit compact row (TIED8) is out of scope: its scales came from the FP8-dynamic checkpoint, so E-54 stays
@@ -256,36 +257,71 @@ once; each generated sequence its prompt and all but its last output token (pree
 
 ## 13. Result (S6 to S8)
 Run (S6, 2026-11-04, D-98): 1 x A100 SXM 80GB, Pod `a18u5h10b2vxws`, Secure, US-MD-1, $1.79/h; the SSH port 271 s after
-the create; setup 220 s (the 62.6 GB download in one try); engine 46.0 s (TRITON_ATTN; KV cache 31,762 tokens);
-pre-flight 3.6 s, no problems; 195 to 207 s per arm; all 5 arms, no cut; peak memory 77.5 GB; session 1,293 s; about
-27 min of Pod, about $0.81 (the live balance drop). Results: `results/e56-a100-20261104/` (37 checksums match).
-- Decision (frozen rule, A1 and A2): **GO1 GO2 GO3**. FACT: the Mac recompute gives the same line.
-  - H1: accuracy BF16 0.9769, BF16C 0.9722; the change -0.0046, 95% interval [-0.0124, +0.0032] (inside +/-0.03).
-  - H2: answers that differ from BF16: BF16C 0.0046 (2 of 432), BF16R 0.0069 (3), STOCK8 0.0023 (1), DET 0; BF16C -
-    BF16R -0.0023 [-0.0087, +0.0041] (the upper bound is below 0.03).
-  - H3: the reference NLL change of BF16C -0.00091 [-0.00156, -0.00025] nats per token (inside +/-0.002); BF16R +0.00274
-    [+0.00205, +0.00344]; STOCK8 -0.00085 [-0.00174, +0.00004]; the BF16 reference NLL 1.7526, top-1 agreement 0.776.
+the create; setup 220 s (the 62.6 GB download in one try); engine 46.0 s ("FA4 not available, forcing TRITON_ATTN
+backend": Triton for all 60 layers; KV cache 31,762 tokens); pre-flight 3.6 s, no problems; 195 to 207 s per arm; all 5
+arms, no cut; peak memory 77.5 GB; session 1,293 s; about 27 min of Pod, about $0.81 (the live balance drop). Results:
+`results/e56-a100-20261104/` (37 checksums match).
+- Decision (frozen rule, A1 and A2): **GO1 GO2 GO3**. FACT: the Mac recompute and R-80's independent grading agree.
+  - H1 (432 items): accuracy BF16 0.9769 (422), BF16C 0.9722 (420); the change -0.0046, 95% interval [-0.0124, +0.0032]
+    (inside +/-0.03). (R-80 C1) Item G299: the BF16 answer loops, stops at 640 tokens with no '####', and the
+    last-number fallback credits it by chance. Under a strict '####' rule BF16 has 421 and the change is -1 item
+    (interval [-0.0087, +0.0041]). G299 gives 3 of the 6 final-answer changes of the three arms.
+  - H2 (432 items): final answers that differ from BF16: BF16C 0.0046 (2), BF16R 0.0069 (3), STOCK8 0.0023 (1), DET 0;
+    BF16C - BF16R -0.0023 [-0.0087, +0.0041] (the upper bound is below 0.03).
+  - H3 (400 reference answers): the reference NLL change of BF16C -0.00091 [-0.00156, -0.00025] nats per token (inside
+    +/-0.002); BF16R +0.00274 [+0.00205, +0.00344]; STOCK8 -0.00085 [-0.00174, +0.00004]; BF16 1.7526, top-1 0.776.
+    (R-80 C5) The noise arm itself is outside the GO3 margin (262 of 400 items worse), so the margin is not calibrated
+    against the noise arm; BF16C has the opposite sign (187 items worse, 213 better). GO3 shows a small, slightly
+    negative shift; the sign is not explained (HYPOTHESIS: chance, or a rounding detail of the compact query; not
+    tested).
+- (R-80 C2) A1 decided the validity: under the frozen rules of f1b3502, V8 (reference NLL 1.5 or less) fails at 1.7526,
+  and the run stops after BF16. A1 (R-79 B1) was made before any 31B data. The A2 limits do not decide the outcome:
+  graded at 320 tokens, BF16C - BF16 is +2 items.
 - Validity: every check passes. FACT: V8: GSM8K 0.975, needle 1.0, reference NLL 1.75; DET bit-identical (432 of 432
-  answers; equal log-probabilities); V5 gaps 0.0018 or less for every arm on Triton; V7 passes (BF16C separations 0 in
-  layer 29 and 0.0018 to 0.0104 elsewhere); the 7 code hashes match the A2 commit.
-- Reported: GSM8K accuracy BF16 0.975, BF16C 0.970, BF16R 0.9725, STOCK8 0.9725; the needles 1.0 in every arm; answers
-  with the same token ids: BF16C 0.785, BF16R 0.826, STOCK8 0.741; the GSM8K answers: mean 141 tokens, 0.3% cut at 640,
-  99.8% with '####'; the long-context NLL change over the needle prompts from token 1,025: BF16C +0.0066 [+0.0005,
-  +0.0127], BF16R +0.0074 [+0.0011, +0.0138], STOCK8 +0.0066 [-0.0022, +0.0154]; the accuracy change of BF16R -0.0023
-  [-0.0113, +0.0067].
-- Predictions (Section 2): GSM8K 0.975 (predicted 0.85 to 0.95: above); needle 1.0 (in range); reference NLL 1.75 (A1:
+  answers; equal log-probabilities); V5 gaps 0.0018 or less for every arm; V7 passes (BF16C separations 0 in layer 29
+  and 0.0018 to 0.0104 elsewhere); the 7 code hashes match the A2 commit.
+- Reported. GSM8K only (400): BF16 0.975, BF16C 0.970, BF16R 0.9725, STOCK8 0.9725. Needles (32): 1.0 in every arm, with
+  identical text in every arm (the needle test is saturated). (R-80 C4) The text: items with other token ids than BF16:
+  BF16C 21.5% (93), BF16R 17.4% (75), STOCK8 25.9% (112), all in GSM8K; BF16C only 42 against BF16R only 24 (sign test
+  p = 0.036; exploratory, not preregistered); the median first divergence at token 40 to 46. The GSM8K answers: mean
+  141 tokens, 0.3% cut at 640, 99.8% with '####'. The long-context NLL change over the needle prompts from token 1,025:
+  BF16C +0.0066 [+0.0005, +0.0127], BF16R +0.0074 [+0.0011, +0.0138], STOCK8 +0.0066 [-0.0022, +0.0154]; (R-80) the
+  baseline there is 11.04 nats per token (top-1 0.142), the regime of the raw-text diagnostic below, so this is not
+  support for the claim.
+- (R-80 C3) The positive control did not separate: STOCK8 equals BF16C in final answers and mean NLL. It changes more
+  text (25.9% against 21.5%) and has a larger item SD of the NLL change (0.86 against 0.63). So E-56 shows that nothing
+  breaks; it does not show that the test would detect a harmful cache.
+- Predictions (Section 2): GSM8K 0.975 (predicted 0.85 to 0.95: higher); needle 1.0 (in range); reference NLL 1.75 (A1:
   0.5 to 2.5, in range); top-1 0.776 (0.4 or more: yes); the BF16C accuracy change -0.46 points (within +/-1: yes);
-  answers that differ 0.46% and 0.69% (predicted 2% to 10%: lower); |Delta_BF16C| 0.0009 (predicted below 5e-4:
-  higher, inside the GO3 margin); STOCK8 changes more than BF16C (predicted: not seen; both are at the noise level).
-- Exploratory (the R-78 diagnostic): the raw-text NLL of the BF16 31B on the health slices is B1 10.79, P1 7.91 and C1
-  5.19 nats per token, as poor as the FP8-dynamic checkpoint in E-55 on the same first tokens. INTERPRETATION: the E-55
-  degradation is not caused by the FP8-dynamic checkpoint or by FA4 (E-56 uses BF16 weights and Triton); it comes with
-  raw text without a chat template in this engine, while the chat-format scoring is healthy (reference NLL 1.75, top-1
-  0.776). The cause is not proven: the instruction-tuned model on raw text, or a raw-text path of vLLM.
-- INTERPRETATION: with the 16-bit weights, the compact K=V cache of the 10 global layers keeps the task accuracy (the
-  95% interval of the change is [-1.24, +0.32] points) and changes the answers no more often than a rounding-size change
-  of the query; its reference-NLL change is smaller than that of the noise arm. The memory saving (37.5% of the
-  global-layer KV bytes) is arithmetic, because the cache was emulated. Next: S9 (R-80, the post-run review).
+  final answers that differ 0.46% and 0.69% (predicted 2% to 10%: lower); |Delta_BF16C| 0.0009 (predicted below 5e-4:
+  higher, inside the GO3 margin); STOCK8 changes more than BF16C (answers: not seen; text: yes).
+- Exploratory, the R-78 diagnostic (rewritten after R-80 C8). FACT: the BF16 31B scores the raw-text health slices at
+  B1 10.79, P1 7.91 and C1 5.19 nats per token; on the same 2,047 tokens the E-55 FP8-dynamic arrays (H100, FA4) agree
+  token by token (correlation 0.957, 0.945 and 0.966; the same top-1 token at 72% to 86% of positions; the top-1 tokens
+  on B1 are " own" 25%, " same" 13% and "//" 13%). INTERPRETATION (R-80): the FP8-dynamic checkpoint and FA4 are ruled
+  out as the main causes. "Raw text without a chat template" is not shown: the needle text inside a chat user turn also
+  scores 11.0 nats. The junk goes with natural text that the model must predict (user content, documents), while the
+  assistant-turn reference scores well. The instruct model itself (A) against a defect in the shared vLLM Gemma 4 path
+  (D) stays open; a gross D defect is unlikely, because chat scoring and 7.7K-token retrieval work in the same engine.
+- The claim (R-80 Section 3, C4): with the 16-bit Gemma 4 31B weights on one A100 with greedy decoding, an emulated
+  compact K=V cache for the 10 global layers changes the final answers of 400 GSM8K problems and 32 needle prompts no
+  more than a rounding-size change of the query does; the accuracy change is -0.5 points with an interval of [-1.2,
+  +0.3] points; the reference NLL changes by less than 0.002 nats per token. Caveats: the cache is emulated (the 37.5%
+  memory saving is arithmetic, no write kernel was tested); the positive control did not separate ("no break found");
+  the GSM8K sequences are about 240 tokens, inside the 1,024-token window, so only the needles test long context, and
+  they are saturated; the text differs in about one answer in five; one checkpoint, one vLLM build, Triton on A100;
+  the margins are heuristics.
+
+## 14. Post-run review (S9)
+R-80 (2026-11-04, a different model; `dossier/REVIEW_E-56_POSTRUN_2026-11-04.md`): CONFIRM_WITH_CORRECTIONS. The frozen
+decision GO1 GO2 GO3 is right (an independent extractor and interval code); no validity check fails. Corrections C1 to
+C10 are applied in Section 13 and below: C1 the G299 grading note; C2 the disclosure that A1 decided the validity; C3 the
+positive control did not separate; C4 "final answers", not "outputs", with the text divergence; C5 the qualified H3; C6
+the GSM8K length in Section 10 point 7; C7 Triton for all layers in Sections 4.1 and 10 point 4; C8 the rewritten
+raw-text paragraph and the recommendation of an engine-independent Hugging Face score of about 1,000 B1 tokens on the
+same weights (it separates A from D; it needs a GPU, the user's approval and a balance check); C9 the bases and the
+status line; C10 the E-54 caveat: keep it for TIED8 and for the raw-text captures, drop the FP8-checkpoint reason for the
+BF16 compact path.
 
 ## Amendments
 A1 (2026-11-04, after R-79 AMEND_THEN_RUN, before any E-56 data; `dossier/REVIEW_E-56_PRERUN_2026-11-04.md`). The
