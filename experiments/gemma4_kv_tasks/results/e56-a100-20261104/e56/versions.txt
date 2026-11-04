@@ -1,0 +1,4 @@
+vllm 0.33.0rc1.dev229+g3966924d5
+torch 2.14.0+cu130
+transformers 5.20.2
+VLLM_BUILD_COMMIT=unset

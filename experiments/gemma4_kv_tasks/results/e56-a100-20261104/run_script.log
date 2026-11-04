@@ -1,0 +1,32 @@
+recorded a18u5h10b2vxws
+/Users/kushagrabainsls/Desktop/mscs/masters-thesis/experiments/gemma4_kv_tasks/results/e56-a100-20261104/code_manifest.json: 7 files at d4ac354
+ssh port 271 s after the create (uptime 28 s)
+sshd up after 1 tries
+2026-11-04T04:42:32Z armed cap 4380
+RUNPOD_API_KEY is set
+RUNPOD_POD_ID is set
+code hashes on the Pod: 7 of 7 match the design commit 
+GPU: NVIDIA A100-SXM4-80GB, 595.91.07, 81920 MiB
+session processes: 3; 04:43:33
+--- watch (max 4500 s)
+04:43:31 disk before the download: mfs#us-md-1.runpod.net:9421  404T  308T   96T  77% /workspace
+04:46:57 setup done after 220 s; versions: vllm 0.33.0rc1.dev229+g3966924d5 torch 2.14.0+cu130 transformers 5.20.2 VLLM_BUILD_COMMIT=unset 
+04:46:57 disk: mfs#us-md-1.runpod.net:9421  404T  309T   96T  77% /workspace
+04:48:07 progress running  cut []
+04:51:37 progress running BF16:202.9 cut []
+04:54:46 progress running BF16:202.9 DET:195.3 cut []
+04:58:17 progress running BF16:202.9 DET:195.3 BF16C:202.8 cut []
+05:01:26 progress running BF16:202.9 DET:195.3 BF16C:202.8 BF16R:196.3 cut []
+05:04:49 engine: (MainProcess pid=1349) INFO 11-04 04:47:50 [kv_cache_utils.py:1147] GPU KV cache size: 31,762 tokens, Maximum concurrency for 10,240 tokens per request: 3.10x
+05:04:49 main: exit 0 after 1292 s; {"status": "ok", "arms": ["BF16", "DET", "BF16C", "BF16R", "STOCK8"], "cut": [], "step_errors": [], "errors": []}
+05:04:50 decision: GO1 GO2 GO3: accuracy BF16C - BF16 -0.0046 [-0.0124, +0.0032] (margin 0.03); differ BF16C - BF16R -0.0023 [-0.0087, +0.0041]; accuracy BF16 0.9769, BF16C 0.9722, BF16R 0.9745, STOCK8 0.9745, DET 0.9769; answer differs from BF16: BF16C 0.0046, BF16R 0.0069, STOCK8 0.0023, DET 0.0000; reference NLL change BF16C -0.00091 [-0.00156, -0.00025]; BF16R +0.00274 [+0.00205, +0.00344]; STOCK8 -0.00085 [-0.00174, +0.00004] (BF16 1.7526, top-1 0.776); long-context NLL change BF16C +0.00659 [+0.00050, +0.01269]; BF16R +0.00743 [+0.00106, +0.01381]; STOCK8 +0.00663 [-0.00216, +0.01542]; BF16 GSM8K answers cut 0.003, with #### 0.998; DET answer ids differ 0.0000; raw-text NLL {'B1': 10.793681825725379, 'P1': 7.914113951521676, 'C1': 5.193602305052351}; cut []
+05:04:50 results: 21244 KB in /workspace/results/e56; disk: mfs#us-md-1.runpod.net:9421  404T  309T   96T  77% /workspace
+05:04:50 done after 1293 s
+05:04:50 AUTO_STOP in 300 s; copy RES now
+05:04:56 progress ok BF16:202.9 DET:195.3 BF16C:202.8 BF16R:196.3 STOCK8:207.3 cut []
+--- watch ended: session ended=1 after 1283 s; 05:04:56
+RES copied after 4 s
+RES checksums match (37 files, 15456 KB)
+--- decision.txt (last 3 lines)
+GO1 GO2 GO3: accuracy BF16C - BF16 -0.0046 [-0.0124, +0.0032] (margin 0.03); differ BF16C - BF16R -0.0023 [-0.0087, +0.0041]; accuracy BF16 0.9769, BF16C 0.9722, BF16R 0.9745, STOCK8 0.9745, DET 0.9769; answer differs from BF16: BF16C 0.0046, BF16R 0.0069, STOCK8 0.0023, DET 0.0000; reference NLL change BF16C -0.00091 [-0.00156, -0.00025]; BF16R +0.00274 [+0.00205, +0.00344]; STOCK8 -0.00085 [-0.00174, +0.00004] (BF16 1.7526, top-1 0.776); long-context NLL change BF16C +0.00659 [+0.00050, +0.01269]; BF16R +0.00743 [+0.00106, +0.01381]; STOCK8 +0.00663 [-0.00216, +0.01542]; BF16 GSM8K answers cut 0.003, with #### 0.998; DET answer ids differ 0.0000; raw-text NLL {'B1': 10.793681825725379, 'P1': 7.914113951521676, 'C1': 5.193602305052351}; cut []
+run script end 05:05:01: DELETE THE POD (pods.py check, delete-pod, pods.py end)

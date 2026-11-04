@@ -1,0 +1,4 @@
+python 3.12.3 x86_64
+torch 2.14.0+cu130 cuda 13.0 cudnn 92400
+0 NVIDIA A100-SXM4-80GB sm_80 108 SMs 81152 MiB
+vllm 0.33.0rc1.dev229+g3966924d5

@@ -1,7 +1,7 @@
 # E-56: output correctness of the compact K=V cache with the 16-bit Gemma 4 31B weights (preregistration)
 
 Status: PREDECLARED 2026-11-04; amendment A1 2026-11-04 (R-79 AMEND_THEN_RUN, before any E-56 data); A2 2026-11-04
-(after S5). NOT RUN. S3: 15
+(after S5). RUN 2026-11-04 (A100): GO1 GO2 GO3 (Section 13). S3: 15
 tests pass (Section 12). Next: S4 (the user's spend approval and a live balance check).
 Idea: I-182. Decision: D-97 (the user, 2026-11-04, "Go ahead": a model-level test of output correctness on the 16-bit
 weights on one A100 80GB, with a baseline-health gate). Journal entry: Section 6.1 E-56.
@@ -253,6 +253,39 @@ once; each generated sequence its prompt and all but its last output token (pree
 - (O1) The stub session reports the long-context NLL change of BF16C, BF16R and STOCK8, the reference top-1
   agreement and the GSM8K answer statistics.
 - Not testable on the Mac: the engine-start retry (F6) and the download loop (F3); the rehearsal and the run log them.
+
+## 13. Result (S6 to S8)
+Run (S6, 2026-11-04, D-98): 1 x A100 SXM 80GB, Pod `a18u5h10b2vxws`, Secure, US-MD-1, $1.79/h; the SSH port 271 s after
+the create; setup 220 s (the 62.6 GB download in one try); engine 46.0 s (TRITON_ATTN; KV cache 31,762 tokens);
+pre-flight 3.6 s, no problems; 195 to 207 s per arm; all 5 arms, no cut; peak memory 77.5 GB; session 1,293 s; about
+27 min of Pod, about $0.81 (the live balance drop). Results: `results/e56-a100-20261104/` (37 checksums match).
+- Decision (frozen rule, A1 and A2): **GO1 GO2 GO3**. FACT: the Mac recompute gives the same line.
+  - H1: accuracy BF16 0.9769, BF16C 0.9722; the change -0.0046, 95% interval [-0.0124, +0.0032] (inside +/-0.03).
+  - H2: answers that differ from BF16: BF16C 0.0046 (2 of 432), BF16R 0.0069 (3), STOCK8 0.0023 (1), DET 0; BF16C -
+    BF16R -0.0023 [-0.0087, +0.0041] (the upper bound is below 0.03).
+  - H3: the reference NLL change of BF16C -0.00091 [-0.00156, -0.00025] nats per token (inside +/-0.002); BF16R +0.00274
+    [+0.00205, +0.00344]; STOCK8 -0.00085 [-0.00174, +0.00004]; the BF16 reference NLL 1.7526, top-1 agreement 0.776.
+- Validity: every check passes. FACT: V8: GSM8K 0.975, needle 1.0, reference NLL 1.75; DET bit-identical (432 of 432
+  answers; equal log-probabilities); V5 gaps 0.0018 or less for every arm on Triton; V7 passes (BF16C separations 0 in
+  layer 29 and 0.0018 to 0.0104 elsewhere); the 7 code hashes match the A2 commit.
+- Reported: GSM8K accuracy BF16 0.975, BF16C 0.970, BF16R 0.9725, STOCK8 0.9725; the needles 1.0 in every arm; answers
+  with the same token ids: BF16C 0.785, BF16R 0.826, STOCK8 0.741; the GSM8K answers: mean 141 tokens, 0.3% cut at 640,
+  99.8% with '####'; the long-context NLL change over the needle prompts from token 1,025: BF16C +0.0066 [+0.0005,
+  +0.0127], BF16R +0.0074 [+0.0011, +0.0138], STOCK8 +0.0066 [-0.0022, +0.0154]; the accuracy change of BF16R -0.0023
+  [-0.0113, +0.0067].
+- Predictions (Section 2): GSM8K 0.975 (predicted 0.85 to 0.95: above); needle 1.0 (in range); reference NLL 1.75 (A1:
+  0.5 to 2.5, in range); top-1 0.776 (0.4 or more: yes); the BF16C accuracy change -0.46 points (within +/-1: yes);
+  answers that differ 0.46% and 0.69% (predicted 2% to 10%: lower); |Delta_BF16C| 0.0009 (predicted below 5e-4:
+  higher, inside the GO3 margin); STOCK8 changes more than BF16C (predicted: not seen; both are at the noise level).
+- Exploratory (the R-78 diagnostic): the raw-text NLL of the BF16 31B on the health slices is B1 10.79, P1 7.91 and C1
+  5.19 nats per token, as poor as the FP8-dynamic checkpoint in E-55 on the same first tokens. INTERPRETATION: the E-55
+  degradation is not caused by the FP8-dynamic checkpoint or by FA4 (E-56 uses BF16 weights and Triton); it comes with
+  raw text without a chat template in this engine, while the chat-format scoring is healthy (reference NLL 1.75, top-1
+  0.776). The cause is not proven: the instruction-tuned model on raw text, or a raw-text path of vLLM.
+- INTERPRETATION: with the 16-bit weights, the compact K=V cache of the 10 global layers keeps the task accuracy (the
+  95% interval of the change is [-1.24, +0.32] points) and changes the answers no more often than a rounding-size change
+  of the query; its reference-NLL change is smaller than that of the noise arm. The memory saving (37.5% of the
+  global-layer KV bytes) is arithmetic, because the cache was emulated. Next: S9 (R-80, the post-run review).
 
 ## Amendments
 A1 (2026-11-04, after R-79 AMEND_THEN_RUN, before any E-56 data; `dossier/REVIEW_E-56_PRERUN_2026-11-04.md`). The
