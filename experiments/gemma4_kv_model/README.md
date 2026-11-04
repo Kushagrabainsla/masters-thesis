@@ -5,7 +5,7 @@ Status: PREDECLARED 2026-11-02; amendment A1 2026-11-03 (R-77, before any E-55 d
 S4: D-95 (the user). S5: rehearsal 2 passed the 10 VERIFY items and found two problems, both fixed in A2 (Section 9).
 Design review (S2): R-77 AMEND_THEN_RUN (`dossier/REVIEW_E-55_PRERUN_2026-11-02.md`); every finding is fixed or
 answered in the A1 list at the end. S6 to S8 (2026-11-04): INVALID (V6); the BF16 baseline is degraded (Section
-13). Next: S9 (R-78, the post-run review).
+13). S9: R-78 CONFIRM_INVALID_WITH_CORRECTIONS (Section 14). Next: D-97 (the user).
 Idea: I-182. Decision: D-94 (the user chose option (1) on 2026-11-02, "Yes, plan E-55": the model-level test with a
 16-bit arm and an 8-bit arm). Journal entry: Section 6.1 E-55.
 Labels: FACT (a source, a log or a computation was read), INTERPRETATION (reasoning), HYPOTHESIS (not tested).
@@ -431,6 +431,24 @@ $1.38 (the first billing read gave $1.00). Results: `results/e55-h100-20261103/`
   correct summaries. INTERPRETATION: the instrument cannot resolve the 0.001-nat margin; the raw-text scoring of this
   checkpoint in this engine is degraded, and every changed arm gives a new chaotic realization of it. The cause is not
   known; R-78 lists the candidates (Section 14).
+
+## 14. Post-run review (S9)
+R-78 (2026-11-04, a different model; `dossier/REVIEW_E-55_POSTRUN_2026-11-04.md`): CONFIRM_INVALID_WITH_CORRECTIONS.
+- INVALID (V6) holds and does not depend on A2 (the t interval, the bootstrap and both forms of V6 fail).
+- The baseline is degraded from token 1: the 31B is worse than E2B in 12 of 12 documents on the same first 16,383
+  tokens; junk top-1 tokens take 37% of the B1 positions (10% of P1, 14% of C1) and repeat across arms at 87% to 90%
+  of their positions; at those positions the real token has an NLL of 20 to 26. The alignment is correct and the NLL
+  does not depend on the chunk offset, so a parser, shift or chunk fault is ruled out.
+- Open causes: the FP8-dynamic checkpoint (most likely, HYPOTHESIS), the instruction-tuned model scored on raw text (an
+  amplifier at most), FA4 in the 50 sliding layers, a vLLM Gemma 4 K=V defect. The rehearsal (E2B: Triton, no K=V,
+  BF16) could not see the last three.
+- At this noise level the design cannot resolve 0.001 nats (the iid standard error is 0.0027, the document-level
+  half-width about 0.035); a larger second run does not help.
+- E-54 stands as arithmetic on the engine's own q, k and v; the health of those tensors is not verified.
+- Corrections for a later model-level test: a baseline-health gate (V8); a power check in place of V6; store the top-1
+  log-probability (for entropy and KL); a task-accuracy metric of the output (the user asked for output correctness on
+  2026-11-04). The next check: a diagnostic H100 session on 4,096-token slices (FA4 against Triton, a chat template,
+  the BF16 weights, an HF BF16 oracle), about $2.5 to $4 (HYPOTHESIS), only after a new S4.
 
 ## Amendments
 A2 (2026-11-03, after the S5 rehearsal 2 and before any 31B data; D-96, the user). Both items come from the
